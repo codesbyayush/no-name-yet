@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniFeedback Widget Debug</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        margin: 0;
+        padding: 40px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        color: white;
+      }
+      
+      .debug-container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      
+      .debug-header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+      
+      .debug-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 16px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+      
+      .debug-section {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 30px;
+        margin-bottom: 30px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      
+      .test-buttons {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+      }
+      
+      .test-btn {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 12px 24px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 14px;
+      }
+      
+      .test-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+      }
+      
+      .status {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 6px;
+        background: rgba(0, 0, 0, 0.2);
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="debug-container">
+      <div class="debug-header">
+        <h1>🔧 OmniFeedback Widget Debug</h1>
+        <p>Development environment for UMD widget testing</p>
+      </div>
+
+      <div class="debug-section">
+        <h2>Widget Test Controls</h2>
+        <p>Use these controls to test the widget functionality:</p>
+        
+        <div class="test-buttons">
+          <button class="test-btn" onclick="testWidgetLoad()">Test Widget Load</button>
+          <button class="test-btn" onclick="testInit()">Initialize Widget</button>
+          <button class="test-btn" onclick="testCustomTheme()">Test Custom Theme</button>
+          <button class="test-btn" onclick="testDestroy()">Destroy Widget</button>
+        </div>
+        
+        <div id="status" class="status">
+          <strong>Status:</strong> <span id="status-text"></span>
+        </div>
+      </div>
+
+      <div class="debug-section">
+        <h2>Widget Container</h2>
+        <p>The widget will appear in the bottom-right corner when initialized.</p>
+        <div id="widget-container" style="min-height: 100px; border: 2px dashed rgba(255,255,255,0.3); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+          <span>Widget will render here and as floating button</span>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let widgetInstance = null;
+
+      function showStatus(message) {
+        const statusDiv = document.getElementById('status');
+        const statusText = document.getElementById('status-text');
+        statusText.textContent = message;
+        statusDiv.style.display = 'block';
+        
+        setTimeout(() => {
+          statusDiv.style.display = 'none';
+        }, 3000);
+      }
+
+      function testWidgetLoad() {
+        if (typeof window.OmniFeedbackWidget !== 'undefined') {
+          showStatus(`✅ Widget loaded! Version: ${window.OmniFeedbackWidget.version || 'Unknown'}`);
+          console.log('Widget API:', window.OmniFeedbackWidget);
+        } else {
+          showStatus('❌ Widget not loaded. Check console for errors.');
+          console.error('OmniFeedbackWidget not found on window object');
+        }
+      }
+
+      function testInit() {
+        try {
+          if (widgetInstance) {
+            widgetInstance.destroy();
+          }
+          
+          widgetInstance = window.OmniFeedbackWidget.init({
+            tenantId: 'debug-tenant-123',
+            jwtAuthToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.debug-token',
+            apiUrl: 'https://api.omnifeedback.ai',
+            theme: {
+              primaryColor: '#667eea'
+            }
+          });
+          
+          showStatus('✅ Widget initialized successfully!');
+        } catch (error) {
+          showStatus(`❌ Error: ${error.message}`);
+          console.error('Widget initialization error:', error);
+        }
+      }
+
+      function testCustomTheme() {
+        try {
+          if (widgetInstance) {
+            widgetInstance.destroy();
+          }
+          
+          widgetInstance = window.OmniFeedbackWidget.init({
+            tenantId: 'custom-theme-tenant',
+            targetElement: '#widget-container',
+            theme: {
+              primaryColor: '#ff6b6b'
+            }
+          });
+          
+          showStatus('✅ Custom red theme widget created!');
+        } catch (error) {
+          showStatus(`❌ Error: ${error.message}`);
+          console.error('Custom theme test error:', error);
+        }
+      }
+
+      function testDestroy() {
+        try {
+          if (window.OmniFeedbackWidget) {
+            window.OmniFeedbackWidget.destroyAll();
+            widgetInstance = null;
+            showStatus('✅ All widgets destroyed!');
+          } else {
+            showStatus('❌ Widget API not available');
+          }
+        } catch (error) {
+          showStatus(`❌ Error: ${error.message}`);
+          console.error('Destroy test error:', error);
+        }
+      }
+
+      // Auto-test widget loading when page loads
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          testWidgetLoad();
+        }, 1000);
+      });
+
+      // Console debugging helpers
+      console.log('🔧 Debug page loaded. Available functions:');
+      console.log('- testWidgetLoad(): Check if widget is loaded');
+      console.log('- testInit(): Initialize widget with default config');
+      console.log('- testCustomTheme(): Test widget with custom theme');
+      console.log('- testDestroy(): Destroy all widget instances');
+    </script>
+  </body>
+</html>
