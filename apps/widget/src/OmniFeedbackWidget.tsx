@@ -8,6 +8,7 @@ interface OmniFeedbackWidgetProps {
     primaryColor?: string;
     buttonText?: string;
   };
+  position?: 'center' | 'above-button';
   onClose?: () => void;
 }
 
@@ -24,6 +25,7 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
   jwtAuthToken,
   apiUrl = "http://localhost:8080",
   theme = {},
+  position = "above-button",
   onClose,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -317,38 +319,60 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
   return (
     <div className="omni-feedback-widget fixed z-[999999] font-sans text-sm leading-relaxed text-gray-800">
       {/* Floating Action Button */}
-      {!isOpen && (
-        <button
-          className="fixed bottom-5 right-5 w-15 h-15 rounded-full border-none cursor-pointer shadow-lg transition-all duration-300 flex items-center justify-center z-[1000000] hover:scale-110 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          style={{ backgroundColor: theme.primaryColor || "#007bff" }}
-          onClick={() => setIsOpen(true)}
-          aria-label="Open feedback widget"
-        >
-          <span className="text-2xl text-white">💬</span>
-        </button>
-      )}
+      <button
+        className="fixed bottom-5 right-5 w-15 h-15 rounded-full border-none cursor-pointer shadow-lg transition-all duration-300 flex items-center justify-center z-[1000000] hover:scale-110 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        style={{ backgroundColor: theme.primaryColor || "#007bff" }}
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label={isOpen ? "Close feedback widget" : "Open feedback widget"}
+      >
+        <span className="text-2xl text-white">💬</span>
+      </button>
 
       {/* Widget Modal */}
       {isOpen && (
-        <div className="fixed inset-0  flex items-center justify-center z-[1000001] p-5">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden animate-in zoom-in-95 fade-in duration-300">
-            <div className="p-5 pb-4 border-b border-gray-200 flex items-center justify-between">
-              <h2 className="m-0 text-xl font-semibold text-gray-900">
-                Feedback
-              </h2>
-              <button
-                className="bg-none border-none text-2xl cursor-pointer text-gray-500 p-0 w-8 h-8 flex items-center justify-center rounded-md transition-all duration-200 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                onClick={closeWidget}
-                aria-label="Close"
-              >
-                ×
-              </button>
+        <>
+          {position === 'center' ? (
+            <div className="fixed inset-0  flex items-center justify-center z-[1000001] p-5">
+              <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden animate-in zoom-in-95 fade-in duration-300">
+                <div className="p-5 pb-4 border-b border-gray-200 flex items-center justify-between">
+                  <h2 className="m-0 text-xl font-semibold text-gray-900">
+                    Feedback
+                  </h2>
+                  <button
+                    className="bg-none border-none text-2xl cursor-pointer text-gray-500 p-0 w-8 h-8 flex items-center justify-center rounded-md transition-all duration-200 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    onClick={closeWidget}
+                    aria-label="Close"
+                  >
+                    ×
+                  </button>
+                </div>
+                <div className="p-6 max-h-[calc(90vh-80px)] overflow-y-auto">
+                  {renderStepContent()}
+                </div>
+              </div>
             </div>
-            <div className="p-6 max-h-[calc(90vh-80px)] overflow-y-auto">
-              {renderStepContent()}
+          ) : (
+            <div className="fixed bottom-20 right-5 z-[1000001] w-96 max-w-[calc(100vw-40px)]">
+              <div className="bg-white rounded-xl shadow-2xl overflow-hidden animate-in zoom-in-95 fade-in duration-300 max-h-[calc(100vh-140px)]">
+                <div className="p-5 pb-4 border-b border-gray-200 flex items-center justify-between">
+                  <h2 className="m-0 text-xl font-semibold text-gray-900">
+                    Feedback
+                  </h2>
+                  <button
+                    className="bg-none border-none text-2xl cursor-pointer text-gray-500 p-0 w-8 h-8 flex items-center justify-center rounded-md transition-all duration-200 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    onClick={closeWidget}
+                    aria-label="Close"
+                  >
+                    ×
+                  </button>
+                </div>
+                <div className="p-6 max-h-[calc(100vh-220px)] overflow-y-auto">
+                  {renderStepContent()}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          )}
+        </>
       )}
     </div>
   );

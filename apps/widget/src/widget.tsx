@@ -12,6 +12,7 @@ interface OmniFeedbackWidgetOptions {
     buttonText?: string;
   };
   targetElement?: string | HTMLElement;
+  position?: 'center' | 'above-button';
 }
 
 interface OmniFeedbackWidgetInstance {
@@ -26,7 +27,7 @@ class OmniFeedbackWidgetManager {
   private instances: Map<string, { root: any; container: HTMLElement }> = new Map();
   
   init(options: OmniFeedbackWidgetOptions): OmniFeedbackWidgetInstance {
-    const { targetElement = 'body', ...widgetProps } = options;
+    const { targetElement = 'body', position = 'above-button', ...widgetProps } = options;
     
     // Get target container
     let container: HTMLElement;
@@ -59,6 +60,7 @@ class OmniFeedbackWidgetManager {
         <div style={{ display: visible ? 'block' : 'none' }}>
           <OmniFeedbackWidget 
             {...widgetProps}
+            position={position}
             onClose={() => {
               // Widget handles its own visibility, but we can add hooks here
             }}
