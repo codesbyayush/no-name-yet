@@ -134,9 +134,9 @@
           }
           
           widgetInstance = window.OmniFeedbackWidget.init({
-            tenantId: 'debug-tenant-123',
+            tenantId: 'test-tenant-123',
             jwtAuthToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.debug-token',
-            apiUrl: 'https://api.omnifeedback.ai',
+            apiUrl: 'http://localhost:8080',
             theme: {
               primaryColor: '#667eea'
             }
@@ -156,8 +156,9 @@
           }
           
           widgetInstance = window.OmniFeedbackWidget.init({
-            tenantId: 'custom-theme-tenant',
+            tenantId: 'test-tenant-123',
             targetElement: '#widget-container',
+            apiUrl: 'http://localhost:8080',
             theme: {
               primaryColor: '#ff6b6b'
             }

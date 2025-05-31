@@ -22,7 +22,7 @@ interface FeedbackData {
 const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
   tenantId,
   jwtAuthToken,
-  apiUrl = "https://api.omnifeedback.ai",
+  apiUrl = "http://localhost:8080",
   theme = {},
   onClose,
 }) => {
@@ -83,35 +83,50 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
     setError(null);
 
     try {
-      const formData = new FormData();
-
+      const browserContext = getBrowserContext();
+      
       const payload = {
-        ...feedbackData,
         tenantId,
-        context: getBrowserContext(),
+        type: feedbackData.type,
+        description: feedbackData.description,
+        severity: feedbackData.type === "bug" ? feedbackData.severity : undefined,
+        userAgent: browserContext.userAgent,
+        url: browserContext.url,
+        browserInfo: {
+          platform: navigator.platform,
+          language: navigator.language,
+          cookieEnabled: navigator.cookieEnabled,
+          onLine: navigator.onLine,
+          screenResolution: `${window.screen.width}x${window.screen.height}`,
+        },
+        // For Phase 2, we'll handle attachments as metadata only
+        attachments: feedbackData.attachments?.map((file, index) => ({
+          id: `${Date.now()}-${index}`,
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          url: `placeholder-url-${index}`, // Will be implemented in Phase 4
+        })) || [],
       };
 
-      formData.append("data", JSON.stringify(payload));
-
-      if (feedbackData.attachments) {
-        feedbackData.attachments.forEach((file, index) => {
-          formData.append(`attachment_${index}`, file);
-        });
-      }
-
-      const headers: HeadersInit = {};
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+      
       if (jwtAuthToken) {
         headers.Authorization = `Bearer ${jwtAuthToken}`;
       }
 
-      const response = await fetch(`${apiUrl}/api/v1/feedback/submit`, {
+      const response = await fetch(`${apiUrl}/api/feedback/submit`, {
         method: "POST",
-        body: formData,
+        body: JSON.stringify(payload),
         headers,
       });
 
+      const result = await response.json();
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(result.message || `HTTP error! status: ${response.status}`);
       }
 
       setCurrentStep("success");

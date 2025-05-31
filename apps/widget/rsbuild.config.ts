@@ -18,4 +18,7 @@ export default defineConfig({
   html: {
     template: "./src/index.html",
   },
+  server: {
+    port: 3000,
+  },
 });
