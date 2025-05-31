@@ -1,6 +1,5 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import OmniFeedbackWidget from './OmniFeedbackWidget';
+import { createRoot } from "react-dom/client";
+import OmniFeedbackWidget from "./OmniFeedbackWidget";
 import './index.css';
 
 // Global interface for the widget
@@ -19,6 +18,8 @@ interface OmniFeedbackWidgetInstance {
   destroy: () => void;
   show: () => void;
   hide: () => void;
+  isVisible: () => boolean;
+  getElement: () => HTMLElement;
 }
 
 class OmniFeedbackWidgetManager {
@@ -53,8 +54,6 @@ class OmniFeedbackWidgetManager {
     // Create React root and render widget
     const root = createRoot(widgetContainer);
     
-    let isVisible = true;
-    
     const renderWidget = (visible: boolean = true) => {
       root.render(
         <div style={{ display: visible ? 'block' : 'none' }}>
@@ -83,20 +82,16 @@ class OmniFeedbackWidgetManager {
           this.instances.delete(instanceId);
         }
       },
-      show: () => {
-        isVisible = true;
-        renderWidget(true);
-      },
-      hide: () => {
-        isVisible = false;
-        renderWidget(false);
-      }
+      show: () => renderWidget(true),
+      hide: () => renderWidget(false),
+      isVisible: () => true,
+      getElement: () => widgetContainer,
     };
   }
 
   // Cleanup all instances
   destroyAll() {
-    this.instances.forEach((instance, id) => {
+    this.instances.forEach((instance) => {
       instance.root.unmount();
       instance.container.remove();
     });

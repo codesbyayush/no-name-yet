@@ -49,8 +49,8 @@ const getFeedbackSchema = z.object({
   tenantId: z.string().min(1, "Tenant ID is required"),
   type: z.enum(["bug", "suggestion"]).optional(),
   status: z.enum(["open", "in_progress", "resolved", "closed"]).optional(),
-  limit: z.string().transform(Number).optional().default(50),
-  offset: z.string().transform(Number).optional().default(0),
+  limit: z.string().transform(Number).optional().default("50"),
+  offset: z.string().transform(Number).optional().default("0"),
 });
 
 // POST /api/feedback/submit - Submit new feedback

@@ -21,4 +21,16 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+  output: {
+    // Single file output for embeddable widget
+    injectStyles: true,
+    filenameHash: false,
+  },
+  tools: {
+    rspack: {
+      optimization: {
+        splitChunks: false,
+      },
+    },
+  },
 });
