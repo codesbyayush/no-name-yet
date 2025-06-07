@@ -1,19 +1,49 @@
-import { pgTable, text, timestamp, serial, jsonb, boolean, pgEnum } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  timestamp,
+  serial,
+  jsonb,
+  boolean,
+  pgEnum,
+  integer,
+} from "drizzle-orm/pg-core";
 
 // Enum for feedback types
 export const feedbackTypeEnum = pgEnum("feedback_type", ["bug", "suggestion"]);
 
 // Enum for feedback severity (for bugs)
-export const severityEnum = pgEnum("severity", ["low", "medium", "high", "critical"]);
+export const severityEnum = pgEnum("severity", [
+  "low",
+  "medium",
+  "high",
+  "critical",
+]);
 
 // Enum for feedback status
-export const statusEnum = pgEnum("status", ["open", "in_progress", "resolved", "closed"]);
+export const statusEnum = pgEnum("status", [
+  "open",
+  "in_progress",
+  "resolved",
+  "closed",
+]);
+
+// Enum for plan types
+export const planTypeEnum = pgEnum("plan_type", [
+  "starter",
+  "pro",
+  "enterprise",
+]);
 
 // Tenants table - represents organizations using the widget
 export const tenants = pgTable("tenants", {
-  id: text("id").primaryKey(),
+  id: serial("id").primaryKey(),
   name: text("name").notNull(),
-  email: text("email"),
+  slug: text("slug").notNull().unique(),
+  plan: planTypeEnum("plan").notNull().default("starter"),
+  stripeCustomerId: text("stripe_customer_id"),
+  billingEmail: text("billing_email"),
+  email: text("email"), // keeping existing field for backward compatibility
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   isActive: boolean("is_active").default(true).notNull(),
@@ -31,20 +61,22 @@ export const tenants = pgTable("tenants", {
 // Feedback table - stores all feedback submissions
 export const feedback = pgTable("feedback", {
   id: serial("id").primaryKey(),
-  tenantId: text("tenant_id").notNull().references(() => tenants.id, { onDelete: "cascade" }),
-  
+  tenantId: integer("tenant_id")
+    .notNull()
+    .references(() => tenants.id, { onDelete: "cascade" }),
+
   // Feedback content
   type: feedbackTypeEnum("type").notNull(),
   title: text("title"),
   description: text("description").notNull(),
   severity: severityEnum("severity"), // Only for bugs
   status: statusEnum("status").default("open").notNull(),
-  
+
   // User context (from JWT or manual input)
   userId: text("user_id"), // From JWT claim
   userEmail: text("user_email"), // From JWT claim or manual input
   userName: text("user_name"), // From JWT claim or manual input
-  
+
   // Technical context
   userAgent: text("user_agent"),
   url: text("url"), // Page where feedback was submitted
@@ -55,16 +87,18 @@ export const feedback = pgTable("feedback", {
     onLine?: boolean;
     screenResolution?: string;
   }>(),
-  
+
   // Attachments and media
-  attachments: jsonb("attachments").default([]).$type<Array<{
-    id: string;
-    name: string;
-    type: string; // image/png, application/pdf, etc.
-    size: number;
-    url: string; // S3 URL or similar
-  }>>(),
-  
+  attachments: jsonb("attachments").default([]).$type<
+    Array<{
+      id: string;
+      name: string;
+      type: string; // image/png, application/pdf, etc.
+      size: number;
+      url: string; // S3 URL or similar
+    }>
+  >(),
+
   // AI processing results (will be added in Phase 3)
   aiAnalysis: jsonb("ai_analysis").$type<{
     category?: string;
@@ -73,11 +107,11 @@ export const feedback = pgTable("feedback", {
     suggestedResponse?: string;
     confidence?: number;
   }>(),
-  
+
   // Metadata
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  
+
   // For future features
   isAnonymous: boolean("is_anonymous").default(false).notNull(),
   tags: text("tags").array().default([]),
