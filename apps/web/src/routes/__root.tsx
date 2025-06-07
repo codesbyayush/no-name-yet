@@ -3,10 +3,11 @@ import Loader from "@/components/loader";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import {
-	HeadContent,
-	Outlet,
-	createRootRouteWithContext,
-	useRouterState,
+  HeadContent,
+  Outlet,
+  createRootRouteWithContext,
+  useRouterState,
+  useLocation,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import "../index.css";
@@ -14,42 +15,50 @@ import "../index.css";
 export type RouterAppContext = {};
 
 export const Route = createRootRouteWithContext<RouterAppContext>()({
-	component: RootComponent,
-	head: () => ({
-		meta: [
-			{
-				title: "My App",
-			},
-			{
-				name: "description",
-				content: "My App is a web application",
-			},
-		],
-		links: [
-			{
-				rel: "icon",
-				href: "/favicon.ico",
-			},
-		],
-	}),
+  component: RootComponent,
+  head: () => ({
+    meta: [
+      {
+        title: "My App",
+      },
+      {
+        name: "description",
+        content: "My App is a web application",
+      },
+    ],
+    links: [
+      {
+        rel: "icon",
+        href: "/favicon.ico",
+      },
+    ],
+  }),
 });
 
 function RootComponent() {
-	const isFetching = useRouterState({
-		select: (s) => s.isLoading,
-	});
+  const isFetching = useRouterState({
+    select: (s) => s.isLoading,
+  });
+  const location = useLocation();
+  const isLandingPage = location.pathname === "/landing";
 
-	return (
-		<>
-			<HeadContent />
-			<ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-				<div className="grid h-svh grid-rows-[auto_1fr]">
-					<Header />
-					{isFetching ? <Loader /> : <Outlet />}
-				</div>
-				<Toaster richColors />
-			</ThemeProvider>
-			<TanStackRouterDevtools position="bottom-left" />
-		</>
-	);
+  return (
+    <>
+      <HeadContent />
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        {isLandingPage ? (
+          <div className="min-h-screen">
+            {isFetching ? <Loader /> : <Outlet />}
+          </div>
+        ) : (
+          <div className="grid h-svh grid-rows-[auto_1fr]">
+            <Header />
+            {isFetching ? <Loader /> : <Outlet />}
+          </div>
+        )}
+        <Toaster richColors />
+      </ThemeProvider>
+      <TanStackRouterDevtools position="bottom-left" />
+    </>
+  );
 }

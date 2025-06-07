@@ -16,10 +16,13 @@
 	"dependencies": {
 		"@hono/zod-validator": "^0.7.0",
 		"better-auth": "^1.2.8",
+		"clsx": "^2.1.1",
 		"dotenv": "^16.4.7",
 		"drizzle-orm": "^0.38.4",
 		"hono": "^4.7.6",
+		"motion": "^12.16.0",
 		"pg": "^8.14.1",
+		"tailwind-merge": "^3.3.0",
 		"zod": "^3.25.16"
 	},
 	"devDependencies": {
