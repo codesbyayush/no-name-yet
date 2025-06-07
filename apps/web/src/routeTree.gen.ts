@@ -11,12 +11,29 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as PublicImport } from './routes/public'
 import { Route as LoginImport } from './routes/login'
 import { Route as LandingImport } from './routes/landing'
 import { Route as DashboardImport } from './routes/dashboard'
+import { Route as AdminImport } from './routes/admin'
 import { Route as IndexImport } from './routes/index'
+import { Route as PublicIndexImport } from './routes/public/index'
+import { Route as AdminIndexImport } from './routes/admin/index'
+import { Route as PublicRoadmapImport } from './routes/public/roadmap'
+import { Route as PublicChangelogImport } from './routes/public/changelog'
+import { Route as PublicBoardImport } from './routes/public/board'
+import { Route as PublicBoardIndexImport } from './routes/public/board/index'
+import { Route as PublicBoardFeedbackImport } from './routes/public/board/feedback'
+import { Route as PublicBoardFeaturesImport } from './routes/public/board/features'
+import { Route as PublicBoardBugsImport } from './routes/public/board/bugs'
 
 // Create/Update Routes
+
+const PublicRoute = PublicImport.update({
+  id: '/public',
+  path: '/public',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const LoginRoute = LoginImport.update({
   id: '/login',
@@ -36,10 +53,70 @@ const DashboardRoute = DashboardImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const AdminRoute = AdminImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
+} as any)
+
+const PublicIndexRoute = PublicIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PublicRoute,
+} as any)
+
+const AdminIndexRoute = AdminIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+
+const PublicRoadmapRoute = PublicRoadmapImport.update({
+  id: '/roadmap',
+  path: '/roadmap',
+  getParentRoute: () => PublicRoute,
+} as any)
+
+const PublicChangelogRoute = PublicChangelogImport.update({
+  id: '/changelog',
+  path: '/changelog',
+  getParentRoute: () => PublicRoute,
+} as any)
+
+const PublicBoardRoute = PublicBoardImport.update({
+  id: '/board',
+  path: '/board',
+  getParentRoute: () => PublicRoute,
+} as any)
+
+const PublicBoardIndexRoute = PublicBoardIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PublicBoardRoute,
+} as any)
+
+const PublicBoardFeedbackRoute = PublicBoardFeedbackImport.update({
+  id: '/feedback',
+  path: '/feedback',
+  getParentRoute: () => PublicBoardRoute,
+} as any)
+
+const PublicBoardFeaturesRoute = PublicBoardFeaturesImport.update({
+  id: '/features',
+  path: '/features',
+  getParentRoute: () => PublicBoardRoute,
+} as any)
+
+const PublicBoardBugsRoute = PublicBoardBugsImport.update({
+  id: '/bugs',
+  path: '/bugs',
+  getParentRoute: () => PublicBoardRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -51,6 +128,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminImport
       parentRoute: typeof rootRoute
     }
     '/dashboard': {
@@ -74,16 +158,142 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
+    '/public': {
+      id: '/public'
+      path: '/public'
+      fullPath: '/public'
+      preLoaderRoute: typeof PublicImport
+      parentRoute: typeof rootRoute
+    }
+    '/public/board': {
+      id: '/public/board'
+      path: '/board'
+      fullPath: '/public/board'
+      preLoaderRoute: typeof PublicBoardImport
+      parentRoute: typeof PublicImport
+    }
+    '/public/changelog': {
+      id: '/public/changelog'
+      path: '/changelog'
+      fullPath: '/public/changelog'
+      preLoaderRoute: typeof PublicChangelogImport
+      parentRoute: typeof PublicImport
+    }
+    '/public/roadmap': {
+      id: '/public/roadmap'
+      path: '/roadmap'
+      fullPath: '/public/roadmap'
+      preLoaderRoute: typeof PublicRoadmapImport
+      parentRoute: typeof PublicImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexImport
+      parentRoute: typeof AdminImport
+    }
+    '/public/': {
+      id: '/public/'
+      path: '/'
+      fullPath: '/public/'
+      preLoaderRoute: typeof PublicIndexImport
+      parentRoute: typeof PublicImport
+    }
+    '/public/board/bugs': {
+      id: '/public/board/bugs'
+      path: '/bugs'
+      fullPath: '/public/board/bugs'
+      preLoaderRoute: typeof PublicBoardBugsImport
+      parentRoute: typeof PublicBoardImport
+    }
+    '/public/board/features': {
+      id: '/public/board/features'
+      path: '/features'
+      fullPath: '/public/board/features'
+      preLoaderRoute: typeof PublicBoardFeaturesImport
+      parentRoute: typeof PublicBoardImport
+    }
+    '/public/board/feedback': {
+      id: '/public/board/feedback'
+      path: '/feedback'
+      fullPath: '/public/board/feedback'
+      preLoaderRoute: typeof PublicBoardFeedbackImport
+      parentRoute: typeof PublicBoardImport
+    }
+    '/public/board/': {
+      id: '/public/board/'
+      path: '/'
+      fullPath: '/public/board/'
+      preLoaderRoute: typeof PublicBoardIndexImport
+      parentRoute: typeof PublicBoardImport
+    }
   }
 }
 
 // Create and export the route tree
 
+interface AdminRouteChildren {
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface PublicBoardRouteChildren {
+  PublicBoardBugsRoute: typeof PublicBoardBugsRoute
+  PublicBoardFeaturesRoute: typeof PublicBoardFeaturesRoute
+  PublicBoardFeedbackRoute: typeof PublicBoardFeedbackRoute
+  PublicBoardIndexRoute: typeof PublicBoardIndexRoute
+}
+
+const PublicBoardRouteChildren: PublicBoardRouteChildren = {
+  PublicBoardBugsRoute: PublicBoardBugsRoute,
+  PublicBoardFeaturesRoute: PublicBoardFeaturesRoute,
+  PublicBoardFeedbackRoute: PublicBoardFeedbackRoute,
+  PublicBoardIndexRoute: PublicBoardIndexRoute,
+}
+
+const PublicBoardRouteWithChildren = PublicBoardRoute._addFileChildren(
+  PublicBoardRouteChildren,
+)
+
+interface PublicRouteChildren {
+  PublicBoardRoute: typeof PublicBoardRouteWithChildren
+  PublicChangelogRoute: typeof PublicChangelogRoute
+  PublicRoadmapRoute: typeof PublicRoadmapRoute
+  PublicIndexRoute: typeof PublicIndexRoute
+}
+
+const PublicRouteChildren: PublicRouteChildren = {
+  PublicBoardRoute: PublicBoardRouteWithChildren,
+  PublicChangelogRoute: PublicChangelogRoute,
+  PublicRoadmapRoute: PublicRoadmapRoute,
+  PublicIndexRoute: PublicIndexRoute,
+}
+
+const PublicRouteWithChildren =
+  PublicRoute._addFileChildren(PublicRouteChildren)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/landing': typeof LandingRoute
   '/login': typeof LoginRoute
+  '/public': typeof PublicRouteWithChildren
+  '/public/board': typeof PublicBoardRouteWithChildren
+  '/public/changelog': typeof PublicChangelogRoute
+  '/public/roadmap': typeof PublicRoadmapRoute
+  '/admin/': typeof AdminIndexRoute
+  '/public/': typeof PublicIndexRoute
+  '/public/board/bugs': typeof PublicBoardBugsRoute
+  '/public/board/features': typeof PublicBoardFeaturesRoute
+  '/public/board/feedback': typeof PublicBoardFeedbackRoute
+  '/public/board/': typeof PublicBoardIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -91,37 +301,103 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/landing': typeof LandingRoute
   '/login': typeof LoginRoute
+  '/public/changelog': typeof PublicChangelogRoute
+  '/public/roadmap': typeof PublicRoadmapRoute
+  '/admin': typeof AdminIndexRoute
+  '/public': typeof PublicIndexRoute
+  '/public/board/bugs': typeof PublicBoardBugsRoute
+  '/public/board/features': typeof PublicBoardFeaturesRoute
+  '/public/board/feedback': typeof PublicBoardFeedbackRoute
+  '/public/board': typeof PublicBoardIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/landing': typeof LandingRoute
   '/login': typeof LoginRoute
+  '/public': typeof PublicRouteWithChildren
+  '/public/board': typeof PublicBoardRouteWithChildren
+  '/public/changelog': typeof PublicChangelogRoute
+  '/public/roadmap': typeof PublicRoadmapRoute
+  '/admin/': typeof AdminIndexRoute
+  '/public/': typeof PublicIndexRoute
+  '/public/board/bugs': typeof PublicBoardBugsRoute
+  '/public/board/features': typeof PublicBoardFeaturesRoute
+  '/public/board/feedback': typeof PublicBoardFeedbackRoute
+  '/public/board/': typeof PublicBoardIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/landing' | '/login'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/dashboard'
+    | '/landing'
+    | '/login'
+    | '/public'
+    | '/public/board'
+    | '/public/changelog'
+    | '/public/roadmap'
+    | '/admin/'
+    | '/public/'
+    | '/public/board/bugs'
+    | '/public/board/features'
+    | '/public/board/feedback'
+    | '/public/board/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/landing' | '/login'
-  id: '__root__' | '/' | '/dashboard' | '/landing' | '/login'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/landing'
+    | '/login'
+    | '/public/changelog'
+    | '/public/roadmap'
+    | '/admin'
+    | '/public'
+    | '/public/board/bugs'
+    | '/public/board/features'
+    | '/public/board/feedback'
+    | '/public/board'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/dashboard'
+    | '/landing'
+    | '/login'
+    | '/public'
+    | '/public/board'
+    | '/public/changelog'
+    | '/public/roadmap'
+    | '/admin/'
+    | '/public/'
+    | '/public/board/bugs'
+    | '/public/board/features'
+    | '/public/board/feedback'
+    | '/public/board/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
   DashboardRoute: typeof DashboardRoute
   LandingRoute: typeof LandingRoute
   LoginRoute: typeof LoginRoute
+  PublicRoute: typeof PublicRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
   DashboardRoute: DashboardRoute,
   LandingRoute: LandingRoute,
   LoginRoute: LoginRoute,
+  PublicRoute: PublicRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -135,13 +411,21 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/admin",
         "/dashboard",
         "/landing",
-        "/login"
+        "/login",
+        "/public"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/admin": {
+      "filePath": "admin.tsx",
+      "children": [
+        "/admin/"
+      ]
     },
     "/dashboard": {
       "filePath": "dashboard.tsx"
@@ -151,6 +435,57 @@ export const routeTree = rootRoute
     },
     "/login": {
       "filePath": "login.tsx"
+    },
+    "/public": {
+      "filePath": "public.tsx",
+      "children": [
+        "/public/board",
+        "/public/changelog",
+        "/public/roadmap",
+        "/public/"
+      ]
+    },
+    "/public/board": {
+      "filePath": "public/board.tsx",
+      "parent": "/public",
+      "children": [
+        "/public/board/bugs",
+        "/public/board/features",
+        "/public/board/feedback",
+        "/public/board/"
+      ]
+    },
+    "/public/changelog": {
+      "filePath": "public/changelog.tsx",
+      "parent": "/public"
+    },
+    "/public/roadmap": {
+      "filePath": "public/roadmap.tsx",
+      "parent": "/public"
+    },
+    "/admin/": {
+      "filePath": "admin/index.tsx",
+      "parent": "/admin"
+    },
+    "/public/": {
+      "filePath": "public/index.tsx",
+      "parent": "/public"
+    },
+    "/public/board/bugs": {
+      "filePath": "public/board/bugs.tsx",
+      "parent": "/public/board"
+    },
+    "/public/board/features": {
+      "filePath": "public/board/features.tsx",
+      "parent": "/public/board"
+    },
+    "/public/board/feedback": {
+      "filePath": "public/board/feedback.tsx",
+      "parent": "/public/board"
+    },
+    "/public/board/": {
+      "filePath": "public/board/index.tsx",
+      "parent": "/public/board"
     }
   }
 }

@@ -5,13 +5,14 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-	plugins: [tailwindcss(), TanStackRouterVite({}), react()],
-	resolve: {
-		alias: {
-			"@": path.resolve(__dirname, "./src"),
-		},
-	},
-	server: {
-		port: 3001,
-	},
+  plugins: [tailwindcss(), TanStackRouterVite({}), react()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+  server: {
+    port: 3001,
+    allowedHosts: [".localtest.me", "localhost", "127.0.0.1"],
+  },
 });
