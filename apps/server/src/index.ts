@@ -12,18 +12,82 @@ import { openAPIApp } from "./openapi/app";
 
 const app = new Hono();
 
+// Create dedicated auth router exactly like zend
+console.log("🔧 Creating auth router...");
+console.log("🔧 Auth object:", !!auth);
+console.log("🔧 Auth handler:", !!auth.handler);
+console.log("🔧 Auth type:", typeof auth);
+
+const authRouter = new Hono();
+
+// Add debugging middleware to auth router
+authRouter.use("*", async (c, next) => {
+  console.log(`🔍 Auth router middleware: ${c.req.method} ${c.req.url}`);
+  console.log(`🔍 Auth router path: ${c.req.path}`);
+  await next();
+});
+
+authRouter.on(["POST", "GET", "OPTIONS"], "/**", async (c) => {
+  console.log(`✅ Auth handler called: ${c.req.method} ${c.req.url}`);
+  try {
+    const result = await auth.handler(c.req.raw);
+    return result;
+  } catch (error) {
+    console.error(`❌ Auth handler error:`, error);
+    return c.json({ error: "Auth handler failed" }, 500);
+  }
+});
+
+// Catch all for auth router
+authRouter.all("*", async (c) => {
+  console.log(`🚨 Auth router catch-all: ${c.req.method} ${c.req.url}`);
+  try {
+    return await auth.handler(c.req.raw);
+  } catch (error) {
+    console.error(`❌ Auth catch-all error:`, error);
+    return c.json({ error: "Auth failed", details: error.message }, 500);
+  }
+});
+
+// Global request logging
+app.use("*", async (c, next) => {
+  console.log(`🌐 Incoming request: ${c.req.method} ${c.req.url}`);
+  console.log(`🌐 Request path: ${c.req.path}`);
+  await next();
+});
+
 app.use(logger());
 app.use(
   "/*",
   cors({
-    origin: "*", // Allow all origins for embeddable widget
-    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowHeaders: ["Content-Type", "Authorization", "X-Tenant-ID"],
-    credentials: false, // Set to false when allowing all origins
+    origin: [
+      process.env.CORS_ORIGIN || "http://localhost:3002",
+      "http://localhost:3000",
+      "http://localhost:3001",
+      "http://localhost:5173", // Vite dev server
+      "http://localhost:4173", // Vite preview
+      "http://127.0.0.1:3000",
+      "http://127.0.0.1:3001",
+      "http://127.0.0.1:3002",
+      "http://127.0.0.1:5173",
+    ],
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allowHeaders: [
+      "Content-Type",
+      "Authorization",
+      "X-Tenant-ID",
+      "Cookie",
+      "Set-Cookie",
+      "X-Requested-With",
+    ],
+    exposeHeaders: ["Set-Cookie"],
+    credentials: true,
+    maxAge: 86400, // 24 hours
   }),
 );
 
-app.on(["POST", "GET"], "/api/auth/**", (c) => auth.handler(c.req.raw));
+// Register auth routes AFTER CORS middleware
+app.route("/api/auth", authRouter);
 
 // Direct docs route for convenience
 app.get("/docs", (c) => c.redirect("/api/docs"));
