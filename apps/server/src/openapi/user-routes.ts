@@ -8,7 +8,27 @@ import {
   CreateUserSchema,
   UpdateUserSchema,
   UserStatsSchema,
-} from "./schemas";
+} from "../schemas/common";
+import {
+  GetUsersQuerySchema,
+  UserIdParamsSchema,
+  TenantIdQuerySchema,
+  TenantIdParamsSchema,
+  GetUsersByTenantQuerySchema,
+  SearchUsersQuerySchema,
+  UpdateUserRoleSchema,
+  UpdateUserStatusSchema,
+  CreateUserResponseSchema,
+  GetUsersResponseSchema,
+  GetUserByIdResponseSchema,
+  UpdateUserResponseSchema,
+  DeleteUserResponseSchema,
+  GetUsersByTenantResponseSchema,
+  GetUserStatsResponseSchema,
+  SearchUsersResponseSchema,
+  UpdateUserRoleResponseSchema,
+  UpdateUserStatusResponseSchema,
+} from "../schemas/user-schemas";
 
 // Create user route
 export const createUserRoute = createRoute({
@@ -147,10 +167,7 @@ export const getUserByIdRoute = createRoute({
       description: "User retrieved successfully",
       content: {
         "application/json": {
-          schema: z.object({
-            success: z.boolean(),
-            data: UserSchema,
-          }),
+          schema: GetUserByIdResponseSchema,
         },
       },
     },
@@ -418,10 +435,7 @@ export const getUserStatsRoute = createRoute({
       description: "User statistics retrieved successfully",
       content: {
         "application/json": {
-          schema: z.object({
-            success: z.boolean(),
-            data: UserStatsSchema,
-          }),
+          schema: GetUserStatsResponseSchema,
         },
       },
     },
@@ -476,11 +490,7 @@ export const searchUsersRoute = createRoute({
       description: "User search completed successfully",
       content: {
         "application/json": {
-          schema: z.object({
-            success: z.boolean(),
-            data: z.array(UserSchema),
-            query: z.string(),
-          }),
+          schema: SearchUsersResponseSchema,
         },
       },
     },

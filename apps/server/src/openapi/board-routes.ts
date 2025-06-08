@@ -8,7 +8,28 @@ import {
   CreateBoardSchema,
   UpdateBoardSchema,
   BoardStatsSchema,
-} from "./schemas";
+} from "../schemas/common";
+import {
+  BoardSlugParamsSchema,
+  CreateBoardResponseSchema,
+  GetBoardByIdResponseSchema,
+  GetBoardBySlugResponseSchema,
+  GetBoardsQuerySchema, // Added this import
+  GetBoardsResponseSchema,
+  GetPublicBoardsQuerySchema,
+  SearchBoardsQuerySchema,
+  UpdateBoardResponseSchema,
+  DeleteBoardResponseSchema,
+  RestoreBoardResponseSchema,
+  GetBoardStatsResponseSchema,
+  GetPublicBoardsResponseSchema,
+  SearchBoardsResponseSchema,
+} from "../schemas/board-schemas";
+import {
+  TenantIdQuerySchema,
+  TenantIdParamsSchema,
+  BoardIdParamsSchema,
+} from "../schemas/shared-request-schemas";
 
 // Create board route
 export const createBoardRoute = createRoute({
@@ -31,11 +52,7 @@ export const createBoardRoute = createRoute({
       description: "Board created successfully",
       content: {
         "application/json": {
-          schema: z.object({
-            success: z.boolean(),
-            message: z.string(),
-            board: BoardSchema,
-          }),
+          schema: CreateBoardResponseSchema,
         },
       },
     },
@@ -64,43 +81,17 @@ export const getBoardsRoute = createRoute({
   path: "/boards",
   tags: ["Boards"],
   summary: "Get boards list",
-  description: "Retrieve a paginated list of boards for a tenant with optional filtering",
+  description:
+    "Retrieve a paginated list of boards for a tenant with optional filtering",
   request: {
-    query: z.object({
-      tenantId: z
-        .string()
-        .transform(Number)
-        .describe("Tenant ID to filter boards"),
-      isPrivate: z
-        .string()
-        .transform(val => val === "true")
-        .optional()
-        .describe("Filter by private/public status"),
-      limit: z
-        .string()
-        .transform(Number)
-        .optional()
-        .default("50")
-        .describe("Number of items per page"),
-      offset: z
-        .string()
-        .transform(Number)
-        .optional()
-        .default("0")
-        .describe("Number of items to skip"),
-      search: z.string().optional().describe("Search query for board name/description"),
-    }),
+    query: GetBoardsQuerySchema,
   },
   responses: {
     200: {
       description: "Boards retrieved successfully",
       content: {
         "application/json": {
-          schema: z.object({
-            success: z.boolean(),
-            data: z.array(BoardSchema),
-            pagination: PaginationSchema,
-          }),
+          schema: GetBoardsResponseSchema,
         },
       },
     },
@@ -131,25 +122,15 @@ export const getBoardByIdRoute = createRoute({
   summary: "Get board by ID",
   description: "Retrieve a specific board by its ID",
   request: {
-    params: z.object({
-      id: z.string().transform(Number).describe("Board ID"),
-    }),
-    query: z.object({
-      tenantId: z
-        .string()
-        .transform(Number)
-        .describe("Tenant ID for authorization"),
-    }),
+    params: BoardIdParamsSchema,
+    query: TenantIdQuerySchema,
   },
   responses: {
     200: {
       description: "Board retrieved successfully",
       content: {
         "application/json": {
-          schema: z.object({
-            success: z.boolean(),
-            data: BoardSchema,
-          }),
+          schema: GetBoardByIdResponseSchema,
         },
       },
     },
@@ -188,25 +169,15 @@ export const getBoardBySlugRoute = createRoute({
   summary: "Get board by slug",
   description: "Retrieve a specific board by its slug identifier",
   request: {
-    params: z.object({
-      slug: z.string().describe("Board slug"),
-    }),
-    query: z.object({
-      tenantId: z
-        .string()
-        .transform(Number)
-        .describe("Tenant ID for authorization"),
-    }),
+    params: BoardSlugParamsSchema,
+    query: TenantIdQuerySchema,
   },
   responses: {
     200: {
       description: "Board retrieved successfully",
       content: {
         "application/json": {
-          schema: z.object({
-            success: z.boolean(),
-            data: BoardSchema,
-          }),
+          schema: GetBoardBySlugResponseSchema,
         },
       },
     },
@@ -245,15 +216,8 @@ export const updateBoardRoute = createRoute({
   summary: "Update board",
   description: "Update an existing board's information",
   request: {
-    params: z.object({
-      id: z.string().transform(Number).describe("Board ID"),
-    }),
-    query: z.object({
-      tenantId: z
-        .string()
-        .transform(Number)
-        .describe("Tenant ID for authorization"),
-    }),
+    params: BoardIdParamsSchema,
+    query: TenantIdQuerySchema,
     body: {
       content: {
         "application/json": {
@@ -267,11 +231,7 @@ export const updateBoardRoute = createRoute({
       description: "Board updated successfully",
       content: {
         "application/json": {
-          schema: z.object({
-            success: z.boolean(),
-            message: z.string(),
-            board: BoardSchema,
-          }),
+          schema: UpdateBoardResponseSchema,
         },
       },
     },
@@ -310,26 +270,15 @@ export const deleteBoardRoute = createRoute({
   summary: "Delete board",
   description: "Soft delete a board (sets status to deleted)",
   request: {
-    params: z.object({
-      id: z.string().transform(Number).describe("Board ID"),
-    }),
-    query: z.object({
-      tenantId: z
-        .string()
-        .transform(Number)
-        .describe("Tenant ID for authorization"),
-    }),
+    params: BoardIdParamsSchema,
+    query: TenantIdQuerySchema,
   },
   responses: {
     200: {
       description: "Board deleted successfully",
       content: {
         "application/json": {
-          schema: z.object({
-            success: z.boolean(),
-            message: z.string(),
-            board: BoardSchema,
-          }),
+          schema: DeleteBoardResponseSchema,
         },
       },
     },
@@ -368,26 +317,15 @@ export const restoreBoardRoute = createRoute({
   summary: "Restore deleted board",
   description: "Restore a previously deleted board",
   request: {
-    params: z.object({
-      id: z.string().transform(Number).describe("Board ID"),
-    }),
-    query: z.object({
-      tenantId: z
-        .string()
-        .transform(Number)
-        .describe("Tenant ID for authorization"),
-    }),
+    params: BoardIdParamsSchema,
+    query: TenantIdQuerySchema,
   },
   responses: {
     200: {
       description: "Board restored successfully",
       content: {
         "application/json": {
-          schema: z.object({
-            success: z.boolean(),
-            message: z.string(),
-            board: BoardSchema,
-          }),
+          schema: RestoreBoardResponseSchema,
         },
       },
     },
@@ -426,27 +364,15 @@ export const getPublicBoardsRoute = createRoute({
   summary: "Get public boards",
   description: "Retrieve public boards for a tenant",
   request: {
-    params: z.object({
-      tenantId: z.string().transform(Number).describe("Tenant ID"),
-    }),
-    query: z.object({
-      limit: z
-        .string()
-        .transform(Number)
-        .optional()
-        .default("20")
-        .describe("Number of boards to return"),
-    }),
+    params: TenantIdParamsSchema,
+    query: GetPublicBoardsQuerySchema,
   },
   responses: {
     200: {
       description: "Public boards retrieved successfully",
       content: {
         "application/json": {
-          schema: z.object({
-            success: z.boolean(),
-            data: z.array(BoardSchema),
-          }),
+          schema: GetPublicBoardsResponseSchema,
         },
       },
     },
@@ -477,25 +403,15 @@ export const getBoardStatsRoute = createRoute({
   summary: "Get board statistics",
   description: "Retrieve statistics for a specific board",
   request: {
-    params: z.object({
-      id: z.string().transform(Number).describe("Board ID"),
-    }),
-    query: z.object({
-      tenantId: z
-        .string()
-        .transform(Number)
-        .describe("Tenant ID for authorization"),
-    }),
+    params: BoardIdParamsSchema,
+    query: TenantIdQuerySchema,
   },
   responses: {
     200: {
       description: "Board statistics retrieved successfully",
       content: {
         "application/json": {
-          schema: z.object({
-            success: z.boolean(),
-            data: BoardStatsSchema,
-          }),
+          schema: GetBoardStatsResponseSchema,
         },
       },
     },
@@ -534,35 +450,15 @@ export const searchBoardsRoute = createRoute({
   summary: "Search boards",
   description: "Search for boards by name or description",
   request: {
-    params: z.object({
-      tenantId: z.string().transform(Number).describe("Tenant ID"),
-    }),
-    query: z.object({
-      q: z.string().min(1).describe("Search query"),
-      includePrivate: z
-        .string()
-        .transform(val => val === "true")
-        .optional()
-        .default("false")
-        .describe("Include private boards in search"),
-      limit: z
-        .string()
-        .transform(Number)
-        .optional()
-        .default("20")
-        .describe("Number of results to return"),
-    }),
+    params: TenantIdParamsSchema,
+    query: SearchBoardsQuerySchema,
   },
   responses: {
     200: {
       description: "Board search completed successfully",
       content: {
         "application/json": {
-          schema: z.object({
-            success: z.boolean(),
-            data: z.array(BoardSchema),
-            query: z.string(),
-          }),
+          schema: SearchBoardsResponseSchema,
         },
       },
     },

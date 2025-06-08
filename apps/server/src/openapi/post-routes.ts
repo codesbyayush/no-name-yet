@@ -8,7 +8,28 @@ import {
   CreatePostSchema,
   UpdatePostSchema,
   PostStatsSchema,
-} from "./schemas";
+} from "../schemas/common";
+import {
+  GetPostsQuerySchema,
+  PostIdParamsSchema,
+  PostSlugParamsSchema,
+  TenantIdQuerySchema,
+  TenantIdParamsSchema,
+  GetPostsByBoardQuerySchema,
+  SearchPostsQuerySchema,
+  GetPublicPostsQuerySchema,
+  CreatePostResponseSchema,
+  GetPostsResponseSchema,
+  GetPostByIdResponseSchema,
+  GetPostBySlugResponseSchema,
+  UpdatePostResponseSchema,
+  DeletePostResponseSchema,
+  RestorePostResponseSchema,
+  GetPostsByBoardResponseSchema,
+  GetPostStatsResponseSchema,
+  SearchPostsResponseSchema,
+  GetPublicPostsResponseSchema,
+} from "../schemas/post-schemas";
 
 // Create post route
 export const createPostRoute = createRoute({
@@ -76,10 +97,7 @@ export const getPostsRoute = createRoute({
         .transform(Number)
         .optional()
         .describe("Filter by board ID"),
-      authorId: z
-        .string()
-        .optional()
-        .describe("Filter by author ID"),
+      authorId: z.string().optional().describe("Filter by author ID"),
       status: z
         .enum(["draft", "published", "archived", "deleted"])
         .optional()
@@ -406,7 +424,9 @@ export const updatePostSentimentRoute = createRoute({
               .number()
               .min(-1)
               .max(1)
-              .describe("Sentiment score between -1 (negative) and 1 (positive)"),
+              .describe(
+                "Sentiment score between -1 (negative) and 1 (positive)",
+              ),
           }),
         },
       },
@@ -524,7 +544,8 @@ export const getPostStatsRoute = createRoute({
   path: "/posts/{id}/stats",
   tags: ["Posts"],
   summary: "Get post statistics",
-  description: "Retrieve statistics for a specific post including votes and comments",
+  description:
+    "Retrieve statistics for a specific post including votes and comments",
   request: {
     params: z.object({
       id: z.string().transform(Number).describe("Post ID"),

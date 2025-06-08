@@ -15,7 +15,42 @@ import {
   PostIntegrationSchema,
   CreatePostIntegrationSchema,
   UpdatePostIntegrationSchema,
-} from "./schemas";
+} from "../schemas/common";
+import {
+  GetCustomFieldsQuerySchema,
+  CustomFieldIdParamsSchema,
+  TenantIdQuerySchema,
+  TenantIdParamsSchema,
+  GetIntegrationsQuerySchema,
+  IntegrationIdParamsSchema,
+  GetCustomFieldValuesQuerySchema,
+  CustomFieldValueIdParamsSchema,
+  GetPostIntegrationsQuerySchema,
+  PostIntegrationIdParamsSchema,
+  TestIntegrationSchema,
+  CreateCustomFieldResponseSchema,
+  GetCustomFieldsResponseSchema,
+  GetCustomFieldByIdResponseSchema,
+  UpdateCustomFieldResponseSchema,
+  DeleteCustomFieldResponseSchema,
+  CreateCustomFieldValueResponseSchema,
+  GetCustomFieldValuesResponseSchema,
+  GetCustomFieldValueByIdResponseSchema,
+  UpdateCustomFieldValueResponseSchema,
+  DeleteCustomFieldValueResponseSchema,
+  CreateIntegrationResponseSchema,
+  GetIntegrationsResponseSchema,
+  GetIntegrationByIdResponseSchema,
+  UpdateIntegrationResponseSchema,
+  DeleteIntegrationResponseSchema,
+  TestIntegrationResponseSchema,
+  CreatePostIntegrationResponseSchema,
+  GetPostIntegrationsResponseSchema,
+  GetPostIntegrationByIdResponseSchema,
+  UpdatePostIntegrationResponseSchema,
+  DeletePostIntegrationResponseSchema,
+  RetryPostIntegrationResponseSchema,
+} from "../schemas/custom-integration-schemas";
 
 // Custom Fields routes
 export const createCustomFieldRoute = createRoute({
@@ -23,7 +58,8 @@ export const createCustomFieldRoute = createRoute({
   path: "/custom-fields",
   tags: ["Custom Fields"],
   summary: "Create custom field",
-  description: "Create a new custom field definition for dynamic data collection",
+  description:
+    "Create a new custom field definition for dynamic data collection",
   request: {
     body: {
       content: {
@@ -380,10 +416,7 @@ export const getCustomFieldValuesRoute = createRoute({
         .string()
         .transform(Number)
         .describe("Tenant ID for authorization"),
-      entityId: z
-        .string()
-        .optional()
-        .describe("Filter by specific entity ID"),
+      entityId: z.string().optional().describe("Filter by specific entity ID"),
       limit: z
         .string()
         .transform(Number)
@@ -504,7 +537,7 @@ export const getIntegrationsRoute = createRoute({
         .describe("Filter by integration type"),
       isActive: z
         .string()
-        .transform(val => val === "true")
+        .transform((val) => val === "true")
         .optional()
         .describe("Filter by active status"),
       limit: z

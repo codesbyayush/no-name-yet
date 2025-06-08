@@ -7,7 +7,19 @@ import {
   CreateTenantSchema,
   UpdateTenantSchema,
   TenantResponseSchema,
-} from "./schemas";
+} from "../schemas/common";
+import {
+  CreateTenantRequestSchema,
+  TenantIdParamsSchema,
+  GetTenantsQuerySchema,
+  UpdateTenantConfigSchema,
+  CreateTenantResponseSchema,
+  GetTenantsResponseSchema,
+  GetTenantByIdResponseSchema,
+  UpdateTenantResponseSchema,
+  DeleteTenantResponseSchema,
+  GetTenantStatsResponseSchema,
+} from "../schemas/tenant-schemas";
 
 // Create tenant route
 export const createTenantRoute = createRoute({
@@ -20,19 +32,7 @@ export const createTenantRoute = createRoute({
     body: {
       content: {
         "application/json": {
-          schema: z.object({
-            id: z.string().min(1).describe("Unique tenant identifier"),
-            name: z.string().min(1).describe("Tenant name"),
-            email: z.string().email().optional().describe("Contact email"),
-            config: z.object({
-              theme: z.object({
-                primaryColor: z.string().optional().describe("Primary theme color"),
-                buttonText: z.string().optional().describe("Custom button text"),
-              }).optional(),
-              apiUrl: z.string().url().optional().describe("Custom API URL"),
-              allowedDomains: z.array(z.string()).optional().describe("Allowed domains for CORS"),
-            }).optional().describe("Tenant configuration"),
-          }),
+          schema: CreateTenantRequestSchema,
         },
       },
     },
@@ -159,15 +159,32 @@ export const updateTenantRoute = createRoute({
           schema: z.object({
             name: z.string().min(1).optional().describe("Tenant name"),
             email: z.string().email().optional().describe("Contact email"),
-            isActive: z.boolean().optional().describe("Whether tenant is active"),
-            config: z.object({
-              theme: z.object({
-                primaryColor: z.string().optional().describe("Primary theme color"),
-                buttonText: z.string().optional().describe("Custom button text"),
-              }).optional(),
-              apiUrl: z.string().url().optional().describe("Custom API URL"),
-              allowedDomains: z.array(z.string()).optional().describe("Allowed domains for CORS"),
-            }).optional().describe("Tenant configuration"),
+            isActive: z
+              .boolean()
+              .optional()
+              .describe("Whether tenant is active"),
+            config: z
+              .object({
+                theme: z
+                  .object({
+                    primaryColor: z
+                      .string()
+                      .optional()
+                      .describe("Primary theme color"),
+                    buttonText: z
+                      .string()
+                      .optional()
+                      .describe("Custom button text"),
+                  })
+                  .optional(),
+                apiUrl: z.string().url().optional().describe("Custom API URL"),
+                allowedDomains: z
+                  .array(z.string())
+                  .optional()
+                  .describe("Allowed domains for CORS"),
+              })
+              .optional()
+              .describe("Tenant configuration"),
           }),
         },
       },

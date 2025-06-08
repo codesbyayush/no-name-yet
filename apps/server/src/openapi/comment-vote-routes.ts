@@ -13,7 +13,32 @@ import {
   CommentStatsSchema,
   VoteStatsSchema,
   VoteCountsSchema,
-} from "./schemas";
+} from "../schemas/common";
+import {
+  GetCommentsQuerySchema,
+  CommentIdParamsSchema,
+  PostIdParamsSchema,
+  TenantIdQuerySchema,
+  GetCommentsByPostQuerySchema,
+  GetVotesByPostQuerySchema,
+  GetVotesByCommentQuerySchema,
+  VoteIdParamsSchema,
+  GetUserVoteQuerySchema,
+  CreateCommentResponseSchema,
+  GetCommentsResponseSchema,
+  GetCommentByIdResponseSchema,
+  UpdateCommentResponseSchema,
+  DeleteCommentResponseSchema,
+  GetCommentsByPostResponseSchema,
+  GetCommentStatsResponseSchema,
+  CreateVoteResponseSchema,
+  UpdateVoteResponseSchema,
+  DeleteVoteResponseSchema,
+  GetVotesByPostResponseSchema,
+  GetVotesByCommentResponseSchema,
+  GetVoteCountsResponseSchema,
+  GetUserVoteResponseSchema,
+} from "../schemas/comment-vote-schemas";
 
 // Comment routes
 export const createCommentRoute = createRoute({
@@ -70,43 +95,7 @@ export const getCommentsRoute = createRoute({
   summary: "Get comments list",
   description: "Retrieve a paginated list of comments with optional filtering",
   request: {
-    query: z.object({
-      tenantId: z
-        .string()
-        .transform(Number)
-        .describe("Tenant ID to filter comments"),
-      postId: z
-        .string()
-        .transform(Number)
-        .optional()
-        .describe("Filter by post ID"),
-      parentCommentId: z
-        .string()
-        .transform(Number)
-        .optional()
-        .describe("Filter by parent comment ID for nested replies"),
-      authorId: z
-        .string()
-        .optional()
-        .describe("Filter by author ID"),
-      isInternal: z
-        .string()
-        .transform(val => val === "true")
-        .optional()
-        .describe("Filter by internal/public status"),
-      limit: z
-        .string()
-        .transform(Number)
-        .optional()
-        .default("50")
-        .describe("Number of items per page"),
-      offset: z
-        .string()
-        .transform(Number)
-        .optional()
-        .default("0")
-        .describe("Number of items to skip"),
-    }),
+    query: GetCommentsQuerySchema,
   },
   responses: {
     200: {
@@ -162,10 +151,7 @@ export const getCommentByIdRoute = createRoute({
       description: "Comment retrieved successfully",
       content: {
         "application/json": {
-          schema: z.object({
-            success: z.boolean(),
-            data: CommentSchema,
-          }),
+          schema: GetCommentByIdResponseSchema,
         },
       },
     },
@@ -334,7 +320,7 @@ export const getCommentsByPostRoute = createRoute({
         .describe("Tenant ID for authorization"),
       includeInternal: z
         .string()
-        .transform(val => val === "true")
+        .transform((val) => val === "true")
         .optional()
         .default("false")
         .describe("Include internal comments"),
@@ -406,10 +392,7 @@ export const getCommentStatsRoute = createRoute({
       description: "Comment statistics retrieved successfully",
       content: {
         "application/json": {
-          schema: z.object({
-            success: z.boolean(),
-            data: CommentStatsSchema,
-          }),
+          schema: GetCommentStatsResponseSchema,
         },
       },
     },
@@ -501,7 +484,8 @@ export const updateVoteRoute = createRoute({
   path: "/votes/{id}",
   tags: ["Votes"],
   summary: "Update vote",
-  description: "Update an existing vote (change from upvote to downvote or vice versa)",
+  description:
+    "Update an existing vote (change from upvote to downvote or vice versa)",
   request: {
     params: z.object({
       id: z.string().transform(Number).describe("Vote ID"),
@@ -582,10 +566,7 @@ export const deleteVoteRoute = createRoute({
       description: "Vote deleted successfully",
       content: {
         "application/json": {
-          schema: z.object({
-            success: z.boolean(),
-            message: z.string(),
-          }),
+          schema: DeleteVoteResponseSchema,
         },
       },
     },
@@ -623,31 +604,8 @@ export const getVotesByPostRoute = createRoute({
   summary: "Get votes by post",
   description: "Retrieve all votes for a specific post",
   request: {
-    params: z.object({
-      postId: z.string().transform(Number).describe("Post ID"),
-    }),
-    query: z.object({
-      tenantId: z
-        .string()
-        .transform(Number)
-        .describe("Tenant ID for authorization"),
-      voteType: z
-        .enum(["upvote", "downvote"])
-        .optional()
-        .describe("Filter by vote type"),
-      limit: z
-        .string()
-        .transform(Number)
-        .optional()
-        .default("100")
-        .describe("Number of items per page"),
-      offset: z
-        .string()
-        .transform(Number)
-        .optional()
-        .default("0")
-        .describe("Number of items to skip"),
-    }),
+    params: PostIdParamsSchema,
+    query: GetVotesByPostQuerySchema,
   },
   responses: {
     200: {
@@ -691,28 +649,7 @@ export const getVotesByCommentRoute = createRoute({
     params: z.object({
       commentId: z.string().transform(Number).describe("Comment ID"),
     }),
-    query: z.object({
-      tenantId: z
-        .string()
-        .transform(Number)
-        .describe("Tenant ID for authorization"),
-      voteType: z
-        .enum(["upvote", "downvote"])
-        .optional()
-        .describe("Filter by vote type"),
-      limit: z
-        .string()
-        .transform(Number)
-        .optional()
-        .default("100")
-        .describe("Number of items per page"),
-      offset: z
-        .string()
-        .transform(Number)
-        .optional()
-        .default("0")
-        .describe("Number of items to skip"),
-    }),
+    query: GetVotesByCommentQuerySchema,
   },
   responses: {
     200: {
@@ -769,10 +706,7 @@ export const getVoteCountsRoute = createRoute({
       description: "Vote counts retrieved successfully",
       content: {
         "application/json": {
-          schema: z.object({
-            success: z.boolean(),
-            data: VoteCountsSchema,
-          }),
+          schema: GetVoteCountsResponseSchema,
         },
       },
     },
@@ -819,10 +753,7 @@ export const getUserVoteRoute = createRoute({
       description: "User vote retrieved successfully",
       content: {
         "application/json": {
-          schema: z.object({
-            success: z.boolean(),
-            data: VoteSchema.nullable(),
-          }),
+          schema: GetUserVoteResponseSchema,
         },
       },
     },

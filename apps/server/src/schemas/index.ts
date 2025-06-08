@@ -1,0 +1,127 @@
+// Re-export all common schemas
+export * from "./common";
+
+// Re-export shared request schemas
+export * from "./shared-request-schemas";
+
+// Re-export route-specific schemas with explicit exports to avoid conflicts
+export {
+  GetBoardsQuerySchema,
+  BoardSlugParamsSchema,
+  GetPublicBoardsQuerySchema,
+  SearchBoardsQuerySchema,
+  CreateBoardResponseSchema,
+  GetBoardsResponseSchema,
+  GetBoardByIdResponseSchema,
+  GetBoardBySlugResponseSchema,
+  UpdateBoardResponseSchema,
+  DeleteBoardResponseSchema,
+  RestoreBoardResponseSchema,
+  GetPublicBoardsResponseSchema,
+  GetBoardStatsResponseSchema,
+  SearchBoardsResponseSchema,
+} from "./board-schemas";
+
+export {
+  GetCommentsQuerySchema,
+  GetCommentsByPostQuerySchema,
+  GetVotesByPostQuerySchema,
+  GetVotesByCommentQuerySchema,
+  GetUserVoteQuerySchema,
+  CreateCommentResponseSchema,
+  GetCommentsResponseSchema,
+  GetCommentByIdResponseSchema,
+  UpdateCommentResponseSchema,
+  DeleteCommentResponseSchema,
+  GetCommentsByPostResponseSchema,
+  GetCommentStatsResponseSchema,
+  CreateVoteResponseSchema,
+  UpdateVoteResponseSchema,
+  DeleteVoteResponseSchema,
+  GetVotesByPostResponseSchema,
+  GetVotesByCommentResponseSchema,
+  GetVoteCountsResponseSchema,
+  GetUserVoteResponseSchema,
+} from "./comment-vote-schemas";
+
+export {
+  GetPostsQuerySchema,
+  PostIdParamsSchema,
+  PostSlugParamsSchema,
+  GetPostsByBoardQuerySchema,
+  SearchPostsQuerySchema,
+  GetPublicPostsQuerySchema,
+  CreatePostResponseSchema,
+  GetPostsResponseSchema,
+  GetPostByIdResponseSchema,
+  GetPostBySlugResponseSchema,
+  UpdatePostResponseSchema,
+  DeletePostResponseSchema,
+  RestorePostResponseSchema,
+  GetPostsByBoardResponseSchema,
+  GetPostStatsResponseSchema,
+  SearchPostsResponseSchema,
+  GetPublicPostsResponseSchema,
+} from "./post-schemas";
+
+export {
+  CreateTenantRequestSchema,
+  GetTenantsQuerySchema,
+  UpdateTenantConfigSchema,
+  CreateTenantResponseSchema,
+  GetTenantsResponseSchema,
+  GetTenantByIdResponseSchema,
+  UpdateTenantResponseSchema,
+  DeleteTenantResponseSchema,
+  GetTenantStatsResponseSchema,
+} from "./tenant-schemas";
+
+export {
+  GetUsersQuerySchema,
+  GetUsersByTenantQuerySchema,
+  SearchUsersQuerySchema,
+  UpdateUserRoleSchema,
+  UpdateUserStatusSchema,
+  CreateUserResponseSchema,
+  GetUsersResponseSchema,
+  GetUserByIdResponseSchema,
+  UpdateUserResponseSchema,
+  DeleteUserResponseSchema,
+  GetUsersByTenantResponseSchema,
+  GetUserStatsResponseSchema,
+  SearchUsersResponseSchema,
+  UpdateUserRoleResponseSchema,
+  UpdateUserStatusResponseSchema,
+} from "./user-schemas";
+
+export {
+  GetCustomFieldsQuerySchema,
+  GetIntegrationsQuerySchema,
+  GetCustomFieldValuesQuerySchema,
+  CustomFieldValueIdParamsSchema,
+  GetPostIntegrationsQuerySchema,
+  PostIntegrationIdParamsSchema,
+  TestIntegrationSchema,
+  CreateCustomFieldResponseSchema,
+  GetCustomFieldsResponseSchema,
+  GetCustomFieldByIdResponseSchema,
+  UpdateCustomFieldResponseSchema,
+  DeleteCustomFieldResponseSchema,
+  CreateCustomFieldValueResponseSchema,
+  GetCustomFieldValuesResponseSchema,
+  GetCustomFieldValueByIdResponseSchema,
+  UpdateCustomFieldValueResponseSchema,
+  DeleteCustomFieldValueResponseSchema,
+  CreateIntegrationResponseSchema,
+  GetIntegrationsResponseSchema,
+  GetIntegrationByIdResponseSchema,
+  UpdateIntegrationResponseSchema,
+  DeleteIntegrationResponseSchema,
+  TestIntegrationResponseSchema,
+  CreatePostIntegrationResponseSchema,
+  GetPostIntegrationsResponseSchema,
+  GetPostIntegrationByIdResponseSchema,
+  UpdatePostIntegrationResponseSchema,
+  DeletePostIntegrationResponseSchema,
+  RetryPostIntegrationResponseSchema,
+} from "./custom-integration-schemas";
