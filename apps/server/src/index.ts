@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { auth } from "./lib/auth";
+import { authMiddleware } from "./middleware/auth";
 import { feedbackRouter } from "./routers/feedback";
 import { tenantsRouter } from "./routers/tenants";
 import { usersRouter } from "./routers/users";
@@ -12,48 +13,14 @@ import { openAPIApp } from "./openapi/app";
 
 const app = new Hono();
 
-// Create dedicated auth router exactly like zend
-console.log("🔧 Creating auth router...");
-console.log("🔧 Auth object:", !!auth);
-console.log("🔧 Auth handler:", !!auth.handler);
-console.log("🔧 Auth type:", typeof auth);
-
 const authRouter = new Hono();
 
-// Add debugging middleware to auth router
-authRouter.use("*", async (c, next) => {
-  console.log(`🔍 Auth router middleware: ${c.req.method} ${c.req.url}`);
-  console.log(`🔍 Auth router path: ${c.req.path}`);
-  await next();
-});
-
-authRouter.on(["POST", "GET", "OPTIONS"], "/**", async (c) => {
-  console.log(`✅ Auth handler called: ${c.req.method} ${c.req.url}`);
-  try {
-    const result = await auth.handler(c.req.raw);
-    return result;
-  } catch (error) {
-    console.error(`❌ Auth handler error:`, error);
-    return c.json({ error: "Auth handler failed" }, 500);
-  }
-});
-
-// Catch all for auth router
 authRouter.all("*", async (c) => {
-  console.log(`🚨 Auth router catch-all: ${c.req.method} ${c.req.url}`);
   try {
     return await auth.handler(c.req.raw);
   } catch (error) {
-    console.error(`❌ Auth catch-all error:`, error);
     return c.json({ error: "Auth failed", details: error.message }, 500);
   }
-});
-
-// Global request logging
-app.use("*", async (c, next) => {
-  console.log(`🌐 Incoming request: ${c.req.method} ${c.req.url}`);
-  console.log(`🌐 Request path: ${c.req.path}`);
-  await next();
 });
 
 app.use(logger());
@@ -85,14 +52,12 @@ app.use(
     maxAge: 86400, // 24 hours
   }),
 );
-
-// Register auth routes AFTER CORS middleware
-app.route("/api/auth", authRouter);
-
-// Direct docs route for convenience
 app.get("/docs", (c) => c.redirect("/api/docs"));
 
-// OpenAPI Documentation Routes
+app.route("/api/auth", authRouter);
+
+app.use("/api/*", authMiddleware);
+
 app.route("/api", openAPIApp);
 
 // API Routes
@@ -150,8 +115,6 @@ app.get("/health", (c) => {
 });
 
 const port = parseInt(process.env.PORT || "8080");
-
-console.log(`🚀 OmniFeedback API Server starting on port ${port}`);
 
 export default {
   port,
