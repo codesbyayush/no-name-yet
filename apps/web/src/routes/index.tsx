@@ -132,6 +132,60 @@ function HomeComponent() {
         </Card>
       </div>
 
+      {/* Tenant Examples Section */}
+      <Card className="mb-12">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            🏢 Multi-Tenant Workspaces
+          </CardTitle>
+          <CardDescription>
+            Explore dedicated workspaces for different organizations
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+              <h4 className="font-semibold mb-2">Demo Company</h4>
+              <p className="text-sm text-muted-foreground mb-3">
+                A sample workspace showcasing all features and capabilities
+              </p>
+              <Button
+                className="w-full"
+                onClick={() => window.open("/demo-company", "_self")}
+              >
+                Visit Demo Company
+              </Button>
+            </div>
+            <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+              <h4 className="font-semibold mb-2">Acme Corp</h4>
+              <p className="text-sm text-muted-foreground mb-3">
+                Example enterprise workspace with custom branding
+              </p>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => window.open("/acme-corp", "_self")}
+              >
+                Visit Acme Corp
+              </Button>
+            </div>
+            <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+              <h4 className="font-semibold mb-2">Startup Inc</h4>
+              <p className="text-sm text-muted-foreground mb-3">
+                Fast-growing startup with active community feedback
+              </p>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => window.open("/startup-inc", "_self")}
+              >
+                Visit Startup Inc
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold mb-4">Have Feedback?</h2>
         <p className="text-muted-foreground mb-6">
