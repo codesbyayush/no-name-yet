@@ -8,6 +8,13 @@
       "when": 1749322713860,
       "tag": "0000_nasty_tombstone",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1749667031411,
+      "tag": "0001_abnormal_puma",
+      "breakpoints": true
     }
   ]
 }

@@ -62,7 +62,7 @@ tenantsRouter.post(
 
       // Check if tenant already exists
       const existingTenant = await db.query.tenants.findFirst({
-        where: eq(tenants.id, data.id),
+        where: eq(tenants.id, parseInt(data.id, 10)),
       });
 
       if (existingTenant) {
@@ -79,8 +79,8 @@ tenantsRouter.post(
       const result = await db
         .insert(tenants)
         .values({
-          id: data.id,
           name: data.name,
+          slug: data.id, // Assuming slug should be the same as the provided id string
           email: data.email,
           config: data.config || {},
         })
@@ -254,7 +254,7 @@ tenantsRouter.put(
 // DELETE /api/tenants/:id - Delete tenant (soft delete by setting isActive to false) (Admin only)
 tenantsRouter.delete("/:id", requireAuth, requireRole("admin"), async (c) => {
   try {
-    const tenantId = c.req.param("id");
+    const tenantId = parseInt(c.req.param("id"), 10);
 
     // Check if tenant exists
     const existingTenant = await db.query.tenants.findFirst({
@@ -305,7 +305,7 @@ tenantsRouter.post(
   requireRole("admin"),
   async (c) => {
     try {
-      const tenantId = c.req.param("id");
+      const tenantId = parseInt(c.req.param("id"), 10);
 
       // Check if tenant exists
       const existingTenant = await db.query.tenants.findFirst({

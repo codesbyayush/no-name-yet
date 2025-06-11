@@ -101,7 +101,7 @@ export const authMiddleware = async (c: Context, next: Next) => {
             name: tenantData.name,
             slug: tenantData.slug,
             plan: tenantData.plan,
-            email: tenantData.email,
+            email: tenantData.email || undefined,
             isActive: tenantData.isActive,
             config: tenantData.config,
             createdAt: tenantData.createdAt,

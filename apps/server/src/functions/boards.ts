@@ -1,6 +1,7 @@
 import { db } from "../db";
 import { boards, type Board, type NewBoard } from "../db/schema";
 import { eq, and, isNull, desc, asc, count } from "drizzle-orm";
+import { sql } from 'drizzle-orm'; // Make sure to import sql
 
 export interface CreateBoardData {
   tenantId: number;
@@ -223,7 +224,7 @@ export class BoardFunctions {
       await db
         .update(boards)
         .set({
-          postCount: boards.postCount + 1,
+          postCount: sql`${boards.postCount} + 1`,
           updatedAt: new Date(),
         })
         .where(eq(boards.id, boardId));
@@ -237,7 +238,7 @@ export class BoardFunctions {
       await db
         .update(boards)
         .set({
-          postCount: boards.postCount - 1,
+          postCount: sql`${boards.postCount} - 1`,
           updatedAt: new Date(),
         })
         .where(eq(boards.id, boardId));
@@ -251,7 +252,7 @@ export class BoardFunctions {
       await db
         .update(boards)
         .set({
-          viewCount: boards.viewCount + 1,
+          viewCount: sql`${boards.postCount} + 1`,
         })
         .where(eq(boards.id, boardId));
     } catch (error) {
