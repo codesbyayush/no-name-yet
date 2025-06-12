@@ -17,12 +17,14 @@ interface CreateOrganizationFormProps {
   className?: string;
   onSuccess?: () => void;
   onError?: (error: Error) => void;
+  buttonText?: string;
 }
 
 export function CreateOrganizationForm({
   className,
   onSuccess,
   onError,
+  buttonText,
 }: CreateOrganizationFormProps) {
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
@@ -178,7 +180,7 @@ export function CreateOrganizationForm({
                 <span className="ml-2">Creating...</span>
               </>
             ) : (
-              "Create Organization"
+              buttonText || "Create Organization"
             )}
           </Button>
         </form>
