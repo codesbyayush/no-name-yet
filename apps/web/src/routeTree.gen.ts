@@ -12,6 +12,7 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as PublicImport } from './routes/public'
+import { Route as OrpcImport } from './routes/orpc'
 import { Route as LoginImport } from './routes/login'
 import { Route as LandingImport } from './routes/landing'
 import { Route as DashboardImport } from './routes/dashboard'
@@ -45,6 +46,12 @@ import { Route as TenantSlugPublicBoardBugsImport } from './routes/$tenantSlug/p
 const PublicRoute = PublicImport.update({
   id: '/public',
   path: '/public',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const OrpcRoute = OrpcImport.update({
+  id: '/orpc',
+  path: '/orpc',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -258,6 +265,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginImport
+      parentRoute: typeof rootRoute
+    }
+    '/orpc': {
+      id: '/orpc'
+      path: '/orpc'
+      fullPath: '/orpc'
+      preLoaderRoute: typeof OrpcImport
       parentRoute: typeof rootRoute
     }
     '/public': {
@@ -535,6 +549,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/landing': typeof LandingRoute
   '/login': typeof LoginRoute
+  '/orpc': typeof OrpcRoute
   '/public': typeof PublicRouteWithChildren
   '/$tenantSlug/admin': typeof TenantSlugAdminRouteWithChildren
   '/$tenantSlug/public': typeof TenantSlugPublicRouteWithChildren
@@ -564,6 +579,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/landing': typeof LandingRoute
   '/login': typeof LoginRoute
+  '/orpc': typeof OrpcRoute
   '/public/changelog': typeof PublicChangelogRoute
   '/public/roadmap': typeof PublicRoadmapRoute
   '/$tenantSlug': typeof TenantSlugIndexRoute
@@ -591,6 +607,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/landing': typeof LandingRoute
   '/login': typeof LoginRoute
+  '/orpc': typeof OrpcRoute
   '/public': typeof PublicRouteWithChildren
   '/$tenantSlug/admin': typeof TenantSlugAdminRouteWithChildren
   '/$tenantSlug/public': typeof TenantSlugPublicRouteWithChildren
@@ -624,6 +641,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/landing'
     | '/login'
+    | '/orpc'
     | '/public'
     | '/$tenantSlug/admin'
     | '/$tenantSlug/public'
@@ -652,6 +670,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/landing'
     | '/login'
+    | '/orpc'
     | '/public/changelog'
     | '/public/roadmap'
     | '/$tenantSlug'
@@ -677,6 +696,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/landing'
     | '/login'
+    | '/orpc'
     | '/public'
     | '/$tenantSlug/admin'
     | '/$tenantSlug/public'
@@ -709,6 +729,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   LandingRoute: typeof LandingRoute
   LoginRoute: typeof LoginRoute
+  OrpcRoute: typeof OrpcRoute
   PublicRoute: typeof PublicRouteWithChildren
 }
 
@@ -719,6 +740,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   LandingRoute: LandingRoute,
   LoginRoute: LoginRoute,
+  OrpcRoute: OrpcRoute,
   PublicRoute: PublicRouteWithChildren,
 }
 
@@ -738,6 +760,7 @@ export const routeTree = rootRoute
         "/dashboard",
         "/landing",
         "/login",
+        "/orpc",
         "/public"
       ]
     },
@@ -766,6 +789,9 @@ export const routeTree = rootRoute
     },
     "/login": {
       "filePath": "login.tsx"
+    },
+    "/orpc": {
+      "filePath": "orpc.tsx"
     },
     "/public": {
       "filePath": "public.tsx",

@@ -2,6 +2,7 @@ import "dotenv/config";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
+import { RPCHandler } from "@orpc/server/fetch";
 import { auth } from "./lib/auth";
 import { authMiddleware } from "./middleware/auth";
 import { feedbackRouter } from "./routers/feedback";
@@ -9,7 +10,8 @@ import { tenantsRouter } from "./routers/tenants";
 import { usersRouter } from "./routers/users";
 import { boardsRouter } from "./routers/boards";
 import { postsRouter } from "./routers/posts";
-import { openAPIApp } from "./openapi/app";
+import { apiRouter } from "./orpc/index";
+import { createContext } from "./orpc/context";
 
 const app = new Hono();
 
@@ -56,9 +58,21 @@ app.get("/docs", (c) => c.redirect("/api/docs"));
 
 app.route("/api/auth", authRouter);
 
-app.use("/api/*", authMiddleware);
+// oRPC Handler
+const rpcHandler = new RPCHandler(apiRouter);
+app.use("/rpc/*", async (c, next) => {
+  const context = await createContext({ context: c });
+  const { matched, response } = await rpcHandler.handle(c.req.raw, {
+    prefix: "/rpc",
+    context: context,
+  });
+  if (matched) {
+    return c.newResponse(response.body, response);
+  }
+  await next();
+});
 
-app.route("/api", openAPIApp);
+app.use("/api/*", authMiddleware);
 
 // API Routes
 app.route("/api/feedback", feedbackRouter);
@@ -93,6 +107,7 @@ app.get("/", (c) => {
         <a href="/api/doc">📄 OpenAPI JSON</a>
         <a href="/health">❤️ Health Check</a>
         <a href="/api/test">🧪 Test Endpoint</a>
+        <a href="/rpc">🚀 oRPC Endpoint</a>
     </div>
 
     <div class="status">
