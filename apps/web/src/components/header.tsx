@@ -31,9 +31,9 @@ export default function Header() {
 
   // Non-tenant links (legacy)
   const publicLinks = [
-    { to: "/public/board", label: "Board" },
-    { to: "/public/roadmap", label: "Roadmap" },
-    { to: "/public/changelog", label: "Changelog" },
+    { to: "/board", label: "Board" },
+    { to: "/roadmap", label: "Roadmap" },
+    { to: "/changelog", label: "Changelog" },
   ];
 
   const adminLinks = [{ to: "/admin", label: "Admin Dashboard" }];

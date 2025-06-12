@@ -1,7 +1,7 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/public/")({
+export const Route = createFileRoute("/board")({
   beforeLoad: () => {
-    throw redirect({ to: "/public/board" });
+    throw redirect({ to: "/board/" });
   },
 });

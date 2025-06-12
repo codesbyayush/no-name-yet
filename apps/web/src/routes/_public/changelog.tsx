@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/public/changelog")({
+export const Route = createFileRoute("/_public/changelog")({
   component: ChangelogPage,
 });
 

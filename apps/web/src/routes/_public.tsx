@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/public")({
+export const Route = createFileRoute("/_public")({
   component: PublicLayout,
 });
 
@@ -8,9 +8,9 @@ function PublicLayout() {
   const location = useLocation();
 
   const publicLinks = [
-    { to: "/public/board", label: "Board" },
-    { to: "/public/roadmap", label: "Roadmap" },
-    { to: "/public/changelog", label: "Changelog" },
+    { to: "/board", label: "Board" },
+    { to: "/roadmap", label: "Roadmap" },
+    { to: "/changelog", label: "Changelog" },
   ];
 
   return (

@@ -1,14 +1,14 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/public/board")({
+export const Route = createFileRoute("/_public/board")({
   component: BoardLayout,
 });
 
 function BoardLayout() {
   const boardSubPages = [
-    { to: "/public/board/features", label: "Features" },
-    { to: "/public/board/bugs", label: "Bug Reports" },
-    { to: "/public/board/feedback", label: "Feedback" },
+    { to: "/board/features", label: "Features" },
+    { to: "/board/bugs", label: "Bug Reports" },
+    { to: "/board/feedback", label: "Feedback" },
   ];
 
   return (
