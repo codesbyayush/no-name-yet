@@ -15,12 +15,11 @@ import { Route as PublicImport } from './routes/public'
 import { Route as OrpcImport } from './routes/orpc'
 import { Route as OnboardingImport } from './routes/onboarding'
 import { Route as LoginImport } from './routes/login'
-import { Route as LandingImport } from './routes/landing'
+import { Route as IndeexImport } from './routes/indeex'
 import { Route as DashboardImport } from './routes/dashboard'
 import { Route as AdminImport } from './routes/admin'
 import { Route as TenantSlugImport } from './routes/$tenantSlug'
-import { Route as IndexImport } from './routes/index'
-import { Route as PublicIndexImport } from './routes/public/index'
+import { Route as PublicIndexImport } ./routes/landing//public/index'
 import { Route as AdminIndexImport } from './routes/admin/index'
 import { Route as TenantSlugIndexImport } from './routes/$tenantSlug/index'
 import { Route as PublicRoadmapImport } from './routes/public/roadmap'
@@ -28,6 +27,7 @@ import { Route as PublicChangelogImport } from './routes/public/changelog'
 import { Route as PublicBoardImport } from './routes/public/board'
 import { Route as TenantSlugPublicImport } from './routes/$tenantSlug/public'
 import { Route as TenantSlugAdminImport } from './routes/$tenantSlug/admin'
+import { Route as LandingImport } from './routes/landing/'
 import { Route as PublicBoardIndexImport } from './routes/public/board/index'
 import { Route as TenantSlugPublicIndexImport } from './routes/$tenantSlug/public/index'
 import { Route as TenantSlugAdminIndexImport } from './routes/$tenantSlug/admin/index'
@@ -68,9 +68,9 @@ const LoginRoute = LoginImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const LandingRoute = LandingImport.update({
-  id: '/landing',
-  path: '/landing',
+const IndeexRoute = IndeexImport.update({
+  id: '/indeex',
+  path: '/indeex',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -89,12 +89,6 @@ const AdminRoute = AdminImport.update({
 const TenantSlugRoute = TenantSlugImport.update({
   id: '/$tenantSlug',
   path: '/$tenantSlug',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const IndexRoute = IndexImport.update({
-  id: '/',
-  path: '/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -144,6 +138,12 @@ const TenantSlugAdminRoute = TenantSlugAdminImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => TenantSlugRoute,
+} as any)
+
+const LandingRoute = LandingImport.update({
+  id: '/landing/',
+  path: '/landing/',
+  getParentRoute: () => rootRoute,
 } as any)
 
 const PublicBoardIndexRoute = PublicBoardIndexImport.update({
@@ -232,13 +232,6 @@ const TenantSlugPublicBoardBugsRoute = TenantSlugPublicBoardBugsImport.update({
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
     '/$tenantSlug': {
       id: '/$tenantSlug'
       path: '/$tenantSlug'
@@ -260,11 +253,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardImport
       parentRoute: typeof rootRoute
     }
-    '/landing': {
-      id: '/landing'
-      path: '/landing'
-      fullPath: '/landing'
-      preLoaderRoute: typeof LandingImport
+    '/indeex': {
+      id: '/indeex'
+      path: '/indeex'
+      fullPath: '/indeex'
+      preLoaderRoute: typeof IndeexImport
       parentRoute: typeof rootRoute
     }
     '/login': {
@@ -293,6 +286,13 @@ declare module '@tanstack/react-router' {
       path: '/public'
       fullPath: '/public'
       preLoaderRoute: typeof PublicImport
+      parentRoute: typeof rootRoute
+    }
+    '/landing/': {
+      id: '/landing/'
+      path: '/landing'
+      fullPath: '/landing'
+      preLoaderRoute: typeof LandingImport
       parentRoute: typeof rootRoute
     }
     '/$tenantSlug/admin': {
@@ -557,15 +557,15 @@ const PublicRouteWithChildren =
   PublicRoute._addFileChildren(PublicRouteChildren)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
   '/$tenantSlug': typeof TenantSlugRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
   '/dashboard': typeof DashboardRoute
-  '/landing': typeof LandingRoute
+  '/indeex': typeof IndeexRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/orpc': typeof OrpcRoute
   '/public': typeof PublicRouteWithChildren
+  '/landing': typeof LandingRoute
   '/$tenantSlug/admin': typeof TenantSlugAdminRouteWithChildren
   '/$tenantSlug/public': typeof TenantSlugPublicRouteWithChildren
   '/public/board': typeof PublicBoardRouteWithChildren
@@ -590,12 +590,12 @@ export interface FileRoutesByFullPath {
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
-  '/landing': typeof LandingRoute
+  '/indeex': typeof IndeexRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/orpc': typeof OrpcRoute
+  '/landing': typeof LandingRoute
   '/public/changelog': typeof PublicChangelogRoute
   '/public/roadmap': typeof PublicRoadmapRoute
   '/$tenantSlug': typeof TenantSlugIndexRoute
@@ -617,15 +617,15 @@ export interface FileRoutesByTo {
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/': typeof IndexRoute
   '/$tenantSlug': typeof TenantSlugRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
   '/dashboard': typeof DashboardRoute
-  '/landing': typeof LandingRoute
+  '/indeex': typeof IndeexRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/orpc': typeof OrpcRoute
   '/public': typeof PublicRouteWithChildren
+  '/landing/': typeof LandingRoute
   '/$tenantSlug/admin': typeof TenantSlugAdminRouteWithChildren
   '/$tenantSlug/public': typeof TenantSlugPublicRouteWithChildren
   '/public/board': typeof PublicBoardRouteWithChildren
@@ -652,15 +652,15 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
     | '/$tenantSlug'
     | '/admin'
     | '/dashboard'
-    | '/landing'
+    | '/indeex'
     | '/login'
     | '/onboarding'
     | '/orpc'
     | '/public'
+    | '/landing'
     | '/$tenantSlug/admin'
     | '/$tenantSlug/public'
     | '/public/board'
@@ -684,12 +684,12 @@ export interface FileRouteTypes {
     | '/$tenantSlug/public/board/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
     | '/dashboard'
-    | '/landing'
+    | '/indeex'
     | '/login'
     | '/onboarding'
     | '/orpc'
+    | '/landing'
     | '/public/changelog'
     | '/public/roadmap'
     | '/$tenantSlug'
@@ -709,15 +709,15 @@ export interface FileRouteTypes {
     | '/$tenantSlug/public/board'
   id:
     | '__root__'
-    | '/'
     | '/$tenantSlug'
     | '/admin'
     | '/dashboard'
-    | '/landing'
+    | '/indeex'
     | '/login'
     | '/onboarding'
     | '/orpc'
     | '/public'
+    | '/landing/'
     | '/$tenantSlug/admin'
     | '/$tenantSlug/public'
     | '/public/board'
@@ -743,27 +743,27 @@ export interface FileRouteTypes {
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
   TenantSlugRoute: typeof TenantSlugRouteWithChildren
   AdminRoute: typeof AdminRouteWithChildren
   DashboardRoute: typeof DashboardRoute
-  LandingRoute: typeof LandingRoute
+  IndeexRoute: typeof IndeexRoute
   LoginRoute: typeof LoginRoute
   OnboardingRoute: typeof OnboardingRoute
   OrpcRoute: typeof OrpcRoute
   PublicRoute: typeof PublicRouteWithChildren
+  LandingRoute: typeof LandingRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
   TenantSlugRoute: TenantSlugRouteWithChildren,
   AdminRoute: AdminRouteWithChildren,
   DashboardRoute: DashboardRoute,
-  LandingRoute: LandingRoute,
+  IndeexRoute: IndeexRoute,
   LoginRoute: LoginRoute,
   OnboardingRoute: OnboardingRoute,
   OrpcRoute: OrpcRoute,
   PublicRoute: PublicRouteWithChildren,
+  LandingRoute: LandingRoute,
 }
 
 export const routeTree = rootRoute
@@ -776,19 +776,16 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/",
         "/$tenantSlug",
         "/admin",
         "/dashboard",
-        "/landing",
+        "/indeex",
         "/login",
         "/onboarding",
         "/orpc",
-        "/public"
+        "/public",
+        "/landing/"
       ]
-    },
-    "/": {
-      "filePath": "index.tsx"
     },
     "/$tenantSlug": {
       "filePath": "$tenantSlug.tsx",
@@ -807,8 +804,8 @@ export const routeTree = rootRoute
     "/dashboard": {
       "filePath": "dashboard.tsx"
     },
-    "/landing": {
-      "filePath": "landing.tsx"
+    "/indeex": {
+      "filePath": "indeex.tsx"
     },
     "/login": {
       "filePath": "login.tsx"
@@ -827,6 +824,9 @@ export const routeTree = rootRoute
         "/public/roadmap",
         "/public/"
       ]
+    },
+    "/landing/": {
+      "filePath": "landing/.tsx"
     },
     "/$tenantSlug/admin": {
       "filePath": "$tenantSlug/admin.tsx",
