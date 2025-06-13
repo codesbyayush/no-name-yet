@@ -9,7 +9,7 @@ import {
   unique,
   index,
 } from "drizzle-orm/pg-core";
-import { tenants } from "./feedback";
+import { organization } from "./organization";
 
 export const user = pgTable(
   "user",
@@ -22,7 +22,7 @@ export const user = pgTable(
     createdAt: timestamp("created_at").notNull(),
     updatedAt: timestamp("updated_at").notNull(),
     // Extended fields for multi-tenancy and enhanced user management
-    tenantId: integer("tenant_id").references(() => tenants.id, {
+    organizationId: text("organization_id").references(() => organization.id, {
       onDelete: "cascade",
     }),
     authProvider: text("auth_provider").notNull().default("email"),
@@ -36,9 +36,12 @@ export const user = pgTable(
     deletedAt: timestamp("deleted_at"),
   },
   (table) => ({
-    uniqueTenantEmail: unique().on(table.tenantId, table.email),
-    uniqueTenantExternalId: unique().on(table.tenantId, table.externalId),
-    tenantIdx: index("idx_users_tenant").on(table.tenantId),
+    uniqueOrganizationEmail: unique().on(table.organizationId, table.email),
+    uniqueOrganizationExternalId: unique().on(
+      table.organizationId,
+      table.externalId,
+    ),
+    organizationIdx: index("idx_users_organization").on(table.organizationId),
     emailIdx: index("idx_users_email").on(table.email),
   }),
 );
@@ -83,18 +86,4 @@ export const verification = pgTable("verification", {
   expiresAt: timestamp("expires_at").notNull(),
   createdAt: timestamp("created_at"),
   updatedAt: timestamp("updated_at"),
-});
-
-// User authentication table for security-sensitive data
-export const userAuth = pgTable("user_auth", {
-  userId: text("user_id")
-    .primaryKey()
-    .references(() => user.id, { onDelete: "cascade" }),
-  passwordHash: text("password_hash"),
-  mfaSecret: text("mfa_secret"),
-  recoveryCodes: text("recovery_codes").array(),
-  failedAttempts: integer("failed_attempts").default(0),
-  lockedUntil: timestamp("locked_until"),
-  refreshTokens: text("refresh_tokens").array(),
-  lastLogin: timestamp("last_login"),
 });

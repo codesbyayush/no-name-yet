@@ -1,9 +1,4 @@
-import {
-  pgTable,
-  text,
-  timestamp,
-  index,
-} from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, index } from "drizzle-orm/pg-core";
 import { user } from "./auth";
 
 // Organization table
@@ -38,7 +33,10 @@ export const member = pgTable(
     createdAt: timestamp("created_at").notNull(),
   },
   (table) => ({
-    userOrgIdx: index("idx_member_user_org").on(table.userId, table.organizationId),
+    userOrgIdx: index("idx_member_user_org").on(
+      table.userId,
+      table.organizationId,
+    ),
     orgIdx: index("idx_member_org").on(table.organizationId),
     teamIdx: index("idx_member_team").on(table.teamId),
   }),
@@ -63,7 +61,10 @@ export const invitation = pgTable(
     createdAt: timestamp("created_at").notNull(),
   },
   (table) => ({
-    emailOrgIdx: index("idx_invitation_email_org").on(table.email, table.organizationId),
+    emailOrgIdx: index("idx_invitation_email_org").on(
+      table.email,
+      table.organizationId,
+    ),
     statusIdx: index("idx_invitation_status").on(table.status),
     expiresIdx: index("idx_invitation_expires").on(table.expiresAt),
   }),

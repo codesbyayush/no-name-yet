@@ -2,12 +2,13 @@ import {
   pgTable,
   text,
   timestamp,
-  serial,
   jsonb,
   boolean,
   pgEnum,
-  integer,
+  index,
 } from "drizzle-orm/pg-core";
+import { organization } from "./organization";
+import { boards } from "./boards";
 
 // Enum for feedback types
 export const feedbackTypeEnum = pgEnum("feedback_type", ["bug", "suggestion"]);
@@ -35,91 +36,67 @@ export const planTypeEnum = pgEnum("plan_type", [
   "enterprise",
 ]);
 
-// Tenants table - represents organizations using the widget
-export const tenants = pgTable("tenants", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  slug: text("slug").notNull().unique(),
-  plan: planTypeEnum("plan").notNull().default("starter"),
-  stripeCustomerId: text("stripe_customer_id"),
-  billingEmail: text("billing_email"),
-  email: text("email"), // keeping existing field for backward compatibility
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  isActive: boolean("is_active").default(true).notNull(),
-  // Configuration for the tenant
-  config: jsonb("config").default({}).$type<{
-    theme?: {
-      primaryColor?: string;
-      buttonText?: string;
-    };
-    apiUrl?: string;
-    allowedDomains?: string[];
-  }>(),
-});
-
 // Feedback table - stores all feedback submissions
-export const feedback = pgTable("feedback", {
-  id: serial("id").primaryKey(),
-  tenantId: integer("tenant_id")
-    .notNull()
-    .references(() => tenants.id, { onDelete: "cascade" }),
+export const feedback = pgTable(
+  "feedback",
+  {
+    id: text("id").primaryKey().default("gen_random_uuid()"),
+    boardId: text("board_id")
+      .notNull()
+      .references(() => boards.id, { onDelete: "cascade" }),
+    type: feedbackTypeEnum("type").notNull(),
+    title: text("title"),
+    description: text("description").notNull(),
+    status: statusEnum("status").default("open").notNull(),
+    userId: text("user_id"),
+    userEmail: text("user_email"),
+    userName: text("user_name"),
 
-  // Feedback content
-  type: feedbackTypeEnum("type").notNull(),
-  title: text("title"),
-  description: text("description").notNull(),
-  severity: severityEnum("severity"), // Only for bugs
-  status: statusEnum("status").default("open").notNull(),
+    userAgent: text("user_agent"),
+    url: text("url"),
+    browserInfo: jsonb("browser_info").$type<{
+      platform?: string;
+      language?: string;
+      cookieEnabled?: boolean;
+      onLine?: boolean;
+      screenResolution?: string;
+    }>(),
 
-  // User context (from JWT or manual input)
-  userId: text("user_id"), // From JWT claim
-  userEmail: text("user_email"), // From JWT claim or manual input
-  userName: text("user_name"), // From JWT claim or manual input
+    // Attachments and media
+    attachments: jsonb("attachments").default([]).$type<
+      Array<{
+        id: string;
+        name: string;
+        type: string; // image/png, application/pdf, etc.
+        size: number;
+        url: string; // S3 URL or similar
+      }>
+    >(),
 
-  // Technical context
-  userAgent: text("user_agent"),
-  url: text("url"), // Page where feedback was submitted
-  browserInfo: jsonb("browser_info").$type<{
-    platform?: string;
-    language?: string;
-    cookieEnabled?: boolean;
-    onLine?: boolean;
-    screenResolution?: string;
-  }>(),
+    // AI processing results (will be added in Phase 3)
+    aiAnalysis: jsonb("ai_analysis").$type<{
+      category?: string;
+      sentiment?: string;
+      summary?: string;
+      suggestedResponse?: string;
+      confidence?: number;
+    }>(),
 
-  // Attachments and media
-  attachments: jsonb("attachments").default([]).$type<
-    Array<{
-      id: string;
-      name: string;
-      type: string; // image/png, application/pdf, etc.
-      size: number;
-      url: string; // S3 URL or similar
-    }>
-  >(),
+    // Metadata
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
 
-  // AI processing results (will be added in Phase 3)
-  aiAnalysis: jsonb("ai_analysis").$type<{
-    category?: string;
-    sentiment?: string;
-    summary?: string;
-    suggestedResponse?: string;
-    confidence?: number;
-  }>(),
+    // For future features
+    isAnonymous: boolean("is_anonymous").default(false).notNull(),
+    tags: text("tags").array().default([]),
+    priority: text("priority").default("medium"), // low, medium, high
+  },
+  (table) => ({
+    boardsIdx: index("idx_feedback_boards").on(table.boardId),
+    statusIdx: index("idx_feedback_status").on(table.status),
+    typeIdx: index("idx_feedback_type").on(table.type),
+  }),
+);
 
-  // Metadata
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-
-  // For future features
-  isAnonymous: boolean("is_anonymous").default(false).notNull(),
-  tags: text("tags").array().default([]),
-  priority: text("priority").default("medium"), // low, medium, high
-});
-
-// Export types for TypeScript
-export type Tenant = typeof tenants.$inferSelect;
-export type NewTenant = typeof tenants.$inferInsert;
 export type Feedback = typeof feedback.$inferSelect;
 export type NewFeedback = typeof feedback.$inferInsert;

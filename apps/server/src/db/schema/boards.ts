@@ -9,16 +9,16 @@ import {
   unique,
   index,
 } from "drizzle-orm/pg-core";
-import { tenants } from "./feedback";
+import { organization } from "./organization";
 
 // Boards table for hierarchical board structure
 export const boards = pgTable(
   "boards",
   {
-    id: serial("id").primaryKey(),
-    tenantId: integer("tenant_id")
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
       .notNull()
-      .references(() => tenants.id, { onDelete: "cascade" }),
+      .references(() => organization.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
     slug: text("slug").notNull(),
     description: text("description"),
@@ -31,8 +31,8 @@ export const boards = pgTable(
     deletedAt: timestamp("deleted_at"),
   },
   (table) => ({
-    uniqueTenantSlug: unique().on(table.tenantId, table.slug),
-    tenantIdx: index("idx_boards_tenant").on(table.tenantId),
+    uniqueOrganizationSlug: unique().on(table.organizationId, table.slug),
+    organizationIdx: index("idx_boards_organization").on(table.organizationId),
   }),
 );
 

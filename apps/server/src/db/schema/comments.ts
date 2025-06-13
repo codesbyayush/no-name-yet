@@ -8,22 +8,18 @@ import {
   boolean,
   index,
 } from "drizzle-orm/pg-core";
-import { tenants } from "./feedback";
-import { posts } from "./posts";
 import { user } from "./auth";
+import { feedback } from "./feedback";
 
 // Comments table with versioned structure
 export const comments = pgTable(
   "comments",
   {
-    id: serial("id").primaryKey(),
-    tenantId: integer("tenant_id")
+    id: text("id").primaryKey(),
+    feedbackId: text("feedback_id")
       .notNull()
-      .references(() => tenants.id, { onDelete: "cascade" }),
-    postId: integer("post_id")
-      .notNull()
-      .references(() => posts.id, { onDelete: "cascade" }),
-    parentCommentId: integer("parent_comment_id").references(
+      .references(() => feedback.id, { onDelete: "cascade" }),
+    parentCommentId: text("parent_comment_id").references(
       (): any => comments.id,
     ),
     authorId: text("author_id")
@@ -37,7 +33,7 @@ export const comments = pgTable(
     deletedAt: timestamp("deleted_at"),
   },
   (table) => ({
-    postIdx: index("idx_comments_post").on(table.postId),
+    feedbackIdx: index("idx_comments_feedback").on(table.feedbackId),
     parentIdx: index("idx_comments_parent").on(table.parentCommentId),
   }),
 );

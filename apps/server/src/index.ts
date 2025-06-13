@@ -4,12 +4,6 @@ import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { RPCHandler } from "@orpc/server/fetch";
 import { auth } from "./lib/auth";
-import { authMiddleware } from "./middleware/auth";
-import { feedbackRouter } from "./routers/feedback";
-import { tenantsRouter } from "./routers/tenants";
-import { usersRouter } from "./routers/users";
-import { boardsRouter } from "./routers/boards";
-import { postsRouter } from "./routers/posts";
 import { apiRouter } from "./orpc/index";
 import { createContext } from "./orpc/context";
 
@@ -71,15 +65,6 @@ app.use("/rpc/*", async (c, next) => {
   }
   await next();
 });
-
-app.use("/api/*", authMiddleware);
-
-// API Routes
-app.route("/api/feedback", feedbackRouter);
-app.route("/api/tenants", tenantsRouter);
-app.route("/api/users", usersRouter);
-app.route("/api/boards", boardsRouter);
-app.route("/api/posts", postsRouter);
 
 app.get("/", (c) => {
   const html = `

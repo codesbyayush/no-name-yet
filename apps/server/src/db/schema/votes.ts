@@ -8,10 +8,10 @@ import {
   unique,
   index,
 } from "drizzle-orm/pg-core";
-import { tenants } from "./feedback";
-import { posts } from "./posts";
+// import { posts } from "./posts";
 import { comments } from "./comments";
 import { user } from "./auth";
+import { feedback } from "./feedback";
 
 // Enum for vote types
 export const voteTypeEnum = pgEnum("vote_type", [
@@ -24,14 +24,11 @@ export const voteTypeEnum = pgEnum("vote_type", [
 export const votes = pgTable(
   "votes",
   {
-    id: serial("id").primaryKey(),
-    tenantId: integer("tenant_id")
-      .notNull()
-      .references(() => tenants.id, { onDelete: "cascade" }),
-    postId: integer("post_id").references(() => posts.id, {
+    id: text("id").primaryKey(),
+    feedbackId: text("feedback_id").references(() => feedback.id, {
       onDelete: "cascade",
     }),
-    commentId: integer("comment_id").references(() => comments.id, {
+    commentId: text("comment_id").references(() => comments.id, {
       onDelete: "cascade",
     }),
     userId: text("user_id")
@@ -42,13 +39,8 @@ export const votes = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => ({
-    uniqueVote: unique().on(
-      table.tenantId,
-      table.userId,
-      table.postId,
-      table.commentId,
-    ),
-    postIdx: index("idx_votes_post").on(table.postId),
+    uniqueVote: unique().on(table.userId, table.feedbackId, table.commentId),
+    feedbackIdx: index("idx_votes_feedback").on(table.feedbackId),
     commentIdx: index("idx_votes_comment").on(table.commentId),
   }),
 );
