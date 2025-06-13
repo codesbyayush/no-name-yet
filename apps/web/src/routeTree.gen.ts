@@ -13,7 +13,7 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as OrpcImport } from './routes/orpc'
 import { Route as OnboardingImport } from './routes/onboarding'
-import { Route as LoginImport } from './routes/login'
+import { Route as LoginImport } from './routes/auth'
 import { Route as LandingImport } from './routes/landing'
 import { Route as BoardImport } from './routes/board'
 import { Route as AdminImport } from './routes/admin'
