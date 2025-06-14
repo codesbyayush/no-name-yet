@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import LandingPage from "../components/landing";
 
 export const Route = createFileRoute("/")({
@@ -46,6 +46,17 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
+  beforeLoad: () => {
+    const host = window.location.href.split("//")[1];
+    if (host) {
+      const hostParts = host.split(".");
+      if (hostParts.length > 1 && hostParts[0] !== "localhost") {
+        throw redirect({
+          to: "/board",
+        });
+      }
+    }
+  },
 });
 
 function LandingComponent() {
