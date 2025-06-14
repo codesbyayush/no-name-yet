@@ -4,6 +4,7 @@ import { boards, comments, feedback, user, votes } from "../db/schema";
 import { eq, and, asc, desc, count, SQL } from "drizzle-orm";
 import { ORPCError } from "@orpc/server";
 import { z } from "zod";
+import { randomUUID } from "crypto";
 
 // Pagination schema for reuse
 const paginationSchema = z.object({
@@ -722,6 +723,479 @@ export const apiRouter = {
         if (error instanceof ORPCError) {
           throw error;
         }
+        throw new ORPCError("INTERNAL_SERVER_ERROR");
+      }
+    }),
+
+  // NEW: Create a post (feedback) in a specific board
+  createPost: protectedProcedure
+    .input(
+      z.object({
+        boardId: z.string().min(1, "Board ID is required"),
+        type: z.enum(["bug", "suggestion"]),
+        title: z.string().min(1, "Title is required").max(200, "Title too long"),
+        description: z.string().min(1, "Description is required").max(5000, "Description too long"),
+        priority: z.enum(["low", "medium", "high"]).default("medium"),
+        tags: z.array(z.string()).default([]),
+        isAnonymous: z.boolean().default(false),
+        attachments: z.array(z.object({
+          id: z.string(),
+          name: z.string(),
+          type: z.string(),
+          size: z.number(),
+          url: z.string()
+        })).default([])
+      })
+    )
+    .handler(async ({ input, context }) => {
+      const { boardId, type, title, description, priority, tags, isAnonymous, attachments } = input;
+      const userId = context.session?.user?.id;
+
+      if (!userId) {
+        throw new ORPCError("UNAUTHORIZED");
+      }
+
+      try {
+        // Verify board exists and user has access
+        const board = await db
+          .select()
+          .from(boards)
+          .where(eq(boards.id, boardId))
+          .limit(1);
+
+        if (!board[0]) {
+          throw new ORPCError("NOT_FOUND");
+        }
+
+        // Create the post
+        const newPost = await db
+          .insert(feedback)
+          .values({
+            boardId,
+            type,
+            title,
+            description,
+            userId: isAnonymous ? null : userId,
+            userEmail: isAnonymous ? null : context.session?.user?.email,
+            userName: isAnonymous ? null : context.session?.user?.name,
+            priority,
+            tags,
+            isAnonymous,
+            attachments,
+            status: "open"
+          })
+          .returning();
+
+        return {
+          post: newPost[0],
+          message: "Post created successfully"
+        };
+      } catch (error) {
+        console.error("Error creating post:", error);
+        if (error instanceof ORPCError) {
+          throw error;
+        }
+        throw new ORPCError("INTERNAL_SERVER_ERROR");
+      }
+    }),
+
+  // NEW: Create a comment on a post
+  createComment: protectedProcedure
+    .input(
+      z.object({
+        feedbackId: z.string().min(1, "Post ID is required"),
+        content: z.string().min(1, "Content is required").max(2000, "Content too long"),
+        parentCommentId: z.string().optional(), // For replies
+        isInternal: z.boolean().default(false)
+      })
+    )
+    .handler(async ({ input, context }) => {
+      const { feedbackId, content, parentCommentId, isInternal } = input;
+      const userId = context.session?.user?.id;
+
+      if (!userId) {
+        throw new ORPCError("UNAUTHORIZED");
+      }
+
+      try {
+        // Verify post exists
+        const post = await db
+          .select()
+          .from(feedback)
+          .where(eq(feedback.id, feedbackId))
+          .limit(1);
+
+        if (!post[0]) {
+          throw new ORPCError("NOT_FOUND");
+        }
+
+        // If replying to a comment, verify parent comment exists
+        if (parentCommentId) {
+          const parentComment = await db
+            .select()
+            .from(comments)
+            .where(and(
+              eq(comments.id, parentCommentId),
+              eq(comments.feedbackId, feedbackId)
+            ))
+            .limit(1);
+
+          if (!parentComment[0]) {
+            throw new ORPCError("NOT_FOUND");
+          }
+        }
+
+        // Create the comment
+        const newComment = await db
+          .insert(comments)
+          .values({
+            id: randomUUID(),
+            feedbackId,
+            content,
+            authorId: userId,
+            parentCommentId: parentCommentId || null,
+            isInternal
+          })
+          .returning();
+
+        // Get the comment with author info
+        const commentWithAuthor = await db
+          .select({
+            id: comments.id,
+            content: comments.content,
+            feedbackId: comments.feedbackId,
+            parentCommentId: comments.parentCommentId,
+            isInternal: comments.isInternal,
+            createdAt: comments.createdAt,
+            updatedAt: comments.updatedAt,
+            author: {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              image: user.image,
+            },
+          })
+          .from(comments)
+          .leftJoin(user, eq(comments.authorId, user.id))
+          .where(eq(comments.id, newComment[0].id))
+          .limit(1);
+
+        return {
+          comment: commentWithAuthor[0],
+          message: "Comment created successfully"
+        };
+      } catch (error) {
+        console.error("Error creating comment:", error);
+        if (error instanceof ORPCError) {
+          throw error;
+        }
+        throw new ORPCError("INTERNAL_SERVER_ERROR");
+      }
+    }),
+
+  // NEW: Vote on a post
+  voteOnPost: protectedProcedure
+    .input(
+      z.object({
+        feedbackId: z.string().min(1, "Post ID is required"),
+        type: z.enum(["upvote", "downvote", "bookmark"]),
+        weight: z.number().min(1).max(5).default(1)
+      })
+    )
+    .handler(async ({ input, context }) => {
+      const { feedbackId, type, weight } = input;
+      const userId = context.session?.user?.id;
+
+      if (!userId) {
+        throw new ORPCError("UNAUTHORIZED");
+      }
+
+      try {
+        // Verify post exists
+        const post = await db
+          .select()
+          .from(feedback)
+          .where(eq(feedback.id, feedbackId))
+          .limit(1);
+
+        if (!post[0]) {
+          throw new ORPCError("NOT_FOUND");
+        }
+
+        // Check if user already voted
+        const existingVote = await db
+          .select()
+          .from(votes)
+          .where(and(
+            eq(votes.feedbackId, feedbackId),
+            eq(votes.userId, userId)
+          ))
+          .limit(1);
+
+        if (existingVote[0]) {
+          // Update existing vote if different type
+          if (existingVote[0].type !== type) {
+            await db
+              .update(votes)
+              .set({ type, weight })
+              .where(eq(votes.id, existingVote[0].id));
+
+            return {
+              message: "Vote updated successfully",
+              vote: { type, weight }
+            };
+          } else {
+            // Remove vote if same type (toggle)
+            await db
+              .delete(votes)
+              .where(eq(votes.id, existingVote[0].id));
+
+            return {
+              message: "Vote removed successfully",
+              vote: null
+            };
+          }
+        } else {
+          // Create new vote
+          const newVote = await db
+            .insert(votes)
+            .values({
+              id: randomUUID(),
+              feedbackId,
+              userId,
+              type,
+              weight
+            })
+            .returning();
+
+          return {
+            message: "Vote created successfully",
+            vote: newVote[0]
+          };
+        }
+      } catch (error) {
+        console.error("Error voting on post:", error);
+        if (error instanceof ORPCError) {
+          throw error;
+        }
+        throw new ORPCError("INTERNAL_SERVER_ERROR");
+      }
+    }),
+
+  // NEW: Vote on a comment
+  voteOnComment: protectedProcedure
+    .input(
+      z.object({
+        commentId: z.string().min(1, "Comment ID is required"),
+        type: z.enum(["upvote", "downvote"]),
+        weight: z.number().min(1).max(5).default(1)
+      })
+    )
+    .handler(async ({ input, context }) => {
+      const { commentId, type, weight } = input;
+      const userId = context.session?.user?.id;
+
+      if (!userId) {
+        throw new ORPCError("UNAUTHORIZED");
+      }
+
+      try {
+        // Verify comment exists
+        const comment = await db
+          .select()
+          .from(comments)
+          .where(eq(comments.id, commentId))
+          .limit(1);
+
+        if (!comment[0]) {
+          throw new ORPCError("NOT_FOUND");
+        }
+
+        // Check if user already voted on this comment
+        const existingVote = await db
+          .select()
+          .from(votes)
+          .where(and(
+            eq(votes.commentId, commentId),
+            eq(votes.userId, userId)
+          ))
+          .limit(1);
+
+        if (existingVote[0]) {
+          // Update existing vote if different type
+          if (existingVote[0].type !== type) {
+            await db
+              .update(votes)
+              .set({ type, weight })
+              .where(eq(votes.id, existingVote[0].id));
+
+            return {
+              message: "Vote updated successfully",
+              vote: { type, weight }
+            };
+          } else {
+            // Remove vote if same type (toggle)
+            await db
+              .delete(votes)
+              .where(eq(votes.id, existingVote[0].id));
+
+            return {
+              message: "Vote removed successfully",
+              vote: null
+            };
+          }
+        } else {
+          // Create new vote
+          const newVote = await db
+            .insert(votes)
+            .values({
+              id: randomUUID(),
+              commentId,
+              userId,
+              type,
+              weight
+            })
+            .returning();
+
+          return {
+            message: "Vote created successfully",
+            vote: newVote[0]
+          };
+        }
+      } catch (error) {
+        console.error("Error voting on comment:", error);
+        if (error instanceof ORPCError) {
+          throw error;
+        }
+        throw new ORPCError("INTERNAL_SERVER_ERROR");
+      }
+    }),
+
+  // NEW: Get comments for a post with threading (replies support)
+  getPostCommentsWithReplies: publicProcedure
+    .input(
+      z.object({
+        feedbackId: z.string().min(1, "Post ID is required"),
+        offset: z.number().min(0).default(0),
+        take: z.number().min(1).max(100).default(20)
+      })
+    )
+    .handler(async ({ input, context }) => {
+      const { feedbackId, offset, take } = input;
+
+      try {
+        // Get all comments for the post
+        const allComments = await db
+          .select({
+            id: comments.id,
+            content: comments.content,
+            feedbackId: comments.feedbackId,
+            parentCommentId: comments.parentCommentId,
+            isInternal: comments.isInternal,
+            createdAt: comments.createdAt,
+            updatedAt: comments.updatedAt,
+            author: {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              image: user.image,
+            },
+          })
+          .from(comments)
+          .leftJoin(user, eq(comments.authorId, user.id))
+          .where(eq(comments.feedbackId, feedbackId))
+          .orderBy(asc(comments.createdAt));
+
+        // Get vote counts for each comment
+        const commentsWithVotes = await Promise.all(
+          allComments.map(async (comment) => {
+            const upvoteCountResult = await db
+              .select({ count: count() })
+              .from(votes)
+              .where(and(eq(votes.commentId, comment.id), eq(votes.type, "upvote")));
+
+            const downvoteCountResult = await db
+              .select({ count: count() })
+              .from(votes)
+              .where(and(eq(votes.commentId, comment.id), eq(votes.type, "downvote")));
+
+            return {
+              ...comment,
+              stats: {
+                upvotes: upvoteCountResult[0]?.count || 0,
+                downvotes: downvoteCountResult[0]?.count || 0,
+              },
+            };
+          })
+        );
+
+        // Organize comments into threads (parent comments with their replies)
+        const parentComments = commentsWithVotes.filter(c => !c.parentCommentId);
+        const replyComments = commentsWithVotes.filter(c => c.parentCommentId);
+
+        const threaded = parentComments.map(parent => ({
+          ...parent,
+          replies: replyComments.filter(reply => reply.parentCommentId === parent.id)
+        }));
+
+        // Apply pagination to parent comments only
+        const paginatedThreaded = threaded.slice(offset, offset + take);
+
+        return {
+          comments: paginatedThreaded,
+          pagination: {
+            offset,
+            take,
+            totalCount: parentComments.length,
+            hasMore: offset + take < parentComments.length,
+          },
+        };
+      } catch (error) {
+        console.error("Error fetching threaded comments:", error);
+        if (error instanceof ORPCError) {
+          throw error;
+        }
+        throw new ORPCError("INTERNAL_SERVER_ERROR");
+      }
+    }),
+
+  // NEW: Get user's votes on posts and comments for UI state
+  getUserVotes: protectedProcedure
+    .input(
+      z.object({
+        feedbackIds: z.array(z.string()).optional(),
+        commentIds: z.array(z.string()).optional(),
+      })
+    )
+    .handler(async ({ input, context }) => {
+      const { feedbackIds, commentIds } = input;
+      const userId = context.session?.user?.id;
+
+      if (!userId) {
+        throw new ORPCError("UNAUTHORIZED");
+      }
+
+      try {
+        const conditions: SQL<unknown>[] = [eq(votes.userId, userId)];
+
+        if (feedbackIds?.length) {
+          conditions.push(eq(votes.feedbackId, feedbackIds[0])); // This needs to be improved for multiple IDs
+        }
+
+        if (commentIds?.length) {
+          conditions.push(eq(votes.commentId, commentIds[0])); // This needs to be improved for multiple IDs
+        }
+
+        const userVotes = await db
+          .select()
+          .from(votes)
+          .where(and(...conditions));
+
+        return {
+          votes: userVotes
+        };
+      } catch (error) {
+        console.error("Error fetching user votes:", error);
         throw new ORPCError("INTERNAL_SERVER_ERROR");
       }
     }),

@@ -4,6 +4,7 @@ import { client } from '@/utils/orpc';
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { useState, useCallback, useRef, useEffect } from "react";
+import { CreateEditPost } from "@/components/create-edit-post";
 
 export const Route = createFileRoute('/_public/board/$postId')({
   component: RouteComponent,
@@ -149,12 +150,17 @@ function RouteComponent() {
       </div>
       <div className="flex flex-col gap-4 sticky top-0 h-fit">
         <div className="border-1 p-4 bg-white z-10">
-          <div>
-            Got an idea
+          <div className="mb-2 text-sm text-gray-600">
+            Got an idea?
           </div>
-          <Button>
-            Submit a post
-          </Button>
+          <CreateEditPost 
+            boardId={post?.boardId || ''} // TODO: Get actual board ID from context
+            mode="create"
+            onSuccess={() => {
+              // Refresh the posts list
+              window.location.reload(); // Temporary until we have proper invalidation
+            }}
+          />
         </div>
         <div>
           <h4>Boards</h4>

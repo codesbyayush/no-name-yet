@@ -4,6 +4,7 @@ import { client } from "@/utils/orpc";
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { createFileRoute, redirect } from "@tanstack/react-router";
+import { CreateEditPost } from "@/components/create-edit-post";
 
 import {
   DropdownMenu,
@@ -48,7 +49,7 @@ function BoardIndexPage() {
   const [position, setPosition] = useState("bottom");
 
   const { data: boards } = useQuery({
-    queryKey: ["boards"],
+    queryKey: ["public-boards"],
     queryFn: () => client.getAllPublicBoards(),
   });
 
@@ -152,12 +153,17 @@ function BoardIndexPage() {
       </div>
       <div className="flex flex-col gap-4 sticky top-0 h-fit">
         <div className="border-1 p-4 bg-white z-10">
-          <div>
-            Got an idea
+          <div className="mb-2 text-sm text-gray-600">
+            Got an idea?
           </div>
-          <Button>
-            Submit a post
-          </Button>
+          <CreateEditPost 
+            boardId={boards?.boards[0].id || ''} // TODO: Get actual board ID from context
+            mode="create"
+            onSuccess={() => {
+              // Refresh the posts list
+              window.location.reload(); // Temporary until we have proper invalidation
+            }}
+          />
         </div>
         <div>
           <h4>Boards</h4>
