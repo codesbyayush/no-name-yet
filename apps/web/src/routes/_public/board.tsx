@@ -1,3 +1,5 @@
+import { client, orpc } from "@/utils/orpc";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_public/board")({
@@ -10,6 +12,11 @@ function BoardLayout() {
     { to: "/board/bugs", label: "Bug Reports" },
     { to: "/board/feedback", label: "Feedback" },
   ];
+
+  const { data } = useQuery({
+    queryKey: ["boards"],
+    queryFn: () => client.getAllPublicBoards(),
+  });
 
   return (
     <div className="flex h-full flex-col">
@@ -29,6 +36,15 @@ function BoardLayout() {
               className="rounded-md bg-secondary px-3 py-2 text-sm font-medium transition-colors hover:bg-secondary/80"
             >
               {label}
+            </Link>
+          ))}
+          {data?.boards.map(({ id, name, slug }) => (
+            <Link
+              key={id}
+              to={`/board/${slug}`}
+              className="rounded-md bg-secondary px-3 py-2 text-sm font-medium transition-colors hover:bg-secondary/80"
+            >
+              {name}
             </Link>
           ))}
         </nav>
