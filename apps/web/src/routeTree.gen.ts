@@ -13,9 +13,9 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as OrpcImport } from './routes/orpc'
 import { Route as OnboardingImport } from './routes/onboarding'
-import { Route as LoginImport } from './routes/auth'
 import { Route as LandingImport } from './routes/landing'
 import { Route as BoardImport } from './routes/board'
+import { Route as AuthImport } from './routes/auth'
 import { Route as AdminImport } from './routes/admin'
 import { Route as PublicImport } from './routes/_public'
 import { Route as TenantSlugImport } from './routes/$tenantSlug'
@@ -55,12 +55,6 @@ const OnboardingRoute = OnboardingImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const LoginRoute = LoginImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const LandingRoute = LandingImport.update({
   id: '/landing',
   path: '/landing',
@@ -70,6 +64,12 @@ const LandingRoute = LandingImport.update({
 const BoardRoute = BoardImport.update({
   id: '/board',
   path: '/board',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AuthRoute = AuthImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -252,6 +252,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminImport
       parentRoute: typeof rootRoute
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthImport
+      parentRoute: typeof rootRoute
+    }
     '/board': {
       id: '/board'
       path: '/board'
@@ -264,13 +271,6 @@ declare module '@tanstack/react-router' {
       path: '/landing'
       fullPath: '/landing'
       preLoaderRoute: typeof LandingImport
-      parentRoute: typeof rootRoute
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
     '/onboarding': {
@@ -544,9 +544,9 @@ export interface FileRoutesByFullPath {
   '/$tenantSlug': typeof TenantSlugRouteWithChildren
   '': typeof PublicRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
+  '/auth': typeof AuthRoute
   '/board': typeof PublicBoardRouteWithChildren
   '/landing': typeof LandingRoute
-  '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/orpc': typeof OrpcRoute
   '/$tenantSlug/admin': typeof TenantSlugAdminRouteWithChildren
@@ -573,9 +573,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof PublicRouteWithChildren
+  '/auth': typeof AuthRoute
   '/board': typeof PublicBoardIndexRoute
   '/landing': typeof LandingRoute
-  '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/orpc': typeof OrpcRoute
   '/changelog': typeof PublicChangelogRoute
@@ -601,9 +601,9 @@ export interface FileRoutesById {
   '/$tenantSlug': typeof TenantSlugRouteWithChildren
   '/_public': typeof PublicRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
+  '/auth': typeof AuthRoute
   '/board': typeof BoardRoute
   '/landing': typeof LandingRoute
-  '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/orpc': typeof OrpcRoute
   '/$tenantSlug/admin': typeof TenantSlugAdminRouteWithChildren
@@ -635,9 +635,9 @@ export interface FileRouteTypes {
     | '/$tenantSlug'
     | ''
     | '/admin'
+    | '/auth'
     | '/board'
     | '/landing'
-    | '/login'
     | '/onboarding'
     | '/orpc'
     | '/$tenantSlug/admin'
@@ -663,9 +663,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | ''
+    | '/auth'
     | '/board'
     | '/landing'
-    | '/login'
     | '/onboarding'
     | '/orpc'
     | '/changelog'
@@ -689,9 +689,9 @@ export interface FileRouteTypes {
     | '/$tenantSlug'
     | '/_public'
     | '/admin'
+    | '/auth'
     | '/board'
     | '/landing'
-    | '/login'
     | '/onboarding'
     | '/orpc'
     | '/$tenantSlug/admin'
@@ -722,9 +722,9 @@ export interface RootRouteChildren {
   TenantSlugRoute: typeof TenantSlugRouteWithChildren
   PublicRoute: typeof PublicRouteWithChildren
   AdminRoute: typeof AdminRouteWithChildren
+  AuthRoute: typeof AuthRoute
   BoardRoute: typeof BoardRoute
   LandingRoute: typeof LandingRoute
-  LoginRoute: typeof LoginRoute
   OnboardingRoute: typeof OnboardingRoute
   OrpcRoute: typeof OrpcRoute
 }
@@ -734,9 +734,9 @@ const rootRouteChildren: RootRouteChildren = {
   TenantSlugRoute: TenantSlugRouteWithChildren,
   PublicRoute: PublicRouteWithChildren,
   AdminRoute: AdminRouteWithChildren,
+  AuthRoute: AuthRoute,
   BoardRoute: BoardRoute,
   LandingRoute: LandingRoute,
-  LoginRoute: LoginRoute,
   OnboardingRoute: OnboardingRoute,
   OrpcRoute: OrpcRoute,
 }
@@ -755,9 +755,9 @@ export const routeTree = rootRoute
         "/$tenantSlug",
         "/_public",
         "/admin",
+        "/auth",
         "/board",
         "/landing",
-        "/login",
         "/onboarding",
         "/orpc"
       ]
@@ -787,14 +787,14 @@ export const routeTree = rootRoute
         "/admin/"
       ]
     },
+    "/auth": {
+      "filePath": "auth.tsx"
+    },
     "/board": {
       "filePath": "board.tsx"
     },
     "/landing": {
       "filePath": "landing.tsx"
-    },
-    "/login": {
-      "filePath": "login.tsx"
     },
     "/onboarding": {
       "filePath": "onboarding.tsx"

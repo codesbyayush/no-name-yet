@@ -40,7 +40,7 @@ export const planTypeEnum = pgEnum("plan_type", [
 export const feedback = pgTable(
   "feedback",
   {
-    id: text("id").primaryKey().default("gen_random_uuid()"),
+    id: text("id").primaryKey().default("gen_random_uuid()::text"),
     boardId: text("board_id")
       .notNull()
       .references(() => boards.id, { onDelete: "cascade" }),
