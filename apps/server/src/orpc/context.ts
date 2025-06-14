@@ -24,8 +24,6 @@ export async function createContext({ context }: CreateContextOptions) {
     }
   }
 
-  console.log("Subdomain:", subdomain);
-
   // Fetch organization based on subdomain
   let org = null;
   if (subdomain) {
@@ -45,9 +43,11 @@ export async function createContext({ context }: CreateContextOptions) {
   return {
     session,
     organization: org,
+    subdomain
   };
 }
 
 export type Context = Awaited<ReturnType<typeof createContext>> & {
   organization: InferSelectModel<typeof organization> | null;
+  subdomain?: string
 };

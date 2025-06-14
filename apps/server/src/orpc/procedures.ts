@@ -10,10 +10,19 @@ const requireAuth = o.middleware(async ({ context, next }) => {
     throw new ORPCError("UNAUTHORIZED");
   }
   return next({
-    context: {
-      session: context.session,
-    },
+    context: context,
   });
 });
 
+const requireOrganization = o.middleware(async ({ context, next }) => {
+  if (!context.organization) {
+    throw new ORPCError("UNAUTHORIZED")
+  }
+  return next({
+    context
+  })
+})
+
 export const protectedProcedure = publicProcedure.use(requireAuth);
+
+export const organizationProcedure = publicProcedure.use(requireOrganization);

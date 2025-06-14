@@ -30,9 +30,7 @@ import { Route as TenantSlugAdminImport } from './routes/$tenantSlug/admin'
 import { Route as PublicBoardIndexImport } from './routes/_public/board/index'
 import { Route as TenantSlugPublicIndexImport } from './routes/$tenantSlug/public/index'
 import { Route as TenantSlugAdminIndexImport } from './routes/$tenantSlug/admin/index'
-import { Route as PublicBoardFeedbackImport } from './routes/_public/board/feedback'
-import { Route as PublicBoardFeaturesImport } from './routes/_public/board/features'
-import { Route as PublicBoardBugsImport } from './routes/_public/board/bugs'
+import { Route as PublicBoardPostIdImport } from './routes/_public/board/$postId'
 import { Route as TenantSlugPublicRoadmapImport } from './routes/$tenantSlug/public/roadmap'
 import { Route as TenantSlugPublicChangelogImport } from './routes/$tenantSlug/public/changelog'
 import { Route as TenantSlugPublicBoardImport } from './routes/$tenantSlug/public/board'
@@ -156,21 +154,9 @@ const TenantSlugAdminIndexRoute = TenantSlugAdminIndexImport.update({
   getParentRoute: () => TenantSlugAdminRoute,
 } as any)
 
-const PublicBoardFeedbackRoute = PublicBoardFeedbackImport.update({
-  id: '/feedback',
-  path: '/feedback',
-  getParentRoute: () => PublicBoardRoute,
-} as any)
-
-const PublicBoardFeaturesRoute = PublicBoardFeaturesImport.update({
-  id: '/features',
-  path: '/features',
-  getParentRoute: () => PublicBoardRoute,
-} as any)
-
-const PublicBoardBugsRoute = PublicBoardBugsImport.update({
-  id: '/bugs',
-  path: '/bugs',
+const PublicBoardPostIdRoute = PublicBoardPostIdImport.update({
+  id: '/$postId',
+  path: '/$postId',
   getParentRoute: () => PublicBoardRoute,
 } as any)
 
@@ -357,25 +343,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TenantSlugPublicRoadmapImport
       parentRoute: typeof TenantSlugPublicImport
     }
-    '/_public/board/bugs': {
-      id: '/_public/board/bugs'
-      path: '/bugs'
-      fullPath: '/board/bugs'
-      preLoaderRoute: typeof PublicBoardBugsImport
-      parentRoute: typeof PublicBoardImport
-    }
-    '/_public/board/features': {
-      id: '/_public/board/features'
-      path: '/features'
-      fullPath: '/board/features'
-      preLoaderRoute: typeof PublicBoardFeaturesImport
-      parentRoute: typeof PublicBoardImport
-    }
-    '/_public/board/feedback': {
-      id: '/_public/board/feedback'
-      path: '/feedback'
-      fullPath: '/board/feedback'
-      preLoaderRoute: typeof PublicBoardFeedbackImport
+    '/_public/board/$postId': {
+      id: '/_public/board/$postId'
+      path: '/$postId'
+      fullPath: '/board/$postId'
+      preLoaderRoute: typeof PublicBoardPostIdImport
       parentRoute: typeof PublicBoardImport
     }
     '/$tenantSlug/admin/': {
@@ -497,16 +469,12 @@ const TenantSlugRouteWithChildren = TenantSlugRoute._addFileChildren(
 )
 
 interface PublicBoardRouteChildren {
-  PublicBoardBugsRoute: typeof PublicBoardBugsRoute
-  PublicBoardFeaturesRoute: typeof PublicBoardFeaturesRoute
-  PublicBoardFeedbackRoute: typeof PublicBoardFeedbackRoute
+  PublicBoardPostIdRoute: typeof PublicBoardPostIdRoute
   PublicBoardIndexRoute: typeof PublicBoardIndexRoute
 }
 
 const PublicBoardRouteChildren: PublicBoardRouteChildren = {
-  PublicBoardBugsRoute: PublicBoardBugsRoute,
-  PublicBoardFeaturesRoute: PublicBoardFeaturesRoute,
-  PublicBoardFeedbackRoute: PublicBoardFeedbackRoute,
+  PublicBoardPostIdRoute: PublicBoardPostIdRoute,
   PublicBoardIndexRoute: PublicBoardIndexRoute,
 }
 
@@ -558,9 +526,7 @@ export interface FileRoutesByFullPath {
   '/$tenantSlug/public/board': typeof TenantSlugPublicBoardRouteWithChildren
   '/$tenantSlug/public/changelog': typeof TenantSlugPublicChangelogRoute
   '/$tenantSlug/public/roadmap': typeof TenantSlugPublicRoadmapRoute
-  '/board/bugs': typeof PublicBoardBugsRoute
-  '/board/features': typeof PublicBoardFeaturesRoute
-  '/board/feedback': typeof PublicBoardFeedbackRoute
+  '/board/$postId': typeof PublicBoardPostIdRoute
   '/$tenantSlug/admin/': typeof TenantSlugAdminIndexRoute
   '/$tenantSlug/public/': typeof TenantSlugPublicIndexRoute
   '/board/': typeof PublicBoardIndexRoute
@@ -584,9 +550,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/$tenantSlug/public/changelog': typeof TenantSlugPublicChangelogRoute
   '/$tenantSlug/public/roadmap': typeof TenantSlugPublicRoadmapRoute
-  '/board/bugs': typeof PublicBoardBugsRoute
-  '/board/features': typeof PublicBoardFeaturesRoute
-  '/board/feedback': typeof PublicBoardFeedbackRoute
+  '/board/$postId': typeof PublicBoardPostIdRoute
   '/$tenantSlug/admin': typeof TenantSlugAdminIndexRoute
   '/$tenantSlug/public': typeof TenantSlugPublicIndexRoute
   '/$tenantSlug/public/board/bugs': typeof TenantSlugPublicBoardBugsRoute
@@ -616,9 +580,7 @@ export interface FileRoutesById {
   '/$tenantSlug/public/board': typeof TenantSlugPublicBoardRouteWithChildren
   '/$tenantSlug/public/changelog': typeof TenantSlugPublicChangelogRoute
   '/$tenantSlug/public/roadmap': typeof TenantSlugPublicRoadmapRoute
-  '/_public/board/bugs': typeof PublicBoardBugsRoute
-  '/_public/board/features': typeof PublicBoardFeaturesRoute
-  '/_public/board/feedback': typeof PublicBoardFeedbackRoute
+  '/_public/board/$postId': typeof PublicBoardPostIdRoute
   '/$tenantSlug/admin/': typeof TenantSlugAdminIndexRoute
   '/$tenantSlug/public/': typeof TenantSlugPublicIndexRoute
   '/_public/board/': typeof PublicBoardIndexRoute
@@ -649,9 +611,7 @@ export interface FileRouteTypes {
     | '/$tenantSlug/public/board'
     | '/$tenantSlug/public/changelog'
     | '/$tenantSlug/public/roadmap'
-    | '/board/bugs'
-    | '/board/features'
-    | '/board/feedback'
+    | '/board/$postId'
     | '/$tenantSlug/admin/'
     | '/$tenantSlug/public/'
     | '/board/'
@@ -674,9 +634,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/$tenantSlug/public/changelog'
     | '/$tenantSlug/public/roadmap'
-    | '/board/bugs'
-    | '/board/features'
-    | '/board/feedback'
+    | '/board/$postId'
     | '/$tenantSlug/admin'
     | '/$tenantSlug/public'
     | '/$tenantSlug/public/board/bugs'
@@ -704,9 +662,7 @@ export interface FileRouteTypes {
     | '/$tenantSlug/public/board'
     | '/$tenantSlug/public/changelog'
     | '/$tenantSlug/public/roadmap'
-    | '/_public/board/bugs'
-    | '/_public/board/features'
-    | '/_public/board/feedback'
+    | '/_public/board/$postId'
     | '/$tenantSlug/admin/'
     | '/$tenantSlug/public/'
     | '/_public/board/'
@@ -823,9 +779,7 @@ export const routeTree = rootRoute
       "filePath": "_public/board.tsx",
       "parent": "/_public",
       "children": [
-        "/_public/board/bugs",
-        "/_public/board/features",
-        "/_public/board/feedback",
+        "/_public/board/$postId",
         "/_public/board/"
       ]
     },
@@ -863,16 +817,8 @@ export const routeTree = rootRoute
       "filePath": "$tenantSlug/public/roadmap.tsx",
       "parent": "/$tenantSlug/public"
     },
-    "/_public/board/bugs": {
-      "filePath": "_public/board/bugs.tsx",
-      "parent": "/_public/board"
-    },
-    "/_public/board/features": {
-      "filePath": "_public/board/features.tsx",
-      "parent": "/_public/board"
-    },
-    "/_public/board/feedback": {
-      "filePath": "_public/board/feedback.tsx",
+    "/_public/board/$postId": {
+      "filePath": "_public/board/$postId.tsx",
       "parent": "/_public/board"
     },
     "/$tenantSlug/admin/": {

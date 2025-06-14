@@ -1,113 +1,100 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
+import { getFeedbacks } from "@/lib/utils";
+import { client } from "@/utils/orpc";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuItem
+} from "@/components/ui/dropdown-menu";
+import { useState } from "react";
 
 export const Route = createFileRoute("/_public/board/")({
   component: BoardIndexPage,
 });
 
 function BoardIndexPage() {
+  const AllFeedbacks = getFeedbacks()
+  const navigate = useNavigate({ from: '/board' })
+  const { data: posts } = useQuery({
+    queryKey: ['all-posts'],
+    queryFn: () => client.getOrganizationPosts({ offset: 0, take: 10})
+  })
+    const [position, setPosition] = useState("bottom");
+
+  const { data } = useQuery({
+    queryKey: ["boards"],
+    queryFn: () => client.getAllPublicBoards(),
+  });
   return (
-    <div className="space-y-6">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold tracking-tight">Welcome to the Board</h2>
-        <p className="text-muted-foreground">
-          Select a category above to browse features, report bugs, or share feedback
-        </p>
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-3">
-        <div className="rounded-lg border bg-card p-6 text-center">
-          <div className="mb-3 flex justify-center">
-            <div className="rounded-full bg-green-100 p-3 dark:bg-green-900">
-              <svg
-                className="h-6 w-6 text-green-600 dark:text-green-300"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 10V3L4 14h7v7l9-11h-7z"
-                />
-              </svg>
-            </div>
-          </div>
-          <h3 className="text-lg font-semibold">Features</h3>
-          <p className="text-sm text-muted-foreground">
-            Explore new features and request enhancements
-          </p>
-        </div>
-
-        <div className="rounded-lg border bg-card p-6 text-center">
-          <div className="mb-3 flex justify-center">
-            <div className="rounded-full bg-red-100 p-3 dark:bg-red-900">
-              <svg
-                className="h-6 w-6 text-red-600 dark:text-red-300"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.667-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"
-                />
-              </svg>
-            </div>
-          </div>
-          <h3 className="text-lg font-semibold">Bug Reports</h3>
-          <p className="text-sm text-muted-foreground">
-            Report issues and track bug fixes
-          </p>
-        </div>
-
-        <div className="rounded-lg border bg-card p-6 text-center">
-          <div className="mb-3 flex justify-center">
-            <div className="rounded-full bg-blue-100 p-3 dark:bg-blue-900">
-              <svg
-                className="h-6 w-6 text-blue-600 dark:text-blue-300"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                />
-              </svg>
-            </div>
-          </div>
-          <h3 className="text-lg font-semibold">Feedback</h3>
-          <p className="text-sm text-muted-foreground">
-            Share your thoughts and suggestions
-          </p>
+    <div>
+      <div className="flex justify-between">
+        <DropdownMenu>
+          <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>Profile</DropdownMenuItem>
+            <DropdownMenuItem>Billing</DropdownMenuItem>
+            <DropdownMenuItem>Team</DropdownMenuItem>
+            <DropdownMenuItem>Subscription</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <div className="flex gap-2">
+          <DropdownMenu>
+          <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>Profile</DropdownMenuItem>
+            <DropdownMenuItem>Billing</DropdownMenuItem>
+            <DropdownMenuItem>Team</DropdownMenuItem>
+            <DropdownMenuItem>Subscription</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <span>
+          search
+        </span>
         </div>
       </div>
-
-      <div className="rounded-lg border bg-muted/50 p-6">
-        <h3 className="mb-3 text-lg font-semibold">Recent Activity</h3>
-        <div className="space-y-3">
-          <div className="flex items-center gap-3 text-sm">
-            <div className="h-2 w-2 rounded-full bg-green-500" />
-            <span>New feature request: Dark mode improvements</span>
-            <span className="text-muted-foreground">2 hours ago</span>
+    <div className="flex gap-4 relative">
+      <div className="border-1 p-4 flex-1">
+        {posts?.posts.map((f, i) => (
+          <div onClick={() => navigate({
+            to: f.id
+          })} key={i} className={`${i > 0 ? 'border-t-2' : ''} py-4 space-y-2`}>
+            <h4 className="font-semibold text-lg">{f.title}</h4>
+            <p className="text-sm text-[#0007149f]">{f.content}</p>
+            <div>
+              <div>icon, name, date</div>
+              <div>status, comms, likes</div>
+            </div>
           </div>
-          <div className="flex items-center gap-3 text-sm">
-            <div className="h-2 w-2 rounded-full bg-red-500" />
-            <span>Bug report: Login form validation issue</span>
-            <span className="text-muted-foreground">4 hours ago</span>
+        ))}
+      </div>
+      <div className="flex flex-col gap-4 sticky top-0 h-fit">
+        <div className="border-1 p-4 bg-white z-10">
+          <div>
+            Got an idea
           </div>
-          <div className="flex items-center gap-3 text-sm">
-            <div className="h-2 w-2 rounded-full bg-blue-500" />
-            <span>Feedback: Great user experience overall</span>
-            <span className="text-muted-foreground">1 day ago</span>
-          </div>
+          <Button>
+            Submit a post
+          </Button>
+        </div>
+        <div>
+          <h4>Boards</h4>
+          {/* Boards content */}
         </div>
       </div>
+    </div>
     </div>
   );
 }
