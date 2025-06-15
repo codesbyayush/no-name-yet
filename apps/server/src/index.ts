@@ -6,6 +6,8 @@ import { RPCHandler } from "@orpc/server/fetch";
 import { auth } from "./lib/auth";
 import { apiRouter } from "./orpc/index";
 import { createContext } from "./orpc/context";
+import { readFileSync } from "fs";
+import { resolve } from "path";
 
 const app = new Hono();
 
@@ -24,9 +26,13 @@ app.use(
   "/*",
   cors({
     origin: (origin, _) => {
-      return origin.endsWith(".localhost:3002")
+      // Support both HTTP and HTTPS for development
+      return origin.endsWith(".localhost:3001") ||
+        origin.endsWith(".localhost:3002") ||
+        origin === "https://localhost:3001" ||
+        origin === "https://localhost:3002"
         ? origin
-        : "http://localhost:3002";
+        : "https://localhost:3002";
     },
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allowHeaders: [
@@ -110,7 +116,14 @@ app.get("/health", (c) => {
 
 const port = parseInt(process.env.PORT || "8080");
 
+// TLS configuration for HTTPS in development
+const tlsConfig = process.env.NODE_ENV === "development" ? {
+  key: readFileSync(resolve(import.meta.dir, "../certs/localhost+2-key.pem")),
+  cert: readFileSync(resolve(import.meta.dir, "../certs/localhost+2.pem")),
+} : undefined;
+
 export default {
   port,
   fetch: app.fetch,
+  tls: tlsConfig,
 };

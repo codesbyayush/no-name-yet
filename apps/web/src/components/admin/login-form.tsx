@@ -42,9 +42,9 @@ export function LoginForm({
             }
           },
           onError: (error) => {
-            toast.error(error.message || "Login failed. Please try again.");
+            toast.error(error.error?.message || "Login failed. Please try again.");
             if (onAuthError) {
-              onAuthError(error);
+              onAuthError(new Error(error.error?.message || "Login failed"));
             } else {
               console.error(error);
             }
@@ -65,8 +65,6 @@ export function LoginForm({
     try {
       await signIn.social({
         provider: "google",
-        callbackURL: "/old-ones",
-        newUserCallbackURL: "/create-organization",
       });
       toast.success("Redirecting to Google...");
     } catch (error) {

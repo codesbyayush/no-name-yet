@@ -20,7 +20,7 @@ function OnboardingPage() {
 
   // If user is not authenticated, redirect to login
   if (!session) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/auth" />;
   }
 
   return (

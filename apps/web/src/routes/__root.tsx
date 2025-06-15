@@ -52,7 +52,6 @@ function RootComponent() {
           </div>
         ) : (
           <div className="grid h-svh grid-rows-[auto_1fr]">
-            <Header />
             {isFetching ? <Loader /> : <Outlet />}
           </div>
         )}

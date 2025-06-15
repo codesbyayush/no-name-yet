@@ -24,8 +24,12 @@ export function LoginForm({
   const navigate = useNavigate({
     from: "/",
   });
-  const { isPending } = authClient.useSession();
+  const { isPending, data } = authClient.useSession();
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+
+  if (data){
+    window.location.href = 'http://acme-corp.localhost:3002'
+  }
 
   const form = useForm({
     defaultValues: {
@@ -41,7 +45,7 @@ export function LoginForm({
         {
           onSuccess: () => {
             navigate({
-              to: "/dashboard",
+              to: "/",
             });
             toast.success("Sign in successful");
           },
@@ -65,8 +69,6 @@ export function LoginForm({
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "http://localhost:3002/dashboard",
-        newUserCallbackURL: "http://localhost:3002/create-organization",
       });
       toast.success("Redirecting to Google...");
     } catch (error) {
