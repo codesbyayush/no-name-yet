@@ -68,23 +68,25 @@ function RouteComponent() {
   }, [])
   return (
     <div className="flex gap-4 relative">
-      <div className="border-1 px-4 flex-1">
-        <div className={`py-4 space-y-2`}>
-            <h4 className="font-semibold text-lg">{post?.title}</h4>
-            <p className="text-sm text-[#0007149f]">{post?.content}</p>
+      <div className="border-1 rounded-3xl max-w-2xl border-stone-200 px-6 flex-1">
+        <div className={`py-6 space-y-2`}>
+          <h4 className="font-semibold capitalize text-lg">{post?.title}</h4>
+          <p className="text-sm text-[#0007149f] font-medium capitalize text-pretty">{post?.content}</p>
 
-              <div className='ml-auto'> comms, likes</div>
-              <div>
-
-              <AutosizeTextarea />
-              <div>
-
-              <Button className='ml-auto'>
-                Comment
-              </Button>
-              </div>
-              </div>
+          <div className='ml-auto flex max-w-max pt-6 gap-3'>
+            <div>Co (4)</div>
+            <div>Li (28)</div>
           </div>
+        <div>
+
+        <div className='bg-gray-50 p-4 rounded-2xl border border-stone-200 mt-6 flex flex-col items-end gap-3'>
+          <AutosizeTextarea className='bg-gray-50 min-h-20 rounded-lg border-none' minHeight={100} placeholder='Add a comment...'/>
+          <Button className='ml-auto rounded-lg'>
+            Comment
+          </Button>
+        </div>
+      </div>
+    </div>
         
         {/* Comments loading state */}
         {isLoadingComments && allComments.length === 0 && (

@@ -111,7 +111,7 @@ function BoardIndexPage() {
         </div>
       </div>
     <div className="flex gap-4 relative">
-      <div className="border-1 p-4 flex-1">
+      <div className="border-1 border-stone-200 bg-white dark:bg-black max-w-2xl rounded-4xl px-6 shadow-xs flex-1">
         {isLoading && <div>Loading posts...</div>}
         {isError && <div>Error loading posts</div>}
         {allPosts.map((f, i) => {
@@ -125,13 +125,31 @@ function BoardIndexPage() {
               onClick={() => navigate({
                 to: f.id
               })} 
-              className={`${i > 0 ? 'border-t-2' : ''} py-4 space-y-2 cursor-pointer hover:bg-gray-50`}
+              className={`${i > 0 ? 'border-t-[1px] border-stone-200' : ''} py-6 space-y-1 cursor-pointer`}
             >
-              <h4 className="font-semibold text-lg">{f.title}</h4>
-              <p className="text-sm text-[#0007149f]">{f.content}</p>
-              <div>
-                <div>icon, name, date</div>
-                <div>status, comms, likes</div>
+              <h4 className="font-semibold capitalize text-lg">{f.title}</h4>
+              <p className="text-sm text-[#0007149f] font-medium capitalize text-pretty">{f.content}</p>
+              <div className="pt-4 flex justify-between">
+                <div className="flex gap-3 items-center">
+                  <div>
+                    {
+                      f.author?.image ? 
+                      <img src={f.author?.image || 'https://picsum/64'} className="h-8 rounded-full"/> : 
+                      <p className="size-8 rounded-full bg-red-900 flex items-center justify-center text-white">
+                        A
+                      </p>
+                    }
+                  </div>
+                  <div>
+                    <h5 className="capitalize font-medium text-sm pb-0.5">{f.author?.name || 'Anon'}</h5>
+                    <p className="capitalize text-xs text-[#0007149f] font-medium">
+                      {f.updatedAt.toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-3 items-center justify-end"><div>In</div>
+                <div>Co(4)</div>
+                <div>Li(28)</div></div>
               </div>
             </div>
           )
