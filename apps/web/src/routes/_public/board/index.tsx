@@ -111,7 +111,7 @@ function BoardIndexPage() {
         </div>
       </div>
     <div className="flex gap-4 relative">
-      <div className="border-1 border-stone-200 bg-white dark:bg-black max-w-2xl rounded-4xl px-6 shadow-xs flex-1">
+      <div className="border-1 border-stone-200 bg-white dark:bg-black max-w-2xl rounded-3xl px-6 shadow-xs flex-1">
         {isLoading && <div>Loading posts...</div>}
         {isError && <div>Error loading posts</div>}
         {allPosts.map((f, i) => {
@@ -169,11 +169,9 @@ function BoardIndexPage() {
           </div>
         )}
       </div>
-      <div className="flex flex-col gap-4 sticky top-0 h-fit">
-        <div className="border-1 p-4 bg-white z-10">
-          <div className="mb-2 text-sm text-gray-600">
-            Got an idea?
-          </div>
+      <div className="flex flex-col gap-4 sticky top-6 h-fit ">
+        <div className="border-1 bg-white z-10 rounded-2xl border-stone-200 shadow-2xs p-4 w-3xs">
+          <h4 className="font-medium capitalize mb-2"> Got an idea?</h4>
           <CreateEditPost 
             boardId={boards?.boards[0].id || ''} // TODO: Get actual board ID from context
             mode="create"
@@ -183,8 +181,8 @@ function BoardIndexPage() {
             }}
           />
         </div>
-        <div>
-          <h4>Boards</h4>
+        <div className="border-1 bg-white z-10 rounded-2xl border-stone-200 shadow-2xs p-4 w-3xs">
+          <h4 className="font-medium capitalize mb-2">boards</h4>
           {/* Boards content */}
         </div>
       </div>

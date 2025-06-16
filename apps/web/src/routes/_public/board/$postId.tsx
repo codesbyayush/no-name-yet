@@ -150,23 +150,29 @@ function RouteComponent() {
           </div>
         )}
       </div>
-      <div className="flex flex-col gap-4 sticky top-0 h-fit">
-        <div className="border-1 p-4 bg-white z-10">
-          <div className="mb-2 text-sm text-gray-600">
-            Got an idea?
+      <div className="flex flex-col gap-4 sticky top-6 h-fit ">
+        <div className="border-1 bg-white z-10 rounded-2xl border-stone-200 shadow-2xs p-4 w-3xs">
+          <div className='flex gap-3 items-center'>
+            <div>
+              { post?.author?.image ? <img src={post?.author.image} className='rounded-full h-8'/> : <span className='bg-gray-800 rounded-full'>A</span>}
+            </div>
+            <div>
+              <h4 className="font-medium capitalize text-sm py-1"> {post?.author?.name}</h4>
+              <p className='text-xs text-stone-600 pl-px'>{post?.createdAt.toLocaleDateString()}</p>
+            </div>
           </div>
-          <CreateEditPost 
-            boardId={post?.boardId || ''} // TODO: Get actual board ID from context
-            mode="create"
-            onSuccess={() => {
-              // Refresh the posts list
-              window.location.reload(); // Temporary until we have proper invalidation
-            }}
-          />
+          <div>
+            { post?.board && 
+            <div className='pt-4 pl-px'>
+              <span className='pr-4 text-sm font-medium text-stone-600'>Board</span>
+              <span className='bg-green-100 text-green-800 text-xs font-medium px-2 rounded-md p-1.5'> {post?.board.name}</span>
+            </div>}
+          </div>
+          
         </div>
-        <div>
-          <h4>Boards</h4>
-          {/* Boards content */}
+        <div className="border-1 bg-white z-10 rounded-2xl border-stone-200 shadow-2xs p-4">
+          <h4 className="font-medium capitalize mb-2">Get Updates</h4>
+          <Button variant={'secondary'} className='w-full border-1 border-stone-200 rounded-lg font-medium'>Subscribe</Button>
         </div>
       </div>
     </div>

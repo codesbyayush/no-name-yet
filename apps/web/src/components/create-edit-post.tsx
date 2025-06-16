@@ -188,7 +188,7 @@ export function CreateEditPost({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button>
+          <Button className='w-full rounded-xl bg-primary'>
             {mode === 'create' ? 'Submit a post' : 'Edit post'}
           </Button>
         )}
