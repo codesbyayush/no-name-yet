@@ -50,7 +50,7 @@ export const Route = createFileRoute("/")({
     const host = window.location.href.split("//")[1];
     if (host) {
       const hostParts = host.split(".");
-      if (hostParts.length > 1 && hostParts[0] !== "localhost") {
+      if (hostParts.length > 1 && hostParts[0] !== "localhost" && hostParts[0] !== 'app') {
         throw redirect({
           to: "/board",
         });

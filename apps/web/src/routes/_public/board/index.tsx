@@ -79,18 +79,23 @@ function BoardIndexPage() {
       }
     }
   }, [])
+
+
   return (
     <div>
-      <div className="flex justify-between">
+      {/* <div className="flex justify-between">
         <DropdownMenu>
           <DropdownMenuTrigger>Open</DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuLabel>Boards</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Billing</DropdownMenuItem>
-            <DropdownMenuItem>Team</DropdownMenuItem>
-            <DropdownMenuItem>Subscription</DropdownMenuItem>
+            {boards?.boards?.map(board => {
+              return (
+                <DropdownMenuItem key={board.id}>
+                  {board.name}
+                </DropdownMenuItem>
+              )
+            })}
           </DropdownMenuContent>
         </DropdownMenu>
         <div className="flex gap-2">
@@ -109,9 +114,9 @@ function BoardIndexPage() {
           search
         </span>
         </div>
-      </div>
+      </div> */}
     <div className="flex gap-4 relative">
-      <div className="border-1 border-stone-200 bg-white dark:bg-black max-w-2xl rounded-3xl px-6 shadow-xs flex-1">
+      <div className="border-1 border-stone-200 bg-white dark:bg-black w-2xl rounded-3xl px-6 shadow-xs flex-1">
         {isLoading && <div>Loading posts...</div>}
         {isError && <div>Error loading posts</div>}
         {allPosts.map((f, i) => {
@@ -183,7 +188,16 @@ function BoardIndexPage() {
         </div>
         <div className="border-1 bg-white z-10 rounded-2xl border-stone-200 shadow-2xs p-4 w-3xs">
           <h4 className="font-medium capitalize mb-2">boards</h4>
-          {/* Boards content */}
+          <div>
+            {boards?.boards.map(board => (
+              <Button key={board.id} className="w-full bg-transparent text-left p-0 text-black  font-medium">
+                <span className="size-4 bg-green-500 rounded-full"/>
+                <span>
+                {board.name}
+                </span>
+              </Button>
+            ))}
+          </div>
         </div>
       </div>
     </div>

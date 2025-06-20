@@ -68,7 +68,7 @@ function RouteComponent() {
   }, [])
   return (
     <div className="flex gap-4 relative">
-      <div className="border-1 rounded-3xl max-w-2xl border-stone-200 px-6 flex-1">
+      <div className="border-1 rounded-3xl w-2xl border-stone-200 px-6 flex-1">
         <div className={`py-6 space-y-2`}>
           <h4 className="font-semibold capitalize text-lg">{post?.title}</h4>
           <p className="text-sm text-[#0007149f] font-medium capitalize text-pretty">{post?.content}</p>
