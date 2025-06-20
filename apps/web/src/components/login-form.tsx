@@ -27,10 +27,6 @@ export function LoginForm({
   const { isPending, data } = authClient.useSession();
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
-  if (data){
-    window.location.href = 'http://acme-corp.localhost:3002'
-  }
-
   const form = useForm({
     defaultValues: {
       email: "",
