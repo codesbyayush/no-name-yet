@@ -30,7 +30,7 @@ import { useQueryClient } from "@tanstack/react-query";
 export const GeneratedForm = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const search = useSearch({ from: '/onboarding' }) as { step?: string };
+  const search = useSearch({ from: '/_admin/onboarding' }) as { step?: string };
   const { data: onboardingStatus, isLoading } = useOnboardingStatus();
   
   // Initialize step based on URL param or onboarding status
@@ -52,7 +52,7 @@ export const GeneratedForm = () => {
         setStep(1);
       } else if (onboardingStatus.isComplete) {
         // User is fully onboarded, redirect to admin
-        navigate({ to: "/admin" });
+        navigate({ to: "/dashboard" });
       }
     }
   }, [onboardingStatus, search.step, navigate]);
@@ -64,7 +64,7 @@ export const GeneratedForm = () => {
   const onSubmit = async (formData: unknown) => {
     console.log(formData);
     toast.success("Setup completed successfully!");
-    navigate({ to: "/admin" });
+    navigate({ to: "/dashboard" });
   };
 
   const handleBack = () => {
@@ -84,7 +84,7 @@ export const GeneratedForm = () => {
     toast.success("Board created successfully");
     // Invalidate queries to refresh onboarding status
     queryClient.invalidateQueries({ queryKey: ["user-boards"] });
-    navigate({ to: "/admin" });
+    navigate({ to: "/dashboard" });
   };
 
   if (isLoading) {

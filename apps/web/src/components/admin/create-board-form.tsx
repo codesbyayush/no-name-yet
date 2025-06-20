@@ -75,7 +75,7 @@ export function CreateBoardForm({
         onSuccess();
       } else {
         // Default redirect to admin dashboard  
-        navigate({ to: "/admin" });
+        navigate({ to: "/dashboard" });
       }
     } catch (err) {
       const errorMessage =
