@@ -47,14 +47,23 @@ export const Route = createFileRoute("/")({
     ],
   }),
   beforeLoad: () => {
-    const host = window.location.href.split("//")[1];
-    if (host) {
-      const hostParts = host.split(".");
-      if (hostParts.length > 1 && hostParts[0] !== "localhost" && hostParts[0] !== 'app') {
-        throw redirect({
-          to: "/board",
-        });
-      }
+    const host = window.location.host;
+    const hostParts = host.split(".");
+    
+    // If on a subdomain (not localhost, not app), redirect to board
+    if (hostParts.length > 1 && hostParts[0] !== "localhost" && hostParts[0] !== 'app') {
+      throw redirect({
+        to: "/board",
+      });
+    }
+    
+    // If on main domain or app subdomain, redirect to app.domain.com
+    // This ensures users always land on app.domain.com for the main app
+    if (hostParts[0] !== 'app' && !host.includes('localhost')) {
+      // In production, redirect to app subdomain
+      // For development, we'll just continue to the landing page
+      window.location.href = `https://app.${hostParts.slice(1).join('.')}`;
+      return;
     }
   },
 });

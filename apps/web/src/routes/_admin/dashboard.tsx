@@ -8,7 +8,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 import data from "@/utils/data.json";
 
-export const Route = createFileRoute("/$tenantSlug/admin/")({
+export const Route = createFileRoute("/_admin/dashboard")({
   component: RouteComponent,
 });
 

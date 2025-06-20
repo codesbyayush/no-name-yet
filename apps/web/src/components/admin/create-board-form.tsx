@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { authClient, useSession } from "@/lib/auth-client";
+import { Switch } from "@/components/ui/switch";
+import { client } from "@/utils/orpc";
 import { useNavigate } from "@tanstack/react-router";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
@@ -12,29 +13,27 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { useQueryClient } from "@tanstack/react-query";
 
-interface CreateOrganizationFormProps {
+interface CreateBoardFormProps {
   className?: string;
   onSuccess?: () => void;
   onError?: (error: Error) => void;
   buttonText?: string;
 }
 
-export function CreateOrganizationForm({
+export function CreateBoardForm({
   className,
   onSuccess,
   onError,
-  buttonText,
-}: CreateOrganizationFormProps) {
+  buttonText = "Create Board",
+}: CreateBoardFormProps) {
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
+  const [description, setDescription] = useState("");
+  const [isPrivate, setIsPrivate] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-
-  const { data: session } = useSession();
 
   const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Convert to lowercase and replace spaces and special chars with dashes
@@ -58,67 +57,29 @@ export function CreateOrganizationForm({
     }
   };
 
-  const checkSlugAvailability = async () => {
-    if (!slug) return;
-
-    try {
-      const response = await authClient.organization.checkSlug({
-        slug,
-      });
-      return response.data?.status;
-    } catch (error) {
-      console.error("Error checking slug availability:", error);
-      return false;
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
 
     try {
-      // Check if the slug is available
-      const isSlugAvailable = await checkSlugAvailability();
-      if (!isSlugAvailable) {
-        setError(
-          "This organization slug is already taken. Please choose another one.",
-        );
-        setIsSubmitting(false);
-        return;
-      }
-
-      // Create the organization
-      const createResult = await authClient.organization.create({
+      // Create the board
+      await client.createBoard({
         name,
         slug,
-        userId: session?.user.id,
+        description: description || undefined,
+        isPrivate,
       });
-
-      console.log("Organization created:", createResult);
-
-      // Set the newly created organization as active
-      const setActiveResult = await authClient.organization.setActive({
-        organizationSlug: slug,
-      });
-
-      console.log("Organization set active:", setActiveResult);
-
-      // Invalidate queries to refresh data
-      queryClient.invalidateQueries({ queryKey: ["user-boards"] });
-      
-      // Small delay to ensure organization creation is complete
-      await new Promise(resolve => setTimeout(resolve, 1000));
 
       if (onSuccess) {
         onSuccess();
       } else {
-        // Redirect to the dashboard route
-        navigate({ to: "/dashboard" });
+        // Default redirect to admin dashboard  
+        navigate({ to: "/admin" });
       }
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : "Failed to create organization";
+        err instanceof Error ? err.message : "Failed to create board";
       setError(errorMessage);
 
       if (onError && err instanceof Error) {
@@ -132,68 +93,86 @@ export function CreateOrganizationForm({
   return (
     <Card className={className}>
       <CardHeader>
-        <CardTitle>Create Organization</CardTitle>
+        <CardTitle>Create Your First Board</CardTitle>
         <CardDescription>
-          Set up a new organization to collaborate with your team
+          Boards help you organize feedback, feature requests, and discussions
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {error && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Organization Name</Label>
+            <Label htmlFor="board-name">Board Name</Label>
             <Input
-              id="name"
+              id="board-name"
               type="text"
+              placeholder="e.g., Feature Requests"
               value={name}
               onChange={handleNameChange}
-              placeholder="Acme Inc."
               required
               disabled={isSubmitting}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="slug">Organization Slug</Label>
+            <Label htmlFor="board-slug">Board URL</Label>
             <div className="flex items-center space-x-2">
               <span className="text-sm text-muted-foreground">
-                example.com/
+                yourorg.domain.com/
               </span>
               <Input
-                id="slug"
+                id="board-slug"
                 type="text"
+                placeholder="feature-requests"
                 value={slug}
                 onChange={handleSlugChange}
-                placeholder="acme"
                 required
                 disabled={isSubmitting}
                 className="flex-1"
               />
             </div>
             <p className="text-xs text-muted-foreground">
-              This will be used in URLs and cannot be changed later.
+              This will be the URL where people can access your board
             </p>
           </div>
 
-          {error && (
-            <Alert variant="destructive">
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+          <div className="space-y-2">
+            <Label htmlFor="board-description">Description (Optional)</Label>
+            <Input
+              id="board-description"
+              placeholder="Describe what this board is for..."
+              value={description}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDescription(e.target.value)}
+              disabled={isSubmitting}
+            />
+          </div>
+
+          <div className="flex items-center justify-between rounded-lg border p-4">
+            <div className="space-y-0.5">
+              <Label className="text-base">Private Board</Label>
+              <p className="text-sm text-muted-foreground">
+                Only organization members can view this board
+              </p>
+            </div>
+            <Switch
+              checked={isPrivate}
+              onCheckedChange={setIsPrivate}
+              disabled={isSubmitting}
+            />
+          </div>
 
           <Button
             type="submit"
             className="w-full"
-            disabled={isSubmitting || !name || !slug}
+            disabled={isSubmitting || !name.trim() || !slug.trim()}
           >
-            {isSubmitting ? (
-              <>
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
-                <span className="ml-2">Creating...</span>
-              </>
-            ) : (
-              buttonText || "Create Organization"
-            )}
+            {isSubmitting ? "Creating..." : buttonText}
           </Button>
         </form>
       </CardContent>

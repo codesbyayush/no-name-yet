@@ -2,9 +2,15 @@ import { createFileRoute } from "@tanstack/react-router";
 import { GeneratedForm } from "@/components/admin/onboarding-form";
 import { useSession } from "@/lib/auth-client";
 import { Navigate } from "@tanstack/react-router";
+import { z } from "zod";
 
-export const Route = createFileRoute("/onboarding")({
+const onboardingSearchSchema = z.object({
+  step: z.string().optional(),
+});
+
+export const Route = createFileRoute("/_admin/onboarding")({
   component: OnboardingPage,
+  validateSearch: onboardingSearchSchema,
 });
 
 function OnboardingPage() {

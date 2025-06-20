@@ -1,10 +1,11 @@
 import { publicProcedure, protectedProcedure } from "./procedures";
 import { db } from "../db";
-import { boards, comments, feedback, user, votes } from "../db/schema";
+import { boards, comments, feedback, user, votes, organization, member } from "../db/schema";
 import { eq, and, asc, desc, count, SQL } from "drizzle-orm";
 import { ORPCError } from "@orpc/server";
 import { z } from "zod";
 import { randomUUID } from "crypto";
+import { auth } from "../lib/auth";
 
 // Pagination schema for reuse
 const paginationSchema = z.object({
@@ -116,6 +117,174 @@ export const apiRouter = {
       throw new ORPCError("INTERNAL_SERVER_ERROR");
     }
   }),
+
+  // Get boards for user's organization (for onboarding check)
+  getUserBoards: protectedProcedure.handler(async ({ context }) => {
+    const userId = context.session?.user?.id;
+    
+    if (!userId) {
+      throw new ORPCError("UNAUTHORIZED");
+    }
+
+    try {
+      // Try to get user's organization ID from user table first
+      const userData = await db
+        .select({ organizationId: user.organizationId })
+        .from(user)
+        .where(eq(user.id, userId))
+        .limit(1);
+
+      let userOrganizationId = userData[0]?.organizationId;
+      
+      // If user doesn't have organizationId, check if they're a member of any organization
+      if (!userOrganizationId) {
+        const memberData = await db
+          .select({ organizationId: member.organizationId })
+          .from(member)
+          .where(eq(member.userId, userId))
+          .limit(1);
+        
+        userOrganizationId = memberData[0]?.organizationId;
+      }
+      
+      if (!userOrganizationId) {
+        return { boards: [], count: 0 };
+      }
+
+      // Get boards for the organization
+      const userBoards = await db
+        .select({
+          id: boards.id,
+          name: boards.name,
+          slug: boards.slug,
+          description: boards.description,
+          isPrivate: boards.isPrivate,
+          postCount: boards.postCount,
+          viewCount: boards.viewCount,
+          createdAt: boards.createdAt,
+          updatedAt: boards.updatedAt,
+        })
+        .from(boards)
+        .where(eq(boards.organizationId, userOrganizationId))
+        .orderBy(desc(boards.createdAt));
+
+      return {
+        boards: userBoards,
+        count: userBoards.length,
+      };
+    } catch (error) {
+      console.error("Error fetching user boards:", error);
+      throw new ORPCError("INTERNAL_SERVER_ERROR");
+    }
+  }),
+
+  // Create a board for user's organization (onboarding step 2)
+  createBoard: protectedProcedure
+    .input(
+      z.object({
+        name: z.string().min(1, "Board name is required"),
+        slug: z.string().min(1, "Board slug is required"),
+        description: z.string().optional(),
+        isPrivate: z.boolean().default(false),
+      })
+    )
+    .handler(async ({ input, context }) => {
+      const userId = context.session?.user?.id;
+      
+      if (!userId) {
+        throw new ORPCError("UNAUTHORIZED");
+      }
+
+      console.log("Creating board for user:", userId);
+      console.log("Session data:", JSON.stringify(context.session, null, 2));
+
+      console.log("Creating board for user:", userId);
+      console.log("Session data:", context.session);
+
+      // Try to get user's organization ID from user table first
+      const userData = await db
+        .select({ organizationId: user.organizationId })
+        .from(user)
+        .where(eq(user.id, userId))
+        .limit(1);
+
+      let userOrganizationId = userData[0]?.organizationId;
+      
+      // If user doesn't have organizationId, check if they're a member of any organization
+      if (!userOrganizationId) {
+        const memberData = await db
+          .select({ organizationId: member.organizationId })
+          .from(member)
+          .where(eq(member.userId, userId))
+          .limit(1);
+        
+        userOrganizationId = memberData[0]?.organizationId;
+      }
+      
+        // Also try to get organization from Better Auth session
+        // Note: This might not be available in the current context
+        if (context.session?.user) {
+          console.log("User session keys:", Object.keys(context.session.user));
+        }
+      
+      if (!userOrganizationId) {
+        console.log("No organization found for user:", userId);
+        console.log("User data:", userData[0]);
+        
+        // Check if any organizations exist for this user in member table
+        const allMemberships = await db
+          .select()
+          .from(member)
+          .where(eq(member.userId, userId));
+        console.log("User memberships:", allMemberships);
+        
+        throw new ORPCError("BAD_REQUEST");
+      }
+
+      try {
+        // Check if board slug is unique within the organization
+        const existingBoard = await db
+          .select({ id: boards.id })
+          .from(boards)
+          .where(
+            and(
+              eq(boards.organizationId, userOrganizationId),
+              eq(boards.slug, input.slug)
+            )
+          )
+          .limit(1);
+
+        if (existingBoard.length > 0) {
+          throw new ORPCError("CONFLICT");
+        }
+
+        // Create the board
+        const newBoard = await db
+          .insert(boards)
+          .values({
+            id: randomUUID(),
+            organizationId: userOrganizationId,
+            name: input.name,
+            slug: input.slug,
+            description: input.description,
+            isPrivate: input.isPrivate,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          })
+          .returning();
+
+        return {
+          board: newBoard[0],
+          success: true,
+        };
+      } catch (error) {
+        console.error("Error creating board:", error);
+        if (error instanceof ORPCError) {
+          throw error;
+        }
+        throw new ORPCError("INTERNAL_SERVER_ERROR");
+      }
+    }),
 
   // NEW: Get comments for a specific post with pagination
   getPostComments: publicProcedure

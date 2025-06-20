@@ -54,7 +54,7 @@ function PublicLayout() {
           {/* Navigation Links */}
           <div className="hidden sm:flex items-center gap-1">
             <Link 
-              to="/board/all" 
+              to="/board" 
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                 location.pathname.includes('/board') 
                   ? 'bg-gray-100 text-gray-900 shadow-sm' 
@@ -76,7 +76,7 @@ function PublicLayout() {
             </Link>
 
             <Link 
-              to="/updates" 
+              to="/board" 
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                 location.pathname === '/updates' 
                   ? 'bg-gray-100 text-gray-900 shadow-sm' 
