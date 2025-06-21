@@ -21,7 +21,7 @@ function AdminLayout() {
         }
       >
         <AppSidebar variant="inset" />
-        <SidebarInset>
+        <SidebarInset className="min-h-max !mt-0">
             <Outlet />
           </SidebarInset>
         </SidebarProvider>

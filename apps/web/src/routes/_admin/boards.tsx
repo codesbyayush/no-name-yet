@@ -187,7 +187,8 @@ function RouteComponent() {
 
   return (
     <div>
-    <div>
+      <div className='sticky -top-12 z-10'>
+    <div className=' bg-background backdrop-blur-2xl max-w-5xl mx-auto'>
       <SiteHeader title='Boards'>
         <>
         <div className="flex items-center gap-3">
@@ -247,7 +248,7 @@ function RouteComponent() {
       </SiteHeader>
       <div className="flex flex-1 flex-col">
         {/* Top Menu */}
-        <div className="border-b border-stone-800 bg-background/95 dark:bg-white backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="bg-background/95 dark:bg-white backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <div className="flex items-center justify-between px-4 py-3 md:px-6 ml-auto">
               
             
@@ -269,7 +270,7 @@ function RouteComponent() {
 
         {/* Content Area */}
         <div className="@container/main flex flex-1 flex-col gap-2">
-          <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+          <div className="flex flex-col gap-4 md:gap-6">
             <Tabs value={search.tab} onValueChange={handleTabChange} className="w-full">
               <TabsContent value="all" className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -320,7 +321,9 @@ function RouteComponent() {
         </div>
       </div>
     </div>
-    <div>
+    <div className='w-full border-t-4 border-muted'/>
+    </div>
+    <div className=''>
       <RenderPostsList />
     </div>
     </div>

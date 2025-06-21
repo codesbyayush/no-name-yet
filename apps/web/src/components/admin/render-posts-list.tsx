@@ -57,8 +57,7 @@ export function RenderPostsList() {
   }, [])
 
   return (
-    <div className="space-y-4">
-      <h1 className="text-2xl font-bold mb-6">Posts List</h1>
+    <div className="space-y-4 py-8">
       
       {isLoading && <div className="text-center py-4">Loading posts...</div>}
       {isError && <div className="text-center py-4 text-red-500">Error loading posts</div>}
