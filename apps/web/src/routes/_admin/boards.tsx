@@ -7,6 +7,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router'
 import { useState, useCallback, useEffect } from 'react'
+import { PlusIcon } from 'lucide-react'
+import { RenderPostsList } from '@/components/admin/render-posts-list'
 
 export const Route = createFileRoute('/_admin/boards')({
   component: RouteComponent,
@@ -184,16 +186,12 @@ function RouteComponent() {
     : null
 
   return (
-    <>
-      <SiteHeader />
-      <div className="flex flex-1 flex-col">
-        {/* Top Menu */}
-        <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="flex items-center justify-between px-4 py-3 md:px-6">
-            {/* Left Side - Filters */}
-            <div className="flex items-center gap-3">
-              {/* Search */}
-              <div className="relative">
+    <div>
+    <div>
+      <SiteHeader title='Boards'>
+        <>
+        <div className="flex items-center gap-3">
+        <div className="relative">
                 <Input
                   placeholder="Search boards..."
                   className="w-64"
@@ -244,7 +242,14 @@ function RouteComponent() {
                   <SelectItem value="created-desc">Created (Newest)</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
+              </div>
+            </>
+      </SiteHeader>
+      <div className="flex flex-1 flex-col">
+        {/* Top Menu */}
+        <div className="border-b border-stone-800 bg-background/95 dark:bg-white backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="flex items-center justify-between px-4 py-3 md:px-6 ml-auto">
+              
             
             {/* Right Side - Tabbed Navigation */}
             <div className="flex items-center">
@@ -314,6 +319,10 @@ function RouteComponent() {
           </div>
         </div>
       </div>
-    </>
+    </div>
+    <div>
+      <RenderPostsList />
+    </div>
+    </div>
   )
 }

@@ -1368,6 +1368,154 @@ export const apiRouter = {
         throw new ORPCError("INTERNAL_SERVER_ERROR");
       }
     }),
+
+  // NEW: Get all posts for organization members only (includes private boards)
+  getOrganizationMemberPosts: protectedProcedure
+    .input(
+      z.object({
+        ...paginationSchema.shape,
+        sortBy: z.enum(["newest", "oldest", "most_voted"]).default("newest"),
+      })
+    )
+    .handler(async ({ input, context }) => {
+      const { offset, take, sortBy } = input;
+      const userId = context.session?.user?.id;
+
+      if (!userId) {
+        throw new ORPCError("UNAUTHORIZED");
+      }
+
+      try {
+        // First, get the user's organization ID
+        let userOrganizationId = null;
+
+        // Check if user has organizationId in user table
+        const userData = await db
+          .select({ organizationId: user.organizationId })
+          .from(user)
+          .where(eq(user.id, userId))
+          .limit(1);
+
+        userOrganizationId = userData[0]?.organizationId;
+
+        // If user doesn't have organizationId, check member table
+        if (!userOrganizationId) {
+          const memberData = await db
+            .select({ organizationId: member.organizationId })
+            .from(member)
+            .where(eq(member.userId, userId))
+            .limit(1);
+
+          userOrganizationId = memberData[0]?.organizationId;
+        }
+
+        if (!userOrganizationId) {
+          throw new ORPCError("FORBIDDEN");
+        }
+
+        // Determine sort order
+        let orderBy;
+        switch (sortBy) {
+          case "oldest":
+            orderBy = asc(feedback.createdAt);
+            break;
+          case "most_voted":
+            orderBy = desc(feedback.createdAt); // TODO: Sort by vote count
+            break;
+          case "newest":
+          default:
+            orderBy = desc(feedback.createdAt);
+            break;
+        }
+
+        // Fetch posts for the organization with author information
+        // This includes both public and private boards since user is a member
+        const posts = await db
+          .select({
+            id: feedback.id,
+            title: feedback.title,
+            content: feedback.description,
+            boardId: feedback.boardId,
+            createdAt: feedback.createdAt,
+            updatedAt: feedback.updatedAt,
+            author: {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              image: user.image,
+            },
+            board: {
+              id: boards.id,
+              name: boards.name,
+              slug: boards.slug,
+              isPrivate: boards.isPrivate,
+            },
+          })
+          .from(feedback)
+          .leftJoin(user, eq(feedback.userId, user.id))
+          .leftJoin(boards, eq(feedback.boardId, boards.id))
+          .where(eq(boards.organizationId, userOrganizationId))
+          .orderBy(orderBy)
+          .offset(offset)
+          .limit(take);
+
+        // Get vote counts and comment counts for each post
+        const postsWithStats = await Promise.all(
+          posts.map(async (post) => {
+            const upvoteCountResult = await db
+              .select({ count: count() })
+              .from(votes)
+              .where(and(eq(votes.feedbackId, post.id), eq(votes.type, "upvote")));
+
+            const downvoteCountResult = await db
+              .select({ count: count() })
+              .from(votes)
+              .where(and(eq(votes.feedbackId, post.id), eq(votes.type, "downvote")));
+
+            const commentCountResult = await db
+              .select({ count: count() })
+              .from(comments)
+              .where(eq(comments.feedbackId, post.id));
+
+            return {
+              ...post,
+              stats: {
+                upvotes: upvoteCountResult[0]?.count || 0,
+                downvotes: downvoteCountResult[0]?.count || 0,
+                comments: commentCountResult[0]?.count || 0,
+              },
+            };
+          })
+        );
+
+        // Get total count for pagination metadata
+        const totalCountResult = await db
+          .select({ count: count() })
+          .from(feedback)
+          .leftJoin(boards, eq(feedback.boardId, boards.id))
+          .where(eq(boards.organizationId, userOrganizationId));
+
+        const totalCount = totalCountResult[0]?.count || 0;
+        const hasMore = offset + take < totalCount;
+
+        return {
+          posts: postsWithStats,
+          organizationId: userOrganizationId,
+          pagination: {
+            offset,
+            take,
+            totalCount,
+            hasMore,
+          },
+        };
+      } catch (error) {
+        console.error("Error fetching organization member posts:", error);
+        if (error instanceof ORPCError) {
+          throw error;
+        }
+        throw new ORPCError("INTERNAL_SERVER_ERROR");
+      }
+    }),
 };
 
 export type AppRouter = typeof apiRouter;
