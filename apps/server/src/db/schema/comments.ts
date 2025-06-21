@@ -23,8 +23,11 @@ export const comments = pgTable(
       (): any => comments.id,
     ),
     authorId: text("author_id")
-      .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
+    // Anonymous user fields
+    isAnonymous: boolean("is_anonymous").default(false).notNull(),
+    anonymousName: text("anonymous_name"),
+    anonymousEmail: text("anonymous_email"),
     content: text("content").notNull(),
     sentimentScore: real("sentiment_score"),
     isInternal: boolean("is_internal").default(false),
