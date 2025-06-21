@@ -305,6 +305,9 @@ export const apiRouter = {
             content: comments.content,
             createdAt: comments.createdAt,
             updatedAt: comments.updatedAt,
+            isAnonymous: comments.isAnonymous,
+            anonymousName: comments.anonymousName,
+            anonymousEmail: comments.anonymousEmail,
             author: {
               id: user.id,
               name: user.name,
@@ -1510,6 +1513,106 @@ export const apiRouter = {
         };
       } catch (error) {
         console.error("Error fetching organization member posts:", error);
+        if (error instanceof ORPCError) {
+          throw error;
+        }
+        throw new ORPCError("INTERNAL_SERVER_ERROR");
+      }
+    }),
+
+  // NEW: Publicly create a comment (anonymous or authenticated)
+  publicCreateComment: publicProcedure
+    .input(
+      z.object({
+        feedbackId: z.string().min(1, "Post ID is required"),
+        content: z.string().min(1, "Content is required").max(2000, "Content too long"),
+        parentCommentId: z.string().optional(), // For replies
+        isInternal: z.boolean().default(false),
+        anonymousName: z.string().optional(),
+        anonymousEmail: z.string().optional(),
+      })
+    )
+    .handler(async ({ input, context }) => {
+      const { feedbackId, content, parentCommentId, isInternal, anonymousName, anonymousEmail } = input;
+      const sessionUser = context.session?.user;
+      const userId = sessionUser?.id;
+      const isAnonymous = !userId;
+
+      try {
+        // Verify post exists
+        const post = await db
+          .select()
+          .from(feedback)
+          .where(eq(feedback.id, feedbackId))
+          .limit(1);
+
+        if (!post[0]) {
+          throw new ORPCError("NOT_FOUND");
+        }
+
+        // If replying to a comment, verify parent comment exists
+        if (parentCommentId) {
+          const parentComment = await db
+            .select()
+            .from(comments)
+            .where(and(
+              eq(comments.id, parentCommentId),
+              eq(comments.feedbackId, feedbackId)
+            ))
+            .limit(1);
+
+          if (!parentComment[0]) {
+            throw new ORPCError("NOT_FOUND");
+          }
+        }
+
+        // Create the comment
+        const newComment = await db
+          .insert(comments)
+          .values({
+            id: randomUUID(),
+            feedbackId,
+            content,
+            authorId: userId || null,
+            parentCommentId: parentCommentId || null,
+            isInternal,
+            isAnonymous,
+            anonymousName: isAnonymous ? anonymousName || null : null,
+            anonymousEmail: isAnonymous ? anonymousEmail || null : null,
+          })
+          .returning();
+
+        // Get the comment with author info (if any)
+        const commentWithAuthor = await db
+          .select({
+            id: comments.id,
+            content: comments.content,
+            feedbackId: comments.feedbackId,
+            parentCommentId: comments.parentCommentId,
+            isInternal: comments.isInternal,
+            isAnonymous: comments.isAnonymous,
+            anonymousName: comments.anonymousName,
+            anonymousEmail: comments.anonymousEmail,
+            createdAt: comments.createdAt,
+            updatedAt: comments.updatedAt,
+            author: {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              image: user.image,
+            },
+          })
+          .from(comments)
+          .leftJoin(user, eq(comments.authorId, user.id))
+          .where(eq(comments.id, newComment[0].id))
+          .limit(1);
+
+        return {
+          comment: commentWithAuthor[0],
+          message: "Comment created successfully"
+        };
+      } catch (error) {
+        console.error("Error creating comment:", error);
         if (error instanceof ORPCError) {
           throw error;
         }
