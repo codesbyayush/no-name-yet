@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/contexts/auth-context"
 import { useNavigate } from "@tanstack/react-router"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export function NavUser() {
   const { isMobile } = useSidebar()
@@ -100,6 +101,10 @@ export function NavUser() {
                 Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <div className="p-2">
+              <ThemeToggle />
+            </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => logout()}>
               <IconLogout />
