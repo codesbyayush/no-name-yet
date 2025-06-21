@@ -187,7 +187,7 @@ function RouteComponent() {
 
   return (
     <div>
-      <div className='sticky -top-12 z-10'>
+      <div className='sticky -top-12'>
     <div className=' bg-background backdrop-blur-2xl max-w-5xl mx-auto'>
       <SiteHeader title='Boards'>
         <>
@@ -267,63 +267,11 @@ function RouteComponent() {
             </div>
           </div>
         </div>
-
-        {/* Content Area */}
-        <div className="@container/main flex flex-1 flex-col gap-2">
-          <div className="flex flex-col gap-4 md:gap-6">
-            <Tabs value={search.tab} onValueChange={handleTabChange} className="w-full">
-              <TabsContent value="all" className="space-y-4">
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {sortedBoards.map((board) => (
-                    <div key={board.id} className="rounded-lg border p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-semibold">{board.title}</h3>
-                        <Badge variant={board.status === 'active' ? 'default' : 'secondary'}>
-                          {board.status}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground mb-3">{board.description}</p>
-                      <div className="flex flex-wrap gap-1">
-                        {board.tags.map((tag) => (
-                          <Badge key={tag} variant="outline" className="text-xs">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </TabsContent>
-              {mockBoards.map((board) => (
-                <TabsContent key={board.id} value={`board-${board.id}`} className="space-y-4">
-                  {currentBoard && (
-                    <div className="rounded-lg border p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-2xl font-bold">{currentBoard.title}</h2>
-                        <Badge variant={currentBoard.status === 'active' ? 'default' : 'secondary'}>
-                          {currentBoard.status}
-                        </Badge>
-                      </div>
-                      <p className="text-muted-foreground mb-4">{currentBoard.description}</p>
-                      <div className="flex flex-wrap gap-2">
-                        {currentBoard.tags.map((tag) => (
-                          <Badge key={tag} variant="outline">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </TabsContent>
-              ))}
-            </Tabs>
-          </div>
-        </div>
       </div>
     </div>
     <div className='w-full border-t-4 border-muted'/>
     </div>
-    <div className=''>
+    <div className='p-6 md:px-10'>
       <RenderPostsList />
     </div>
     </div>
