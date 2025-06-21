@@ -18,6 +18,7 @@ import { Route as PublicChangelogRouteImport } from './routes/_public/changelog'
 import { Route as PublicBoardRouteImport } from './routes/_public/board'
 import { Route as AdminOnboardingRouteImport } from './routes/_admin/onboarding'
 import { Route as AdminDashboardRouteImport } from './routes/_admin/dashboard'
+import { Route as AdminBoardsRouteImport } from './routes/_admin/boards'
 import { Route as PublicBoardIndexRouteImport } from './routes/_public/board/index'
 import { Route as PublicBoardPostIdRouteImport } from './routes/_public/board/$postId'
 
@@ -64,6 +65,11 @@ const AdminDashboardRoute = AdminDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminBoardsRoute = AdminBoardsRouteImport.update({
+  id: '/boards',
+  path: '/boards',
+  getParentRoute: () => AdminRoute,
+} as any)
 const PublicBoardIndexRoute = PublicBoardIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -78,6 +84,7 @@ const PublicBoardPostIdRoute = PublicBoardPostIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/boards': typeof AdminBoardsRoute
   '/dashboard': typeof AdminDashboardRoute
   '/onboarding': typeof AdminOnboardingRoute
   '/board': typeof PublicBoardRouteWithChildren
@@ -89,6 +96,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/boards': typeof AdminBoardsRoute
   '/dashboard': typeof AdminDashboardRoute
   '/onboarding': typeof AdminOnboardingRoute
   '/changelog': typeof PublicChangelogRoute
@@ -102,6 +110,7 @@ export interface FileRoutesById {
   '/_admin': typeof AdminRouteWithChildren
   '/_public': typeof PublicRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_admin/boards': typeof AdminBoardsRoute
   '/_admin/dashboard': typeof AdminDashboardRoute
   '/_admin/onboarding': typeof AdminOnboardingRoute
   '/_public/board': typeof PublicBoardRouteWithChildren
@@ -115,6 +124,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/boards'
     | '/dashboard'
     | '/onboarding'
     | '/board'
@@ -126,6 +136,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/boards'
     | '/dashboard'
     | '/onboarding'
     | '/changelog'
@@ -138,6 +149,7 @@ export interface FileRouteTypes {
     | '/_admin'
     | '/_public'
     | '/auth'
+    | '/_admin/boards'
     | '/_admin/dashboard'
     | '/_admin/onboarding'
     | '/_public/board'
@@ -219,6 +231,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/_admin/boards': {
+      id: '/_admin/boards'
+      path: '/boards'
+      fullPath: '/boards'
+      preLoaderRoute: typeof AdminBoardsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/_public/board/': {
       id: '/_public/board/'
       path: '/'
@@ -237,11 +256,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminBoardsRoute: typeof AdminBoardsRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminOnboardingRoute: typeof AdminOnboardingRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminBoardsRoute: AdminBoardsRoute,
   AdminDashboardRoute: AdminDashboardRoute,
   AdminOnboardingRoute: AdminOnboardingRoute,
 }

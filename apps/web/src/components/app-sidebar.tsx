@@ -39,111 +39,115 @@ const data = {
   },
   navMain: [
     {
-      title: "Dashboard",
+      title: "Public View",
       url: "#",
       icon: IconDashboard,
     },
-    {
-      title: "Lifecycle",
-      url: "#",
-      icon: IconListDetails,
-    },
-    {
-      title: "Analytics",
-      url: "#",
-      icon: IconChartBar,
-    },
-    {
-      title: "Projects",
-      url: "#",
-      icon: IconFolder,
-    },
-    {
-      title: "Team",
-      url: "#",
-      icon: IconUsers,
-    },
+    // {
+    //   title: "Analytics",
+    //   url: "#",
+    //   icon: IconListDetails,
+    // },
+    // {
+    //   title: "Projects",
+    //   url: "#",
+    //   icon: IconFolder,
+    // },
+    // {
+    //   title: "Team",
+    //   url: "#",
+    //   icon: IconUsers,
+    // },
   ],
-  navClouds: [
-    {
-      title: "Capture",
-      icon: IconCamera,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: IconFileDescription,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: IconFileAi,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-  ],
+  // navClouds: [
+  //   {
+  //     title: "Capture",
+  //     icon: IconCamera,
+  //     isActive: true,
+  //     url: "#",
+  //     items: [
+  //       {
+  //         title: "Active Proposals",
+  //         url: "#",
+  //       },
+  //       {
+  //         title: "Archived",
+  //         url: "#",
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     title: "Proposal",
+  //     icon: IconFileDescription,
+  //     url: "#",
+  //     items: [
+  //       {
+  //         title: "Active Proposals",
+  //         url: "#",
+  //       },
+  //       {
+  //         title: "Archived",
+  //         url: "#",
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     title: "Prompts",
+  //     icon: IconFileAi,
+  //     url: "#",
+  //     items: [
+  //       {
+  //         title: "Active Proposals",
+  //         url: "#",
+  //       },
+  //       {
+  //         title: "Archived",
+  //         url: "#",
+  //       },
+  //     ],
+  //   },
+  // ],
   navSecondary: [
     {
-      title: "Settings",
-      url: "#",
-      icon: IconSettings,
-    },
-    {
-      title: "Get Help",
+      title: "Help & Feedback",
       url: "#",
       icon: IconHelp,
     },
-    {
-      title: "Search",
-      url: "#",
-      icon: IconSearch,
-    },
   ],
-  documents: [
+  services: [
     {
-      name: "Data Library",
-      url: "#",
+      name: "Boards",
+      url: "/boards",
       icon: IconDatabase,
     },
     {
-      name: "Reports",
-      url: "#",
+      name: "Roadmap",
+      url: "/roadmap",
       icon: IconReport,
     },
     {
-      name: "Word Assistant",
-      url: "#",
+      name: "Changelog",
+      url: "/changelog",
       icon: IconFileWord,
+    },
+  ],
+  insights: [
+    {
+      name: "Analytics",
+      url: "/analytics",
+      icon: IconChartBar,
+    },
+    {
+      name: "Users",
+      url: "/users",
+      icon: IconUsers,
+    },
+  ],
+  settings: [
+    {
+      name: "Settings",
+      url: "/settings",
+      icon: IconSettings,
     },
   ],
 }
@@ -168,7 +172,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
+        <NavDocuments items={data.services} heading={"Services"}/>
+        <NavDocuments items={data.insights} heading={"Insights"}/>
+        <NavDocuments items={data.settings} heading={"Workspace"}/>
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
