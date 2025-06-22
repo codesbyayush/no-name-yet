@@ -187,7 +187,7 @@ function RouteComponent() {
 
   return (
     <div>
-      <div className='sticky -top-12'>
+      <div className='sticky -top-12 z-10'>
     <div className=' bg-background backdrop-blur-2xl max-w-5xl mx-auto'>
       <SiteHeader title='Boards'>
         <>

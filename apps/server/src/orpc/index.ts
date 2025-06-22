@@ -1453,6 +1453,7 @@ export const apiRouter = {
               slug: boards.slug,
               isPrivate: boards.isPrivate,
             },
+            status: feedback.status
           })
           .from(feedback)
           .leftJoin(user, eq(feedback.userId, user.id))

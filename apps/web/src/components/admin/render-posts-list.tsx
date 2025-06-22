@@ -8,6 +8,7 @@ import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-q
 import { client } from "@/utils/orpc"
 import { useState, useCallback, useRef, useEffect } from "react"
 import { AutosizeTextarea } from "../ui/autosize-textarea"
+import { StatusIcon } from "../ui/status-icon"
 
 export function RenderPostsList() {
   // Replace dummy data with infinite query
@@ -97,12 +98,14 @@ function PostCard({ post }: { post: any }) {
       <SheetTrigger asChild>
         <div className="flex items-center gap-4 mx-auto w-5xl bg-stone-500/5 backdrop-blur-2xl p-5 rounded-xl">
             <div className="flex flex-1 gap-4 items-center">
-                <span className="text-sm text-muted-foreground rounded-full bg-yellow-100/75 p-1 size-8 flex items-center justify-center">p</span>
+              {post.status && <StatusIcon status={post.status} />}
                 <span className="text-base font-medium line-clamp-1">{post.title}</span>
+                <span className="text-sm bg-accent backdrop-blur-2xl px-3 py-1 rounded-lg">{post.board?.name || 'General'}</span>
             </div>
             <div className="flex gap-3 items-center">
-                <span className="text-sm text-stone-300/75 bg-stone-500/5 backdrop-blur-2xl px-3 py-1 rounded-lg">{post.board?.name || 'General'}</span>
                 <span className="text-sm text-muted-foreground">{new Date(post.createdAt).toLocaleDateString()}</span>
+                <span>
+                  Co (1)</span><span>Li (28)</span>
             </div>
 
         </div>
