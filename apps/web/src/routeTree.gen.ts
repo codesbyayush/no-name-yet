@@ -16,6 +16,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as PublicRoadmapRouteImport } from './routes/_public/roadmap'
 import { Route as PublicChangelogRouteImport } from './routes/_public/changelog'
 import { Route as PublicBoardRouteImport } from './routes/_public/board'
+import { Route as AdminSettingsRouteImport } from './routes/_admin/settings'
 import { Route as AdminOnboardingRouteImport } from './routes/_admin/onboarding'
 import { Route as AdminDashboardRouteImport } from './routes/_admin/dashboard'
 import { Route as AdminBoardsRouteImport } from './routes/_admin/boards'
@@ -55,6 +56,11 @@ const PublicBoardRoute = PublicBoardRouteImport.update({
   path: '/board',
   getParentRoute: () => PublicRoute,
 } as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminOnboardingRoute = AdminOnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
@@ -87,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/boards': typeof AdminBoardsRoute
   '/dashboard': typeof AdminDashboardRoute
   '/onboarding': typeof AdminOnboardingRoute
+  '/settings': typeof AdminSettingsRoute
   '/board': typeof PublicBoardRouteWithChildren
   '/changelog': typeof PublicChangelogRoute
   '/roadmap': typeof PublicRoadmapRoute
@@ -99,6 +106,7 @@ export interface FileRoutesByTo {
   '/boards': typeof AdminBoardsRoute
   '/dashboard': typeof AdminDashboardRoute
   '/onboarding': typeof AdminOnboardingRoute
+  '/settings': typeof AdminSettingsRoute
   '/changelog': typeof PublicChangelogRoute
   '/roadmap': typeof PublicRoadmapRoute
   '/board/$postId': typeof PublicBoardPostIdRoute
@@ -113,6 +121,7 @@ export interface FileRoutesById {
   '/_admin/boards': typeof AdminBoardsRoute
   '/_admin/dashboard': typeof AdminDashboardRoute
   '/_admin/onboarding': typeof AdminOnboardingRoute
+  '/_admin/settings': typeof AdminSettingsRoute
   '/_public/board': typeof PublicBoardRouteWithChildren
   '/_public/changelog': typeof PublicChangelogRoute
   '/_public/roadmap': typeof PublicRoadmapRoute
@@ -127,6 +136,7 @@ export interface FileRouteTypes {
     | '/boards'
     | '/dashboard'
     | '/onboarding'
+    | '/settings'
     | '/board'
     | '/changelog'
     | '/roadmap'
@@ -139,6 +149,7 @@ export interface FileRouteTypes {
     | '/boards'
     | '/dashboard'
     | '/onboarding'
+    | '/settings'
     | '/changelog'
     | '/roadmap'
     | '/board/$postId'
@@ -152,6 +163,7 @@ export interface FileRouteTypes {
     | '/_admin/boards'
     | '/_admin/dashboard'
     | '/_admin/onboarding'
+    | '/_admin/settings'
     | '/_public/board'
     | '/_public/changelog'
     | '/_public/roadmap'
@@ -217,6 +229,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicBoardRouteImport
       parentRoute: typeof PublicRoute
     }
+    '/_admin/settings': {
+      id: '/_admin/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/_admin/onboarding': {
       id: '/_admin/onboarding'
       path: '/onboarding'
@@ -259,12 +278,14 @@ interface AdminRouteChildren {
   AdminBoardsRoute: typeof AdminBoardsRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminOnboardingRoute: typeof AdminOnboardingRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminBoardsRoute: AdminBoardsRoute,
   AdminDashboardRoute: AdminDashboardRoute,
   AdminOnboardingRoute: AdminOnboardingRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
