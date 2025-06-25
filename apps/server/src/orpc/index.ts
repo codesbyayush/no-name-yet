@@ -1,11 +1,21 @@
 import { publicProcedure, protectedProcedure } from "./procedures";
 import { db } from "../db";
-import { boards, comments, feedback, user, votes, organization, member } from "../db/schema";
+import {
+  boards,
+  comments,
+  feedback,
+  user,
+  votes,
+  organization,
+  member,
+} from "../db/schema";
 import { eq, and, asc, desc, count, SQL } from "drizzle-orm";
 import { ORPCError } from "@orpc/server";
 import { z } from "zod";
 import { randomUUID } from "crypto";
 import { auth } from "../lib/auth";
+import { publicRouter } from "./public";
+import { organizationRouter } from "./organization";
 
 // Pagination schema for reuse
 const paginationSchema = z.object({
@@ -29,7 +39,11 @@ const boardIdSchema = z.object({
 });
 
 export const apiRouter = {
-  // Health check - public endpoint
+  // New router structure
+  public: publicRouter,
+  organization: organizationRouter,
+
+  // Legacy routes (to be moved gradually)
   healthCheck: publicProcedure.handler(async ({ context }) => {
     return {
       status: "ok",
@@ -121,7 +135,7 @@ export const apiRouter = {
   // Get boards for user's organization (for onboarding check)
   getUserBoards: protectedProcedure.handler(async ({ context }) => {
     const userId = context.session?.user?.id;
-    
+
     if (!userId) {
       throw new ORPCError("UNAUTHORIZED");
     }
@@ -135,7 +149,7 @@ export const apiRouter = {
         .limit(1);
 
       let userOrganizationId = userData[0]?.organizationId;
-      
+
       // If user doesn't have organizationId, check if they're a member of any organization
       if (!userOrganizationId) {
         const memberData = await db
@@ -143,10 +157,10 @@ export const apiRouter = {
           .from(member)
           .where(eq(member.userId, userId))
           .limit(1);
-        
+
         userOrganizationId = memberData[0]?.organizationId;
       }
-      
+
       if (!userOrganizationId) {
         return { boards: [], count: 0 };
       }
@@ -186,11 +200,11 @@ export const apiRouter = {
         slug: z.string().min(1, "Board slug is required"),
         description: z.string().optional(),
         isPrivate: z.boolean().default(false),
-      })
+      }),
     )
     .handler(async ({ input, context }) => {
       const userId = context.session?.user?.id;
-      
+
       if (!userId) {
         throw new ORPCError("UNAUTHORIZED");
       }
@@ -209,7 +223,7 @@ export const apiRouter = {
         .limit(1);
 
       let userOrganizationId = userData[0]?.organizationId;
-      
+
       // If user doesn't have organizationId, check if they're a member of any organization
       if (!userOrganizationId) {
         const memberData = await db
@@ -217,27 +231,27 @@ export const apiRouter = {
           .from(member)
           .where(eq(member.userId, userId))
           .limit(1);
-        
+
         userOrganizationId = memberData[0]?.organizationId;
       }
-      
-        // Also try to get organization from Better Auth session
-        // Note: This might not be available in the current context
-        if (context.session?.user) {
-          console.log("User session keys:", Object.keys(context.session.user));
-        }
-      
+
+      // Also try to get organization from Better Auth session
+      // Note: This might not be available in the current context
+      if (context.session?.user) {
+        console.log("User session keys:", Object.keys(context.session.user));
+      }
+
       if (!userOrganizationId) {
         console.log("No organization found for user:", userId);
         console.log("User data:", userData[0]);
-        
+
         // Check if any organizations exist for this user in member table
         const allMemberships = await db
           .select()
           .from(member)
           .where(eq(member.userId, userId));
         console.log("User memberships:", allMemberships);
-        
+
         throw new ORPCError("BAD_REQUEST");
       }
 
@@ -249,8 +263,8 @@ export const apiRouter = {
           .where(
             and(
               eq(boards.organizationId, userOrganizationId),
-              eq(boards.slug, input.slug)
-            )
+              eq(boards.slug, input.slug),
+            ),
           )
           .limit(1);
 
@@ -292,7 +306,7 @@ export const apiRouter = {
       z.object({
         ...postIdSchema.shape,
         ...paginationSchema.shape,
-      })
+      }),
     )
     .handler(async ({ input, context }) => {
       const { postId, offset, take } = input;
@@ -352,19 +366,19 @@ export const apiRouter = {
         ...postIdSchema.shape,
         ...paginationSchema.shape,
         voteType: z.enum(["upvote", "downvote"]).optional(), // Filter by vote type
-      })
+      }),
     )
     .handler(async ({ input, context }) => {
       const { postId, offset, take, voteType } = input;
 
       try {
         // Build where conditions
-        let whereConditions: SQL<unknown> | undefined = eq(votes.feedbackId, postId);
+        let whereConditions: SQL<unknown> | undefined = eq(
+          votes.feedbackId,
+          postId,
+        );
         if (voteType) {
-          whereConditions = and(
-            whereConditions,
-            eq(votes.type, voteType)
-          );
+          whereConditions = and(whereConditions, eq(votes.type, voteType));
         }
 
         // Fetch votes with voter information
@@ -434,7 +448,7 @@ export const apiRouter = {
         ...feedbackIdSchema.shape,
         ...paginationSchema.shape,
         sortBy: z.enum(["newest", "oldest", "most_voted"]).default("newest"),
-      })
+      }),
     )
     .handler(async ({ input, context }) => {
       const { feedbackId, offset, take, sortBy } = input;
@@ -485,12 +499,16 @@ export const apiRouter = {
             const upvoteCountResult = await db
               .select({ count: count() })
               .from(votes)
-              .where(and(eq(votes.feedbackId, post.id), eq(votes.type, "upvote")));
+              .where(
+                and(eq(votes.feedbackId, post.id), eq(votes.type, "upvote")),
+              );
 
             const downvoteCountResult = await db
               .select({ count: count() })
               .from(votes)
-              .where(and(eq(votes.feedbackId, post.id), eq(votes.type, "downvote")));
+              .where(
+                and(eq(votes.feedbackId, post.id), eq(votes.type, "downvote")),
+              );
 
             const commentCountResult = await db
               .select({ count: count() })
@@ -505,7 +523,7 @@ export const apiRouter = {
                 comments: commentCountResult[0]?.count || 0,
               },
             };
-          })
+          }),
         );
 
         // Get total count for pagination metadata
@@ -563,7 +581,7 @@ export const apiRouter = {
       z.object({
         ...paginationSchema.shape,
         sortBy: z.enum(["newest", "oldest", "most_voted"]).default("newest"),
-      })
+      }),
     )
     .handler(async ({ input, context }) => {
       const { offset, take, sortBy } = input;
@@ -624,12 +642,16 @@ export const apiRouter = {
             const upvoteCountResult = await db
               .select({ count: count() })
               .from(votes)
-              .where(and(eq(votes.feedbackId, post.id), eq(votes.type, "upvote")));
+              .where(
+                and(eq(votes.feedbackId, post.id), eq(votes.type, "upvote")),
+              );
 
             const downvoteCountResult = await db
               .select({ count: count() })
               .from(votes)
-              .where(and(eq(votes.feedbackId, post.id), eq(votes.type, "downvote")));
+              .where(
+                and(eq(votes.feedbackId, post.id), eq(votes.type, "downvote")),
+              );
 
             const commentCountResult = await db
               .select({ count: count() })
@@ -644,7 +666,7 @@ export const apiRouter = {
                 comments: commentCountResult[0]?.count || 0,
               },
             };
-          })
+          }),
         );
 
         // Get total count for pagination metadata
@@ -724,7 +746,9 @@ export const apiRouter = {
         const downvoteCountResult = await db
           .select({ count: count() })
           .from(votes)
-          .where(and(eq(votes.feedbackId, post.id), eq(votes.type, "downvote")));
+          .where(
+            and(eq(votes.feedbackId, post.id), eq(votes.type, "downvote")),
+          );
 
         // Get comment count
         const commentCountResult = await db
@@ -743,8 +767,8 @@ export const apiRouter = {
             .where(
               and(
                 eq(votes.feedbackId, post.id),
-                eq(votes.userId, context.session.user.id)
-              )
+                eq(votes.userId, context.session.user.id),
+              ),
             )
             .limit(1);
 
@@ -776,7 +800,7 @@ export const apiRouter = {
         ...boardIdSchema.shape,
         ...paginationSchema.shape,
         sortBy: z.enum(["newest", "oldest", "most_voted"]).default("newest"),
-      })
+      }),
     )
     .handler(async ({ input, context }) => {
       const { boardId, offset, take, sortBy } = input;
@@ -801,7 +825,11 @@ export const apiRouter = {
         }
 
         // Check if board is private and user has access
-        if (board[0].isPrivate && (!context.organization || context.organization.id !== board[0].organizationId)) {
+        if (
+          board[0].isPrivate &&
+          (!context.organization ||
+            context.organization.id !== board[0].organizationId)
+        ) {
           throw new ORPCError("FORBIDDEN");
         }
 
@@ -848,12 +876,16 @@ export const apiRouter = {
             const upvoteCountResult = await db
               .select({ count: count() })
               .from(votes)
-              .where(and(eq(votes.feedbackId, post.id), eq(votes.type, "upvote")));
+              .where(
+                and(eq(votes.feedbackId, post.id), eq(votes.type, "upvote")),
+              );
 
             const downvoteCountResult = await db
               .select({ count: count() })
               .from(votes)
-              .where(and(eq(votes.feedbackId, post.id), eq(votes.type, "downvote")));
+              .where(
+                and(eq(votes.feedbackId, post.id), eq(votes.type, "downvote")),
+              );
 
             const commentCountResult = await db
               .select({ count: count() })
@@ -868,7 +900,7 @@ export const apiRouter = {
                 comments: commentCountResult[0]?.count || 0,
               },
             };
-          })
+          }),
         );
 
         // Get total count for pagination metadata
@@ -905,22 +937,41 @@ export const apiRouter = {
       z.object({
         boardId: z.string().min(1, "Board ID is required"),
         type: z.enum(["bug", "suggestion"]),
-        title: z.string().min(1, "Title is required").max(200, "Title too long"),
-        description: z.string().min(1, "Description is required").max(5000, "Description too long"),
+        title: z
+          .string()
+          .min(1, "Title is required")
+          .max(200, "Title too long"),
+        description: z
+          .string()
+          .min(1, "Description is required")
+          .max(5000, "Description too long"),
         priority: z.enum(["low", "medium", "high"]).default("medium"),
         tags: z.array(z.string()).default([]),
         isAnonymous: z.boolean().default(false),
-        attachments: z.array(z.object({
-          id: z.string(),
-          name: z.string(),
-          type: z.string(),
-          size: z.number(),
-          url: z.string()
-        })).default([])
-      })
+        attachments: z
+          .array(
+            z.object({
+              id: z.string(),
+              name: z.string(),
+              type: z.string(),
+              size: z.number(),
+              url: z.string(),
+            }),
+          )
+          .default([]),
+      }),
     )
     .handler(async ({ input, context }) => {
-      const { boardId, type, title, description, priority, tags, isAnonymous, attachments } = input;
+      const {
+        boardId,
+        type,
+        title,
+        description,
+        priority,
+        tags,
+        isAnonymous,
+        attachments,
+      } = input;
       const userId = context.session?.user?.id;
 
       if (!userId) {
@@ -954,13 +1005,13 @@ export const apiRouter = {
             tags,
             isAnonymous,
             attachments,
-            status: "open"
+            status: "open",
           })
           .returning();
 
         return {
           post: newPost[0],
-          message: "Post created successfully"
+          message: "Post created successfully",
         };
       } catch (error) {
         console.error("Error creating post:", error);
@@ -976,10 +1027,13 @@ export const apiRouter = {
     .input(
       z.object({
         feedbackId: z.string().min(1, "Post ID is required"),
-        content: z.string().min(1, "Content is required").max(2000, "Content too long"),
+        content: z
+          .string()
+          .min(1, "Content is required")
+          .max(2000, "Content too long"),
         parentCommentId: z.string().optional(), // For replies
-        isInternal: z.boolean().default(false)
-      })
+        isInternal: z.boolean().default(false),
+      }),
     )
     .handler(async ({ input, context }) => {
       const { feedbackId, content, parentCommentId, isInternal } = input;
@@ -1006,10 +1060,12 @@ export const apiRouter = {
           const parentComment = await db
             .select()
             .from(comments)
-            .where(and(
-              eq(comments.id, parentCommentId),
-              eq(comments.feedbackId, feedbackId)
-            ))
+            .where(
+              and(
+                eq(comments.id, parentCommentId),
+                eq(comments.feedbackId, feedbackId),
+              ),
+            )
             .limit(1);
 
           if (!parentComment[0]) {
@@ -1026,7 +1082,7 @@ export const apiRouter = {
             content,
             authorId: userId,
             parentCommentId: parentCommentId || null,
-            isInternal
+            isInternal,
           })
           .returning();
 
@@ -1054,7 +1110,7 @@ export const apiRouter = {
 
         return {
           comment: commentWithAuthor[0],
-          message: "Comment created successfully"
+          message: "Comment created successfully",
         };
       } catch (error) {
         console.error("Error creating comment:", error);
@@ -1071,8 +1127,8 @@ export const apiRouter = {
       z.object({
         feedbackId: z.string().min(1, "Post ID is required"),
         type: z.enum(["upvote", "downvote", "bookmark"]),
-        weight: z.number().min(1).max(5).default(1)
-      })
+        weight: z.number().min(1).max(5).default(1),
+      }),
     )
     .handler(async ({ input, context }) => {
       const { feedbackId, type, weight } = input;
@@ -1098,10 +1154,9 @@ export const apiRouter = {
         const existingVote = await db
           .select()
           .from(votes)
-          .where(and(
-            eq(votes.feedbackId, feedbackId),
-            eq(votes.userId, userId)
-          ))
+          .where(
+            and(eq(votes.feedbackId, feedbackId), eq(votes.userId, userId)),
+          )
           .limit(1);
 
         if (existingVote[0]) {
@@ -1114,17 +1169,15 @@ export const apiRouter = {
 
             return {
               message: "Vote updated successfully",
-              vote: { type, weight }
+              vote: { type, weight },
             };
           } else {
             // Remove vote if same type (toggle)
-            await db
-              .delete(votes)
-              .where(eq(votes.id, existingVote[0].id));
+            await db.delete(votes).where(eq(votes.id, existingVote[0].id));
 
             return {
               message: "Vote removed successfully",
-              vote: null
+              vote: null,
             };
           }
         } else {
@@ -1136,13 +1189,13 @@ export const apiRouter = {
               feedbackId,
               userId,
               type,
-              weight
+              weight,
             })
             .returning();
 
           return {
             message: "Vote created successfully",
-            vote: newVote[0]
+            vote: newVote[0],
           };
         }
       } catch (error) {
@@ -1160,8 +1213,8 @@ export const apiRouter = {
       z.object({
         commentId: z.string().min(1, "Comment ID is required"),
         type: z.enum(["upvote", "downvote"]),
-        weight: z.number().min(1).max(5).default(1)
-      })
+        weight: z.number().min(1).max(5).default(1),
+      }),
     )
     .handler(async ({ input, context }) => {
       const { commentId, type, weight } = input;
@@ -1187,10 +1240,7 @@ export const apiRouter = {
         const existingVote = await db
           .select()
           .from(votes)
-          .where(and(
-            eq(votes.commentId, commentId),
-            eq(votes.userId, userId)
-          ))
+          .where(and(eq(votes.commentId, commentId), eq(votes.userId, userId)))
           .limit(1);
 
         if (existingVote[0]) {
@@ -1203,17 +1253,15 @@ export const apiRouter = {
 
             return {
               message: "Vote updated successfully",
-              vote: { type, weight }
+              vote: { type, weight },
             };
           } else {
             // Remove vote if same type (toggle)
-            await db
-              .delete(votes)
-              .where(eq(votes.id, existingVote[0].id));
+            await db.delete(votes).where(eq(votes.id, existingVote[0].id));
 
             return {
               message: "Vote removed successfully",
-              vote: null
+              vote: null,
             };
           }
         } else {
@@ -1225,13 +1273,13 @@ export const apiRouter = {
               commentId,
               userId,
               type,
-              weight
+              weight,
             })
             .returning();
 
           return {
             message: "Vote created successfully",
-            vote: newVote[0]
+            vote: newVote[0],
           };
         }
       } catch (error) {
@@ -1249,8 +1297,8 @@ export const apiRouter = {
       z.object({
         feedbackId: z.string().min(1, "Post ID is required"),
         offset: z.number().min(0).default(0),
-        take: z.number().min(1).max(100).default(20)
-      })
+        take: z.number().min(1).max(100).default(20),
+      }),
     )
     .handler(async ({ input, context }) => {
       const { feedbackId, offset, take } = input;
@@ -1284,12 +1332,19 @@ export const apiRouter = {
             const upvoteCountResult = await db
               .select({ count: count() })
               .from(votes)
-              .where(and(eq(votes.commentId, comment.id), eq(votes.type, "upvote")));
+              .where(
+                and(eq(votes.commentId, comment.id), eq(votes.type, "upvote")),
+              );
 
             const downvoteCountResult = await db
               .select({ count: count() })
               .from(votes)
-              .where(and(eq(votes.commentId, comment.id), eq(votes.type, "downvote")));
+              .where(
+                and(
+                  eq(votes.commentId, comment.id),
+                  eq(votes.type, "downvote"),
+                ),
+              );
 
             return {
               ...comment,
@@ -1298,16 +1353,22 @@ export const apiRouter = {
                 downvotes: downvoteCountResult[0]?.count || 0,
               },
             };
-          })
+          }),
         );
 
         // Organize comments into threads (parent comments with their replies)
-        const parentComments = commentsWithVotes.filter(c => !c.parentCommentId);
-        const replyComments = commentsWithVotes.filter(c => c.parentCommentId);
+        const parentComments = commentsWithVotes.filter(
+          (c) => !c.parentCommentId,
+        );
+        const replyComments = commentsWithVotes.filter(
+          (c) => c.parentCommentId,
+        );
 
-        const threaded = parentComments.map(parent => ({
+        const threaded = parentComments.map((parent) => ({
           ...parent,
-          replies: replyComments.filter(reply => reply.parentCommentId === parent.id)
+          replies: replyComments.filter(
+            (reply) => reply.parentCommentId === parent.id,
+          ),
         }));
 
         // Apply pagination to parent comments only
@@ -1337,7 +1398,7 @@ export const apiRouter = {
       z.object({
         feedbackIds: z.array(z.string()).optional(),
         commentIds: z.array(z.string()).optional(),
-      })
+      }),
     )
     .handler(async ({ input, context }) => {
       const { feedbackIds, commentIds } = input;
@@ -1364,7 +1425,7 @@ export const apiRouter = {
           .where(and(...conditions));
 
         return {
-          votes: userVotes
+          votes: userVotes,
         };
       } catch (error) {
         console.error("Error fetching user votes:", error);
@@ -1378,7 +1439,7 @@ export const apiRouter = {
       z.object({
         ...paginationSchema.shape,
         sortBy: z.enum(["newest", "oldest", "most_voted"]).default("newest"),
-      })
+      }),
     )
     .handler(async ({ input, context }) => {
       const { offset, take, sortBy } = input;
@@ -1453,7 +1514,7 @@ export const apiRouter = {
               slug: boards.slug,
               isPrivate: boards.isPrivate,
             },
-            status: feedback.status
+            status: feedback.status,
           })
           .from(feedback)
           .leftJoin(user, eq(feedback.userId, user.id))
@@ -1469,12 +1530,16 @@ export const apiRouter = {
             const upvoteCountResult = await db
               .select({ count: count() })
               .from(votes)
-              .where(and(eq(votes.feedbackId, post.id), eq(votes.type, "upvote")));
+              .where(
+                and(eq(votes.feedbackId, post.id), eq(votes.type, "upvote")),
+              );
 
             const downvoteCountResult = await db
               .select({ count: count() })
               .from(votes)
-              .where(and(eq(votes.feedbackId, post.id), eq(votes.type, "downvote")));
+              .where(
+                and(eq(votes.feedbackId, post.id), eq(votes.type, "downvote")),
+              );
 
             const commentCountResult = await db
               .select({ count: count() })
@@ -1489,7 +1554,7 @@ export const apiRouter = {
                 comments: commentCountResult[0]?.count || 0,
               },
             };
-          })
+          }),
         );
 
         // Get total count for pagination metadata
@@ -1526,15 +1591,25 @@ export const apiRouter = {
     .input(
       z.object({
         feedbackId: z.string().min(1, "Post ID is required"),
-        content: z.string().min(1, "Content is required").max(2000, "Content too long"),
+        content: z
+          .string()
+          .min(1, "Content is required")
+          .max(2000, "Content too long"),
         parentCommentId: z.string().optional(), // For replies
         isInternal: z.boolean().default(false),
         anonymousName: z.string().optional(),
         anonymousEmail: z.string().optional(),
-      })
+      }),
     )
     .handler(async ({ input, context }) => {
-      const { feedbackId, content, parentCommentId, isInternal, anonymousName, anonymousEmail } = input;
+      const {
+        feedbackId,
+        content,
+        parentCommentId,
+        isInternal,
+        anonymousName,
+        anonymousEmail,
+      } = input;
       const sessionUser = context.session?.user;
       const userId = sessionUser?.id;
       const isAnonymous = !userId;
@@ -1556,10 +1631,12 @@ export const apiRouter = {
           const parentComment = await db
             .select()
             .from(comments)
-            .where(and(
-              eq(comments.id, parentCommentId),
-              eq(comments.feedbackId, feedbackId)
-            ))
+            .where(
+              and(
+                eq(comments.id, parentCommentId),
+                eq(comments.feedbackId, feedbackId),
+              ),
+            )
             .limit(1);
 
           if (!parentComment[0]) {
@@ -1610,7 +1687,7 @@ export const apiRouter = {
 
         return {
           comment: commentWithAuthor[0],
-          message: "Comment created successfully"
+          message: "Comment created successfully",
         };
       } catch (error) {
         console.error("Error creating comment:", error);

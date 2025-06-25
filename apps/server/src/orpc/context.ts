@@ -16,7 +16,7 @@ export async function createContext({ context }: CreateContextOptions) {
 
   // Extract subdomain from host
   const host = context.req.raw.headers.get("origin")?.split("//")[1];
-  let subdomain = null;
+  let subdomain: string | undefined = undefined;
   if (host) {
     const hostParts = host.split(".");
     if (hostParts.length > 1 && hostParts[0] !== "localhost") {
@@ -43,11 +43,11 @@ export async function createContext({ context }: CreateContextOptions) {
   return {
     session,
     organization: org,
-    subdomain
+    subdomain: subdomain || undefined,
   };
 }
 
 export type Context = Awaited<ReturnType<typeof createContext>> & {
   organization: InferSelectModel<typeof organization> | null;
-  subdomain?: string
+  subdomain?: string;
 };

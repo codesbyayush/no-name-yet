@@ -28,7 +28,7 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
     "http://127.0.0.1:8080",
     "https://127.0.0.1:8080",
     "http://127.0.0.1:5173",
-    "https://*.localhost:3002"
+    "https://*.localhost:3002",
   ],
   emailAndPassword: {
     enabled: true,

@@ -17,7 +17,13 @@ authRouter.all("*", async (c) => {
   try {
     return await auth.handler(c.req.raw);
   } catch (error) {
-    return c.json({ error: "Auth failed", details: error.message }, 500);
+    return c.json(
+      {
+        error: "Auth failed",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
+      500,
+    );
   }
 });
 
@@ -117,10 +123,17 @@ app.get("/health", (c) => {
 const port = parseInt(process.env.PORT || "8080");
 
 // TLS configuration for HTTPS in development
-const tlsConfig = process.env.NODE_ENV === "development" ? {
-  key: readFileSync(resolve(import.meta.dir, "../certs/localhost+2-key.pem")),
-  cert: readFileSync(resolve(import.meta.dir, "../certs/localhost+2.pem")),
-} : undefined;
+const tlsConfig =
+  process.env.NODE_ENV === "development"
+    ? {
+        key: readFileSync(
+          resolve(import.meta.dir, "../certs/localhost+2-key.pem"),
+        ),
+        cert: readFileSync(
+          resolve(import.meta.dir, "../certs/localhost+2.pem"),
+        ),
+      }
+    : undefined;
 
 export default {
   port,

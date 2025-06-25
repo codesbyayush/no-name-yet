@@ -3,7 +3,7 @@ import { client } from "@/utils/orpc";
 import { useSession } from "@/lib/auth-client";
 
 export interface OnboardingStatus {
-  step: 1 | 2 | 'complete';
+  step: 1 | 2 | "complete";
   needsOrganization: boolean;
   needsBoards: boolean;
   isComplete: boolean;
@@ -16,8 +16,12 @@ export function useOnboardingStatus(): {
   error: any;
 } {
   const { data: session, isPending: sessionLoading } = useSession();
-  
-  const { data: boardsData, isLoading: boardsLoading, error } = useQuery({
+
+  const {
+    data: boardsData,
+    isLoading: boardsLoading,
+    error,
+  } = useQuery({
     queryKey: ["user-boards"],
     queryFn: () => client.getUserBoards(),
     enabled: !!session?.user?.id,
@@ -36,13 +40,13 @@ export function useOnboardingStatus(): {
   // If no boards and no org, they need organization setup
   const boardCount = boardsData?.count || 0;
   const hasBoards = boardCount > 0;
-  
+
   // We'll determine if user has organization by checking if they can get boards
   // This is a bit indirect, but works until we extend the session
   const hasOrganization = boardsData !== undefined && !error;
 
   const onboardingStatus: OnboardingStatus = {
-    step: !hasOrganization ? 1 : !hasBoards ? 2 : 'complete',
+    step: !hasOrganization ? 1 : !hasBoards ? 2 : "complete",
     needsOrganization: !hasOrganization,
     needsBoards: hasOrganization && !hasBoards,
     isComplete: hasOrganization && hasBoards,
@@ -56,15 +60,16 @@ export function useSubdomainContext() {
   const getSubdomainInfo = () => {
     const host = window.location.host;
     const hostParts = host.split(".");
-    
+
     // Check if we're on a subdomain (not localhost, not app)
-    const isSubdomain = hostParts.length > 1 && 
-                       hostParts[0] !== "localhost" && 
-                       hostParts[0] !== "app";
-    
+    const isSubdomain =
+      hostParts.length > 1 &&
+      hostParts[0] !== "localhost" &&
+      hostParts[0] !== "app";
+
     const subdomain = isSubdomain ? hostParts[0] : null;
     const isMainApp = hostParts[0] === "app" || host.includes("localhost");
-    
+
     return {
       subdomain,
       isSubdomain,
@@ -78,7 +83,7 @@ export function useSubdomainContext() {
 
 export function shouldRedirectToOnboarding(
   onboardingStatus: OnboardingStatus | undefined,
-  subdomainContext: ReturnType<typeof useSubdomainContext>
+  subdomainContext: ReturnType<typeof useSubdomainContext>,
 ): { shouldRedirect: boolean; reason: string; step?: number } {
   if (!onboardingStatus) {
     return { shouldRedirect: false, reason: "Loading..." };
