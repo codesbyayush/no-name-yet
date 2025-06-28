@@ -1,8 +1,15 @@
 import { z } from "zod/v4";
 import { protectedProcedure } from "../procedures";
 import { db } from "@/db";
-import { and, asc, count, desc, eq, isNull, sql } from "drizzle-orm";
-import { boards, comments, feedback, user, votes } from "@/db/schema";
+import { and, asc, count, desc, eq, exists, isNull, sql } from "drizzle-orm";
+import {
+  boards,
+  comments,
+  feedback,
+  user,
+  votes,
+  type Vote,
+} from "@/db/schema";
 import { ORPCError } from "@orpc/client";
 
 const paginationSchema = z.object({
@@ -133,8 +140,11 @@ export const mixedRouter = {
               name: boards.name,
               slug: boards.slug,
             },
-            comments: db.$count(comments, eq(feedback.id, comments.feedbackId)),
-            votes: db.$count(votes, eq(feedback.id, votes.feedbackId)),
+            totalComments: db.$count(
+              comments,
+              eq(feedback.id, comments.feedbackId),
+            ),
+            totalVotes: db.$count(votes, eq(feedback.id, votes.feedbackId)),
           })
           .from(feedback)
           .leftJoin(user, eq(feedback.userId, user.id))

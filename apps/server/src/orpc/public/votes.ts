@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { protectedProcedure } from "../procedures";
 import { db } from "../../db";
 import {
@@ -8,6 +8,7 @@ import {
   type Vote,
   type NewVote,
 } from "../../db/schema/votes";
+import { feedback } from "@/db/schema";
 
 export const votesRouter = {
   create: protectedProcedure
@@ -16,7 +17,7 @@ export const votesRouter = {
         .object({
           feedbackId: z.string().optional(),
           commentId: z.string().optional(),
-          type: z.enum(["upvote", "downvote", "bookmark"]),
+          type: z.enum(["upvote", "downvote", "bookmark"]).optional(),
           weight: z.number().int().min(1).default(1),
         })
         .refine((data) => data.feedbackId || data.commentId, {
@@ -36,7 +37,7 @@ export const votesRouter = {
           feedbackId: input.feedbackId || null,
           commentId: input.commentId || null,
           userId,
-          type: input.type,
+          type: input.type || "upvote",
           weight: input.weight,
         })
         .returning();
@@ -75,16 +76,25 @@ export const votesRouter = {
   delete: protectedProcedure
     .input(
       z.object({
-        id: z.string(),
+        feedbackId: z.string().optional(),
+        commentId: z.string().optional(),
       }),
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
       const userId = context.session!.user.id;
 
+      const filters = [eq(votes.userId, userId)];
+
+      if (input.feedbackId) {
+        filters.push(eq(votes.feedbackId, input.feedbackId));
+      } else if (input.commentId) {
+        filters.push(eq(votes.commentId, input.commentId));
+      }
+
       const [deletedVote] = await db
         .delete(votes)
-        .where(eq(votes.id, input.id))
+        .where(and(...filters))
         .returning();
 
       if (!deletedVote) {
@@ -92,5 +102,37 @@ export const votesRouter = {
       }
 
       return { success: true, deletedVote };
+    }),
+
+  get: protectedProcedure
+    .input(
+      z.object({
+        feedbackId: z.string().optional(),
+        commentId: z.string().optional(),
+      }),
+    )
+    .output(z.any())
+    .handler(async ({ input, context }) => {
+      const userId = context.session!.user.id;
+
+      const filter = [eq(votes.userId, userId)];
+      if (input.feedbackId) {
+        filter.push(eq(votes.feedbackId, input.feedbackId));
+      } else if (input.commentId) {
+        filter.push(eq(votes.commentId, input.commentId));
+      } else {
+        throw new Error("Resource not found");
+      }
+
+      const [vote] = await db
+        .select()
+        .from(votes)
+        .where(and(...filter));
+
+      if (!vote) {
+        return false;
+      }
+
+      return true;
     }),
 };

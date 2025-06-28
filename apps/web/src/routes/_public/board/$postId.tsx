@@ -21,6 +21,34 @@ function RouteComponent() {
   const [commentInput, setCommentInput] = useState("");
   const queryClient = useQueryClient();
 
+  // Query to check if the current user has voted
+  const {
+    data: hasVoted,
+    refetch: refetchVote,
+    isLoading: isLoadingVote,
+  } = useQuery({
+    queryKey: [postId, "hasVoted"],
+    queryFn: () => client.public.votes.get({ feedbackId: postId }),
+  });
+
+  // Mutation to create a vote
+  const createVoteMutation = useMutation({
+    mutationFn: () => client.public.votes.create({ feedbackId: postId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [postId, "hasVoted"] });
+      refetchVote();
+    },
+  });
+
+  // Mutation to delete a vote
+  const deleteVoteMutation = useMutation({
+    mutationFn: () => client.public.votes.delete({ feedbackId: postId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [postId, "hasVoted"] });
+      refetchVote();
+    },
+  });
+
   // Replace useQuery with useInfiniteQuery for comments
   const {
     data,
@@ -101,8 +129,41 @@ function RouteComponent() {
           </p>
 
           <div className="ml-auto flex max-w-max pt-6 gap-3">
-            <div>Co ({post?.comments})</div>
-            <div>Li ({post?.votes})</div>
+            <div>Co ({post?.totalComments})</div>
+            <button
+              type="button"
+              className="flex items-center gap-1 group"
+              aria-label={hasVoted ? "Unvote" : "Vote"}
+              disabled={
+                createVoteMutation.isPending ||
+                deleteVoteMutation.isPending ||
+                isLoadingVote
+              }
+              onClick={() => {
+                if (hasVoted) {
+                  deleteVoteMutation.mutate();
+                } else {
+                  createVoteMutation.mutate();
+                }
+              }}
+            >
+              <span
+                style={{
+                  fontSize: "1.5rem",
+                  transition: "color 0.2s",
+                  color: hasVoted ? "#ef4444" : "#a3a3a3",
+                  filter:
+                    createVoteMutation.isPending || deleteVoteMutation.isPending
+                      ? "grayscale(0.7)"
+                      : undefined,
+                }}
+              >
+                {hasVoted ? "❤️" : "🤍"}
+              </span>
+              <span className="ml-1 text-base font-medium text-stone-700">
+                {typeof post?.totalVotes === "number" ? post.totalVotes : 0}
+              </span>
+            </button>
           </div>
           <div>
             <div className="bg-gray-50 p-4 rounded-2xl border border-stone-200 mt-6 flex flex-col items-end gap-3">
