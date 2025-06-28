@@ -14,7 +14,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuItem
+  DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { useState, useCallback, useRef, useEffect } from "react";
 
@@ -23,9 +23,9 @@ export const Route = createFileRoute("/_public/board/")({
 });
 
 function BoardIndexPage() {
-  const AllFeedbacks = getFeedbacks()
-  const navigate = useNavigate({ from: '/board' })
-  
+  const AllFeedbacks = getFeedbacks();
+  const navigate = useNavigate({ from: "/board" });
+
   // Replace useQuery with useInfiniteQuery for posts
   const {
     data,
@@ -33,19 +33,21 @@ function BoardIndexPage() {
     hasNextPage,
     isFetchingNextPage,
     isLoading,
-    isError
+    isError,
   } = useInfiniteQuery({
-    queryKey: ['all-posts'],
-    queryFn: ({ pageParam = 0 }) => 
-      client.getOrganizationPosts({ offset: pageParam, take: 10 }),
-    getNextPageParam: (lastPage) => 
-      lastPage.pagination.hasMore ? lastPage.pagination.offset + lastPage.pagination.take : undefined,
+    queryKey: ["all-posts"],
+    queryFn: ({ pageParam = 0 }) =>
+      client.mixed.getDetailedPosts({ offset: pageParam, take: 10 }),
+    getNextPageParam: (lastPage) =>
+      lastPage.pagination.hasMore
+        ? lastPage.pagination.offset + lastPage.pagination.take
+        : undefined,
     initialPageParam: 0,
-  })
+  });
 
   // Flatten all posts from all pages
-  const allPosts = data?.pages.flatMap(page => page.posts) ?? []
-  
+  const allPosts = data?.pages.flatMap((page) => page.posts) ?? [];
+
   const [position, setPosition] = useState("bottom");
 
   const { data: boards } = useQuery({
@@ -54,32 +56,37 @@ function BoardIndexPage() {
   });
 
   // Intersection Observer for infinite scroll
-  const observerRef = useRef<IntersectionObserver | null>(null)
-  const triggerRef = useRef<HTMLDivElement | null>(null)
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const triggerRef = useRef<HTMLDivElement | null>(null);
 
-  const lastPostCallback = useCallback((node: HTMLDivElement | null) => {
-    if (isLoading) return
-    if (observerRef.current) observerRef.current.disconnect()
-    
-    observerRef.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-        fetchNextPage()
-      }
-    }, {
-      rootMargin: '100px' // Trigger 100px before reaching the element
-    })
-    
-    if (node) observerRef.current.observe(node)
-  }, [isLoading, hasNextPage, fetchNextPage, isFetchingNextPage])
+  const lastPostCallback = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (isLoading) return;
+      if (observerRef.current) observerRef.current.disconnect();
+
+      observerRef.current = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+          }
+        },
+        {
+          rootMargin: "100px", // Trigger 100px before reaching the element
+        },
+      );
+
+      if (node) observerRef.current.observe(node);
+    },
+    [isLoading, hasNextPage, fetchNextPage, isFetchingNextPage],
+  );
 
   useEffect(() => {
     return () => {
       if (observerRef.current) {
-        observerRef.current.disconnect()
+        observerRef.current.disconnect();
       }
-    }
-  }, [])
-
+    };
+  }, []);
 
   return (
     <div>
@@ -115,92 +122,104 @@ function BoardIndexPage() {
         </span>
         </div>
       </div> */}
-    <div className="flex gap-4 relative">
-      <div className="border-1 border-stone-200 bg-white dark:bg-black w-2xl rounded-3xl px-6 shadow-xs flex-1">
-        {isLoading && <div>Loading posts...</div>}
-        {isError && <div>Error loading posts</div>}
-        {allPosts.map((f, i) => {
-          const isLastPost = i === allPosts.length - 1
-          const isSecondLastPost = i === allPosts.length - 2
-          
-          return (
-            <div 
-              key={f.id}
-              ref={isSecondLastPost ? lastPostCallback : null}
-              onClick={() => navigate({
-                to: f.id
-              })} 
-              className={`${i > 0 ? 'border-t-[1px] border-stone-200' : ''} py-6 space-y-1 cursor-pointer`}
-            >
-              <h4 className="font-semibold capitalize text-lg">{f.title}</h4>
-              <p className="text-sm text-[#0007149f] font-medium capitalize text-pretty">{f.content}</p>
-              <div className="pt-4 flex justify-between">
-                <div className="flex gap-3 items-center">
-                  <div>
-                    {
-                      f.author?.image ? 
-                      <img src={f.author?.image || 'https://picsum/64'} className="h-8 rounded-full"/> : 
-                      <p className="size-8 rounded-full bg-red-900 flex items-center justify-center text-white">
-                        A
+      <div className="flex gap-4 relative">
+        <div className="border-1 border-stone-200 bg-white dark:bg-black w-2xl rounded-3xl px-6 shadow-xs flex-1">
+          {isLoading && <div>Loading posts...</div>}
+          {isError && <div>Error loading posts</div>}
+          {allPosts.map((f, i) => {
+            const isLastPost = i === allPosts.length - 1;
+            const isSecondLastPost = i === allPosts.length - 2;
+
+            return (
+              <div
+                key={f.id}
+                ref={isSecondLastPost ? lastPostCallback : null}
+                onClick={() =>
+                  navigate({
+                    to: f.id,
+                  })
+                }
+                className={`${i > 0 ? "border-t-[1px] border-stone-200" : ""} py-6 space-y-1 cursor-pointer`}
+              >
+                <h4 className="font-semibold capitalize text-lg">{f.title}</h4>
+                <p className="text-sm text-[#0007149f] font-medium capitalize text-pretty">
+                  {f.content}
+                </p>
+                <div className="pt-4 flex justify-between">
+                  <div className="flex gap-3 items-center">
+                    <div>
+                      {f.author?.image ? (
+                        <img
+                          src={f.author?.image || "https://picsum/64"}
+                          className="h-8 rounded-full"
+                        />
+                      ) : (
+                        <p className="size-8 rounded-full bg-red-900 flex items-center justify-center text-white">
+                          A
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <h5 className="capitalize font-medium text-sm pb-0.5">
+                        {f.author?.name || "Anon"}
+                      </h5>
+                      <p className="capitalize text-xs text-[#0007149f] font-medium">
+                        {f.updatedAt.toLocaleDateString()}
                       </p>
-                    }
+                    </div>
                   </div>
-                  <div>
-                    <h5 className="capitalize font-medium text-sm pb-0.5">{f.author?.name || 'Anon'}</h5>
-                    <p className="capitalize text-xs text-[#0007149f] font-medium">
-                      {f.updatedAt.toLocaleDateString()}
-                    </p>
+                  <div className="flex gap-3 items-center justify-end">
+                    <div>In</div>
+                    <div>Co({f.comments})</div>
+                    <div>Li({f.votes})</div>
                   </div>
                 </div>
-                <div className="flex gap-3 items-center justify-end"><div>In</div>
-                <div>Co(4)</div>
-                <div>Li(28)</div></div>
               </div>
+            );
+          })}
+
+          {/* Loading indicator for next page */}
+          {isFetchingNextPage && (
+            <div className="py-4 text-center">
+              <div className="text-sm text-gray-500">Loading more posts...</div>
             </div>
-          )
-        })}
-        
-        {/* Loading indicator for next page */}
-        {isFetchingNextPage && (
-          <div className="py-4 text-center">
-            <div className="text-sm text-gray-500">Loading more posts...</div>
-          </div>
-        )}
-        
-        {/* End of posts indicator */}
-        {!hasNextPage && allPosts.length > 0 && (
-          <div className="py-4 text-center">
-            <div className="text-sm text-gray-500">No more posts to load</div>
-          </div>
-        )}
-      </div>
-      <div className="flex flex-col gap-4 sticky top-6 h-fit ">
-        <div className="border-1 bg-white z-10 rounded-2xl border-stone-200 shadow-2xs p-4 w-3xs">
-          <h4 className="font-medium capitalize mb-2"> Got an idea?</h4>
-          <CreateEditPost 
-            boardId={boards?.boards[0].id || ''} // TODO: Get actual board ID from context
-            mode="create"
-            onSuccess={() => {
-              // Refresh the posts list
-              window.location.reload(); // Temporary until we have proper invalidation
-            }}
-          />
+          )}
+
+          {/* End of posts indicator */}
+          {!hasNextPage && allPosts.length > 0 && (
+            <div className="py-4 text-center">
+              <div className="text-sm text-gray-500">No more posts to load</div>
+            </div>
+          )}
         </div>
-        <div className="border-1 bg-white z-10 rounded-2xl border-stone-200 shadow-2xs p-4 w-3xs">
-          <h4 className="font-medium capitalize mb-2">boards</h4>
-          <div>
-            {boards?.boards.map(board => (
-              <Button key={board.id} className="w-full bg-transparent text-left p-0 text-black  font-medium">
-                <span className="size-4 bg-green-500 rounded-full"/>
-                <span>
-                {board.name}
-                </span>
-              </Button>
-            ))}
+        <div className="flex flex-col gap-4 sticky top-6 h-fit ">
+          <div className="border-1 bg-white z-10 rounded-2xl border-stone-200 shadow-2xs p-4 w-3xs">
+            <h4 className="font-medium capitalize mb-2"> Got an idea?</h4>
+            <CreateEditPost
+              boardId={boards?.boards[0].id || ""} // TODO: Get actual board ID from context
+              mode="create"
+              onSuccess={() => {
+                // Refresh the posts list
+                window.location.reload(); // Temporary until we have proper invalidation
+              }}
+            />
+          </div>
+          <div className="border-1 bg-white z-10 rounded-2xl border-stone-200 shadow-2xs p-4 w-3xs">
+            <h4 className="font-medium capitalize mb-2">boards</h4>
+            <div>
+              {boards?.boards.map((board) => (
+                <Button
+                  key={board.id}
+                  className="w-full bg-transparent text-left p-0 text-black  font-medium"
+                >
+                  <span className="size-4 bg-green-500 rounded-full" />
+                  <span>{board.name}</span>
+                </Button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
-    </div>
     </div>
   );
 }

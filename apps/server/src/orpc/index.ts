@@ -16,6 +16,7 @@ import { randomUUID } from "crypto";
 import { auth } from "../lib/auth";
 import { publicRouter } from "./public";
 import { organizationRouter } from "./organization";
+import { mixedRouter } from "./features";
 
 // Pagination schema for reuse
 const paginationSchema = z.object({
@@ -42,6 +43,7 @@ export const apiRouter = {
   // New router structure
   public: publicRouter,
   organization: organizationRouter,
+  mixed: mixedRouter,
 
   // Legacy routes (to be moved gradually)
   healthCheck: publicProcedure.handler(async ({ context }) => {

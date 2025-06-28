@@ -85,7 +85,10 @@ CREATE TABLE "comments" (
 	"id" text PRIMARY KEY NOT NULL,
 	"feedback_id" text NOT NULL,
 	"parent_comment_id" text,
-	"author_id" text NOT NULL,
+	"author_id" text,
+	"is_anonymous" boolean DEFAULT false NOT NULL,
+	"anonymous_name" text,
+	"anonymous_email" text,
 	"content" text NOT NULL,
 	"sentiment_score" real,
 	"is_internal" boolean DEFAULT false,
@@ -95,7 +98,7 @@ CREATE TABLE "comments" (
 );
 --> statement-breakpoint
 CREATE TABLE "feedback" (
-	"id" text PRIMARY KEY DEFAULT 'gen_random_uuid()' NOT NULL,
+	"id" text PRIMARY KEY DEFAULT 'gen_random_uuid()::text' NOT NULL,
 	"board_id" text NOT NULL,
 	"type" "feedback_type" NOT NULL,
 	"title" text,

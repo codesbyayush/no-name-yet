@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1749754458276,
-      "tag": "0000_steep_butterfly",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1749843952121,
-      "tag": "0001_ordinary_blonde_phantom",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1750532624491,
-      "tag": "0002_melodic_psylocke",
+      "when": 1751138283006,
+      "tag": "0000_lucky_iron_lad",
       "breakpoints": true
     }
   ]

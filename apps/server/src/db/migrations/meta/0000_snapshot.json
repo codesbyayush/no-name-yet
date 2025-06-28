@@ -1,5 +1,5 @@
 {
-  "id": "371ea4c9-24e7-4c5c-8985-51cf1640b22b",
+  "id": "e3616796-1524-4410-9116-ce57f752dfdf",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -595,7 +595,26 @@
           "name": "author_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
+        },
+        "is_anonymous": {
+          "name": "is_anonymous",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "anonymous_name": {
+          "name": "anonymous_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "anonymous_email": {
+          "name": "anonymous_email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "content": {
           "name": "content",
@@ -725,7 +744,7 @@
           "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "default": "'gen_random_uuid()'"
+          "default": "'gen_random_uuid()::text'"
         },
         "board_id": {
           "name": "board_id",

@@ -1,3 +1,5 @@
+import { boardsRouter } from "./boards";
+
 export const organizationRouter = {
-  // Organization routes will be added here
+  boardsRouter: boardsRouter,
 };
