@@ -1,7 +1,12 @@
 import { AutosizeTextarea } from "@/components/ui/autosize-textarea";
 import { Button } from "@/components/ui/button";
 import { client } from "@/utils/orpc";
-import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
+import {
+  useQuery,
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useCallback, useRef, useEffect } from "react";
 import { CreateEditPost } from "@/components/create-edit-post";
@@ -12,6 +17,9 @@ export const Route = createFileRoute("/_public/board/$postId")({
 
 function RouteComponent() {
   const { postId } = Route.useParams();
+
+  const [commentInput, setCommentInput] = useState("");
+  const queryClient = useQueryClient();
 
   // Replace useQuery with useInfiniteQuery for comments
   const {
@@ -74,6 +82,15 @@ function RouteComponent() {
       }
     };
   }, []);
+  const commentMutation = useMutation({
+    mutationFn: (content: string) =>
+      client.public.comments.create({ feedbackId: postId, content }),
+    onSuccess: () => {
+      setCommentInput("");
+      queryClient.invalidateQueries({ queryKey: [postId, "comments"] });
+    },
+  });
+
   return (
     <div className="flex gap-4 relative">
       <div className="border-1 rounded-3xl w-2xl border-stone-200 px-6 flex-1">
@@ -93,8 +110,16 @@ function RouteComponent() {
                 className="bg-gray-50 min-h-20 rounded-lg border-none"
                 minHeight={100}
                 placeholder="Add a comment..."
+                value={commentInput}
+                onChange={(e) => setCommentInput(e.target.value)}
               />
-              <Button className="ml-auto rounded-lg">Comment</Button>
+              <Button
+                className="ml-auto rounded-lg"
+                onClick={() => commentMutation.mutate(commentInput)}
+                disabled={!commentInput.trim() || commentMutation.isPending}
+              >
+                {commentMutation.isPending ? "Posting..." : "Comment"}
+              </Button>
             </div>
           </div>
         </div>
