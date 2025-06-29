@@ -9,17 +9,18 @@ import {
   type Feedback,
   type NewFeedback,
 } from "../../db/schema/feedback";
+import { ORPCError } from "@orpc/client";
 
 export const postsRouter = {
   create: protectedProcedure
     .input(
       z.object({
         boardId: z.string(),
-        type: z.enum(["bug", "suggestion"]),
+        type: z.enum(["bug", "suggestion"]).default("bug"),
         title: z.string().optional(),
         description: z.string().min(1),
         url: z.string().optional(),
-        priority: z.enum(["low", "medium", "high"]).default("medium"),
+        priority: z.enum(["low", "medium", "high"]).default("low"),
         tags: z.array(z.string()).default([]),
         userAgent: z.string().optional(),
         browserInfo: z
@@ -50,27 +51,36 @@ export const postsRouter = {
       const userEmail = context.session!.user.email;
       const userName = context.session!.user.name;
 
-      const [newPost] = await db
-        .insert(feedback)
-        .values({
-          boardId: input.boardId,
-          type: input.type,
-          title: input.title,
-          description: input.description,
-          userId,
-          userEmail,
-          userName,
-          userAgent: input.userAgent,
-          url: input.url,
-          priority: input.priority,
-          tags: input.tags,
-          browserInfo: input.browserInfo,
-          attachments: input.attachments,
-          isAnonymous: false,
-        })
-        .returning();
+      if (!userId) {
+        throw new ORPCError("UNAUTHORIZED");
+      }
 
-      return newPost;
+      try {
+        const [newPost] = await db
+          .insert(feedback)
+          .values({
+            boardId: input.boardId,
+            type: input.type,
+            title: input.title,
+            description: input.description,
+            userId,
+            userEmail,
+            userName,
+            userAgent: input.userAgent,
+            url: input.url,
+            priority: input.priority,
+            tags: input.tags,
+            browserInfo: input.browserInfo,
+            attachments: input.attachments,
+            isAnonymous: false,
+          })
+          .returning();
+
+        return newPost;
+      } catch (error) {
+        console.error(error);
+        throw new ORPCError("INTERNAL_SERVER_ERROR");
+      }
     }),
 
   update: protectedProcedure

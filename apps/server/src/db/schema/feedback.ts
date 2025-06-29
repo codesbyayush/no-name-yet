@@ -9,6 +9,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { organization } from "./organization";
 import { boards } from "./boards";
+import { sql } from "drizzle-orm";
 
 // Enum for feedback types
 export const feedbackTypeEnum = pgEnum("feedback_type", ["bug", "suggestion"]);
@@ -40,7 +41,9 @@ export const planTypeEnum = pgEnum("plan_type", [
 export const feedback = pgTable(
   "feedback",
   {
-    id: text("id").primaryKey().default("gen_random_uuid()::text"),
+    id: text("id")
+      .primaryKey()
+      .default(sql`gen_random_uuid()::text`),
     boardId: text("board_id")
       .notNull()
       .references(() => boards.id, { onDelete: "cascade" }),
