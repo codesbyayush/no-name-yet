@@ -124,7 +124,7 @@ function RouteComponent() {
       <div className="border-1 rounded-3xl w-2xl border-stone-200 px-6 flex-1">
         <div className={`py-6 space-y-2`}>
           <h4 className="font-semibold capitalize text-lg">{post?.title}</h4>
-          <p className="text-sm text-[#0007149f] font-medium capitalize text-pretty">
+          <p className="text-sm text-accent-foreground/75 font-medium capitalize text-pretty">
             {post?.content}
           </p>
 
@@ -160,15 +160,15 @@ function RouteComponent() {
               >
                 {hasVoted ? "❤️" : "🤍"}
               </span>
-              <span className="ml-1 text-base font-medium text-stone-700">
+              <span className="ml-1 text-base font-medium text-muted-foreground">
                 {typeof post?.totalVotes === "number" ? post.totalVotes : 0}
               </span>
             </button>
           </div>
           <div>
-            <div className="bg-gray-50 p-4 rounded-2xl border border-stone-200 mt-6 flex flex-col items-end gap-3">
+            <div className="bg-noise bg-secondary/90 p-4 rounded-2xl border border-stone-200 mt-6 flex flex-col items-end gap-3">
               <AutosizeTextarea
-                className="bg-gray-50 min-h-20 rounded-lg border-none"
+                className="bg-secondary min-h-20 rounded-lg border-none"
                 minHeight={100}
                 placeholder="Add a comment..."
                 value={commentInput}
@@ -239,15 +239,6 @@ function RouteComponent() {
           </div>
         )}
 
-        {/* End of comments indicator */}
-        {!hasNextPage && allComments.length > 0 && (
-          <div className="py-4 text-center border-t-2">
-            <div className="text-sm text-gray-500">
-              No more comments to load
-            </div>
-          </div>
-        )}
-
         {/* No comments state */}
         {!isLoadingComments && allComments.length === 0 && (
           <div className="py-4 text-center border-t-2">
@@ -258,7 +249,7 @@ function RouteComponent() {
         )}
       </div>
       <div className="flex flex-col gap-4 sticky top-6 h-fit ">
-        <div className="border-1 bg-white z-10 rounded-2xl border-stone-200 shadow-2xs p-4 w-3xs">
+        <div className="border-1 bg-background/90 bg-noise z-10 rounded-2xl border-stone-200 shadow-2xs p-4 w-3xs">
           <div className="flex gap-3 items-center">
             <div>
               {post?.author?.image ? (
@@ -268,11 +259,10 @@ function RouteComponent() {
               )}
             </div>
             <div>
-              <h4 className="font-medium capitalize text-sm py-1">
-                {" "}
+              <h4 className="font-medium text-foreground capitalize text-sm py-1">
                 {post?.author?.name}
               </h4>
-              <p className="text-xs text-stone-600 pl-px">
+              <p className="text-xs text-muted-foreground pl-px">
                 {post?.createdAt.toLocaleDateString()}
               </p>
             </div>
@@ -280,22 +270,21 @@ function RouteComponent() {
           <div>
             {post?.board && (
               <div className="pt-4 pl-px">
-                <span className="pr-4 text-sm font-medium text-stone-600">
+                <span className="pr-4 text-sm font-medium text-foreground">
                   Board
                 </span>
                 <span className="bg-green-100 text-green-800 text-xs font-medium px-2 rounded-md p-1.5">
-                  {" "}
                   {post?.board.name}
                 </span>
               </div>
             )}
           </div>
         </div>
-        <div className="border-1 bg-white z-10 rounded-2xl border-stone-200 shadow-2xs p-4">
+        <div className="border-1 bg-background/90 bg-noise z-10 rounded-2xl border-stone-200 shadow-2xs p-4">
           <h4 className="font-medium capitalize mb-2">Get Updates</h4>
           <Button
             variant={"secondary"}
-            className="w-full border-1 border-stone-200 rounded-lg font-medium"
+            className="w-full rounded-lg font-medium"
           >
             Subscribe
           </Button>

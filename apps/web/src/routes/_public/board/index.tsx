@@ -123,7 +123,7 @@ function BoardIndexPage() {
         </div>
       </div> */}
       <div className="flex gap-4 relative">
-        <div className="border-1 border-stone-200 bg-white dark:bg-black w-2xl rounded-3xl px-6 shadow-xs flex-1">
+        <div className="border-1 border-stone-200 bg-background/90 bg-noise w-2xl rounded-3xl px-6 shadow-xs flex-1">
           {isLoading && <div>Loading posts...</div>}
           {isError && <div>Error loading posts</div>}
           {allPosts.map((f, i) => {
@@ -142,7 +142,7 @@ function BoardIndexPage() {
                 className={`${i > 0 ? "border-t-[1px] border-stone-200" : ""} py-6 space-y-1 cursor-pointer`}
               >
                 <h4 className="font-semibold capitalize text-lg">{f.title}</h4>
-                <p className="text-sm text-[#0007149f] font-medium capitalize text-pretty">
+                <p className="text-sm text-accent-foreground/75 font-medium capitalize text-pretty">
                   {f.content}
                 </p>
                 <div className="pt-4 flex justify-between">
@@ -184,16 +184,9 @@ function BoardIndexPage() {
               <div className="text-sm text-gray-500">Loading more posts...</div>
             </div>
           )}
-
-          {/* End of posts indicator */}
-          {!hasNextPage && allPosts.length > 0 && (
-            <div className="py-4 text-center">
-              <div className="text-sm text-gray-500">No more posts to load</div>
-            </div>
-          )}
         </div>
         <div className="flex flex-col gap-4 sticky top-6 h-fit ">
-          <div className="border-1 bg-white z-10 rounded-2xl border-stone-200 shadow-2xs p-4 w-3xs">
+          <div className="border-1 bg-background/90 bg-noise z-10 rounded-2xl border-stone-200 shadow-2xs p-4 w-3xs">
             <h4 className="font-medium capitalize mb-2"> Got an idea?</h4>
             <CreateEditPost
               boardId={boards?.boards[0].id || ""} // TODO: Get actual board ID from context
@@ -204,13 +197,14 @@ function BoardIndexPage() {
               }}
             />
           </div>
-          <div className="border-1 bg-white z-10 rounded-2xl border-stone-200 shadow-2xs p-4 w-3xs">
+          <div className="border-1 bg-background/90 bg-noise z-10 rounded-2xl border-stone-200 shadow-2xs p-4 w-3xs">
             <h4 className="font-medium capitalize mb-2">boards</h4>
             <div>
               {boards?.boards.map((board) => (
                 <Button
                   key={board.id}
-                  className="w-full bg-transparent text-left p-0 text-black  font-medium"
+                  variant={"secondary"}
+                  className="w-full  text-foreground text-left p-0 font-medium"
                 >
                   <span className="size-4 bg-green-500 rounded-full" />
                   <span>{board.name}</span>
