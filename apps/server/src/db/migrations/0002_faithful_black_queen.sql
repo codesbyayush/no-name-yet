@@ -1,0 +1,1 @@
+ALTER TABLE "organization" ADD COLUMN "public_key" text DEFAULT gen_random_uuid()::text;

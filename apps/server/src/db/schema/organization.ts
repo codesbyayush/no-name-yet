@@ -1,5 +1,6 @@
 import { pgTable, text, timestamp, index } from "drizzle-orm/pg-core";
 import { user } from "./auth";
+import { sql } from "drizzle-orm";
 
 // Organization table
 export const organization = pgTable(
@@ -10,6 +11,7 @@ export const organization = pgTable(
     slug: text("slug").notNull(),
     logo: text("logo"),
     metadata: text("metadata"),
+    publicKey: text("public_key").default(sql`gen_random_uuid()::text`),
     createdAt: timestamp("created_at").notNull(),
   },
   (table) => ({

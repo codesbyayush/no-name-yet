@@ -15,6 +15,13 @@
       "when": 1751181410004,
       "tag": "0001_ancient_magma",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1751186842412,
+      "tag": "0002_faithful_black_queen",
+      "breakpoints": true
     }
   ]
 }
