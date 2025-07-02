@@ -222,7 +222,7 @@ function RouteComponent() {
   return (
     <div>
       <div className="sticky -top-12 z-10">
-        <div className=" bg-background backdrop-blur-2xl max-w-5xl mx-auto">
+        <div className="bg-background backdrop-blur-2xl max-w-5xl mx-auto text-card-foreground">
           <SiteHeader title="Boards">
             <>
               <div className="flex items-center gap-3">
@@ -291,7 +291,7 @@ function RouteComponent() {
           </SiteHeader>
           <div className="flex flex-1 flex-col">
             {/* Top Menu */}
-            <div className="bg-background/95 dark:bg-white backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className=" backdrop-blur">
               <div className="flex items-center justify-between px-4 py-3 md:px-6 ml-auto">
                 {/* Right Side - Tabbed Navigation */}
                 <div className="flex items-center">

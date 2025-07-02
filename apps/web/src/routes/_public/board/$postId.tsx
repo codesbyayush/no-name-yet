@@ -120,8 +120,8 @@ function RouteComponent() {
   });
 
   return (
-    <div className="flex gap-4 relative">
-      <div className="border-1 rounded-3xl w-2xl border-stone-200 px-6 flex-1">
+    <div className="flex gap-4 relative text-card-foreground ">
+      <div className="border-1 rounded-3xl w-2xl border-stone-200 bg-card px-6 flex-1">
         <div className={`py-6 space-y-2`}>
           <h4 className="font-semibold capitalize text-lg">{post?.title}</h4>
           <p className="text-sm text-accent-foreground/75 font-medium capitalize text-pretty">
@@ -166,9 +166,9 @@ function RouteComponent() {
             </button>
           </div>
           <div>
-            <div className="bg-noise bg-secondary/90 p-4 rounded-2xl border border-stone-200 mt-6 flex flex-col items-end gap-3">
+            <div className="bg-muted p-4 rounded-2xl border border-stone-200 mt-6 flex flex-col items-end gap-3">
               <AutosizeTextarea
-                className="bg-secondary min-h-20 rounded-lg border-none"
+                className="bg-muted min-h-20 rounded-lg border-none"
                 minHeight={100}
                 placeholder="Add a comment..."
                 value={commentInput}
@@ -207,7 +207,7 @@ function RouteComponent() {
             <div
               key={comment.id}
               ref={isSecondLastComment ? lastCommentCallback : null}
-              className={"flex gap-1 py-4 space-y-2 w-full border-t-2"}
+              className={`flex gap-1 py-4 space-y-2 w-full ${i === allComments.length - 1 ? "border-b-0" : "border-b-2"}`}
             >
               <div>
                 <img

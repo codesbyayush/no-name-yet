@@ -89,41 +89,9 @@ function BoardIndexPage() {
   }, []);
 
   return (
-    <div>
-      {/* <div className="flex justify-between">
-        <DropdownMenu>
-          <DropdownMenuTrigger>Open</DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuLabel>Boards</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {boards?.boards?.map(board => {
-              return (
-                <DropdownMenuItem key={board.id}>
-                  {board.name}
-                </DropdownMenuItem>
-              )
-            })}
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <div className="flex gap-2">
-          <DropdownMenu>
-          <DropdownMenuTrigger>Open</DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Billing</DropdownMenuItem>
-            <DropdownMenuItem>Team</DropdownMenuItem>
-            <DropdownMenuItem>Subscription</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <span>
-          search
-        </span>
-        </div>
-      </div> */}
+    <div className="text-card-foreground">
       <div className="flex gap-4 relative">
-        <div className="border-1 border-stone-200 bg-background/90 bg-noise w-2xl rounded-3xl px-6 shadow-xs flex-1">
+        <div className="border-1 border-stone-200 bg-card/90 w-2xl rounded-3xl px-6 shadow-xs flex-1">
           {isLoading && <div>Loading posts...</div>}
           {isError && <div>Error loading posts</div>}
           {allPosts.map((f, i) => {
@@ -141,8 +109,10 @@ function BoardIndexPage() {
                 }
                 className={`${i > 0 ? "border-t-[1px] border-stone-200" : ""} py-6 space-y-1 cursor-pointer`}
               >
-                <h4 className="font-semibold capitalize text-lg">{f.title}</h4>
-                <p className="text-sm text-accent-foreground/75 font-medium capitalize text-pretty">
+                <h4 className="font-semibold text-card-foreground capitalize text-lg">
+                  {f.title}
+                </h4>
+                <p className="text-sm text-muted-foreground font-medium capitalize text-pretty">
                   {f.content}
                 </p>
                 <div className="pt-4 flex justify-between">
@@ -163,7 +133,7 @@ function BoardIndexPage() {
                       <h5 className="capitalize font-medium text-sm pb-0.5">
                         {f.author?.name || "Anon"}
                       </h5>
-                      <p className="capitalize text-xs text-[#0007149f] font-medium">
+                      <p className="capitalize text-xs text-muted-foreground font-medium">
                         {f.updatedAt.toLocaleDateString()}
                       </p>
                     </div>

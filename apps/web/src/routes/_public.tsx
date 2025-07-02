@@ -1,3 +1,4 @@
+import { useSession } from "@/lib/auth-client";
 import {
   createFileRoute,
   Link,
@@ -12,6 +13,8 @@ export const Route = createFileRoute("/_public")({
 function PublicLayout() {
   const location = useLocation();
 
+  const { data: session } = useSession();
+
   const publicLinks = [
     { to: "/board", label: "Board" },
     { to: "/roadmap", label: "Roadmap" },
@@ -19,7 +22,7 @@ function PublicLayout() {
   ];
 
   return (
-    <div className="flex h-full min-h-screen flex-col items-center">
+    <div className="flex h-full min-h-screen flex-col items-center bg-background bg-noise">
       {/* Navigation Header */}
       <nav className="w-[60rem] flex justify-between items-center gap-4 p-4">
         {/* Logo and Navigation Links */}
@@ -63,9 +66,17 @@ function PublicLayout() {
             {/* User Avatar Button */}
             <button className="p-0.5 rounded-full shadow-sm  transition-colors">
               <div className="w-8 h-8 rounded-full border border-accent-foreground overflow-hidden">
-                <span className="size-5 bg-accent p-4 aspect-square rounded-full flex items-center justify-center ">
-                  ?
-                </span>
+                {session?.user.image ? (
+                  <img
+                    src={session.user.image}
+                    alt="User Avatar"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="size-5 bg-accent p-4 aspect-square rounded-full flex items-center justify-center ">
+                    ?
+                  </span>
+                )}
               </div>
             </button>
           </div>
