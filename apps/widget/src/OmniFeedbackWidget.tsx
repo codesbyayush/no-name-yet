@@ -1,29 +1,30 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { createApiClient, type FeedbackSubmission, type Board } from "./api";
 
 interface OmniFeedbackWidgetProps {
-  tenantId: string;
-  jwtAuthToken?: string;
+  publicKey: string;
+  boardId?: string;
+  user?: {
+    id?: string;
+    name?: string;
+    email?: string;
+  };
+  customData?: { [key: string]: any };
   apiUrl?: string;
   theme?: {
     primaryColor?: string;
     buttonText?: string;
   };
-  position?: 'center' | 'above-button';
+  position?: "center" | "above-button";
   onClose?: () => void;
 }
 
-interface FeedbackData {
-  type: "bug" | "suggestion";
-  description: string;
-  severity?: "low" | "medium" | "high" | "critical";
-  category?: string;
-  attachments?: File[];
-}
-
 const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
-  tenantId,
-  jwtAuthToken,
-  apiUrl = "http://localhost:8080",
+  publicKey,
+  boardId,
+  user,
+  customData,
+  apiUrl = "https://localhost:8080",
   theme = {},
   position = "above-button",
   onClose,
@@ -32,15 +33,52 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
   const [currentStep, setCurrentStep] = useState<
     "type" | "details" | "submit" | "success"
   >("type");
-  const [feedbackData, setFeedbackData] = useState<FeedbackData>({
-    type: "bug",
-    description: "",
-    severity: "medium",
-  });
+
+  // State for feedback content
+  const [feedbackType, setFeedbackType] = useState<"bug" | "suggestion">("bug");
+  const [description, setDescription] = useState("");
+  const [severity, setSeverity] = useState<
+    "low" | "medium" | "high" | "critical"
+  >("medium");
+
+  // State for board selection
+  const [boards, setBoards] = useState<Board[]>([]);
+  const [selectedBoardId, setSelectedBoardId] = useState<string | undefined>(
+    boardId,
+  );
+  const [isLoadingBoards, setIsLoadingBoards] = useState<boolean>(!boardId);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [apiClient] = useState(() => createApiClient({ apiUrl, publicKey }));
+  console.log(publicKey);
+
+  useEffect(() => {
+    // If no boardId is provided, fetch the public boards for the user to choose from.
+    if (!boardId) {
+      setIsLoadingBoards(true);
+      setError(null);
+      apiClient
+        .getPublicBoards()
+        .then((fetchedBoards) => {
+          setBoards(fetchedBoards);
+          if (fetchedBoards && fetchedBoards.length > 0) {
+            setSelectedBoardId(fetchedBoards[0].id);
+          } else {
+            setError("No public boards are available.");
+          }
+        })
+        .catch(() => {
+          setError("Could not load boards. Please check your public key.");
+        })
+        .finally(() => {
+          setIsLoadingBoards(false);
+        });
+    }
+  }, [boardId, apiClient]);
 
   // Collect browser context
   const getBrowserContext = () => ({
@@ -54,84 +92,57 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
   });
 
   const handleTypeSelection = (type: "bug" | "suggestion") => {
-    setFeedbackData((prev) => ({ ...prev, type }));
+    setFeedbackType(type);
     setCurrentStep("details");
   };
 
-  const handleDescriptionChange = (description: string) => {
-    setFeedbackData((prev) => ({ ...prev, description }));
-  };
-
-  const handleSeverityChange = (
-    severity: "low" | "medium" | "high" | "critical",
-  ) => {
-    setFeedbackData((prev) => ({ ...prev, severity }));
-  };
-
-  const handleFileUpload = (files: FileList | null) => {
-    if (files) {
-      const fileArray = Array.from(files);
-      setFeedbackData((prev) => ({ ...prev, attachments: fileArray }));
-    }
-  };
+  // const handleFileUpload = (files: FileList | null) => {
+  //   if (files) {
+  //     const fileArray = Array.from(files);
+  //     setFeedbackData((prev) => ({ ...prev, attachments: fileArray }));
+  //   }
+  // };
 
   const submitFeedback = async () => {
-    if (!feedbackData.description.trim()) {
-      setError("Please provide a description");
+    if (!description.trim()) {
+      setError("Please provide a description.");
+      return;
+    }
+    if (!selectedBoardId) {
+      setError("Please select a board.");
       return;
     }
 
     setIsSubmitting(true);
     setError(null);
 
-    try {
-      const browserContext = getBrowserContext();
-      
-      const payload = {
-        tenantId,
-        type: feedbackData.type,
-        description: feedbackData.description,
-        severity: feedbackData.type === "bug" ? feedbackData.severity : undefined,
+    const browserContext = getBrowserContext();
+
+    const submission: FeedbackSubmission = {
+      boardId: selectedBoardId,
+      type: feedbackType,
+      description,
+      severity: feedbackType === "bug" ? severity : undefined,
+      user,
+      customData,
+      browserInfo: {
         userAgent: browserContext.userAgent,
         url: browserContext.url,
-        browserInfo: {
-          platform: navigator.platform,
-          language: navigator.language,
-          cookieEnabled: navigator.cookieEnabled,
-          onLine: navigator.onLine,
-          screenResolution: `${window.screen.width}x${window.screen.height}`,
-        },
-        // For Phase 2, we'll handle attachments as metadata only
-        attachments: feedbackData.attachments?.map((file, index) => ({
-          id: `${Date.now()}-${index}`,
-          name: file.name,
-          type: file.type,
-          size: file.size,
-          url: `placeholder-url-${index}`, // Will be implemented in Phase 4
-        })) || [],
-      };
+        platform: navigator.platform,
+        language: navigator.language,
+        cookieEnabled: navigator.cookieEnabled,
+        onLine: navigator.onLine,
+        screenResolution: `${window.screen.width}x${window.screen.height}`,
+      },
+    };
 
-      const headers: HeadersInit = {
-        "Content-Type": "application/json",
-      };
-      
-      if (jwtAuthToken) {
-        headers.Authorization = `Bearer ${jwtAuthToken}`;
+    try {
+      const result = await apiClient.submitFeedback(submission);
+      if (result.success) {
+        setCurrentStep("success");
+      } else {
+        throw new Error("Submission was not successful.");
       }
-
-      const response = await fetch(`${apiUrl}/api/feedback/submit`, {
-        method: "POST",
-        body: JSON.stringify(payload),
-        headers,
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || `HTTP error! status: ${response.status}`);
-      }
-
-      setCurrentStep("success");
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to submit feedback",
@@ -143,11 +154,9 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
 
   const resetWidget = () => {
     setCurrentStep("type");
-    setFeedbackData({
-      type: "bug",
-      description: "",
-      severity: "medium",
-    });
+    setDescription("");
+    setFeedbackType("bug");
+    setSeverity("medium");
     setError(null);
     setIsSubmitting(false);
   };
@@ -195,74 +204,80 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
         return (
           <div className="animate-in fade-in duration-200">
             <h3 className="text-lg font-semibold mb-5 text-gray-900">
-              {feedbackData.type === "bug"
+              {feedbackType === "bug"
                 ? "Describe the issue"
                 : "Share your suggestion"}
             </h3>
 
+            {!boardId && ( // Only show board selector if no specific board was passed in
+              <div className="mb-5">
+                <label
+                  htmlFor="board-select"
+                  className="block mb-2 font-medium text-gray-700"
+                >
+                  Select a Board
+                </label>
+                {isLoadingBoards ? (
+                  <div className="w-full p-3 border-2 border-gray-200 rounded-md bg-gray-100 animate-pulse">
+                    Loading boards...
+                  </div>
+                ) : (
+                  <select
+                    id="board-select"
+                    className="w-full p-3 border-2 border-gray-200 rounded-md font-inherit text-sm transition-colors duration-200 focus:outline-none focus:border-blue-500 disabled:bg-gray-100"
+                    value={selectedBoardId}
+                    onChange={(e) => setSelectedBoardId(e.target.value)}
+                    disabled={boards.length === 0}
+                  >
+                    {boards.length === 0 && (
+                      <option>No boards available</option>
+                    )}
+                    {boards.map((b) => (
+                      <option key={b.id} value={b.id}>
+                        {b.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
+            )}
+
             <textarea
               className="w-full min-h-[100px] p-3 border-2 border-gray-200 rounded-md font-inherit text-sm resize-y transition-colors duration-200 mb-5 focus:outline-none focus:border-blue-500 placeholder:text-gray-500"
               placeholder={
-                feedbackData.type === "bug"
+                feedbackType === "bug"
                   ? "Please describe what happened and what you expected..."
                   : "Tell us about your improvement idea..."
               }
-              value={feedbackData.description}
-              onChange={(e) => handleDescriptionChange(e.target.value)}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
               rows={4}
             />
 
-            {feedbackData.type === "bug" && (
+            {feedbackType === "bug" && (
               <div className="mb-5">
                 <label className="block mb-2 font-medium text-gray-700">
                   How urgent is this issue?
                 </label>
                 <div className="flex gap-2 flex-wrap">
-                  {(["low", "medium", "high", "critical"] as const).map(
-                    (severity) => (
-                      <button
-                        key={severity}
-                        className={`py-2 px-4 border-2 rounded-full cursor-pointer text-xs font-medium transition-all duration-200 capitalize focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                          feedbackData.severity === severity
-                            ? "bg-blue-500 border-blue-500 text-white"
-                            : "bg-white border-gray-200 text-gray-700 hover:border-blue-500"
-                        }`}
-                        onClick={() => handleSeverityChange(severity)}
-                      >
-                        {severity.charAt(0).toUpperCase() + severity.slice(1)}
-                      </button>
-                    ),
-                  )}
+                  {(["low", "medium", "high", "critical"] as const).map((s) => (
+                    <button
+                      key={s}
+                      className={`py-2 px-4 border-2 rounded-full cursor-pointer text-xs font-medium transition-all duration-200 capitalize focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                        severity === s
+                          ? "bg-blue-500 border-blue-500 text-white"
+                          : "bg-white border-gray-200 text-gray-700 hover:border-blue-500"
+                      }`}
+                      onClick={() => setSeverity(s)}
+                    >
+                      {s.charAt(0).toUpperCase() + s.slice(1)}
+                    </button>
+                  ))}
                 </div>
               </div>
             )}
 
-            <div className="mb-5">
-              <label className="block mb-2 font-medium text-gray-700">
-                Attach files (optional)
-              </label>
-              <input
-                ref={fileInputRef}
-                type="file"
-                multiple
-                accept="image/*,.pdf,.doc,.docx"
-                onChange={(e) => handleFileUpload(e.target.files)}
-                className="w-full p-2 border-2 border-dashed border-gray-200 rounded-md bg-gray-50 cursor-pointer transition-colors duration-200 hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              />
-              {feedbackData.attachments &&
-                feedbackData.attachments.length > 0 && (
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {feedbackData.attachments.map((file, index) => (
-                      <span
-                        key={index}
-                        className="bg-gray-200 px-2 py-1 rounded text-xs text-gray-700"
-                      >
-                        {file.name}
-                      </span>
-                    ))}
-                  </div>
-                )}
-            </div>
+            {/* File upload commented out */}
 
             {error && (
               <div className="bg-red-100 text-red-800 p-3 rounded-md mb-4 text-sm border border-red-200">
@@ -280,7 +295,12 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
               <button
                 className="py-3 px-6 bg-blue-500 text-white border-none rounded-md text-sm font-medium cursor-pointer transition-all duration-200 min-w-[100px] hover:bg-blue-600 disabled:bg-gray-500 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 onClick={submitFeedback}
-                disabled={isSubmitting || !feedbackData.description.trim()}
+                disabled={
+                  isSubmitting ||
+                  !description.trim() ||
+                  isLoadingBoards ||
+                  !selectedBoardId
+                }
               >
                 {isSubmitting ? "Submitting..." : "Submit Feedback"}
               </button>
@@ -298,8 +318,8 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
               </h3>
               <p className="text-gray-500 mb-6 leading-relaxed">
                 We've received your{" "}
-                {feedbackData.type === "bug" ? "bug report" : "suggestion"} and
-                will review it soon.
+                {feedbackType === "bug" ? "bug report" : "suggestion"} and will
+                review it soon.
               </p>
               <button
                 className="py-3 px-6 bg-blue-500 text-white border-none rounded-md text-sm font-medium cursor-pointer transition-all duration-200 min-w-[100px] hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
@@ -331,7 +351,7 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
       {/* Widget Modal */}
       {isOpen && (
         <>
-          {position === 'center' ? (
+          {position === "center" ? (
             <div className="fixed inset-0  flex items-center justify-center z-[1000001] p-5">
               <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden animate-in zoom-in-95 fade-in duration-300">
                 <div className="p-5 pb-4 border-b border-gray-200 flex items-center justify-between">

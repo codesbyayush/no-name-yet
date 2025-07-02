@@ -1,10 +1,17 @@
 import { createRoot } from "react-dom/client";
 import OmniFeedbackWidget from "./OmniFeedbackWidget";
-import './index.css';
+import "./index.css";
 
 // Global interface for the widget
 interface OmniFeedbackWidgetOptions {
-  tenantId: string;
+  publicKey: string;
+  boardId?: string;
+  user?: {
+    id?: string;
+    name?: string;
+    email?: string;
+  };
+  customData?: { [key: string]: string | undefined };
   jwtAuthToken?: string;
   apiUrl?: string;
   theme?: {
@@ -12,7 +19,7 @@ interface OmniFeedbackWidgetOptions {
     buttonText?: string;
   };
   targetElement?: string | HTMLElement;
-  position?: 'center' | 'above-button';
+  position?: "center" | "above-button";
 }
 
 interface OmniFeedbackWidgetInstance {
@@ -24,14 +31,19 @@ interface OmniFeedbackWidgetInstance {
 }
 
 class OmniFeedbackWidgetManager {
-  private instances: Map<string, { root: any; container: HTMLElement }> = new Map();
-  
+  private instances: Map<string, { root: any; container: HTMLElement }> =
+    new Map();
+
   init(options: OmniFeedbackWidgetOptions): OmniFeedbackWidgetInstance {
-    const { targetElement = 'body', position = 'above-button', ...widgetProps } = options;
-    
+    const {
+      targetElement = "body",
+      position = "above-button",
+      ...widgetProps
+    } = options;
+
     // Get target container
     let container: HTMLElement;
-    if (typeof targetElement === 'string') {
+    if (typeof targetElement === "string") {
       container = document.querySelector(targetElement) as HTMLElement;
       if (!container) {
         throw new Error(`Target element "${targetElement}" not found`);
@@ -41,31 +53,31 @@ class OmniFeedbackWidgetManager {
     }
 
     // Create a unique container for this widget instance
-    const widgetContainer = document.createElement('div');
-    widgetContainer.className = 'omnifeedback-widget-container';
-    widgetContainer.style.position = 'relative';
-    widgetContainer.style.zIndex = '999999';
-    
+    const widgetContainer = document.createElement("div");
+    widgetContainer.className = "omnifeedback-widget-container";
+    widgetContainer.style.position = "relative";
+    widgetContainer.style.zIndex = "999999";
+
     // Generate unique ID for this instance
     const instanceId = `omnifeedback-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     widgetContainer.id = instanceId;
-    
+
     container.appendChild(widgetContainer);
 
     // Create React root and render widget
     const root = createRoot(widgetContainer);
-    
+
     const renderWidget = (visible: boolean = true) => {
       root.render(
-        <div style={{ display: visible ? 'block' : 'none' }}>
-          <OmniFeedbackWidget 
+        <div style={{ display: visible ? "block" : "none" }}>
+          <OmniFeedbackWidget
             {...widgetProps}
             position={position}
             onClose={() => {
               // Widget handles its own visibility, but we can add hooks here
             }}
           />
-        </div>
+        </div>,
       );
     };
 
@@ -108,11 +120,11 @@ const widgetManager = new OmniFeedbackWidgetManager();
 const OmniFeedbackWidgetAPI = {
   init: (options: OmniFeedbackWidgetOptions) => widgetManager.init(options),
   destroyAll: () => widgetManager.destroyAll(),
-  version: '1.0.0'
+  version: "1.0.0",
 };
 
 // For UMD export - ensure it's available globally
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   (window as any).OmniFeedbackWidget = OmniFeedbackWidgetAPI;
 }
 
@@ -120,39 +132,64 @@ if (typeof window !== 'undefined') {
 export default OmniFeedbackWidgetAPI;
 
 // Auto-initialize if data attributes are found on script tag
-if (typeof document !== 'undefined' && typeof window !== 'undefined') {
+if (typeof document !== "undefined" && typeof window !== "undefined") {
   const initializeFromDataAttributes = () => {
-    // Look for script tag with data attributes
-    const scriptTags = document.querySelectorAll('script[data-tenant-id]');
-    
-    scriptTags.forEach((script) => {
-      const tenantId = script.getAttribute('data-tenant-id');
-      const jwtAuthToken = script.getAttribute('data-jwt-token');
-      const apiUrl = script.getAttribute('data-api-url');
-      const targetElement = script.getAttribute('data-target') || 'body';
-      const primaryColor = script.getAttribute('data-primary-color');
-      
-      if (tenantId) {
+    // Look for a script tag with the required data-public-key attribute.
+    // This will find the first script tag that matches, which is typical for widgets.
+    const scriptTag = document.querySelector("script[data-public-key]");
+
+    if (scriptTag instanceof HTMLScriptElement) {
+      const {
+        publicKey,
+        boardId,
+        apiUrl,
+        target,
+        position,
+        primaryColor,
+        buttonText,
+        userId,
+        userName,
+        userEmail,
+        jwtAuthToken,
+        ...customData // Capture all other data-* attributes as customData
+      } = scriptTag.dataset;
+
+      if (publicKey) {
         try {
           widgetManager.init({
-            tenantId,
-            jwtAuthToken: jwtAuthToken || undefined,
-            apiUrl: apiUrl || undefined,
-            targetElement,
+            publicKey,
+            boardId,
+            apiUrl,
+            targetElement: target,
+            position:
+              position === "center" || position === "above-button"
+                ? position
+                : undefined,
             theme: {
-              primaryColor: primaryColor || undefined,
-            }
+              primaryColor,
+              buttonText,
+            },
+            user: {
+              id: userId,
+              name: userName,
+              email: userEmail,
+            },
+            customData,
+            jwtAuthToken,
           });
         } catch (error) {
-          console.error('OmniFeedback Widget auto-initialization failed:', error);
+          console.error(
+            "OmniFeedback Widget auto-initialization failed:",
+            error,
+          );
         }
       }
-    });
+    }
   };
 
   // Try to initialize immediately if DOM is already ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeFromDataAttributes);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeFromDataAttributes);
   } else {
     initializeFromDataAttributes();
   }

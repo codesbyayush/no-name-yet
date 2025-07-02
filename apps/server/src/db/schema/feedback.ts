@@ -51,6 +51,7 @@ export const feedback = pgTable(
     title: text("title"),
     description: text("description").notNull(),
     status: statusEnum("status").default("open").notNull(),
+    // Need to rethink there: user can be from tenant that we do not have in our db
     userId: text("user_id"),
     userEmail: text("user_email"),
     userName: text("user_name"),
@@ -63,6 +64,8 @@ export const feedback = pgTable(
       cookieEnabled?: boolean;
       onLine?: boolean;
       screenResolution?: string;
+      userAgent?: string;
+      url?: string;
     }>(),
 
     // Attachments and media
@@ -84,6 +87,9 @@ export const feedback = pgTable(
       suggestedResponse?: string;
       confidence?: number;
     }>(),
+
+    // Custom data from the user
+    metadata: jsonb("metadata").$type<Record<string, unknown>>(),
 
     // Metadata
     createdAt: timestamp("created_at").defaultNow().notNull(),

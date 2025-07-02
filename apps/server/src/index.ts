@@ -37,7 +37,8 @@ app.use(
       return origin.endsWith(".localhost:3001") ||
         origin.endsWith(".localhost:3002") ||
         origin === "https://localhost:3001" ||
-        origin === "https://localhost:3002"
+        origin === "https://localhost:3002" ||
+        origin === "http://localhost:3000"
         ? origin
         : "https://localhost:3002";
     },
@@ -46,6 +47,7 @@ app.use(
       "Content-Type",
       "Authorization",
       "X-Tenant-ID",
+      "X-Public-Key",
       "Cookie",
       "Set-Cookie",
       "X-Requested-With",
