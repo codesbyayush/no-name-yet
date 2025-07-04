@@ -131,27 +131,32 @@ export function CreateEditPost({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button className="w-full rounded-xl bg-primary">
+          <Button className="w-full rounded-xl bg-primary hover:bg-primary/90 h-12 text-base font-medium shadow-sm">
             {mode === "create" ? "Submit a post" : "Edit post"}
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[550px] w-11/12 max-h-[90vh] overflow-y-auto rounded-3xl">
-        <DialogHeader>
-          <DialogTitle>
+      <DialogContent className="sm:max-w-[600px] w-11/12 max-h-[90vh] overflow-y-auto rounded-3xl border-muted-foreground/10 bg-card shadow-xl">
+        <DialogHeader className="space-y-3 pb-2">
+          <DialogTitle className="text-2xl font-semibold text-card-foreground">
             {mode === "create" ? "Create New Post" : "Edit Post"}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-muted-foreground text-base">
             {mode === "create"
               ? "Share your feedback, suggestion, or report a bug."
               : "Update your post details."}
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-2 pt-2">
           {/* Title */}
-          <div className="space-y-2">
-            <Label htmlFor="title">Title *</Label>
+          <div className="space-y-3">
+            <Label
+              htmlFor="title"
+              className="text-base font-medium text-card-foreground"
+            >
+              Title *
+            </Label>
             <Input
               id="title"
               value={formData.title}
@@ -161,19 +166,23 @@ export function CreateEditPost({
               placeholder="Enter post title..."
               maxLength={250}
               required
+              className="rounded-xl border-muted-foreground/20 !bg-muted h-12 text-base px-4 focus:border-primary focus:ring-2 focus:ring-primary/20 text-foreground"
             />
-            {
-              <div
-                className={`text-xs ${formData.title.length > 150 ? "text-muted-foreground" : "text-transparent"}`}
-              >
-                {formData.title.length}/250 characters
-              </div>
-            }
+            <div
+              className={`text-xs text-right ${formData.title.length > 200 ? "text-destructive" : formData.title.length > 150 ? "text-yellow-600" : "text-muted-foreground"}`}
+            >
+              {formData.title.length}/250 characters
+            </div>
           </div>
 
           {/* Description */}
-          <div className="space-y-2">
-            <Label htmlFor="description">Description *</Label>
+          <div className="space-y-3">
+            <Label
+              htmlFor="description"
+              className="text-base font-medium text-card-foreground"
+            >
+              Description *
+            </Label>
             <AutosizeTextarea
               id="description"
               value={formData.description}
@@ -185,11 +194,12 @@ export function CreateEditPost({
               }
               placeholder="Describe your feedback in detail..."
               maxLength={5000}
-              minHeight={100}
+              minHeight={120}
               required
+              className="rounded-xl border-muted-foreground/20 !bg-muted text-base px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/20 text-foreground"
             />
             <div
-              className={`text-xs ${formData.description.length > 5000 ? "text-muted-foreground" : "text-transparent"}`}
+              className={`text-xs text-right ${formData.description.length > 4500 ? "text-destructive" : formData.description.length > 3500 ? "text-yellow-600" : "text-muted-foreground"}`}
             >
               {formData.description.length}/5000 characters
             </div>
@@ -243,31 +253,48 @@ export function CreateEditPost({
           </div> */}
         </form>
 
-        <DialogFooter>
-          <div className="gap-4 w-full">
-            <div className="space-y-2 w-full">
-              <Select
-                value={formData.board}
-                onValueChange={(value: string) =>
-                  setFormData((prev) => ({ ...prev, board: value }))
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select board" />
-                </SelectTrigger>
-                <SelectContent>
-                  {boards?.boards.map((board) => (
-                    <SelectItem value={board.id}>{board.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+        <div className="space-y-4">
+          <div className="space-y-3">
+            <Label
+              htmlFor="board"
+              className="text-base font-medium text-card-foreground"
+            >
+              Board
+            </Label>
+            <Select
+              value={formData.board}
+              onValueChange={(value: string) =>
+                setFormData((prev) => ({ ...prev, board: value }))
+              }
+            >
+              <SelectTrigger className="rounded-lg p-2 border-muted-foreground/20 !bg-muted h-12 text-base text-foreground px-4 hover:!bg-muted focus:!bg-muted capitalize">
+                <SelectValue
+                  placeholder="Select board"
+                  className="text-foreground"
+                />
+              </SelectTrigger>
+              <SelectContent className="rounded-sm border-muted-foreground/10 !bg-muted shadow-xl">
+                {boards?.boards.map((board) => (
+                  <SelectItem
+                    key={board.id}
+                    value={board.id}
+                    className="rounded-xs text-base cursor-pointer"
+                  >
+                    {board.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
+        </div>
+
+        <DialogFooter className="pt-6 gap-3">
           <Button
             type="button"
             variant="outline"
             onClick={() => setOpen(false)}
             disabled={isLoading}
+            className="rounded-xl h-12 px-6 text-base border-muted-foreground/20 hover:bg-muted/50 bg-background text-foreground"
           >
             Cancel
           </Button>
@@ -279,6 +306,7 @@ export function CreateEditPost({
               !formData.title.trim() ||
               !formData.description.trim()
             }
+            className="rounded-xl h-12 px-8 text-base bg-primary hover:bg-primary/90 shadow-lg"
           >
             {isLoading ? (
               <>
