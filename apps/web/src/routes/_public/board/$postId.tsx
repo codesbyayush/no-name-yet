@@ -110,7 +110,7 @@ function RouteComponent() {
 
   return (
     <div className="flex gap-4 relative text-card-foreground ">
-      <div className="border-1 rounded-3xl w-2xl border-stone-200 bg-card px-6 flex-1">
+      <div className="border-1 border-muted-foreground/10 bg-gradient-to-bl rounded-3xl to-card from-card-foreground/5 w-2xl shadow-xs flex-1 px-6">
         <div className={`py-6 space-y-2`}>
           <h4 className="font-semibold capitalize text-lg">{post?.title}</h4>
           <p className="text-sm text-accent-foreground/75 font-medium capitalize text-pretty">
@@ -135,7 +135,7 @@ function RouteComponent() {
             />
           </div>
           <div>
-            <div className="bg-muted p-4 rounded-2xl border border-stone-200 mt-6 flex flex-col items-end gap-3">
+            <div className="bg-muted p-4 rounded-2xl border border-muted-foreground/10 mt-6 flex flex-col items-end gap-3">
               <AutosizeTextarea
                 className="bg-muted min-h-20 rounded-lg border-none"
                 minHeight={100}
@@ -176,7 +176,7 @@ function RouteComponent() {
             <div
               key={comment.id}
               ref={isSecondLastComment ? lastCommentCallback : null}
-              className={`flex gap-1 py-4 space-y-2 w-full ${i === allComments.length - 1 ? "border-b-0" : "border-b-2"}`}
+              className={`flex gap-1 py-4 space-y-2 w-full ${i === allComments.length - 1 ? "border-b-0" : "border-b-2 border-muted-foreground/5"}`}
             >
               <div>
                 <img
@@ -189,7 +189,20 @@ function RouteComponent() {
                 <div className="flex gap-2 w-full">
                   <h4>{comment.author?.name}</h4>
                   <span>{comment.createdAt.toLocaleDateString()}</span>
-                  <span className="ml-auto">dots</span>
+                  <span className="ml-auto">
+                    <svg
+                      width={16}
+                      height={16}
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="text-muted-foreground"
+                    >
+                      <circle cx="5" cy="12" r="1.5" fill="currentColor" />
+                      <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+                      <circle cx="19" cy="12" r="1.5" fill="currentColor" />
+                    </svg>
+                  </span>
                 </div>
                 <div>
                   <p>{comment.content}</p>
@@ -201,7 +214,7 @@ function RouteComponent() {
 
         {/* Loading indicator for next page of comments */}
         {isFetchingNextPage && (
-          <div className="py-4 text-center border-t-2">
+          <div className="py-4 text-center border-t-2 border-muted-foreground/5">
             <div className="text-sm text-gray-500">
               Loading more comments...
             </div>
@@ -210,7 +223,7 @@ function RouteComponent() {
 
         {/* No comments state */}
         {!isLoadingComments && allComments.length === 0 && (
-          <div className="py-4 text-center border-t-2">
+          <div className="py-4 text-center border-t-2 border-muted-foreground/5">
             <div className="text-sm text-gray-500">
               No comments yet. Be the first to comment!
             </div>
@@ -218,7 +231,7 @@ function RouteComponent() {
         )}
       </div>
       <div className="flex flex-col gap-4 sticky top-6 h-fit ">
-        <div className="border-1 bg-background/90 bg-noise z-10 rounded-2xl border-stone-200 shadow-2xs p-4 w-3xs">
+        <div className="border-1 bg-background/90 bg-noise z-10 rounded-2xl border-muted-foreground/10 shadow-2xs p-4 w-3xs">
           <div className="flex gap-3 items-center">
             <div>
               {post?.author?.image ? (
@@ -249,7 +262,7 @@ function RouteComponent() {
             )}
           </div>
         </div>
-        <div className="border-1 bg-background/90 bg-noise z-10 rounded-2xl border-stone-200 shadow-2xs p-4">
+        <div className="border-1 bg-background/90 bg-noise z-10 rounded-2xl border-muted-foreground/10 shadow-2xs p-4">
           <h4 className="font-medium capitalize mb-2">Get Updates</h4>
           <Button
             variant={"secondary"}
