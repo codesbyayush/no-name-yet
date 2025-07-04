@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { client } from '../utils/orpc';
-import { Button } from './ui/button';
-import { AutosizeTextarea } from './ui/autosize-textarea';
-import { Input } from './ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Badge } from './ui/badge';
-import { toast } from 'sonner';
+import React, { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { client } from "../utils/orpc";
+import { Button } from "./ui/button";
+import { AutosizeTextarea } from "./ui/autosize-textarea";
+import { Input } from "./ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Badge } from "./ui/badge";
+import { toast } from "sonner";
+import { CommentIcon, UpvoteIcon, VoteButton, CommentButton } from "./svg";
 
 interface PostExampleProps {
   boardId: string;
@@ -16,82 +17,99 @@ export function PostExample({ boardId }: PostExampleProps) {
   const queryClient = useQueryClient();
   const [isCreatingPost, setIsCreatingPost] = useState(false);
   const [postForm, setPostForm] = useState({
-    title: '',
-    description: '',
-    type: 'suggestion' as 'bug' | 'suggestion',
-    priority: 'medium' as 'low' | 'medium' | 'high'
+    title: "",
+    description: "",
+    type: "suggestion" as "bug" | "suggestion",
+    priority: "medium" as "low" | "medium" | "high",
   });
 
   // Fetch posts for the board
   const { data: postsData, isLoading } = useQuery({
-    queryKey: ['boardPosts', boardId],
+    queryKey: ["boardPosts", boardId],
     queryFn: () => client.getBoardPosts({ boardId, offset: 0, take: 10 }),
-    enabled: !!boardId
+    enabled: !!boardId,
   });
 
   // Create post mutation
   const createPostMutation = useMutation({
-    mutationFn: (data: typeof postForm) => 
+    mutationFn: (data: typeof postForm) =>
       client.createPost({
         boardId,
         ...data,
         tags: [],
         isAnonymous: false,
-        attachments: []
+        attachments: [],
       }),
     onSuccess: () => {
-      toast.success('Post created successfully!');
-      queryClient.invalidateQueries({ queryKey: ['boardPosts', boardId] });
-      setPostForm({ title: '', description: '', type: 'suggestion', priority: 'medium' });
+      toast.success("Post created successfully!");
+      queryClient.invalidateQueries({ queryKey: ["boardPosts", boardId] });
+      setPostForm({
+        title: "",
+        description: "",
+        type: "suggestion",
+        priority: "medium",
+      });
       setIsCreatingPost(false);
     },
     onError: (error: any) => {
-      toast.error(error.message || 'Failed to create post');
-    }
+      toast.error(error.message || "Failed to create post");
+    },
   });
 
   // Comment mutation
   const createCommentMutation = useMutation({
-    mutationFn: ({ feedbackId, content }: { feedbackId: string; content: string }) =>
+    mutationFn: ({
+      feedbackId,
+      content,
+    }: {
+      feedbackId: string;
+      content: string;
+    }) =>
       client.createComment({
         feedbackId,
         content,
-        isInternal: false
+        isInternal: false,
       }),
     onSuccess: () => {
-      toast.success('Comment added successfully!');
-      queryClient.invalidateQueries({ queryKey: ['postComments'] });
+      toast.success("Comment added successfully!");
+      queryClient.invalidateQueries({ queryKey: ["postComments"] });
     },
     onError: (error: any) => {
-      toast.error(error.message || 'Failed to add comment');
-    }
+      toast.error(error.message || "Failed to add comment");
+    },
   });
 
   // Vote mutation
   const voteMutation = useMutation({
-    mutationFn: ({ feedbackId, type }: { feedbackId: string; type: 'upvote' | 'downvote' }) =>
+    mutationFn: ({
+      feedbackId,
+      type,
+    }: {
+      feedbackId: string;
+      type: "upvote" | "downvote";
+    }) =>
       client.voteOnPost({
         feedbackId,
         type,
-        weight: 1
+        weight: 1,
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['boardPosts', boardId] });
+      queryClient.invalidateQueries({ queryKey: ["boardPosts", boardId] });
     },
     onError: (error: any) => {
-      toast.error(error.message || 'Failed to vote');
-    }
+      toast.error(error.message || "Failed to vote");
+    },
   });
 
   const handleCreatePost = () => {
     if (!postForm.title.trim() || !postForm.description.trim()) {
-      toast.error('Please fill in all required fields');
+      toast.error("Please fill in all required fields");
       return;
     }
     createPostMutation.mutate(postForm);
   };
 
-  const handleVote = (feedbackId: string, type: 'upvote' | 'downvote') => {
+  const handleVote = (feedbackId: string, type: "upvote" | "downvote") => {
     voteMutation.mutate({ feedbackId, type });
   };
 
@@ -108,26 +126,33 @@ export function PostExample({ boardId }: PostExampleProps) {
         </CardHeader>
         <CardContent>
           {!isCreatingPost ? (
-            <Button onClick={() => setIsCreatingPost(true)}>
-              Create Post
-            </Button>
+            <Button onClick={() => setIsCreatingPost(true)}>Create Post</Button>
           ) : (
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-2">Title</label>
                 <Input
                   value={postForm.title}
-                  onChange={(e) => setPostForm(prev => ({ ...prev, title: e.target.value }))}
+                  onChange={(e) =>
+                    setPostForm((prev) => ({ ...prev, title: e.target.value }))
+                  }
                   placeholder="Enter post title..."
                   maxLength={200}
                 />
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium mb-2">Description</label>
+                <label className="block text-sm font-medium mb-2">
+                  Description
+                </label>
                 <AutosizeTextarea
                   value={postForm.description}
-                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setPostForm(prev => ({ ...prev, description: e.target.value }))}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                    setPostForm((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
                   placeholder="Describe your feedback..."
                   maxLength={5000}
                 />
@@ -138,7 +163,12 @@ export function PostExample({ boardId }: PostExampleProps) {
                   <label className="block text-sm font-medium mb-2">Type</label>
                   <select
                     value={postForm.type}
-                    onChange={(e) => setPostForm(prev => ({ ...prev, type: e.target.value as 'bug' | 'suggestion' }))}
+                    onChange={(e) =>
+                      setPostForm((prev) => ({
+                        ...prev,
+                        type: e.target.value as "bug" | "suggestion",
+                      }))
+                    }
                     className="border rounded px-3 py-2"
                   >
                     <option value="suggestion">Suggestion</option>
@@ -147,10 +177,17 @@ export function PostExample({ boardId }: PostExampleProps) {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Priority</label>
+                  <label className="block text-sm font-medium mb-2">
+                    Priority
+                  </label>
                   <select
                     value={postForm.priority}
-                    onChange={(e) => setPostForm(prev => ({ ...prev, priority: e.target.value as 'low' | 'medium' | 'high' }))}
+                    onChange={(e) =>
+                      setPostForm((prev) => ({
+                        ...prev,
+                        priority: e.target.value as "low" | "medium" | "high",
+                      }))
+                    }
                     className="border rounded px-3 py-2"
                   >
                     <option value="low">Low</option>
@@ -161,14 +198,14 @@ export function PostExample({ boardId }: PostExampleProps) {
               </div>
 
               <div className="flex gap-2">
-                <Button 
+                <Button
                   onClick={handleCreatePost}
                   disabled={createPostMutation.isPending}
                 >
-                  {createPostMutation.isPending ? 'Creating...' : 'Create Post'}
+                  {createPostMutation.isPending ? "Creating..." : "Create Post"}
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={() => setIsCreatingPost(false)}
                 >
                   Cancel
@@ -183,9 +220,9 @@ export function PostExample({ boardId }: PostExampleProps) {
       <div className="space-y-4">
         <h2 className="text-xl font-semibold">Posts</h2>
         {postsData?.posts?.map((post: any) => (
-          <PostCard 
-            key={post.id} 
-            post={post} 
+          <PostCard
+            key={post.id}
+            post={post}
             onVote={handleVote}
             onComment={createCommentMutation.mutate}
           />
@@ -197,33 +234,34 @@ export function PostExample({ boardId }: PostExampleProps) {
 
 interface PostCardProps {
   post: any;
-  onVote: (feedbackId: string, type: 'upvote' | 'downvote') => void;
+  onVote: (feedbackId: string, type: "upvote" | "downvote") => void;
   onComment: (params: { feedbackId: string; content: string }) => void;
 }
 
 function PostCard({ post, onVote, onComment }: PostCardProps) {
   const [showCommentForm, setShowCommentForm] = useState(false);
-  const [commentContent, setCommentContent] = useState('');
+  const [commentContent, setCommentContent] = useState("");
 
   // Fetch comments for this post
   const { data: commentsData } = useQuery({
-    queryKey: ['postComments', post.id],
-    queryFn: () => client.getPostCommentsWithReplies({ 
-      feedbackId: post.id, 
-      offset: 0, 
-      take: 5 
-    }),
-    enabled: showCommentForm
+    queryKey: ["postComments", post.id],
+    queryFn: () =>
+      client.getPostCommentsWithReplies({
+        feedbackId: post.id,
+        offset: 0,
+        take: 5,
+      }),
+    enabled: showCommentForm,
   });
 
   const handleAddComment = () => {
     if (!commentContent.trim()) return;
-    
-    onComment({ 
-      feedbackId: post.id, 
-      content: commentContent 
+
+    onComment({
+      feedbackId: post.id,
+      content: commentContent,
     });
-    setCommentContent('');
+    setCommentContent("");
     setShowCommentForm(false);
   };
 
@@ -238,47 +276,49 @@ function PostCard({ post, onVote, onComment }: PostCardProps) {
               <p className="text-gray-600 mt-2">{post.description}</p>
             </div>
             <div className="flex gap-2">
-              <Badge variant={post.type === 'bug' ? 'destructive' : 'default'}>
+              <Badge variant={post.type === "bug" ? "destructive" : "default"}>
                 {post.type}
               </Badge>
-              <Badge variant="outline">
-                {post.priority}
-              </Badge>
+              <Badge variant="outline">{post.priority}</Badge>
             </div>
           </div>
 
           {/* Post Stats */}
           <div className="flex items-center gap-4 text-sm text-gray-500">
-            <span>👍 {post.stats?.upvotes || 0}</span>
-            <span>👎 {post.stats?.downvotes || 0}</span>
-            <span>💬 {post.stats?.comments || 0}</span>
-            <span>By {post.author?.name || 'Anonymous'}</span>
+            <span className="flex items-center gap-1">
+              <UpvoteIcon size={14} className="text-gray-500" />
+              {post.stats?.upvotes || 0}
+            </span>
+            <span className="flex items-center gap-1">
+              <UpvoteIcon size={14} className="text-gray-500 rotate-180" />
+              {post.stats?.downvotes || 0}
+            </span>
+            <span className="flex items-center gap-1">
+              <CommentIcon size={14} className="text-gray-500" />
+              {post.stats?.comments || 0}
+            </span>
+            <span>By {post.author?.name || "Anonymous"}</span>
             <span>{new Date(post.createdAt).toLocaleDateString()}</span>
           </div>
 
           {/* Actions */}
           <div className="flex gap-2">
-            <Button 
-              variant="outline" 
+            <VoteButton
+              count={post.stats?.upvotes || 0}
+              isVoted={false}
+              onClick={() => onVote(post.id, "upvote")}
+            />
+            <Button
+              variant="outline"
               size="sm"
-              onClick={() => onVote(post.id, 'upvote')}
-            >
-              👍 Upvote
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => onVote(post.id, 'downvote')}
+              onClick={() => onVote(post.id, "downvote")}
             >
               👎 Downvote
             </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
+            <CommentButton
+              count={post.stats?.comments || 0}
               onClick={() => setShowCommentForm(!showCommentForm)}
-            >
-              💬 Comment
-            </Button>
+            />
           </div>
 
           {/* Comment Form */}
@@ -286,7 +326,9 @@ function PostCard({ post, onVote, onComment }: PostCardProps) {
             <div className="space-y-2 pt-4 border-t">
               <AutosizeTextarea
                 value={commentContent}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setCommentContent(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                  setCommentContent(e.target.value)
+                }
                 placeholder="Add a comment..."
                 maxLength={2000}
               />
@@ -294,9 +336,9 @@ function PostCard({ post, onVote, onComment }: PostCardProps) {
                 <Button size="sm" onClick={handleAddComment}>
                   Add Comment
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => setShowCommentForm(false)}
                 >
                   Cancel
@@ -332,13 +374,19 @@ function CommentCard({ comment }: CommentCardProps) {
           <p className="text-sm">{comment.content}</p>
         </div>
         <div className="flex gap-2 text-xs text-gray-500">
-          <span>👍 {comment.stats?.upvotes || 0}</span>
-          <span>👎 {comment.stats?.downvotes || 0}</span>
+          <span className="flex items-center gap-1">
+            <UpvoteIcon size={12} className="text-gray-500" />
+            {comment.stats?.upvotes || 0}
+          </span>
+          <span className="flex items-center gap-1">
+            <UpvoteIcon size={12} className="text-gray-500 rotate-180" />
+            {comment.stats?.downvotes || 0}
+          </span>
         </div>
       </div>
-      
+
       <div className="flex justify-between items-center text-xs text-gray-500">
-        <span>By {comment.author?.name || 'Anonymous'}</span>
+        <span>By {comment.author?.name || "Anonymous"}</span>
         <span>{new Date(comment.createdAt).toLocaleDateString()}</span>
       </div>
 
@@ -349,7 +397,8 @@ function CommentCard({ comment }: CommentCardProps) {
             <div key={reply.id} className="bg-white rounded p-2 text-sm">
               <p>{reply.content}</p>
               <div className="text-xs text-gray-500 mt-1">
-                By {reply.author?.name || 'Anonymous'} • {new Date(reply.createdAt).toLocaleDateString()}
+                By {reply.author?.name || "Anonymous"} •{" "}
+                {new Date(reply.createdAt).toLocaleDateString()}
               </div>
             </div>
           ))}

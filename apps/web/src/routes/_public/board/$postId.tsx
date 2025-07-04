@@ -10,6 +10,7 @@ import {
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useCallback, useRef, useEffect } from "react";
 import { CreateEditPost } from "@/components/create-edit-post";
+import { CommentButton, VoteButton } from "@/components/svg";
 
 export const Route = createFileRoute("/_public/board/$postId")({
   component: RouteComponent,
@@ -129,11 +130,10 @@ function RouteComponent() {
           </p>
 
           <div className="ml-auto flex max-w-max pt-6 gap-3">
-            <div>Co ({post?.totalComments})</div>
-            <button
-              type="button"
-              className="flex items-center gap-1 group"
-              aria-label={hasVoted ? "Unvote" : "Vote"}
+            <CommentButton count={post?.totalComments || 0} disabled />
+            <VoteButton
+              count={post?.totalVotes || 0}
+              isVoted={hasVoted}
               disabled={
                 createVoteMutation.isPending ||
                 deleteVoteMutation.isPending ||
@@ -146,24 +146,7 @@ function RouteComponent() {
                   createVoteMutation.mutate();
                 }
               }}
-            >
-              <span
-                style={{
-                  fontSize: "1.5rem",
-                  transition: "color 0.2s",
-                  color: hasVoted ? "#ef4444" : "#a3a3a3",
-                  filter:
-                    createVoteMutation.isPending || deleteVoteMutation.isPending
-                      ? "grayscale(0.7)"
-                      : undefined,
-                }}
-              >
-                {hasVoted ? "❤️" : "🤍"}
-              </span>
-              <span className="ml-1 text-base font-medium text-muted-foreground">
-                {typeof post?.totalVotes === "number" ? post.totalVotes : 0}
-              </span>
-            </button>
+            />
           </div>
           <div>
             <div className="bg-muted p-4 rounded-2xl border border-stone-200 mt-6 flex flex-col items-end gap-3">
