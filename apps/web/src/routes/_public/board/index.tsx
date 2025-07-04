@@ -1,10 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { getFeedbacks } from "@/lib/utils";
 import { client } from "@/utils/orpc";
-import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
+import {
+  useQuery,
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { CreateEditPost } from "@/components/create-edit-post";
+import { VoteButton, CommentButton } from "@/components/svg";
 
 import {
   DropdownMenu,
@@ -17,6 +23,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { useState, useCallback, useRef, useEffect } from "react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_public/board/")({
   component: BoardIndexPage,
@@ -25,6 +32,7 @@ export const Route = createFileRoute("/_public/board/")({
 function BoardIndexPage() {
   const AllFeedbacks = getFeedbacks();
   const navigate = useNavigate({ from: "/board" });
+  const queryClient = useQueryClient();
 
   // Replace useQuery with useInfiniteQuery for posts
   const {
@@ -48,7 +56,84 @@ function BoardIndexPage() {
   // Flatten all posts from all pages
   const allPosts = data?.pages.flatMap((page) => page.posts) ?? [];
 
+  // Fetch vote status for each post
+  const postIds = allPosts.map((post) => post.id);
+  const voteQueries = useQuery({
+    queryKey: ["user-votes", postIds],
+    queryFn: async () => {
+      const voteStatuses = await Promise.all(
+        postIds.map(async (postId) => {
+          try {
+            const hasVoted = await client.public.votes.get({
+              feedbackId: postId,
+            });
+            return { postId, hasVoted };
+          } catch (error) {
+            return { postId, hasVoted: false };
+          }
+        }),
+      );
+      return voteStatuses.reduce(
+        (acc, { postId, hasVoted }) => {
+          acc[postId] = hasVoted;
+          return acc;
+        },
+        {} as Record<string, boolean>,
+      );
+    },
+    enabled: postIds.length > 0,
+  });
+
+  const userVotes = voteQueries.data || {};
+
   const [position, setPosition] = useState("bottom");
+
+  // Vote mutations
+  const createVoteMutation = useMutation({
+    mutationFn: ({ feedbackId }: { feedbackId: string }) =>
+      client.public.votes.create({ feedbackId }),
+    onSuccess: () => {
+      toast.success("Vote added!");
+      // Invalidate posts to refresh vote counts
+      queryClient.invalidateQueries({ queryKey: ["all-posts"] });
+      // Invalidate user votes to update vote status
+      queryClient.invalidateQueries({ queryKey: ["user-votes"] });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to vote");
+    },
+  });
+
+  const deleteVoteMutation = useMutation({
+    mutationFn: ({ feedbackId }: { feedbackId: string }) =>
+      client.public.votes.delete({ feedbackId }),
+    onSuccess: () => {
+      toast.success("Vote removed!");
+      // Invalidate posts to refresh vote counts
+      queryClient.invalidateQueries({ queryKey: ["all-posts"] });
+      // Invalidate user votes to update vote status
+      queryClient.invalidateQueries({ queryKey: ["user-votes"] });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to remove vote");
+    },
+  });
+
+  const handleVote = (feedbackId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const hasVoted = userVotes[feedbackId];
+
+    if (hasVoted) {
+      deleteVoteMutation.mutate({ feedbackId });
+    } else {
+      createVoteMutation.mutate({ feedbackId });
+    }
+  };
+
+  const handleCommentClick = (feedbackId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate({ to: feedbackId });
+  };
 
   const { data: boards } = useQuery({
     queryKey: ["public-boards"],
@@ -120,8 +205,20 @@ function BoardIndexPage() {
                   </div>
                   <div className="flex gap-3 items-center justify-end">
                     <div>In</div>
-                    <div>Co({f.comments})</div>
-                    <div>Li({f.votes})</div>
+                    <CommentButton
+                      count={f.comments || 0}
+                      onClick={(e) => handleCommentClick(f.id, e)}
+                    />
+                    <VoteButton
+                      count={f.votes || 0}
+                      isVoted={userVotes[f.id] || false}
+                      disabled={
+                        createVoteMutation.isPending ||
+                        deleteVoteMutation.isPending ||
+                        voteQueries.isLoading
+                      }
+                      onClick={(e) => handleVote(f.id, e)}
+                    />
                   </div>
                 </div>
                 <div className="pt-4 flex justify-between items-center">

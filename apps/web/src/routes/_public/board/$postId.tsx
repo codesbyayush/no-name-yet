@@ -130,7 +130,7 @@ function RouteComponent() {
           </p>
 
           <div className="ml-auto flex max-w-max pt-6 gap-3">
-            <CommentButton count={post?.totalComments || 0} disabled />
+            <CommentButton count={post?.totalComments || 0} />
             <VoteButton
               count={post?.totalVotes || 0}
               isVoted={hasVoted}
