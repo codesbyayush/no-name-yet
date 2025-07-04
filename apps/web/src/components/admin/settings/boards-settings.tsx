@@ -60,9 +60,9 @@ export function BoardsSettings() {
   ]);
 
   const [newBoardName, setNewBoardName] = useState("");
-  const [newBoardType, setNewBoardType] = useState<
-    "public" | "private" | "internal"
-  >("public");
+  const [newBoardType, setNewBoardType] = useState<"public" | "private">(
+    "public",
+  );
   const [newTagName, setNewTagName] = useState("");
 
   const addBoard = () => {
@@ -126,7 +126,7 @@ export function BoardsSettings() {
   return (
     <div className="space-y-8">
       {/* Guest Submissions Section */}
-      <Card>
+      <Card className="bg-card border border-muted-foreground/10">
         <CardHeader>
           <CardTitle>Allow Guest Submissions</CardTitle>
           <CardDescription>
@@ -150,18 +150,11 @@ export function BoardsSettings() {
               disabled={!allowGuestSubmissions} // Simulate paid feature
             />
           </div>
-          {!allowGuestSubmissions && (
-            <div className="mt-4">
-              <Button variant="outline" size="sm">
-                Upgrade to enable guest submissions
-              </Button>
-            </div>
-          )}
         </CardContent>
       </Card>
 
       {/* Manage Boards Section */}
-      <Card>
+      <Card className="bg-card border border-muted-foreground/10">
         <CardHeader>
           <CardTitle>Manage Boards</CardTitle>
           <CardDescription>
@@ -172,7 +165,7 @@ export function BoardsSettings() {
         <CardContent className="space-y-4">
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="border-b-0 border-none">
                 <TableHead>Name</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead className="w-[100px]">Actions</TableHead>
@@ -180,7 +173,7 @@ export function BoardsSettings() {
             </TableHeader>
             <TableBody>
               {boards.map((board) => (
-                <TableRow key={board.id}>
+                <TableRow key={board.id} className="border-b-0">
                   <TableCell className="font-medium">{board.name}</TableCell>
                   <TableCell>
                     <Badge
@@ -210,7 +203,7 @@ export function BoardsSettings() {
             </TableBody>
           </Table>
 
-          <div className="flex gap-3 pt-4 border-t">
+          <div className="flex gap-3 pt-4">
             <Input
               placeholder="Board name"
               value={newBoardName}
@@ -219,7 +212,7 @@ export function BoardsSettings() {
             />
             <Select
               value={newBoardType}
-              onValueChange={(value: "public" | "private" | "internal") =>
+              onValueChange={(value: "public" | "private") =>
                 setNewBoardType(value)
               }
             >
@@ -229,7 +222,6 @@ export function BoardsSettings() {
               <SelectContent>
                 <SelectItem value="public">Public</SelectItem>
                 <SelectItem value="private">Private</SelectItem>
-                <SelectItem value="internal">Internal</SelectItem>
               </SelectContent>
             </Select>
             <Button onClick={addBoard}>
@@ -241,7 +233,7 @@ export function BoardsSettings() {
       </Card>
 
       {/* Manage Tags Section */}
-      <Card>
+      <Card className="bg-card border border-muted-foreground/10">
         <CardHeader>
           <CardTitle>Manage Tags</CardTitle>
           <CardDescription>
@@ -280,7 +272,7 @@ export function BoardsSettings() {
             ))}
           </div>
 
-          <div className="flex gap-3 pt-4 border-t">
+          <div className="flex gap-3 pt-4">
             <Input
               placeholder="Tag name"
               value={newTagName}

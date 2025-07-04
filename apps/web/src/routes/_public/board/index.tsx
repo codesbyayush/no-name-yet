@@ -91,7 +91,7 @@ function BoardIndexPage() {
   return (
     <div className="text-card-foreground">
       <div className="flex gap-4 relative">
-        <div className="border-1 border-stone-200 bg-card/90 w-2xl rounded-3xl px-6 shadow-xs flex-1">
+        <div className="border-1 border-muted-foreground/10 bg-gradient-to-bl rounded-3xl to-card from-card-foreground/5 w-2xl shadow-xs flex-1">
           {isLoading && <div>Loading posts...</div>}
           {isError && <div>Error loading posts</div>}
           {allPosts.map((f, i) => {
@@ -107,7 +107,7 @@ function BoardIndexPage() {
                     to: f.id,
                   })
                 }
-                className={`${i > 0 ? "border-t-[1px] border-stone-200" : ""} py-6 space-y-1 cursor-pointer`}
+                className={`${i > 0 ? "border-t-[1px] border-muted-foreground/5" : ""} p-6 space-y-1 cursor-pointer`}
               >
                 <h4 className="font-semibold text-card-foreground capitalize text-lg">
                   {f.title}
@@ -156,7 +156,7 @@ function BoardIndexPage() {
           )}
         </div>
         <div className="flex flex-col gap-4 sticky top-6 h-fit ">
-          <div className="border-1 bg-background/90 bg-noise z-10 rounded-2xl border-stone-200 shadow-2xs p-4 w-3xs">
+          <div className="border-1 bg-card bg-noise z-10 rounded-2xl  border-muted-foreground/10 shadow-2xs p-4 w-3xs">
             <h4 className="font-medium capitalize mb-2"> Got an idea?</h4>
             <CreateEditPost
               boardId={boards?.boards[0].id || ""} // TODO: Get actual board ID from context
@@ -167,7 +167,7 @@ function BoardIndexPage() {
               }}
             />
           </div>
-          <div className="border-1 bg-background/90 bg-noise z-10 rounded-2xl border-stone-200 shadow-2xs p-4 w-3xs">
+          <div className="border-1 bg-background/90 rounded-2xl bg-noise z-10  border-muted-foreground/10 shadow-2xs p-4 w-3xs">
             <h4 className="font-medium capitalize mb-2">boards</h4>
             <div>
               {boards?.boards.map((board) => (

@@ -1,54 +1,73 @@
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { PlusIcon } from 'lucide-react'
-import { useState } from 'react'
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { PlusIcon } from "lucide-react";
+import { useState } from "react";
 
 interface FooterLink {
-  id: string
-  label: string
-  url: string
+  id: string;
+  label: string;
+  url: string;
 }
 
 export function GeneralSettings() {
-  const [workspaceName, setWorkspaceName] = useState('random-workspace-01')
-  const [isPrivate, setIsPrivate] = useState(false)
-  const [isReadOnly, setIsReadOnly] = useState(false)
-  const [allowIndexing, setAllowIndexing] = useState(true)
-  const [language, setLanguage] = useState('en')
-  const [footerLinks, setFooterLinks] = useState<FooterLink[]>([])
+  const [workspaceName, setWorkspaceName] = useState("random-workspace-01");
+  const [isPrivate, setIsPrivate] = useState(false);
+  const [isReadOnly, setIsReadOnly] = useState(false);
+
+  const [language, setLanguage] = useState("en");
+  const [footerLinks, setFooterLinks] = useState<FooterLink[]>([]);
 
   const addFooterLink = () => {
     const newLink: FooterLink = {
       id: Date.now().toString(),
-      label: '',
-      url: ''
-    }
-    setFooterLinks([...footerLinks, newLink])
-  }
+      label: "",
+      url: "",
+    };
+    setFooterLinks([...footerLinks, newLink]);
+  };
 
-  const updateFooterLink = (id: string, field: 'label' | 'url', value: string) => {
-    setFooterLinks(footerLinks.map(link =>
-      link.id === id ? { ...link, [field]: value } : link
-    ))
-  }
+  const updateFooterLink = (
+    id: string,
+    field: "label" | "url",
+    value: string,
+  ) => {
+    setFooterLinks(
+      footerLinks.map((link) =>
+        link.id === id ? { ...link, [field]: value } : link,
+      ),
+    );
+  };
 
   const removeFooterLink = (id: string) => {
-    setFooterLinks(footerLinks.filter(link => link.id !== id))
-  }
+    setFooterLinks(footerLinks.filter((link) => link.id !== id));
+  };
 
   return (
     <div className="space-y-8">
       {/* Workspace Section */}
-      <Card>
+      <Card className="bg-card border border-muted-foreground/10">
         <CardHeader>
           <CardTitle>Workspace</CardTitle>
           <CardDescription>
-            Workspace settings to tailor the branding, look, and feel of your public portal.
+            Workspace settings to tailor the branding, look, and feel of your
+            public portal.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -89,35 +108,16 @@ export function GeneralSettings() {
               onCheckedChange={setIsReadOnly}
             />
           </div>
-
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="search-indexing">Index in search engines like Google</Label>
-              <p className="text-sm text-muted-foreground">
-                Allow Indexing of your Public Hub on search engines like Google, Bing, etc. Note: If your posts already shows up in Google search results, it may take a few days to be removed.
-              </p>
-            </div>
-            <Switch
-              id="search-indexing"
-              checked={allowIndexing}
-              onCheckedChange={setAllowIndexing}
-            />
-          </div>
-
-          <div className="pt-4">
-            <Button variant="outline">
-              Upgrade
-            </Button>
-          </div>
         </CardContent>
       </Card>
 
       {/* Language Preference Section */}
-      <Card>
+      <Card className="bg-card border border-muted-foreground/10">
         <CardHeader>
           <CardTitle>Public hub language preference</CardTitle>
           <CardDescription>
-            Select your preferred language to create a native Public Hub experience.
+            Select your preferred language to create a native Public Hub
+            experience.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -138,11 +138,12 @@ export function GeneralSettings() {
       </Card>
 
       {/* Footer Links Section */}
-      <Card>
+      <Card className="bg-card border border-muted-foreground/10">
         <CardHeader>
           <CardTitle>Footer Links</CardTitle>
           <CardDescription>
-            These links will help your users to connect with you or go to your website.
+            These links will help your users to connect with you or go to your
+            website.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -151,13 +152,17 @@ export function GeneralSettings() {
               <Input
                 placeholder="Link label"
                 value={link.label}
-                onChange={(e) => updateFooterLink(link.id, 'label', e.target.value)}
+                onChange={(e) =>
+                  updateFooterLink(link.id, "label", e.target.value)
+                }
                 className="flex-1"
               />
               <Input
                 placeholder="https://example.com"
                 value={link.url}
-                onChange={(e) => updateFooterLink(link.id, 'url', e.target.value)}
+                onChange={(e) =>
+                  updateFooterLink(link.id, "url", e.target.value)
+                }
                 className="flex-1"
               />
               <Button
@@ -170,16 +175,12 @@ export function GeneralSettings() {
             </div>
           ))}
 
-          <Button
-            variant="outline"
-            onClick={addFooterLink}
-            className="w-full"
-          >
+          <Button variant="outline" onClick={addFooterLink} className="w-full">
             <PlusIcon className="h-4 w-4 mr-2" />
             Add Link
           </Button>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
