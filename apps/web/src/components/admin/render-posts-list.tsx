@@ -19,6 +19,7 @@ import { client } from "@/utils/orpc";
 import { useState, useCallback, useRef, useEffect } from "react";
 import { AutosizeTextarea } from "../ui/autosize-textarea";
 import { StatusIcon } from "../ui/status-icon";
+import { CommentButton, VoteButton, CommentIcon, MoreDotsIcon } from "../svg";
 
 export function RenderPostsList() {
   // Replace dummy data with infinite query
@@ -115,7 +116,7 @@ function PostCard({ post }: { post: any }) {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <div className="flex items-center gap-4 mx-auto w-5xl bg-card p-5 rounded-xl text-card-foreground">
+        <div className="flex items-center gap-4 mx-auto w-5xl border-1 border-muted-foreground/10 bg-gradient-to-bl rounded-3xl to-card from-card-foreground/5 shadow-xs p-5 text-card-foreground cursor-pointer hover:shadow-md transition-shadow">
           <div className="flex flex-1 gap-4 items-center">
             {post.status && <StatusIcon status={post.status} />}
             <span className="text-base font-medium line-clamp-1">
@@ -129,12 +130,12 @@ function PostCard({ post }: { post: any }) {
             <span className="text-sm text-muted-foreground">
               {new Date(post.createdAt).toLocaleDateString()}
             </span>
-            <span>Co (1)</span>
-            <span>Li (28)</span>
+            <CommentButton count={1} disabled />
+            <VoteButton count={28} isVoted={false} disabled />
           </div>
         </div>
       </SheetTrigger>
-      <SheetContent className="w-[90%] h-[calc(100vh-2rem)] max-w-[90%] sm:max-w-[600px] md:w-[700px] lg:max-w-[1000px] lg:w-[1000px] overflow-y-auto border-1 border-sidebar bg-card m-4 p-4 rounded-2xl">
+      <SheetContent className="w-[90%] h-[calc(100vh-2rem)] max-w-[90%] sm:max-w-[600px] md:w-[700px] lg:max-w-[1000px] lg:w-[1000px] overflow-y-auto border-1 border-muted-foreground/10 bg-card m-4 p-6 rounded-3xl shadow-xl">
         <PostDetail post={post} />
       </SheetContent>
     </Sheet>
@@ -243,7 +244,7 @@ function PostDetail({ post }: { post: any }) {
 
   return (
     <div className="flex gap-4 relative text-card-foreground">
-      <div className=" rounded-3xl w-5xl px-6 flex-1 ">
+      <div className="border-1 border-muted-foreground/10 bg-gradient-to-bl rounded-3xl to-card from-card-foreground/5 w-5xl shadow-xs flex-1 px-6">
         <div className={`py-6 space-y-2`}>
           <h4 className="font-semibold text-card-foreground capitalize text-lg">
             {post?.title}
@@ -253,14 +254,14 @@ function PostDetail({ post }: { post: any }) {
           </p>
 
           <div className="ml-auto flex max-w-max pt-6 gap-3">
-            <div>Co ({allComments.length})</div>
-            <div>Li (28)</div>
+            <CommentButton count={allComments.length} disabled />
+            <VoteButton count={28} isVoted={false} disabled />
           </div>
         </div>
 
-        <div className="bg-muted p-4 rounded-2xl border border-stone-200 mt-6 flex flex-col items-end gap-3">
+        <div className="bg-muted p-4 rounded-2xl border border-muted-foreground/10 mt-6 flex flex-col items-end gap-3">
           <AutosizeTextarea
-            className=" min-h-20 rounded-lg border-none bg-muted"
+            className="rounded-xl border-muted-foreground/20 !bg-muted text-base px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/20 text-foreground min-h-20 border-none"
             minHeight={100}
             placeholder="Add a comment..."
             value={commentText}
@@ -269,7 +270,7 @@ function PostDetail({ post }: { post: any }) {
             disabled={isSubmitting}
           />
           <Button
-            className="ml-auto rounded-lg"
+            className="ml-auto rounded-xl h-10 px-6 text-base bg-primary hover:bg-primary/90 shadow-lg"
             onClick={handleSubmitComment}
             disabled={!commentText.trim() || isSubmitting}
           >
@@ -299,7 +300,7 @@ function PostDetail({ post }: { post: any }) {
             <div
               key={comment.id}
               ref={isSecondLastComment ? lastCommentCallback : null}
-              className={`flex gap-1 py-4 space-y-2 w-full ${i === allComments.length - 1 ? "border-b-0" : "border-b-2"}`}
+              className={`flex gap-1 py-4 space-y-2 w-full ${i === allComments.length - 1 ? "border-b-0" : "border-b-2 border-muted-foreground/5"}`}
             >
               <div>
                 <img
@@ -318,7 +319,9 @@ function PostDetail({ post }: { post: any }) {
                   <span>
                     {new Date(comment.createdAt).toLocaleDateString()}
                   </span>
-                  <span className="ml-auto">dots</span>
+                  <span className="ml-auto">
+                    <MoreDotsIcon size={16} className="text-muted-foreground" />
+                  </span>
                 </div>
                 <div>
                   <p>{comment.content}</p>
@@ -330,7 +333,7 @@ function PostDetail({ post }: { post: any }) {
 
         {/* Loading indicator for next page of comments */}
         {isFetchingNextPage && (
-          <div className="py-4 text-center ">
+          <div className="py-4 text-center border-t-2 border-muted-foreground/5">
             <div className="text-sm text-gray-500">
               Loading more comments...
             </div>
@@ -339,15 +342,15 @@ function PostDetail({ post }: { post: any }) {
 
         {/* No comments state */}
         {!isLoadingComments && allComments.length === 0 && (
-          <div className="py-4 text-center ">
+          <div className="py-4 text-center border-t-2 border-muted-foreground/5">
             <div className="text-sm text-gray-500">
               No comments yet. Be the first to comment!
             </div>
           </div>
         )}
       </div>
-      <div className="flex flex-col gap-4 sticky top-6 h-fit ">
-        <div className="border-1 bg-background/90 bg-noise z-10 rounded-2xl border-stone-200 shadow-2xs p-4 w-3xs">
+      <div className="flex flex-col gap-4 sticky h-fit ">
+        <div className="border-1 bg-background/90 bg-noise z-10 rounded-2xl border-muted-foreground/10 shadow-2xs p-4 w-3xs">
           <div className="flex gap-3 items-center">
             <div>
               {post?.author?.image ? (
@@ -377,15 +380,6 @@ function PostDetail({ post }: { post: any }) {
               </div>
             )}
           </div>
-        </div>
-        <div className="border-1 bg-background/90 bg-noise z-10 rounded-2xl border-stone-200 shadow-2xs p-4">
-          <h4 className="font-medium capitalize mb-2">Get Updates</h4>
-          <Button
-            variant={"secondary"}
-            className="w-full rounded-lg font-medium"
-          >
-            Subscribe
-          </Button>
         </div>
       </div>
     </div>

@@ -74,7 +74,7 @@ export function CreateBoardForm({
       if (onSuccess) {
         onSuccess();
       } else {
-        // Default redirect to admin dashboard  
+        // Default redirect to admin dashboard
         navigate({ to: "/dashboard" });
       }
     } catch (err) {
@@ -106,9 +106,14 @@ export function CreateBoardForm({
           </Alert>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="board-name">Board Name</Label>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-3">
+            <Label
+              htmlFor="board-name"
+              className="text-base font-medium text-card-foreground"
+            >
+              Board Name
+            </Label>
             <Input
               id="board-name"
               type="text"
@@ -117,11 +122,17 @@ export function CreateBoardForm({
               onChange={handleNameChange}
               required
               disabled={isSubmitting}
+              className="rounded-xl border-muted-foreground/20 !bg-muted h-12 text-base px-4 focus:border-primary focus:ring-2 focus:ring-primary/20 text-foreground"
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="board-slug">Board URL</Label>
+          <div className="space-y-3">
+            <Label
+              htmlFor="board-slug"
+              className="text-base font-medium text-card-foreground"
+            >
+              Board URL
+            </Label>
             <div className="flex items-center space-x-2">
               <span className="text-sm text-muted-foreground">
                 yourorg.domain.com/
@@ -134,7 +145,7 @@ export function CreateBoardForm({
                 onChange={handleSlugChange}
                 required
                 disabled={isSubmitting}
-                className="flex-1"
+                className="flex-1 rounded-xl border-muted-foreground/20 !bg-muted h-12 text-base px-4 focus:border-primary focus:ring-2 focus:ring-primary/20 text-foreground"
               />
             </div>
             <p className="text-xs text-muted-foreground">
@@ -142,20 +153,30 @@ export function CreateBoardForm({
             </p>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="board-description">Description (Optional)</Label>
+          <div className="space-y-3">
+            <Label
+              htmlFor="board-description"
+              className="text-base font-medium text-card-foreground"
+            >
+              Description (Optional)
+            </Label>
             <Input
               id="board-description"
               placeholder="Describe what this board is for..."
               value={description}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDescription(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setDescription(e.target.value)
+              }
               disabled={isSubmitting}
+              className="rounded-xl border-muted-foreground/20 !bg-muted h-12 text-base px-4 focus:border-primary focus:ring-2 focus:ring-primary/20 text-foreground"
             />
           </div>
 
-          <div className="flex items-center justify-between rounded-lg border p-4">
+          <div className="flex items-center justify-between rounded-xl border-muted-foreground/20 border bg-muted p-4">
             <div className="space-y-0.5">
-              <Label className="text-base">Private Board</Label>
+              <Label className="text-base font-medium text-card-foreground">
+                Private Board
+              </Label>
               <p className="text-sm text-muted-foreground">
                 Only organization members can view this board
               </p>
@@ -169,7 +190,7 @@ export function CreateBoardForm({
 
           <Button
             type="submit"
-            className="w-full"
+            className="w-full rounded-xl h-12 text-base bg-primary hover:bg-primary/90 shadow-lg"
             disabled={isSubmitting || !name.trim() || !slug.trim()}
           >
             {isSubmitting ? "Creating..." : buttonText}

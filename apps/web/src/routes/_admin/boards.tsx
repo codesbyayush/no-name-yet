@@ -229,7 +229,7 @@ function RouteComponent() {
                 <div className="relative">
                   <Input
                     placeholder="Search boards..."
-                    className="w-64"
+                    className="w-64 rounded-xl border-muted-foreground/20 !bg-muted h-10 text-base px-4 focus:border-primary focus:ring-2 focus:ring-primary/20 text-foreground"
                     value={localSearchValue}
                     onChange={(e) => {
                       setLocalSearchValue(e.target.value);
@@ -240,18 +240,46 @@ function RouteComponent() {
 
                 {/* Tags Filter */}
                 <Select value={search.tag} onValueChange={handleTagChange}>
-                  <SelectTrigger className="w-32">
+                  <SelectTrigger className="w-32 rounded-xl border-muted-foreground/20 !bg-muted h-10 text-base text-foreground px-4 hover:!bg-muted focus:!bg-muted">
                     <SelectValue placeholder="Tags" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Tags</SelectItem>
-                    <SelectItem value="feature-request">
+                  <SelectContent className="rounded-2xl border-muted-foreground/10 !bg-muted shadow-xl p-2">
+                    <SelectItem
+                      value="all"
+                      className="rounded-xl py-2 px-4 text-base hover:!bg-background focus:!bg-background cursor-pointer"
+                    >
+                      All Tags
+                    </SelectItem>
+                    <SelectItem
+                      value="feature-request"
+                      className="rounded-xl py-2 px-4 text-base hover:!bg-background focus:!bg-background cursor-pointer"
+                    >
                       Feature Request
                     </SelectItem>
-                    <SelectItem value="bug-report">Bug Report</SelectItem>
-                    <SelectItem value="enhancement">Enhancement</SelectItem>
-                    <SelectItem value="bug">Bug</SelectItem>
-                    <SelectItem value="discussion">Discussion</SelectItem>
+                    <SelectItem
+                      value="bug-report"
+                      className="rounded-xl py-2 px-4 text-base hover:!bg-background focus:!bg-background cursor-pointer"
+                    >
+                      Bug Report
+                    </SelectItem>
+                    <SelectItem
+                      value="enhancement"
+                      className="rounded-xl py-2 px-4 text-base hover:!bg-background focus:!bg-background cursor-pointer"
+                    >
+                      Enhancement
+                    </SelectItem>
+                    <SelectItem
+                      value="bug"
+                      className="rounded-xl py-2 px-4 text-base hover:!bg-background focus:!bg-background cursor-pointer"
+                    >
+                      Bug
+                    </SelectItem>
+                    <SelectItem
+                      value="discussion"
+                      className="rounded-xl py-2 px-4 text-base hover:!bg-background focus:!bg-background cursor-pointer"
+                    >
+                      Discussion
+                    </SelectItem>
                   </SelectContent>
                 </Select>
 
@@ -260,28 +288,59 @@ function RouteComponent() {
                   value={search.status}
                   onValueChange={handleStatusChange}
                 >
-                  <SelectTrigger className="w-32">
+                  <SelectTrigger className="w-32 rounded-xl border-muted-foreground/20 !bg-muted h-10 text-base text-foreground px-4 hover:!bg-muted focus:!bg-muted">
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="archived">Archived</SelectItem>
+                  <SelectContent className="rounded-2xl border-muted-foreground/10 !bg-muted shadow-xl p-2">
+                    <SelectItem
+                      value="all"
+                      className="rounded-xl py-2 px-4 text-base hover:!bg-background focus:!bg-background cursor-pointer"
+                    >
+                      All Status
+                    </SelectItem>
+                    <SelectItem
+                      value="active"
+                      className="rounded-xl py-2 px-4 text-base hover:!bg-background focus:!bg-background cursor-pointer"
+                    >
+                      Active
+                    </SelectItem>
+                    <SelectItem
+                      value="archived"
+                      className="rounded-xl py-2 px-4 text-base hover:!bg-background focus:!bg-background cursor-pointer"
+                    >
+                      Archived
+                    </SelectItem>
                   </SelectContent>
                 </Select>
 
                 {/* Order */}
                 <Select value={search.order} onValueChange={handleOrderChange}>
-                  <SelectTrigger className="w-36">
+                  <SelectTrigger className="w-36 rounded-xl border-muted-foreground/20 !bg-muted h-10 text-base text-foreground px-4 hover:!bg-muted focus:!bg-muted">
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="name-asc">Name A-Z</SelectItem>
-                    <SelectItem value="name-desc">Name Z-A</SelectItem>
-                    <SelectItem value="created-asc">
+                  <SelectContent className="rounded-2xl border-muted-foreground/10 !bg-muted shadow-xl p-2">
+                    <SelectItem
+                      value="name-asc"
+                      className="rounded-xl py-2 px-4 text-base hover:!bg-background focus:!bg-background cursor-pointer"
+                    >
+                      Name A-Z
+                    </SelectItem>
+                    <SelectItem
+                      value="name-desc"
+                      className="rounded-xl py-2 px-4 text-base hover:!bg-background focus:!bg-background cursor-pointer"
+                    >
+                      Name Z-A
+                    </SelectItem>
+                    <SelectItem
+                      value="created-asc"
+                      className="rounded-xl py-2 px-4 text-base hover:!bg-background focus:!bg-background cursor-pointer"
+                    >
                       Created (Oldest)
                     </SelectItem>
-                    <SelectItem value="created-desc">
+                    <SelectItem
+                      value="created-desc"
+                      className="rounded-xl py-2 px-4 text-base hover:!bg-background focus:!bg-background cursor-pointer"
+                    >
                       Created (Newest)
                     </SelectItem>
                   </SelectContent>
