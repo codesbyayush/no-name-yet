@@ -109,13 +109,22 @@ function BoardIndexPage() {
                 }
                 className={`${i > 0 ? "border-t-[1px] border-muted-foreground/5" : ""} p-6 space-y-1 cursor-pointer`}
               >
-                <h4 className="font-semibold text-card-foreground capitalize text-lg">
-                  {f.title}
-                </h4>
-                <p className="text-sm text-muted-foreground font-medium capitalize text-pretty">
-                  {f.content}
-                </p>
-                <div className="pt-4 flex justify-between">
+                <div className="justify-between flex gap-3 items-center">
+                  <div>
+                    <h4 className="font-semibold text-card-foreground capitalize text-lg">
+                      {f.title}
+                    </h4>
+                    <p className="text-sm text-muted-foreground font-medium capitalize text-pretty">
+                      {f.content}
+                    </p>
+                  </div>
+                  <div className="flex gap-3 items-center justify-end">
+                    <div>In</div>
+                    <div>Co({f.comments})</div>
+                    <div>Li({f.votes})</div>
+                  </div>
+                </div>
+                <div className="pt-4 flex justify-between items-center">
                   <div className="flex gap-3 items-center">
                     <div>
                       {f.author?.image ? (
@@ -137,12 +146,9 @@ function BoardIndexPage() {
                         {f.updatedAt.toLocaleDateString()}
                       </p>
                     </div>
+                    <div>Feedback</div>
                   </div>
-                  <div className="flex gap-3 items-center justify-end">
-                    <div>In</div>
-                    <div>Co({f.comments})</div>
-                    <div>Li({f.votes})</div>
-                  </div>
+                  <div>In Progress</div>
                 </div>
               </div>
             );
