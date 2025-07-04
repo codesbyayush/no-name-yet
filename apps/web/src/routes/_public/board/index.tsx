@@ -173,7 +173,6 @@ function BoardIndexPage() {
                     </p>
                   </div>
                   <div className="flex gap-3 items-center justify-end">
-                    <div>In</div>
                     <CommentButton
                       count={f.comments || 0}
                       onClick={(e) => handleCommentClick(f.id, e)}
@@ -195,15 +194,15 @@ function BoardIndexPage() {
                       {f.author?.image ? (
                         <img
                           src={f.author?.image || "https://picsum/64"}
-                          className="h-8 rounded-full"
+                          className="h-7 rounded-full"
                         />
                       ) : (
-                        <p className="size-8 rounded-full bg-red-900 flex items-center justify-center text-white">
+                        <p className="size-7 rounded-full bg-red-900 flex items-center justify-center text-white">
                           A
                         </p>
                       )}
                     </div>
-                    <div>
+                    <div className="flex self-end items-center gap-3 pt-px">
                       <h5 className="capitalize font-medium text-sm pb-0.5">
                         {f.author?.name || "Anon"}
                       </h5>
@@ -211,9 +210,8 @@ function BoardIndexPage() {
                         {f.updatedAt.toLocaleDateString()}
                       </p>
                     </div>
-                    <div>Feedback</div>
                   </div>
-                  <div>In Progress</div>
+                  <div>board, status</div>
                 </div>
               </div>
             );

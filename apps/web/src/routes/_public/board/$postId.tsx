@@ -111,7 +111,7 @@ function RouteComponent() {
   return (
     <div className="flex gap-4 relative text-card-foreground ">
       <div className="border-1 border-muted-foreground/10 bg-gradient-to-bl rounded-3xl to-card from-card-foreground/5 w-2xl shadow-xs flex-1 px-6">
-        <div className={`py-6 space-y-2`}>
+        <div className={`py-6`}>
           <h4 className="font-semibold capitalize text-lg">{post?.title}</h4>
           <p className="text-sm text-accent-foreground/75 font-medium capitalize text-pretty">
             {post?.content}
