@@ -22,22 +22,11 @@ function RouteComponent() {
   const [commentInput, setCommentInput] = useState("");
   const queryClient = useQueryClient();
 
-  // Query to check if the current user has voted
-  const {
-    data: hasVoted,
-    refetch: refetchVote,
-    isLoading: isLoadingVote,
-  } = useQuery({
-    queryKey: [postId, "hasVoted"],
-    queryFn: () => client.public.votes.get({ feedbackId: postId }),
-  });
-
   // Mutation to create a vote
   const createVoteMutation = useMutation({
     mutationFn: () => client.public.votes.create({ feedbackId: postId }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [postId, "hasVoted"] });
-      refetchVote();
+      queryClient.invalidateQueries({ queryKey: [postId, "post"] });
     },
   });
 
@@ -45,8 +34,7 @@ function RouteComponent() {
   const deleteVoteMutation = useMutation({
     mutationFn: () => client.public.votes.delete({ feedbackId: postId }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [postId, "hasVoted"] });
-      refetchVote();
+      queryClient.invalidateQueries({ queryKey: [postId, "post"] });
     },
   });
 
@@ -133,14 +121,12 @@ function RouteComponent() {
             <CommentButton count={post?.totalComments || 0} />
             <VoteButton
               count={post?.totalVotes || 0}
-              isVoted={hasVoted}
+              isVoted={post?.hasVoted || false}
               disabled={
-                createVoteMutation.isPending ||
-                deleteVoteMutation.isPending ||
-                isLoadingVote
+                createVoteMutation.isPending || deleteVoteMutation.isPending
               }
               onClick={() => {
-                if (hasVoted) {
+                if (post?.hasVoted) {
                   deleteVoteMutation.mutate();
                 } else {
                   createVoteMutation.mutate();

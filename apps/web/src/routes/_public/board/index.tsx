@@ -56,36 +56,6 @@ function BoardIndexPage() {
   // Flatten all posts from all pages
   const allPosts = data?.pages.flatMap((page) => page.posts) ?? [];
 
-  // Fetch vote status for each post
-  const postIds = allPosts.map((post) => post.id);
-  const voteQueries = useQuery({
-    queryKey: ["user-votes", postIds],
-    queryFn: async () => {
-      const voteStatuses = await Promise.all(
-        postIds.map(async (postId) => {
-          try {
-            const hasVoted = await client.public.votes.get({
-              feedbackId: postId,
-            });
-            return { postId, hasVoted };
-          } catch (error) {
-            return { postId, hasVoted: false };
-          }
-        }),
-      );
-      return voteStatuses.reduce(
-        (acc, { postId, hasVoted }) => {
-          acc[postId] = hasVoted;
-          return acc;
-        },
-        {} as Record<string, boolean>,
-      );
-    },
-    enabled: postIds.length > 0,
-  });
-
-  const userVotes = voteQueries.data || {};
-
   const [position, setPosition] = useState("bottom");
 
   // Vote mutations
@@ -94,10 +64,8 @@ function BoardIndexPage() {
       client.public.votes.create({ feedbackId }),
     onSuccess: () => {
       toast.success("Vote added!");
-      // Invalidate posts to refresh vote counts
+      // Invalidate posts to refresh vote counts and vote status
       queryClient.invalidateQueries({ queryKey: ["all-posts"] });
-      // Invalidate user votes to update vote status
-      queryClient.invalidateQueries({ queryKey: ["user-votes"] });
     },
     onError: (error: any) => {
       toast.error(error.message || "Failed to vote");
@@ -109,19 +77,20 @@ function BoardIndexPage() {
       client.public.votes.delete({ feedbackId }),
     onSuccess: () => {
       toast.success("Vote removed!");
-      // Invalidate posts to refresh vote counts
+      // Invalidate posts to refresh vote counts and vote status
       queryClient.invalidateQueries({ queryKey: ["all-posts"] });
-      // Invalidate user votes to update vote status
-      queryClient.invalidateQueries({ queryKey: ["user-votes"] });
     },
     onError: (error: any) => {
       toast.error(error.message || "Failed to remove vote");
     },
   });
 
-  const handleVote = (feedbackId: string, e: React.MouseEvent) => {
+  const handleVote = (
+    feedbackId: string,
+    hasVoted: boolean,
+    e: React.MouseEvent,
+  ) => {
     e.stopPropagation();
-    const hasVoted = userVotes[feedbackId];
 
     if (hasVoted) {
       deleteVoteMutation.mutate({ feedbackId });
@@ -211,13 +180,12 @@ function BoardIndexPage() {
                     />
                     <VoteButton
                       count={f.votes || 0}
-                      isVoted={userVotes[f.id] || false}
+                      isVoted={f.hasVoted || false}
                       disabled={
                         createVoteMutation.isPending ||
-                        deleteVoteMutation.isPending ||
-                        voteQueries.isLoading
+                        deleteVoteMutation.isPending
                       }
-                      onClick={(e) => handleVote(f.id, e)}
+                      onClick={(e) => handleVote(f.id, f.hasVoted || false, e)}
                     />
                   </div>
                 </div>

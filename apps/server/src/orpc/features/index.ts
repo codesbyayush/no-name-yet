@@ -34,6 +34,8 @@ export const mixedRouter = {
         throw new ORPCError("NOT_FOUND");
       }
 
+      const userId = context.session?.user?.id;
+
       try {
         // Determine sort order
         let orderBy;
@@ -78,6 +80,19 @@ export const mixedRouter = {
             },
             comments: db.$count(comments, eq(feedback.id, comments.feedbackId)),
             votes: db.$count(votes, eq(feedback.id, votes.feedbackId)),
+            hasVoted: userId
+              ? exists(
+                  db
+                    .select()
+                    .from(votes)
+                    .where(
+                      and(
+                        eq(votes.feedbackId, feedback.id),
+                        eq(votes.userId, userId),
+                      ),
+                    ),
+                )
+              : false,
           })
           .from(feedback)
           .leftJoin(user, eq(feedback.userId, user.id))
@@ -119,6 +134,8 @@ export const mixedRouter = {
         throw new ORPCError("NOT_FOUND");
       }
 
+      const userId = context.session?.user?.id;
+
       try {
         // Fetch posts for the organization with author information
         const post = await db
@@ -145,6 +162,19 @@ export const mixedRouter = {
               eq(feedback.id, comments.feedbackId),
             ),
             totalVotes: db.$count(votes, eq(feedback.id, votes.feedbackId)),
+            hasVoted: userId
+              ? exists(
+                  db
+                    .select()
+                    .from(votes)
+                    .where(
+                      and(
+                        eq(votes.feedbackId, feedback.id),
+                        eq(votes.userId, userId),
+                      ),
+                    ),
+                )
+              : false,
           })
           .from(feedback)
           .leftJoin(user, eq(feedback.userId, user.id))
