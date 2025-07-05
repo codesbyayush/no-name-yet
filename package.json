@@ -1,7 +1,10 @@
 {
 	"name": "my-better-t-app",
 	"private": true,
-	"workspaces": ["apps/*", "packages/*"],
+	"workspaces": [
+		"apps/*",
+		"packages/*"
+	],
 	"scripts": {
 		"check": "biome check --write .",
 		"dev": "bun run --filter '*' dev",
@@ -13,11 +16,14 @@
 		"db:push": "bun run --filter server db:push",
 		"db:studio": "bun run --filter server db:studio",
 		"db:generate": "bun run --filter server db:generate",
-		"db:migrate": "bun run --filter server db:migrate"
+		"db:migrate": "bun run --filter server db:migrate",
+		"knip": "knip"
 	},
-	"dependencies": {},
 	"devDependencies": {
-		"@biomejs/biome": "1.9.4"
+		"@biomejs/biome": "1.9.4",
+		"@types/node": "^24.0.10",
+		"knip": "^5.61.3",
+		"typescript": "^5.8.3"
 	},
 	"packageManager": "bun@1.2.10"
 }

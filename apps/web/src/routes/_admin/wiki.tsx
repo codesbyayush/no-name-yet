@@ -1,4 +1,4 @@
-import Editor from "@/components/wiki/editor";
+// import Editor from "@/components/wiki/editor";
 import {
 	createFileRoute,
 	useNavigate,
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/_admin/wiki")({
 function RouteComponent() {
 	return (
 		<div>
-			<Editor />
+			{/* <Editor /> */}
 		</div>
 	);
 }
