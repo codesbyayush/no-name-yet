@@ -6,6 +6,34 @@ import { adminOnlyProcedure } from "../procedures";
 
 // TODO: Implement user organization resource owner org validation
 export const boardsRouter = {
+  getAll: adminOnlyProcedure
+    .output(z.array(z.object({
+      id: z.string(),
+      symbol: z.string().nullable(),
+      name: z.string(),
+      slug: z.string(),
+      description: z.string().nullable(),
+      isPrivate: z.boolean().nullable(),
+      postCount: z.number().nullable(),
+      viewCount: z.number().nullable(),
+      customFields: z.any().nullable(),
+      createdAt: z.date(),
+      updatedAt: z.date(),
+      deletedAt: z.date().nullable(),
+    })))
+    .handler(async ({ context }) => {
+      if (!context.organization?.id) {
+        throw new Error("Organization not found");
+      }
+
+      const allBoards = await db
+        .select()
+        .from(boards)
+        .where(eq(boards.organizationId, context.organization.id));
+
+      return allBoards;
+    }),
+
   create: adminOnlyProcedure
     .input(
       z.object({

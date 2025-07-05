@@ -9,13 +9,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import {
   Table,
@@ -27,7 +20,7 @@ import {
 } from "@/components/ui/table";
 import { client, queryClient } from "@/utils/orpc";
 import { adminClient } from "@/utils/admin-orpc";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { EditIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -35,40 +28,41 @@ import { toast } from "sonner";
 interface Board {
   id: string;
   name: string;
-  emoji: string;
-  isPrivate: boolean;
+  symbol: string | null;
+  isPrivate: boolean | null;
 }
 
 interface Tag {
   id: string;
   name: string;
   color: string;
+  count: number;
 }
 
 export function BoardsSettings() {
   const [allowGuestSubmissions, setAllowGuestSubmissions] = useState(false);
-  const [boards, setBoards] = useState<Board[]>([
-    { id: "1", name: "Feature Requests", emoji: "💡", isPrivate: false },
-    { id: "2", name: "Bug Reports", emoji: "🐛", isPrivate: false },
-    { id: "3", name: "General Feedback", emoji: "💬", isPrivate: false },
-  ]);
+  
+  // Fetch boards from the server
+  const { data: boardsData, isLoading: boardsLoading } = useQuery({
+    queryKey: ["admin-boards"],
+    queryFn: () => adminClient.organization.boardsRouter.getAll(),
+  });
 
-  const [tags, setTags] = useState<Tag[]>([
-    { id: "1", name: "accessibility", color: "blue" },
-    { id: "2", name: "security", color: "red" },
-    { id: "3", name: "support", color: "green" },
-    { id: "4", name: "design/ui", color: "purple" },
-    { id: "5", name: "integration", color: "orange" },
-    { id: "6", name: "status", color: "gray" },
-    { id: "7", name: "tags", color: "pink" },
-    { id: "8", name: "labels", color: "yellow" },
-  ]);
+  // Fetch tags from the server
+  const { data: tagsData, isLoading: tagsLoading } = useQuery({
+    queryKey: ["admin-tags"],
+    queryFn: () => adminClient.organization.tagsRouter.getAll(),
+  });
+
+  const boards = boardsData || [];
+  const tags = tagsData || [];
 
   const [newBoardName, setNewBoardName] = useState("");
   const [newBoardEmoji, setNewBoardEmoji] = useState("");
   const [newBoardIsPrivate, setNewBoardIsPrivate] = useState(false);
-  const [newTagName, setNewTagName] = useState("");
   const [showEmojiDropdown, setShowEmojiDropdown] = useState(false);
+  const [newTagName, setNewTagName] = useState("");
+  const [newTagColor, setNewTagColor] = useState("blue");
 
   const availableEmojis = [
     "💡",
@@ -103,7 +97,7 @@ export function BoardsSettings() {
     "🎤",
   ];
 
-  const usedEmojis = boards.map((board) => board.emoji);
+  const usedEmojis = boards.map((board) => board.symbol).filter(Boolean);
   const firstAvailableEmoji =
     availableEmojis.find((emoji) => !usedEmojis.includes(emoji)) ||
     availableEmojis[0];
@@ -115,75 +109,68 @@ export function BoardsSettings() {
     }
   }, [boards, firstAvailableEmoji, newBoardEmoji]);
 
-  const createPostMutation = useMutation({
-    mutationFn: (data: Omit<Board, "id">) =>
+  const createBoardMutation = useMutation({
+    mutationFn: (data: { name: string; emoji: string; isPrivate: boolean }) =>
       adminClient.organization.boardsRouter.create({
         ...data,
         slug: data.name.split(" ").join("-").toLowerCase(),
       }),
     onSuccess: () => {
-      toast.success("Post created successfully!");
-      queryClient.invalidateQueries({ queryKey: ["boards"] });
-      // addBoardInData();
+      toast.success("Board created successfully!");
+      queryClient.invalidateQueries({ queryKey: ["admin-boards"] });
+      setNewBoardName("");
+      setNewBoardEmoji(firstAvailableEmoji);
+      setNewBoardIsPrivate(false);
+      setShowEmojiDropdown(false);
     },
     onError: (error: any) => {
-      toast.error(error.message || "Failed to create post");
+      toast.error(error.message || "Failed to create board");
     },
   });
 
   const createBoard = () => {
-    createPostMutation.mutate({
+    createBoardMutation.mutate({
       name: newBoardName.trim(),
       emoji: newBoardEmoji,
       isPrivate: newBoardIsPrivate,
     });
   };
 
-  const addBoard = () => {
-    if (newBoardName.trim() && newBoardEmoji) {
-      const newBoard: Board = {
-        id: Date.now().toString(),
-        name: newBoardName.trim(),
-        emoji: newBoardEmoji,
-        isPrivate: newBoardIsPrivate,
-      };
-      setBoards([...boards, newBoard]);
-      setNewBoardName("");
-      setNewBoardEmoji(firstAvailableEmoji);
-      setNewBoardIsPrivate(false);
-      setShowEmojiDropdown(false);
-    }
-  };
-
-  const removeBoard = (id: string) => {
-    setBoards(boards.filter((board) => board.id !== id));
-  };
-
-  const addTag = () => {
-    if (newTagName.trim()) {
-      const colors = [
-        "blue",
-        "red",
-        "green",
-        "purple",
-        "orange",
-        "gray",
-        "pink",
-        "yellow",
-      ];
-      const randomColor = colors[Math.floor(Math.random() * colors.length)];
-      const newTag: Tag = {
-        id: Date.now().toString(),
-        name: newTagName.trim(),
-        color: randomColor,
-      };
-      setTags([...tags, newTag]);
+  const createTagMutation = useMutation({
+    mutationFn: (data: { name: string; color: string }) =>
+      adminClient.organization.tagsRouter.create(data),
+    onSuccess: () => {
+      toast.success("Tag created successfully!");
+      queryClient.invalidateQueries({ queryKey: ["admin-tags"] });
       setNewTagName("");
-    }
+      setNewTagColor("blue");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to create tag");
+    },
+  });
+
+  const deleteTagMutation = useMutation({
+    mutationFn: (tagId: string) =>
+      adminClient.organization.tagsRouter.delete({ id: tagId }),
+    onSuccess: () => {
+      toast.success("Tag deleted successfully!");
+      queryClient.invalidateQueries({ queryKey: ["admin-tags"] });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to delete tag");
+    },
+  });
+
+  const createTag = () => {
+    createTagMutation.mutate({
+      name: newTagName.trim(),
+      color: newTagColor,
+    });
   };
 
-  const removeTag = (id: string) => {
-    setTags(tags.filter((tag) => tag.id !== id));
+  const deleteTag = (tagId: string) => {
+    deleteTagMutation.mutate(tagId);
   };
 
   const getColorClasses = (color: string) => {
@@ -250,31 +237,45 @@ export function BoardsSettings() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {boards.map((board) => (
-                <TableRow key={board.id} className="border-b-0">
-                  <TableCell className="text-xl">{board.emoji}</TableCell>
-                  <TableCell className="font-medium">{board.name}</TableCell>
-                  <TableCell>
-                    <Badge variant={board.isPrivate ? "secondary" : "default"}>
-                      {board.isPrivate ? "Private" : "Public"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Button variant="ghost" size="sm">
-                        <EditIcon className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeBoard(board.id)}
-                      >
-                        <TrashIcon className="h-4 w-4" />
-                      </Button>
-                    </div>
+              {boardsLoading ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center py-8">
+                    Loading boards...
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : boards.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                    No boards found. Create your first board below.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                boards.map((board) => (
+                  <TableRow key={board.id} className="border-b-0">
+                    <TableCell className="text-xl">{board.symbol || "📋"}</TableCell>
+                    <TableCell className="font-medium">{board.name}</TableCell>
+                    <TableCell>
+                      <Badge variant={board.isPrivate ? "secondary" : "default"}>
+                        {board.isPrivate ? "Private" : "Public"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Button variant="ghost" size="sm">
+                          <EditIcon className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          disabled
+                        >
+                          <TrashIcon className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
 
@@ -353,48 +354,82 @@ export function BoardsSettings() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex flex-wrap gap-2">
-            {tags.map((tag) => (
-              <div key={tag.id} className="group relative">
-                <Badge
-                  variant="outline"
-                  className={`${getColorClasses(tag.color)} relative cursor-pointer border pr-6 transition-all hover:pr-8`}
-                >
-                  {tag.name}
-                  <button
-                    onClick={() => removeTag(tag.id)}
-                    className="-translate-y-1/2 absolute top-1/2 right-1 rounded-full p-0.5 opacity-0 transition-opacity hover:bg-black/10 group-hover:opacity-100"
+          {tagsLoading ? (
+            <div className="text-center py-8 text-muted-foreground">
+              Loading tags...
+            </div>
+          ) : tags.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              No tags found. Create your first tag below.
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {tags.map((tag) => (
+                <div key={tag.id} className="group relative">
+                  <Badge
+                    variant="outline"
+                    className={`${getColorClasses(tag.color)} relative border transition-all hover:pr-6`}
                   >
-                    <svg
-                      width="12"
-                      height="12"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                    {tag.name}
+                    <button
+                      onClick={() => deleteTag(tag.id)}
+                      className="-translate-y-1/2 absolute top-1/2 right-1 rounded-full p-0.5 opacity-0 transition-opacity hover:bg-black/10 group-hover:opacity-100 cursor-pointer"
                     >
-                      <path d="M18 6L6 18M6 6l12 12" />
-                    </svg>
-                  </button>
-                </Badge>
-              </div>
-            ))}
-          </div>
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M18 6L6 18M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          )}
 
           <div className="border-t border-muted-foreground/10 pt-6 mt-8">
-            <div className="flex gap-3">
-              <Input
-                placeholder="Tag name"
-                value={newTagName}
-                onChange={(e) => setNewTagName(e.target.value)}
-                className="flex-1"
-              />
-              <Button onClick={addTag}>
-                <PlusIcon className="mr-2 h-4 w-4" />
-                Add Tag
-              </Button>
+            <div className="space-y-4">
+              <div className="flex gap-3">
+                <Input
+                  placeholder="Tag name"
+                  value={newTagName}
+                  onChange={(e) => setNewTagName(e.target.value)}
+                  className="flex-1"
+                />
+                <select
+                  value={newTagColor}
+                  onChange={(e) => setNewTagColor(e.target.value)}
+                  className="px-3 py-2 border border-border rounded-md bg-background"
+                >
+                  <option value="blue">Blue</option>
+                  <option value="red">Red</option>
+                  <option value="green">Green</option>
+                  <option value="purple">Purple</option>
+                  <option value="orange">Orange</option>
+                  <option value="gray">Gray</option>
+                  <option value="pink">Pink</option>
+                  <option value="yellow">Yellow</option>
+                </select>
+                <Button 
+                  onClick={createTag}
+                  disabled={!newTagName.trim()}
+                >
+                  <PlusIcon className="mr-2 h-4 w-4" />
+                  Add Tag
+                </Button>
+              </div>
+              {!newTagName.trim() && (
+                <p className="text-sm text-muted-foreground">
+                  Please enter a tag name to continue.
+                </p>
+              )}
             </div>
           </div>
         </CardContent>

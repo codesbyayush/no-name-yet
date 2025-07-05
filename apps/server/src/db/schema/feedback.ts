@@ -10,6 +10,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { boards } from "./boards";
 import { organization } from "./organization";
+import { tags } from "./tags";
 
 // Enum for feedback types
 export const feedbackTypeEnum = pgEnum("feedback_type", ["bug", "suggestion"]);
@@ -95,7 +96,9 @@ export const feedback = pgTable(
 
 		// For future features
 		isAnonymous: boolean("is_anonymous").default(false).notNull(),
-		tags: text("tags").array().default([]),
+
+		// TODO: Find why foreign key contraint fails
+		tagIds: text("tag_ids").array().default([]),
 		priority: text("priority").default("medium"), // low, medium, high
 	},
 	(table) => ({
