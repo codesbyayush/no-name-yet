@@ -1,36 +1,36 @@
 #!/usr/bin/env bun
 
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Client } from "pg";
-import { sql } from "drizzle-orm";
 import * as fs from "fs";
 import * as path from "path";
+import { sql } from "drizzle-orm";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Client } from "pg";
 
 // Database reset script
 // This script will completely drop all tables, types, and sequences, then regenerate migrations
 
 async function resetDatabase() {
-  console.log("🔄 Starting database reset...");
+	console.log("🔄 Starting database reset...");
 
-  // Get database URL from environment
-  const databaseUrl = process.env.DATABASE_URL;
-  if (!databaseUrl) {
-    console.error("❌ DATABASE_URL environment variable is required");
-    process.exit(1);
-  }
+	// Get database URL from environment
+	const databaseUrl = process.env.DATABASE_URL;
+	if (!databaseUrl) {
+		console.error("❌ DATABASE_URL environment variable is required");
+		process.exit(1);
+	}
 
-  // Create database connection
-  const client = new Client({
-    connectionString: databaseUrl,
-  });
-  await client.connect();
-  const db = drizzle(client);
+	// Create database connection
+	const client = new Client({
+		connectionString: databaseUrl,
+	});
+	await client.connect();
+	const db = drizzle(client);
 
-  try {
-    console.log("🗑️  Dropping all tables and types...");
+	try {
+		console.log("🗑️  Dropping all tables and types...");
 
-    // Drop tables in dependency order (children first)
-    const dropTablesSQL = `
+		// Drop tables in dependency order (children first)
+		const dropTablesSQL = `
       -- Drop all tables in dependency order
       DROP TABLE IF EXISTS "post_integrations" CASCADE;
       DROP TABLE IF EXISTS "integrations" CASCADE;
@@ -72,49 +72,49 @@ async function resetDatabase() {
       DROP SEQUENCE IF EXISTS "post_integrations_id_seq" CASCADE;
     `;
 
-    await db.execute(sql.raw(dropTablesSQL));
-    console.log("✅ Successfully dropped all tables, types, and sequences");
+		await db.execute(sql.raw(dropTablesSQL));
+		console.log("✅ Successfully dropped all tables, types, and sequences");
 
-    // Close database connection
-    await client.end();
+		// Close database connection
+		await client.end();
 
-    console.log("🧹 Cleaning up migration files...");
+		console.log("🧹 Cleaning up migration files...");
 
-    // Remove existing migration files
-    const migrationsDir = path.join(process.cwd(), "src/db/migrations");
-    if (fs.existsSync(migrationsDir)) {
-      const files = fs.readdirSync(migrationsDir);
-      for (const file of files) {
-        const filePath = path.join(migrationsDir, file);
-        if (fs.statSync(filePath).isFile()) {
-          fs.unlinkSync(filePath);
-          console.log(`   Deleted: ${file}`);
-        } else if (fs.statSync(filePath).isDirectory()) {
-          // Remove meta directory and its contents
-          if (file === "meta") {
-            fs.rmSync(filePath, { recursive: true, force: true });
-            console.log(`   Deleted: ${file}/ (directory)`);
-          }
-        }
-      }
-    }
+		// Remove existing migration files
+		const migrationsDir = path.join(process.cwd(), "src/db/migrations");
+		if (fs.existsSync(migrationsDir)) {
+			const files = fs.readdirSync(migrationsDir);
+			for (const file of files) {
+				const filePath = path.join(migrationsDir, file);
+				if (fs.statSync(filePath).isFile()) {
+					fs.unlinkSync(filePath);
+					console.log(`   Deleted: ${file}`);
+				} else if (fs.statSync(filePath).isDirectory()) {
+					// Remove meta directory and its contents
+					if (file === "meta") {
+						fs.rmSync(filePath, { recursive: true, force: true });
+						console.log(`   Deleted: ${file}/ (directory)`);
+					}
+				}
+			}
+		}
 
-    console.log("✅ Migration files cleaned up");
-    console.log("\n🚀 Database reset complete!");
-    console.log("\nNext steps:");
-    console.log("1. Run: bun run db:generate");
-    console.log("2. Run: bun run db:push");
-    console.log(
-      "\nThis will create fresh migrations from your current schema.",
-    );
-  } catch (error) {
-    console.error("❌ Error during database reset:", error);
-    process.exit(1);
-  }
+		console.log("✅ Migration files cleaned up");
+		console.log("\n🚀 Database reset complete!");
+		console.log("\nNext steps:");
+		console.log("1. Run: bun run db:generate");
+		console.log("2. Run: bun run db:push");
+		console.log(
+			"\nThis will create fresh migrations from your current schema.",
+		);
+	} catch (error) {
+		console.error("❌ Error during database reset:", error);
+		process.exit(1);
+	}
 }
 
 // Run the reset
 resetDatabase().catch((error) => {
-  console.error("❌ Unexpected error:", error);
-  process.exit(1);
+	console.error("❌ Unexpected error:", error);
+	process.exit(1);
 });

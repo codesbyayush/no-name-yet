@@ -21,7 +21,8 @@
 	},
 	"formatter": {
 		"enabled": true,
-		"indentStyle": "tab"
+		"indentStyle": "tab",
+		"indentWidth": 2
 	},
 	"organizeImports": {
 		"enabled": true
@@ -41,6 +42,9 @@
 						"functions": ["clsx", "cva", "cn"]
 					}
 				}
+			},
+			"style": {
+				"noNonNullAssertion": "off"
 			}
 		}
 	},

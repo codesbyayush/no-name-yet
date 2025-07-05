@@ -1,9 +1,9 @@
 import { commentsRouter } from "./comments";
-import { votesRouter } from "./votes";
 import { postsRouter } from "./posts";
+import { votesRouter } from "./votes";
 
 export const publicRouter = {
-  comments: commentsRouter,
-  votes: votesRouter,
-  posts: postsRouter,
+	comments: commentsRouter,
+	votes: votesRouter,
+	posts: postsRouter,
 };

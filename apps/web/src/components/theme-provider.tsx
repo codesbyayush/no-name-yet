@@ -23,17 +23,17 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 // Function to apply theme based on Tailwind v4 approach
 function applyTheme(theme: Theme) {
 	const root = document.documentElement;
-	
+
 	// Remove existing theme classes
 	root.classList.remove("light", "dark");
-	
+
 	if (theme === "system") {
 		// Remove theme from localStorage to respect system preference
 		localStorage.removeItem("vite-ui-theme");
 		// Apply dark class if system prefers dark
 		root.classList.toggle(
 			"dark",
-			window.matchMedia("(prefers-color-scheme: dark)").matches
+			window.matchMedia("(prefers-color-scheme: dark)").matches,
 		);
 	} else {
 		// Set explicit theme
@@ -60,7 +60,7 @@ export function ThemeProvider({
 	useEffect(() => {
 		// Apply theme on mount
 		applyTheme(theme);
-		
+
 		// Listen for system theme changes
 		const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 		const handleChange = () => {
@@ -68,7 +68,7 @@ export function ThemeProvider({
 				applyTheme("system");
 			}
 		};
-		
+
 		mediaQuery.addEventListener("change", handleChange);
 		return () => mediaQuery.removeEventListener("change", handleChange);
 	}, [theme]);
