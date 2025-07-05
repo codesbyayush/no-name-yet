@@ -6,8 +6,9 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { auth } from "./lib/auth";
-import { createContext } from "./orpc/context";
+import { createContext, createAdminContext } from "./orpc/context";
 import { apiRouter } from "./orpc/index";
+import { adminRouter } from "./orpc/admin";
 import v1Router from "./rest";
 
 const app = new Hono();
@@ -62,12 +63,26 @@ app.get("/docs", (c) => c.redirect("/api/docs"));
 app.route("/api/auth", authRouter);
 app.route("/api/v1", v1Router);
 
-// oRPC Handler
+// oRPC Handler for regular API routes
 const rpcHandler = new RPCHandler(apiRouter);
 app.use("/rpc/*", async (c, next) => {
 	const context = await createContext({ context: c });
 	const { matched, response } = await rpcHandler.handle(c.req.raw, {
 		prefix: "/rpc",
+		context: context,
+	});
+	if (matched) {
+		return c.newResponse(response.body, response);
+	}
+	await next();
+});
+
+// oRPC Handler for admin routes
+const adminRpcHandler = new RPCHandler(adminRouter);
+app.use("/admin/*", async (c, next) => {
+	const context = await createAdminContext({ context: c });
+	const { matched, response } = await adminRpcHandler.handle(c.req.raw, {
+		prefix: "/admin",
 		context: context,
 	});
 	if (matched) {

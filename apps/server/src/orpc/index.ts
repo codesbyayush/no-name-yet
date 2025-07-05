@@ -14,7 +14,6 @@ import {
 } from "../db/schema";
 import { auth } from "../lib/auth";
 import { mixedRouter } from "./features";
-import { organizationRouter } from "./organization";
 import { protectedProcedure, publicProcedure } from "./procedures";
 import { publicRouter } from "./public";
 
@@ -42,7 +41,6 @@ const boardIdSchema = z.object({
 export const apiRouter = {
 	// New router structure
 	public: publicRouter,
-	organization: organizationRouter,
 	mixed: mixedRouter,
 
 	// Legacy routes (to be moved gradually)

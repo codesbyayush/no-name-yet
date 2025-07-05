@@ -25,8 +25,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { client, queryClient } from "@/utils/orpc";
+import { adminClient } from "@/utils/admin-orpc";
+import { useMutation } from "@tanstack/react-query";
 import { EditIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
 interface Board {
   id: string;
@@ -110,6 +114,30 @@ export function BoardsSettings() {
       setNewBoardEmoji(firstAvailableEmoji);
     }
   }, [boards, firstAvailableEmoji, newBoardEmoji]);
+
+  const createPostMutation = useMutation({
+    mutationFn: (data: Omit<Board, "id">) =>
+      adminClient.organization.boardsRouter.create({
+        ...data,
+        slug: data.name.split(" ").join("-").toLowerCase(),
+      }),
+    onSuccess: () => {
+      toast.success("Post created successfully!");
+      queryClient.invalidateQueries({ queryKey: ["boards"] });
+      // addBoardInData();
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to create post");
+    },
+  });
+
+  const createBoard = () => {
+    createPostMutation.mutate({
+      name: newBoardName.trim(),
+      emoji: newBoardEmoji,
+      isPrivate: newBoardIsPrivate,
+    });
+  };
 
   const addBoard = () => {
     if (newBoardName.trim() && newBoardEmoji) {
@@ -298,7 +326,7 @@ export function BoardsSettings() {
                   />
                 </div>
                 <Button
-                  onClick={addBoard}
+                  onClick={createBoard}
                   disabled={!newBoardName.trim() || !newBoardEmoji}
                 >
                   <PlusIcon className="mr-2 h-4 w-4" />
