@@ -1,7 +1,8 @@
-import * as React from "react"
+import * as React from "react";
 import {
   IconCamera,
   IconChartBar,
+  IconCode,
   IconDashboard,
   IconDatabase,
   IconFileAi,
@@ -15,12 +16,12 @@ import {
   IconSearch,
   IconSettings,
   IconUsers,
-} from "@tabler/icons-react"
+} from "@tabler/icons-react";
 
-import { NavDocuments } from "@/components/nav-documents"
-import { NavMain } from "@/components/nav-main"
-import { NavSecondary } from "@/components/nav-secondary"
-import { NavUser } from "@/components/nav-user"
+import { NavDocuments } from "@/components/nav-documents";
+import { NavMain } from "@/components/nav-main";
+import { NavSecondary } from "@/components/nav-secondary";
+import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -29,7 +30,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 const data = {
   user: {
@@ -145,12 +146,17 @@ const data = {
   ],
   settings: [
     {
+      name: "Widget",
+      url: "/widget",
+      icon: IconCode,
+    },
+    {
       name: "Settings",
       url: "/settings",
       icon: IconSettings,
     },
   ],
-}
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -172,14 +178,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavDocuments items={data.services} heading={"Services"}/>
-        <NavDocuments items={data.insights} heading={"Insights"}/>
-        <NavDocuments items={data.settings} heading={"Workspace"}/>
+        <NavDocuments items={data.services} heading={"Services"} />
+        <NavDocuments items={data.insights} heading={"Insights"} />
+        <NavDocuments items={data.settings} heading={"Workspace"} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
         <NavUser />
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }
