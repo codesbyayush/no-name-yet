@@ -1,4 +1,5 @@
 import { AppSidebar } from "@/components/app-sidebar";
+import OmniFeedbackWidget from "@/components/feedback-widget";
 import { OnboardingGuard } from "@/components/onboarding-guard";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AuthProvider } from "@/contexts/auth-context";
@@ -20,6 +21,7 @@ function AdminLayout() {
 						} as React.CSSProperties
 					}
 				>
+					<OmniFeedbackWidget />
 					<AppSidebar variant="inset" />
 					<SidebarInset className="!mt-0 min-h-max">
 						<Outlet />

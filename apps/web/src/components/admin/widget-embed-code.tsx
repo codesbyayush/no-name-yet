@@ -16,7 +16,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
@@ -26,14 +26,10 @@ import React, { useState, useMemo } from "react";
 interface WidgetConfig {
 	organizationId: string;
 	boardId?: string;
-	theme: "light" | "dark" | "auto";
-	position: "bottom-right" | "bottom-left" | "top-right" | "top-left";
+	position: "above-button" | "center";
 	buttonColor: string;
 	buttonText: string;
-	showBranding: boolean;
-	enableEmoji: boolean;
-	enableScreenshot: boolean;
-	autoOpen: boolean;
+	apiUrl?: string;
 	customDomain?: string;
 }
 
@@ -46,7 +42,7 @@ interface OptionGroup {
 		description: string;
 		changeable: boolean;
 		reason: string;
-		type: "text" | "select" | "switch" | "color";
+		type: "text" | "select" | "color";
 		options?: { label: string; value: string }[];
 	}[];
 }
@@ -55,14 +51,10 @@ export function WidgetEmbedCode() {
 	const [config, setConfig] = useState<WidgetConfig>({
 		organizationId: "org_123456789",
 		boardId: "board_general",
-		theme: "auto",
-		position: "bottom-right",
+		position: "above-button",
 		buttonColor: "#3b82f6",
 		buttonText: "Feedback",
-		showBranding: true,
-		enableEmoji: true,
-		enableScreenshot: true,
-		autoOpen: false,
+		apiUrl: "https://localhost:8080",
 		customDomain: "",
 	});
 
@@ -96,6 +88,15 @@ export function WidgetEmbedCode() {
 						{ label: "Feature Requests", value: "board_features" },
 					],
 				},
+				{
+					key: "apiUrl",
+					label: "API URL",
+					description: "Backend API endpoint for the widget",
+					changeable: true,
+					reason:
+						"Point to your backend server. Use localhost for development.",
+					type: "text",
+				},
 			],
 		},
 		{
@@ -103,32 +104,16 @@ export function WidgetEmbedCode() {
 			description: "Visual customization options",
 			options: [
 				{
-					key: "theme",
-					label: "Theme",
-					description: "Color scheme for the widget",
-					changeable: true,
-					reason:
-						"Match your website's design. 'Auto' adapts to user's system preference.",
-					type: "select",
-					options: [
-						{ label: "Auto (System)", value: "auto" },
-						{ label: "Light", value: "light" },
-						{ label: "Dark", value: "dark" },
-					],
-				},
-				{
 					key: "position",
 					label: "Position",
-					description: "Where the widget button appears on screen",
+					description: "Where the widget appears on screen",
 					changeable: true,
 					reason:
-						"Position based on your website layout to avoid conflicts with existing elements.",
+						"'Above-button' shows as floating button, 'center' shows in center of screen.",
 					type: "select",
 					options: [
-						{ label: "Bottom Right", value: "bottom-right" },
-						{ label: "Bottom Left", value: "bottom-left" },
-						{ label: "Top Right", value: "top-right" },
-						{ label: "Top Left", value: "top-left" },
+						{ label: "Floating Button", value: "above-button" },
+						{ label: "Center Screen", value: "center" },
 					],
 				},
 				{
@@ -152,51 +137,9 @@ export function WidgetEmbedCode() {
 			],
 		},
 		{
-			title: "Features",
-			description: "Enable or disable widget functionality",
+			title: "Deployment",
+			description: "Widget hosting and domain settings",
 			options: [
-				{
-					key: "enableEmoji",
-					label: "Emoji Reactions",
-					description: "Allow users to react with emojis",
-					changeable: true,
-					reason:
-						"Emojis provide quick feedback options. Disable if you prefer text-only feedback.",
-					type: "switch",
-				},
-				{
-					key: "enableScreenshot",
-					label: "Screenshot Capture",
-					description: "Allow users to attach screenshots",
-					changeable: true,
-					reason:
-						"Screenshots help identify UI issues. May require additional permissions from users.",
-					type: "switch",
-				},
-				{
-					key: "autoOpen",
-					label: "Auto Open",
-					description: "Automatically open widget on page load",
-					changeable: true,
-					reason:
-						"Can increase engagement but may be intrusive. Use sparingly.",
-					type: "switch",
-				},
-			],
-		},
-		{
-			title: "Branding",
-			description: "Control widget branding elements",
-			options: [
-				{
-					key: "showBranding",
-					label: "Show Powered By",
-					description: "Display 'Powered by' text in widget",
-					changeable: false,
-					reason:
-						"Required for free plan. Can be removed with premium subscription.",
-					type: "switch",
-				},
 				{
 					key: "customDomain",
 					label: "Custom Domain",
@@ -213,61 +156,203 @@ export function WidgetEmbedCode() {
 	const generateEmbedCode = useMemo(() => {
 		const configString = JSON.stringify(
 			{
-				organizationId: config.organizationId,
+				publicKey: config.organizationId, // Widget expects publicKey, not organizationId
 				...(config.boardId && { boardId: config.boardId }),
-				theme: config.theme,
-				position: config.position,
-				buttonColor: config.buttonColor,
-				buttonText: config.buttonText,
-				showBranding: config.showBranding,
-				enableEmoji: config.enableEmoji,
-				enableScreenshot: config.enableScreenshot,
-				autoOpen: config.autoOpen,
-				...(config.customDomain && { customDomain: config.customDomain }),
+				...(config.apiUrl && { apiUrl: config.apiUrl }),
+				theme: {
+					primaryColor: config.buttonColor,
+					buttonText: config.buttonText,
+				},
+				position: config.position, // Use the actual position value
 			},
 			null,
 			2,
 		);
 
-		const domain = config.customDomain || "widget.yourdomain.com";
+		const domain = config.customDomain || "localhost:3000"; // Default to localhost for development
 
 		return {
-			script: `<!-- Feedback Widget -->
+			script: `<!-- OmniFeedback Widget -->
 <script>
-  window.FeedbackWidget = ${configString};
+  // Widget will auto-initialize when script loads
+  // Or you can manually initialize:
+  // window.OmniFeedbackWidget.init(${configString});
 </script>
-<script src="https://${domain}/widget.js" async></script>`,
+<!-- Script loads once and persists across route changes -->
+<script src="http://${domain}/omnifeedback-widget.js" async></script>`,
 
-			react: `import { useEffect } from 'react';
+			react: `import { useEffect, useRef } from 'react';
 
-const FeedbackWidget = () => {
-  useEffect(() => {
-    // Initialize widget
-    window.FeedbackWidget = ${configString};
+// TypeScript support - all types are included inline for immediate use
 
-    // Load widget script
+interface OmniFeedbackWidgetOptions {
+  publicKey: string;
+  boardId?: string;
+  user?: {
+    id?: string;
+    name?: string;
+    email?: string;
+  };
+  customData?: { [key: string]: string | undefined };
+  jwtAuthToken?: string;
+  apiUrl?: string;
+  theme?: {
+    primaryColor?: string;
+    buttonText?: string;
+  };
+  targetElement?: string | HTMLElement;
+  position?: "center" | "above-button";
+}
+
+interface OmniFeedbackWidgetInstance {
+  destroy: () => void;
+  show: () => void;
+  hide: () => void;
+  isVisible: () => boolean;
+  getElement: () => HTMLElement;
+}
+
+interface OmniFeedbackWidgetAPI {
+  init: (options: OmniFeedbackWidgetOptions) => OmniFeedbackWidgetInstance;
+  destroyAll: () => void;
+  version: string;
+}
+
+declare global {
+  interface Window {
+    OmniFeedbackWidget: OmniFeedbackWidgetAPI;
+  }
+}
+
+// Global script loading state to prevent multiple loads across route changes
+const scriptLoadState = {
+  loading: false,
+  loaded: false,
+  promise: null as Promise<void> | null,
+};
+
+const loadScriptOnce = (scriptUrl: string): Promise<void> => {
+  // If already loaded, return immediately
+  if (scriptLoadState.loaded && window.OmniFeedbackWidget) {
+    return Promise.resolve();
+  }
+
+  // If already loading, return the existing promise
+  if (scriptLoadState.loading && scriptLoadState.promise) {
+    return scriptLoadState.promise;
+  }
+
+  // Check if script already exists in DOM
+  const existingScript = document.querySelector(\`script[src="\${scriptUrl}"]\`);
+  if (existingScript) {
+    scriptLoadState.loaded = true;
+    return Promise.resolve();
+  }
+
+  // Start loading
+  scriptLoadState.loading = true;
+  scriptLoadState.promise = new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    script.src = 'https://${domain}/widget.js';
+    script.src = scriptUrl;
     script.async = true;
-    document.head.appendChild(script);
-
-    return () => {
-      // Cleanup
-      document.head.removeChild(script);
-      delete window.FeedbackWidget;
+    
+    script.onload = () => {
+      scriptLoadState.loaded = true;
+      scriptLoadState.loading = false;
+      resolve();
     };
-  }, []);
+    
+    script.onerror = () => {
+      scriptLoadState.loading = false;
+      scriptLoadState.promise = null;
+      reject(new Error('Failed to load OmniFeedback widget script'));
+    };
+    
+    document.head.appendChild(script);
+  });
+
+  return scriptLoadState.promise;
+};
+
+const OmniFeedbackWidget = () => {
+  const instanceRef = useRef<OmniFeedbackWidgetInstance | null>(null);
+
+  useEffect(() => {
+    const initWidget = async () => {
+      try {
+        // Load script only once per domain
+        await loadScriptOnce('http://${domain}/omnifeedback-widget.js');
+        
+        // Initialize widget if not already initialized
+        if (window.OmniFeedbackWidget && !instanceRef.current) {
+          instanceRef.current = window.OmniFeedbackWidget.init(${configString});
+        }
+      } catch (error) {
+        console.error('Failed to initialize OmniFeedback widget:', error);
+      }
+    };
+
+    initWidget();
+
+    // Only cleanup the widget instance, not the script
+    return () => {
+      if (instanceRef.current) {
+        instanceRef.current.destroy();
+        instanceRef.current = null;
+      }
+    };
+  }, []); // Empty dependency array - only run once
 
   return null;
 };
 
-export default FeedbackWidget;`,
+export default OmniFeedbackWidget;`,
 
-			npm: `# Install the widget package
-npm install @yourdomain/feedback-widget
+			types: `// TypeScript declarations for OmniFeedbackWidget
+// Copy these interfaces to your project for type safety
 
-# Or with yarn
-yarn add @yourdomain/feedback-widget`,
+export interface OmniFeedbackWidgetOptions {
+  publicKey: string;
+  boardId?: string;
+  user?: {
+    id?: string;
+    name?: string;
+    email?: string;
+  };
+  customData?: { [key: string]: string | undefined };
+  jwtAuthToken?: string;
+  apiUrl?: string;
+  theme?: {
+    primaryColor?: string;
+    buttonText?: string;
+  };
+  targetElement?: string | HTMLElement;
+  position?: "center" | "above-button";
+}
+
+export interface OmniFeedbackWidgetInstance {
+  destroy: () => void;
+  show: () => void;
+  hide: () => void;
+  isVisible: () => boolean;
+  getElement: () => HTMLElement;
+}
+
+export interface OmniFeedbackWidgetAPI {
+  init: (options: OmniFeedbackWidgetOptions) => OmniFeedbackWidgetInstance;
+  destroyAll: () => void;
+  version: string;
+}
+
+// Extend the global Window interface
+declare global {
+  interface Window {
+    OmniFeedbackWidget: OmniFeedbackWidgetAPI;
+  }
+}
+
+// Export for module usage
+export {};`,
 		};
 	}, [config]);
 
@@ -359,23 +444,7 @@ yarn add @yourdomain/feedback-widget`,
 												</Select>
 											)}
 
-											{option.type === "switch" && (
-												<div className="flex items-center space-x-2">
-													<Switch
-														id={option.key}
-														checked={config[option.key] as boolean}
-														onCheckedChange={(checked) =>
-															updateConfig(option.key, checked)
-														}
-														disabled={!option.changeable}
-													/>
-													<Label htmlFor={option.key} className="text-sm">
-														{(config[option.key] as boolean)
-															? "Enabled"
-															: "Disabled"}
-													</Label>
-												</div>
-											)}
+
 
 											{option.type === "color" && (
 												<div className="flex items-center space-x-2">
@@ -442,7 +511,7 @@ yarn add @yourdomain/feedback-widget`,
 							<TabsList className="grid w-full grid-cols-3">
 								<TabsTrigger value="script">HTML Script</TabsTrigger>
 								<TabsTrigger value="react">React Component</TabsTrigger>
-								<TabsTrigger value="npm">NPM Package</TabsTrigger>
+								<TabsTrigger value="types">TypeScript</TabsTrigger>
 							</TabsList>
 
 							<TabsContent value="script" className="mt-4 flex-1">
@@ -492,36 +561,34 @@ yarn add @yourdomain/feedback-widget`,
 								</div>
 							</TabsContent>
 
-							<TabsContent value="npm" className="mt-4 flex-1">
+							<TabsContent value="types" className="mt-4 flex-1">
 								<div className="space-y-4">
 									<div className="flex items-center justify-between">
 										<p className="text-muted-foreground text-sm">
-											Install and use our NPM package for better integration
+											TypeScript declarations for type safety
 										</p>
 										<Button
 											variant="outline"
 											size="sm"
-											onClick={() => copyToClipboard(generateEmbedCode.npm)}
+											onClick={() => copyToClipboard(generateEmbedCode.types)}
 										>
 											<Copy className="mr-2 h-4 w-4" />
 											{copied ? "Copied!" : "Copy"}
 										</Button>
 									</div>
 									<Textarea
-										value={generateEmbedCode.npm}
+										value={generateEmbedCode.types}
 										readOnly
-										className="min-h-[100px] resize-none font-mono text-sm"
+										className="min-h-[300px] resize-none font-mono text-sm"
 									/>
 									<div className="rounded-md bg-muted/50 p-4">
 										<p className="mb-2 font-semibold text-sm">
-											NPM Package Benefits:
+											TypeScript Setup Options:
 										</p>
 										<ul className="space-y-1 text-muted-foreground text-sm">
-											<li>• TypeScript support</li>
-											<li>• Better integration with build tools</li>
-											<li>• Automatic updates</li>
-											<li>• Tree-shaking support</li>
-											<li>• Better error handling</li>
+											<li>• <strong>Copy the types above</strong> into your project for immediate type safety</li>
+											<li>• <strong>No external dependencies</strong> - everything is self-contained</li>
+											<li>• <strong>Works with any TypeScript setup</strong> - just paste and go</li>
 										</ul>
 									</div>
 								</div>
