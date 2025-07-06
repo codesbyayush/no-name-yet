@@ -132,13 +132,13 @@ export function CreateEditPost({
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
 				{trigger || (
-					<Button className="h-12 w-full rounded-xl bg-primary font-medium text-base shadow-sm hover:bg-primary/90">
+					<Button className="h-10 p-0 w-full rounded-xl bg-primary font-medium text-base shadow-sm hover:bg-primary/90">
 						{mode === "create" ? "Submit a post" : "Edit post"}
 					</Button>
 				)}
 			</DialogTrigger>
 			<DialogContent className="max-h-[90vh] w-11/12 overflow-y-auto rounded-3xl border-muted-foreground/10 bg-card shadow-xl sm:max-w-[600px]">
-				<DialogHeader className="space-y-3 pb-2">
+				<DialogHeader className="pb-2">
 					<DialogTitle className="font-semibold text-2xl text-card-foreground">
 						{mode === "create" ? "Create New Post" : "Edit Post"}
 					</DialogTitle>
@@ -149,7 +149,7 @@ export function CreateEditPost({
 					</DialogDescription>
 				</DialogHeader>
 
-				<form onSubmit={handleSubmit} className="space-y-2 pt-2">
+				<form onSubmit={handleSubmit} className="pt-2">
 					{/* Title */}
 					<div className="space-y-3">
 						<Label
@@ -254,7 +254,7 @@ export function CreateEditPost({
           </div> */}
 				</form>
 
-				<div className="space-y-4">
+				<div>
 					<div className="space-y-3">
 						<Label
 							htmlFor="board"
@@ -289,7 +289,7 @@ export function CreateEditPost({
 					</div>
 				</div>
 
-				<DialogFooter className="gap-3 pt-6">
+				<DialogFooter className="gap-3">
 					<Button
 						type="button"
 						variant="outline"

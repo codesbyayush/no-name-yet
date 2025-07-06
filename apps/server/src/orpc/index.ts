@@ -111,6 +111,7 @@ export const apiRouter = {
 					viewCount: boards.viewCount,
 					createdAt: boards.createdAt,
 					updatedAt: boards.updatedAt,
+					symbol: boards.symbol,
 				})
 				.from(boards)
 				.where(

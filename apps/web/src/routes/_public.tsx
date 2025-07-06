@@ -1,3 +1,4 @@
+import { BrandLogoIcon } from "@/components/svg/logo";
 import { useSession } from "@/lib/auth-client";
 import {
 	Link,
@@ -30,16 +31,18 @@ function PublicLayout() {
 					{/* Logo */}
 					<Link
 						to="/"
-						className="flex items-center gap-3 transition-opacity hover:opacity-80"
+						className="flex items-center gap-3 transition-opacity hover:opacity-80 size-10"
 					>
-						<div className="h-8 w-8 overflow-hidden rounded-lg bg-transparent">
+						{/* <div className="h-8 w-8 overflow-hidden rounded-lg bg-transparent">
 							<span className="flex aspect-square size-5 items-center justify-center rounded bg-accent p-4 ">
 								A
 							</span>
 						</div>
 						<div className="xs:block hidden">
 							<span className="font-medium text-gray-900 text-lg">A</span>
-						</div>
+						</div> */}
+
+						<BrandLogoIcon size={40} className="invert border rounded-lg p-1 border-muted/50"/>
 					</Link>
 
 					{/* Separator */}

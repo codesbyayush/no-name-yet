@@ -25,7 +25,6 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
-
 export const Route = createFileRoute("/_public/board/")({
   component: BoardIndexPage,
 });
@@ -242,7 +241,7 @@ function BoardIndexPage() {
           )}
         </div>
         <div className="sticky top-6 flex h-fit flex-col gap-4 ">
-          <div className="z-10 w-3xs rounded-2xl border-1 border-muted-foreground/10 bg-card bg-noise p-4 shadow-2xs">
+          <div className="z-10 w-3xs rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card shadow-xs p-4">
             <h4 className="mb-2 font-medium capitalize"> Got an idea?</h4>
             <CreateEditPost
               boardId={boards?.boards[0].id || ""} // TODO: Get actual board ID from context
@@ -253,17 +252,21 @@ function BoardIndexPage() {
               }}
             />
           </div>
-          <div className="z-10 w-3xs rounded-2xl border-1 border-muted-foreground/10 bg-background/90 bg-noise p-4 shadow-2xs">
+          <div className="z-10 w-3xs rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card shadow-xs p-4">
             <h4 className="mb-2 font-medium capitalize">boards</h4>
-            <div>
+            <div className="flex flex-col gap-2">
               {boards?.boards.map((board) => (
                 <Button
                   key={board.id}
                   variant={"secondary"}
-                  className="w-full p-0 text-left font-medium text-foreground"
+                  className="w-full justify-start p-3 text-left font-medium text-foreground h-auto"
                 >
-                  <span className="size-4 rounded-full bg-green-500" />
-                  <span>{board.name}</span>
+                  <p className="whitespace-break-spaces capitalize flex gap-2 items-center">
+                    {board.symbol}
+                    <span className="text-left break-words capitalize">
+                      {board.name}
+                    </span>
+                  </p>
                 </Button>
               ))}
             </div>
