@@ -128,7 +128,7 @@ const data = {
 		},
 		{
 			name: "Changelog",
-			url: "/changelog",
+			url: "/ayush/changelog",
 			icon: IconFileWord,
 		},
 	],
