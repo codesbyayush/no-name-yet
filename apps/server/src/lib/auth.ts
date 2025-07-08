@@ -5,6 +5,7 @@ import { db } from "../db";
 import * as schema from "../db/schema";
 
 export const auth: ReturnType<typeof betterAuth> = betterAuth({
+  // baseURL: process.env.CORS_ORIGIN!,
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: schema,
@@ -17,9 +18,9 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
   },
 
   advanced: {
-    crossSubDomainCookies: {
-      enabled: true,
-    },
+    // crossSubDomainCookies: {
+    //   enabled: true,
+    // },
     cookie: {
       sameSite: "none",
       secure: true,
