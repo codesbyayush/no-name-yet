@@ -35,7 +35,7 @@ const LandingPage = () => {
 					<FloatingNav navItems={navItems} />
 					<div className="px-4 py-12 md:py-28">
 						<Spotlight />
-						<h1 className="relative z-10 mx-auto max-w-4xl text-center font-bold text-2xl md:text-4xl lg:text-7xl">
+						<h1 className="relative z-10 mx-auto max-w-4xl text-center font-bold">
 							{"Build better with customer feedback"
 								.split(" ")
 								.map((word, index) => (
@@ -48,7 +48,7 @@ const LandingPage = () => {
 											delay: index * 0.1,
 											ease: "easeInOut",
 										}}
-										className="mr-2 inline-block bg-gradient-to-r from-white via-yellow-100 to-stone-100 bg-clip-text text-transparent"
+										className="mr-2 inline-block bg-gradient-to-r from-white via-yellow-100 to-stone-100 bg-clip-text text-transparent text-2xl md:text-4xl lg:text-7xl"
 									>
 										{word}
 									</motion.span>
@@ -65,7 +65,7 @@ const LandingPage = () => {
 								duration: 0.3,
 								delay: 0.8,
 							}}
-							className="relative z-10 mx-auto max-w-xl py-4 text-center font-normal text-lg text-neutral-600 dark:text-neutral-400"
+							className="relative z-10 mx-auto max-w-xl py-4 text-center font-normal text-neutral-600 dark:text-neutral-400 text-2xl md:text-6xl"
 						>
 							Collect feedback to guide your product decisions
 						</motion.p>
@@ -82,10 +82,10 @@ const LandingPage = () => {
 							}}
 							className="relative z-10 mt-8 flex flex-wrap items-center justify-center gap-4"
 						>
-							<button className="hover:-translate-y-0.5 w-60 transform rounded-lg border border-gray-300 bg-noise bg-white px-6 py-2 font-medium text-black transition-all duration-300 hover:bg-gray-100 dark:border-gray-700 dark:bg-black dark:text-white dark:hover:bg-gray-900">
+							<button className="hover:-translate-y-0.5 w-60 transform rounded-lg border px-6 py-2 font-medium text-black transition-all duration-300">
 								Explore Now
 							</button>
-							<button className="hover:-translate-y-0.5 w-60 transform rounded-lg bg-noise bg-zinc-700/75 px-6 py-2 font-medium text-white transition-all duration-300 hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-gray-200">
+							<button className="hover:-translate-y-0.5 w-60 transform rounded-lg px-6 py-2 font-medium  transition-all duration-300 ">
 								Connect with us
 							</button>
 						</motion.div>
