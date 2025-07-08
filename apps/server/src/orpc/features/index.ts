@@ -93,7 +93,7 @@ export const mixedRouter = {
                       ),
                     ),
                 )
-              : false,
+              : sql`false`,
           })
           .from(feedback)
           .leftJoin(user, eq(feedback.userId, user.id))
@@ -175,7 +175,7 @@ export const mixedRouter = {
                       ),
                     ),
                 )
-              : false,
+              : sql`false`,
           })
           .from(feedback)
           .leftJoin(user, eq(feedback.userId, user.id))

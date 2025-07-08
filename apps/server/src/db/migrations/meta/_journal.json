@@ -5,43 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1751138283006,
-      "tag": "0000_lucky_iron_lad",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1751181410004,
-      "tag": "0001_ancient_magma",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1751186842412,
-      "tag": "0002_faithful_black_queen",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1751385559835,
-      "tag": "0003_fine_warhawk",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1751711336788,
-      "tag": "0004_colossal_spacker_dave",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1751735299998,
-      "tag": "0005_outgoing_harry_osborn",
+      "when": 1751996266320,
+      "tag": "0000_nebulous_mongu",
       "breakpoints": true
     }
   ]

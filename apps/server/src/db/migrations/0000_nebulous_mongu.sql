@@ -67,6 +67,7 @@ CREATE TABLE "verification" (
 --> statement-breakpoint
 CREATE TABLE "boards" (
 	"id" text PRIMARY KEY NOT NULL,
+	"symbol" text,
 	"organization_id" text NOT NULL,
 	"name" text NOT NULL,
 	"slug" text NOT NULL,
@@ -98,7 +99,7 @@ CREATE TABLE "comments" (
 );
 --> statement-breakpoint
 CREATE TABLE "feedback" (
-	"id" text PRIMARY KEY DEFAULT 'gen_random_uuid()::text' NOT NULL,
+	"id" text PRIMARY KEY DEFAULT gen_random_uuid()::text NOT NULL,
 	"board_id" text NOT NULL,
 	"type" "feedback_type" NOT NULL,
 	"title" text,
@@ -112,11 +113,23 @@ CREATE TABLE "feedback" (
 	"browser_info" jsonb,
 	"attachments" jsonb DEFAULT '[]'::jsonb,
 	"ai_analysis" jsonb,
+	"metadata" jsonb,
+	"tags" jsonb DEFAULT '[]'::jsonb,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	"is_anonymous" boolean DEFAULT false NOT NULL,
-	"tags" text[] DEFAULT '{}',
+	"tag_ids" text[] DEFAULT '{}',
 	"priority" text DEFAULT 'medium'
+);
+--> statement-breakpoint
+CREATE TABLE "tags" (
+	"id" text PRIMARY KEY NOT NULL,
+	"name" text NOT NULL,
+	"color" text DEFAULT 'blue' NOT NULL,
+	"organization_id" text NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "tags_organization_id_name_unique" UNIQUE("organization_id","name")
 );
 --> statement-breakpoint
 CREATE TABLE "votes" (
@@ -157,6 +170,7 @@ CREATE TABLE "organization" (
 	"slug" text NOT NULL,
 	"logo" text,
 	"metadata" text,
+	"public_key" text DEFAULT gen_random_uuid()::text,
 	"created_at" timestamp NOT NULL
 );
 --> statement-breakpoint
@@ -176,6 +190,7 @@ ALTER TABLE "comments" ADD CONSTRAINT "comments_feedback_id_feedback_id_fk" FORE
 ALTER TABLE "comments" ADD CONSTRAINT "comments_parent_comment_id_comments_id_fk" FOREIGN KEY ("parent_comment_id") REFERENCES "public"."comments"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "comments" ADD CONSTRAINT "comments_author_id_user_id_fk" FOREIGN KEY ("author_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "feedback" ADD CONSTRAINT "feedback_board_id_boards_id_fk" FOREIGN KEY ("board_id") REFERENCES "public"."boards"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "tags" ADD CONSTRAINT "tags_organization_id_organization_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organization"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "votes" ADD CONSTRAINT "votes_feedback_id_feedback_id_fk" FOREIGN KEY ("feedback_id") REFERENCES "public"."feedback"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "votes" ADD CONSTRAINT "votes_comment_id_comments_id_fk" FOREIGN KEY ("comment_id") REFERENCES "public"."comments"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "votes" ADD CONSTRAINT "votes_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -194,6 +209,7 @@ CREATE INDEX "idx_comments_parent" ON "comments" USING btree ("parent_comment_id
 CREATE INDEX "idx_feedback_boards" ON "feedback" USING btree ("board_id");--> statement-breakpoint
 CREATE INDEX "idx_feedback_status" ON "feedback" USING btree ("status");--> statement-breakpoint
 CREATE INDEX "idx_feedback_type" ON "feedback" USING btree ("type");--> statement-breakpoint
+CREATE INDEX "idx_tags_organization" ON "tags" USING btree ("organization_id");--> statement-breakpoint
 CREATE INDEX "idx_votes_feedback" ON "votes" USING btree ("feedback_id");--> statement-breakpoint
 CREATE INDEX "idx_votes_comment" ON "votes" USING btree ("comment_id");--> statement-breakpoint
 CREATE INDEX "idx_invitation_email_org" ON "invitation" USING btree ("email","organization_id");--> statement-breakpoint

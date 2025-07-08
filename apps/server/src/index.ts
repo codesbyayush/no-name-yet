@@ -34,12 +34,7 @@ app.use(
 	"/*",
 	cors({
 		origin: (origin, _) => {
-			// Support both HTTP and HTTPS for development
-			return origin.endsWith(".localhost:3001") ||
-				origin.endsWith(".localhost:3002") ||
-				origin === "https://localhost:3001" ||
-				origin === "https://localhost:3002" ||
-				origin === "http://localhost:3000"
+			return origin.endsWith(process.env.CORS_ORIGIN!)
 				? origin
 				: "https://localhost:3002";
 		},

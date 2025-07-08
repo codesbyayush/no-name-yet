@@ -90,6 +90,9 @@ export const feedback = pgTable(
 		// Custom data from the user
 		metadata: jsonb("metadata").$type<Record<string, unknown>>(),
 
+		// Tags for categorization
+		tags: jsonb("tags").default([]).$type<string[]>(),
+
 		// Metadata
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 		updatedAt: timestamp("updated_at").defaultNow().notNull(),
