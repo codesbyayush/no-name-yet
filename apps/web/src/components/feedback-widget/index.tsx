@@ -183,7 +183,7 @@ const OmniFeedbackWidget = () => {
         if (window.OmniFeedbackWidget && !instanceRef.current) {
           instanceRef.current = window.OmniFeedbackWidget.init({
             "publicKey": "0d9f0628-0547-4887-8931-2ea1e0eab302",
-            "apiUrl": "https://no-name-yet.onrender.com",
+            "apiUrl": import.meta.env.PUBLIC_BACKEND_SERVER_URL!,
             "theme": {
               "primaryColor": "#3b82f6",
               "buttonText": "Feedback"

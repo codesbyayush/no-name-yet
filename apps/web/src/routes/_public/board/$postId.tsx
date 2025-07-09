@@ -235,7 +235,7 @@ function RouteComponent() {
 					<div className="flex items-center gap-3">
 						<div>
 							{post?.author?.image ? (
-								<img src={post?.author.image} className="h-8 rounded-full" />
+								<img src={post?.author?.image} className="h-8 rounded-full" />
 							) : (
 								<span className="rounded-full bg-gray-800">A</span>
 							)}

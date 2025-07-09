@@ -54,7 +54,7 @@ export function WidgetEmbedCode() {
 		position: "above-button",
 		buttonColor: "#3b82f6",
 		buttonText: "Feedback",
-		apiUrl: "https://no-name-yet.onrender.com",
+		apiUrl: import.meta.env.PUBLIC_BACKEND_SERVER_URL!,
 		customDomain: "",
 	});
 

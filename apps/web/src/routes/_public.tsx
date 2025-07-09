@@ -69,9 +69,9 @@ function PublicLayout() {
 						{/* User Avatar Button */}
 						<button className="rounded-full p-0.5 shadow-sm transition-colors">
 							<div className="h-8 w-8 overflow-hidden rounded-full border border-accent-foreground">
-								{session?.user.image ? (
+								{session?.user?.image ? (
 									<img
-										src={session.user.image}
+										src={session?.user?.image}
 										alt="User Avatar"
 										className="h-full w-full object-cover"
 									/>
