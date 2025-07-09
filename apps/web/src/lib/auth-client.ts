@@ -2,7 +2,7 @@ import { adminClient, organizationClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
 export const authClient = createAuthClient({
-	baseURL: "https://localhost:8080",
+	baseURL: "https://no-name-yet.onrender.com/",
 	plugins: [adminClient(), organizationClient()],
 	fetchOptions: {
 		credentials: "include",

@@ -22,7 +22,7 @@ export const queryClient = new QueryClient({
 });
 
 export const link = new RPCLink({
-	url: `https://localhost:8080/rpc`,
+	url: `https://no-name-yet.onrender.com/rpc`,
 	fetch(url, options) {
 		return fetch(url, {
 			...options,

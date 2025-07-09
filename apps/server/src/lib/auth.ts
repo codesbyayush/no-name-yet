@@ -18,9 +18,10 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
   },
 
   advanced: {
-    // crossSubDomainCookies: {
-    //   enabled: true,
-    // },
+    crossSubDomainCookies: {
+      enabled: true,
+      domains: [".localhost:3002"],
+    },
     cookie: {
       sameSite: "none",
       secure: true,
