@@ -123,7 +123,7 @@ export const votesRouter = {
         throw new Error("Resource not found");
       }
 
-      const [vote] = await db
+      const [vote] = await context.db
         .select()
         .from(votes)
         .where(and(...filter));

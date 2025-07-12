@@ -18,20 +18,22 @@ const authRouter = new Hono();
 
 // NOTE: You may need to re-implement this route to use getAuth(c.env) if needed
 // For now, we will leave it as a stub
-// authRouter.all("*", async (c) => {
-//   try {
-//     const auth = getAuth(c.env);
-//     return await auth.handler(c.req.raw);
-//   } catch (error) {
-//     return c.json(
-//       {
-//         error: "Auth failed",
-//         details: error instanceof Error ? error.message : "Unknown error",
-//       },
-//       500,
-//     );
-//   }
-// });
+import { getAuth } from "./lib/auth";
+
+authRouter.all("*", async (c) => {
+  try {
+    const auth = getAuth(c.env);
+    return await auth.handler(c.req.raw);
+  } catch (error) {
+    return c.json(
+      {
+        error: "Auth failed",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
+      500,
+    );
+  }
+});
 
 app.use(logger());
 app.use(
@@ -65,7 +67,10 @@ app.route("/api/v1", v1Router);
 // oRPC Handler for regular API routes
 const rpcHandler = new RPCHandler(apiRouter);
 app.use("/rpc/*", async (c, next) => {
-  const context = await createContext({ context: c, env: c.env });
+  const context = await createContext({
+    context: c,
+    env: c.env as any as Record<string, unknown>,
+  });
   const { matched, response } = await rpcHandler.handle(c.req.raw, {
     prefix: "/rpc",
     context: context,
@@ -79,7 +84,10 @@ app.use("/rpc/*", async (c, next) => {
 // oRPC Handler for admin routes
 const adminRpcHandler = new RPCHandler(adminRouter);
 app.use("/admin/*", async (c, next) => {
-  const context = await createAdminContext({ context: c, env: c.env });
+  const context = await createAdminContext({
+    context: c,
+    env: c.env as unknown as Record<string, unknown>,
+  });
   const { matched, response } = await adminRpcHandler.handle(c.req.raw, {
     prefix: "/admin",
     context: context,
@@ -90,4 +98,5 @@ app.use("/admin/*", async (c, next) => {
   await next();
 });
 
+app.get("/ping", (c) => c.text("pong"));
 export default app;
