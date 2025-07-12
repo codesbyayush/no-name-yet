@@ -4,7 +4,7 @@ import { admin, organization } from "better-auth/plugins";
 import { getDb } from "../db";
 import * as schema from "../db/schema";
 
-export function getAuth(env: Record<string, unknown>): any {
+export function getAuth(env: Record<string, string>): any {
   return betterAuth({
     baseURL: env.BETTER_AUTH_URL as string,
     database: drizzleAdapter(getDb(env as { DATABASE_URL: string }), {
@@ -18,7 +18,7 @@ export function getAuth(env: Record<string, unknown>): any {
     advanced: {
       crossSubDomainCookies: {
         enabled: true,
-        domain: ".localhost:3002",
+        domain: env.COOKIE_DOMAIN,
       },
       defaultCookieAttributes: {
         secure: true,

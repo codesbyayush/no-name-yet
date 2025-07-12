@@ -1,2 +1,4 @@
 node_modules
 .turbo
+wrangler.toml
+AGENTS.md
