@@ -2,7 +2,6 @@ import { randomUUID } from "crypto";
 import { ORPCError } from "@orpc/server";
 import { type SQL, and, asc, count, desc, eq } from "drizzle-orm";
 import { z } from "zod";
-import { db } from "../db";
 import {
   boards,
   comments,
@@ -12,7 +11,6 @@ import {
   user,
   votes,
 } from "../db/schema";
-import { auth } from "../lib/auth";
 import { mixedRouter } from "./features";
 import { protectedProcedure, publicProcedure } from "./procedures";
 import { publicRouter } from "./public";
@@ -54,7 +52,7 @@ export const apiRouter = {
 
     try {
       // Fetch all public boards for the organization
-      const publicBoards = await db
+      const publicBoards = await context.db
         .select({
           id: boards.id,
           name: boards.name,
@@ -96,7 +94,7 @@ export const apiRouter = {
 
     try {
       // Try to get user's organization ID from user table first
-      const userData = await db
+      const userData = await context.db
         .select({ organizationId: user.organizationId })
         .from(user)
         .where(eq(user.id, userId))
@@ -106,7 +104,7 @@ export const apiRouter = {
 
       // If user doesn't have organizationId, check if they're a member of any organization
       if (!userOrganizationId) {
-        const memberData = await db
+        const memberData = await context.db
           .select({ organizationId: member.organizationId })
           .from(member)
           .where(eq(member.userId, userId))
@@ -120,7 +118,7 @@ export const apiRouter = {
       }
 
       // Get boards for the organization
-      const userBoards = await db
+      const userBoards = await context.db
         .select({
           id: boards.id,
           name: boards.name,
@@ -170,7 +168,7 @@ export const apiRouter = {
       console.log("Session data:", context.session);
 
       // Try to get user's organization ID from user table first
-      const userData = await db
+      const userData = await context.db
         .select({ organizationId: user.organizationId })
         .from(user)
         .where(eq(user.id, userId))
@@ -180,7 +178,7 @@ export const apiRouter = {
 
       // If user doesn't have organizationId, check if they're a member of any organization
       if (!userOrganizationId) {
-        const memberData = await db
+        const memberData = await context.db
           .select({ organizationId: member.organizationId })
           .from(member)
           .where(eq(member.userId, userId))
@@ -200,7 +198,7 @@ export const apiRouter = {
         console.log("User data:", userData[0]);
 
         // Check if any organizations exist for this user in member table
-        const allMemberships = await db
+        const allMemberships = await context.db
           .select()
           .from(member)
           .where(eq(member.userId, userId));
@@ -211,7 +209,7 @@ export const apiRouter = {
 
       try {
         // Check if board slug is unique within the organization
-        const existingBoard = await db
+        const existingBoard = await context.db
           .select({ id: boards.id })
           .from(boards)
           .where(
@@ -227,7 +225,7 @@ export const apiRouter = {
         }
 
         // Create the board
-        const newBoard = await db
+        const newBoard = await context.db
           .insert(boards)
           .values({
             id: randomUUID(),
@@ -267,7 +265,7 @@ export const apiRouter = {
 
       try {
         // Fetch comments with author information
-        const comm = await db
+        const comm = await context.db
           .select({
             id: comments.id,
             content: comments.content,
@@ -291,7 +289,7 @@ export const apiRouter = {
           .limit(take);
 
         // Get total count for pagination metadata
-        const totalCountResult = await db
+        const totalCountResult = await context.db
           .select({ count: count() })
           .from(comments)
           .where(eq(comments.feedbackId, postId));
@@ -336,7 +334,7 @@ export const apiRouter = {
         }
 
         // Fetch votes with voter information
-        const voteResult = await db
+        const voteResult = await context.db
           .select({
             id: votes.id,
             type: votes.type,
@@ -356,17 +354,17 @@ export const apiRouter = {
           .limit(take);
 
         // Get total count and vote breakdown
-        const totalCountResult = await db
+        const totalCountResult = await context.db
           .select({ count: count() })
           .from(votes)
           .where(whereConditions);
 
-        const upvoteCountResult = await db
+        const upvoteCountResult = await context.db
           .select({ count: count() })
           .from(votes)
           .where(and(eq(votes.feedbackId, postId), eq(votes.type, "upvote")));
 
-        const downvoteCountResult = await db
+        const downvoteCountResult = await context.db
           .select({ count: count() })
           .from(votes)
           .where(and(eq(votes.feedbackId, postId), eq(votes.type, "downvote")));
@@ -426,7 +424,7 @@ export const apiRouter = {
         }
 
         // Fetch posts with author information and vote counts
-        const posts = await db
+        const posts = await context.db
           .select({
             id: feedback.id,
             title: feedback.title,
@@ -450,21 +448,21 @@ export const apiRouter = {
         // Get vote counts for each post (this could be optimized with a single query)
         const postsWithVotes = await Promise.all(
           posts.map(async (post) => {
-            const upvoteCountResult = await db
+            const upvoteCountResult = await context.db
               .select({ count: count() })
               .from(votes)
               .where(
                 and(eq(votes.feedbackId, post.id), eq(votes.type, "upvote")),
               );
 
-            const downvoteCountResult = await db
+            const downvoteCountResult = await context.db
               .select({ count: count() })
               .from(votes)
               .where(
                 and(eq(votes.feedbackId, post.id), eq(votes.type, "downvote")),
               );
 
-            const commentCountResult = await db
+            const commentCountResult = await context.db
               .select({ count: count() })
               .from(comments)
               .where(eq(comments.feedbackId, post.id));
@@ -481,7 +479,7 @@ export const apiRouter = {
         );
 
         // Get total count for pagination metadata
-        const totalCountResult = await db
+        const totalCountResult = await context.db
           .select({ count: count() })
           .from(feedback)
           .where(eq(feedback.id, feedbackId));
@@ -515,7 +513,7 @@ export const apiRouter = {
       }
 
       try {
-        const userVote = await db
+        const userVote = await context.db
           .select()
           .from(votes)
           .where(and(eq(votes.feedbackId, postId), eq(votes.userId, userId)))
@@ -562,7 +560,7 @@ export const apiRouter = {
         }
 
         // Fetch posts for the organization with author information
-        const posts = await db
+        const posts = await context.db
           .select({
             id: feedback.id,
             title: feedback.title,
@@ -593,21 +591,21 @@ export const apiRouter = {
         // Get vote counts and comment counts for each post
         const postsWithStats = await Promise.all(
           posts.map(async (post) => {
-            const upvoteCountResult = await db
+            const upvoteCountResult = await context.db
               .select({ count: count() })
               .from(votes)
               .where(
                 and(eq(votes.feedbackId, post.id), eq(votes.type, "upvote")),
               );
 
-            const downvoteCountResult = await db
+            const downvoteCountResult = await context.db
               .select({ count: count() })
               .from(votes)
               .where(
                 and(eq(votes.feedbackId, post.id), eq(votes.type, "downvote")),
               );
 
-            const commentCountResult = await db
+            const commentCountResult = await context.db
               .select({ count: count() })
               .from(comments)
               .where(eq(comments.feedbackId, post.id));
@@ -624,7 +622,7 @@ export const apiRouter = {
         );
 
         // Get total count for pagination metadata
-        const totalCountResult = await db
+        const totalCountResult = await context.db
           .select({ count: count() })
           .from(feedback)
           .leftJoin(boards, eq(feedback.boardId, boards.id))
@@ -658,7 +656,7 @@ export const apiRouter = {
 
       try {
         // Fetch the post with author and board information
-        const postResult = await db
+        const postResult = await context.db
           .select({
             id: feedback.id,
             title: feedback.title,
@@ -692,12 +690,12 @@ export const apiRouter = {
         const post = postResult[0];
 
         // Get vote counts
-        const upvoteCountResult = await db
+        const upvoteCountResult = await context.db
           .select({ count: count() })
           .from(votes)
           .where(and(eq(votes.feedbackId, post.id), eq(votes.type, "upvote")));
 
-        const downvoteCountResult = await db
+        const downvoteCountResult = await context.db
           .select({ count: count() })
           .from(votes)
           .where(
@@ -705,7 +703,7 @@ export const apiRouter = {
           );
 
         // Get comment count
-        const commentCountResult = await db
+        const commentCountResult = await context.db
           .select({ count: count() })
           .from(comments)
           .where(eq(comments.feedbackId, post.id));
@@ -713,7 +711,7 @@ export const apiRouter = {
         // Get user's vote if they're authenticated
         let userVote = null;
         if (context.session?.user?.id) {
-          const userVoteResult = await db
+          const userVoteResult = await context.db
             .select({
               type: votes.type,
             })
@@ -761,7 +759,7 @@ export const apiRouter = {
 
       try {
         // First verify the board exists and is accessible
-        const board = await db
+        const board = await context.db
           .select({
             id: boards.id,
             name: boards.name,
@@ -803,7 +801,7 @@ export const apiRouter = {
         }
 
         // Fetch posts for the board with author information
-        const posts = await db
+        const posts = await context.db
           .select({
             id: feedback.id,
             title: feedback.title,
@@ -827,21 +825,21 @@ export const apiRouter = {
         // Get vote counts and comment counts for each post
         const postsWithStats = await Promise.all(
           posts.map(async (post) => {
-            const upvoteCountResult = await db
+            const upvoteCountResult = await context.db
               .select({ count: count() })
               .from(votes)
               .where(
                 and(eq(votes.feedbackId, post.id), eq(votes.type, "upvote")),
               );
 
-            const downvoteCountResult = await db
+            const downvoteCountResult = await context.db
               .select({ count: count() })
               .from(votes)
               .where(
                 and(eq(votes.feedbackId, post.id), eq(votes.type, "downvote")),
               );
 
-            const commentCountResult = await db
+            const commentCountResult = await context.db
               .select({ count: count() })
               .from(comments)
               .where(eq(comments.feedbackId, post.id));
@@ -858,7 +856,7 @@ export const apiRouter = {
         );
 
         // Get total count for pagination metadata
-        const totalCountResult = await db
+        const totalCountResult = await context.db
           .select({ count: count() })
           .from(feedback)
           .where(eq(feedback.boardId, boardId));
@@ -934,7 +932,7 @@ export const apiRouter = {
 
       try {
         // Verify board exists and user has access
-        const board = await db
+        const board = await context.db
           .select()
           .from(boards)
           .where(eq(boards.id, boardId))
@@ -945,7 +943,7 @@ export const apiRouter = {
         }
 
         // Create the post
-        const newPost = await db
+        const newPost = await context.db
           .insert(feedback)
           .values({
             boardId,
@@ -999,7 +997,7 @@ export const apiRouter = {
 
       try {
         // Verify post exists
-        const post = await db
+        const post = await context.db
           .select()
           .from(feedback)
           .where(eq(feedback.id, feedbackId))
@@ -1011,7 +1009,7 @@ export const apiRouter = {
 
         // If replying to a comment, verify parent comment exists
         if (parentCommentId) {
-          const parentComment = await db
+          const parentComment = await context.db
             .select()
             .from(comments)
             .where(
@@ -1028,7 +1026,7 @@ export const apiRouter = {
         }
 
         // Create the comment
-        const newComment = await db
+        const newComment = await context.db
           .insert(comments)
           .values({
             id: randomUUID(),
@@ -1041,7 +1039,7 @@ export const apiRouter = {
           .returning();
 
         // Get the comment with author info
-        const commentWithAuthor = await db
+        const commentWithAuthor = await context.db
           .select({
             id: comments.id,
             content: comments.content,
@@ -1094,7 +1092,7 @@ export const apiRouter = {
 
       try {
         // Verify post exists
-        const post = await db
+        const post = await context.db
           .select()
           .from(feedback)
           .where(eq(feedback.id, feedbackId))
@@ -1105,7 +1103,7 @@ export const apiRouter = {
         }
 
         // Check if user already voted
-        const existingVote = await db
+        const existingVote = await context.db
           .select()
           .from(votes)
           .where(
@@ -1116,7 +1114,7 @@ export const apiRouter = {
         if (existingVote[0]) {
           // Update existing vote if different type
           if (existingVote[0].type !== type) {
-            await db
+            await context.db
               .update(votes)
               .set({ type, weight })
               .where(eq(votes.id, existingVote[0].id));
@@ -1127,7 +1125,9 @@ export const apiRouter = {
             };
           } else {
             // Remove vote if same type (toggle)
-            await db.delete(votes).where(eq(votes.id, existingVote[0].id));
+            await context.db
+              .delete(votes)
+              .where(eq(votes.id, existingVote[0].id));
 
             return {
               message: "Vote removed successfully",
@@ -1136,7 +1136,7 @@ export const apiRouter = {
           }
         } else {
           // Create new vote
-          const newVote = await db
+          const newVote = await context.db
             .insert(votes)
             .values({
               id: randomUUID(),
@@ -1180,7 +1180,7 @@ export const apiRouter = {
 
       try {
         // Verify comment exists
-        const comment = await db
+        const comment = await context.db
           .select()
           .from(comments)
           .where(eq(comments.id, commentId))
@@ -1191,7 +1191,7 @@ export const apiRouter = {
         }
 
         // Check if user already voted on this comment
-        const existingVote = await db
+        const existingVote = await context.db
           .select()
           .from(votes)
           .where(and(eq(votes.commentId, commentId), eq(votes.userId, userId)))
@@ -1200,7 +1200,7 @@ export const apiRouter = {
         if (existingVote[0]) {
           // Update existing vote if different type
           if (existingVote[0].type !== type) {
-            await db
+            await context.db
               .update(votes)
               .set({ type, weight })
               .where(eq(votes.id, existingVote[0].id));
@@ -1211,7 +1211,9 @@ export const apiRouter = {
             };
           } else {
             // Remove vote if same type (toggle)
-            await db.delete(votes).where(eq(votes.id, existingVote[0].id));
+            await context.db
+              .delete(votes)
+              .where(eq(votes.id, existingVote[0].id));
 
             return {
               message: "Vote removed successfully",
@@ -1220,7 +1222,7 @@ export const apiRouter = {
           }
         } else {
           // Create new vote
-          const newVote = await db
+          const newVote = await context.db
             .insert(votes)
             .values({
               id: randomUUID(),
@@ -1259,7 +1261,7 @@ export const apiRouter = {
 
       try {
         // Get all comments for the post
-        const allComments = await db
+        const allComments = await context.db
           .select({
             id: comments.id,
             content: comments.content,
@@ -1283,14 +1285,14 @@ export const apiRouter = {
         // Get vote counts for each comment
         const commentsWithVotes = await Promise.all(
           allComments.map(async (comment) => {
-            const upvoteCountResult = await db
+            const upvoteCountResult = await context.db
               .select({ count: count() })
               .from(votes)
               .where(
                 and(eq(votes.commentId, comment.id), eq(votes.type, "upvote")),
               );
 
-            const downvoteCountResult = await db
+            const downvoteCountResult = await context.db
               .select({ count: count() })
               .from(votes)
               .where(
@@ -1373,7 +1375,7 @@ export const apiRouter = {
           conditions.push(eq(votes.commentId, commentIds[0])); // This needs to be improved for multiple IDs
         }
 
-        const userVotes = await db
+        const userVotes = await context.db
           .select()
           .from(votes)
           .where(and(...conditions));
@@ -1408,7 +1410,7 @@ export const apiRouter = {
         let userOrganizationId = null;
 
         // Check if user has organizationId in user table
-        const userData = await db
+        const userData = await context.db
           .select({ organizationId: user.organizationId })
           .from(user)
           .where(eq(user.id, userId))
@@ -1418,7 +1420,7 @@ export const apiRouter = {
 
         // If user doesn't have organizationId, check member table
         if (!userOrganizationId) {
-          const memberData = await db
+          const memberData = await context.db
             .select({ organizationId: member.organizationId })
             .from(member)
             .where(eq(member.userId, userId))
@@ -1448,7 +1450,7 @@ export const apiRouter = {
 
         // Fetch posts for the organization with author information
         // This includes both public and private boards since user is a member
-        const posts = await db
+        const posts = await context.db
           .select({
             id: feedback.id,
             title: feedback.title,
@@ -1481,21 +1483,21 @@ export const apiRouter = {
         // Get vote counts and comment counts for each post
         const postsWithStats = await Promise.all(
           posts.map(async (post) => {
-            const upvoteCountResult = await db
+            const upvoteCountResult = await context.db
               .select({ count: count() })
               .from(votes)
               .where(
                 and(eq(votes.feedbackId, post.id), eq(votes.type, "upvote")),
               );
 
-            const downvoteCountResult = await db
+            const downvoteCountResult = await context.db
               .select({ count: count() })
               .from(votes)
               .where(
                 and(eq(votes.feedbackId, post.id), eq(votes.type, "downvote")),
               );
 
-            const commentCountResult = await db
+            const commentCountResult = await context.db
               .select({ count: count() })
               .from(comments)
               .where(eq(comments.feedbackId, post.id));
@@ -1512,7 +1514,7 @@ export const apiRouter = {
         );
 
         // Get total count for pagination metadata
-        const totalCountResult = await db
+        const totalCountResult = await context.db
           .select({ count: count() })
           .from(feedback)
           .leftJoin(boards, eq(feedback.boardId, boards.id))
@@ -1570,7 +1572,7 @@ export const apiRouter = {
 
       try {
         // Verify post exists
-        const post = await db
+        const post = await context.db
           .select()
           .from(feedback)
           .where(eq(feedback.id, feedbackId))
@@ -1582,7 +1584,7 @@ export const apiRouter = {
 
         // If replying to a comment, verify parent comment exists
         if (parentCommentId) {
-          const parentComment = await db
+          const parentComment = await context.db
             .select()
             .from(comments)
             .where(
@@ -1599,7 +1601,7 @@ export const apiRouter = {
         }
 
         // Create the comment
-        const newComment = await db
+        const newComment = await context.db
           .insert(comments)
           .values({
             id: randomUUID(),
@@ -1615,7 +1617,7 @@ export const apiRouter = {
           .returning();
 
         // Get the comment with author info (if any)
-        const commentWithAuthor = await db
+        const commentWithAuthor = await context.db
           .select({
             id: comments.id,
             content: comments.content,
