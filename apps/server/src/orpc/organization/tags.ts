@@ -1,6 +1,5 @@
 import { eq, sql, inArray } from "drizzle-orm";
 import { z } from "zod";
-import { db } from "../../db";
 import { tags } from "../../db/schema/tags";
 import { feedback } from "../../db/schema/feedback";
 import { boards } from "../../db/schema/boards";
@@ -8,23 +7,25 @@ import { adminOnlyProcedure } from "../procedures";
 
 export const tagsRouter = {
   getAll: adminOnlyProcedure
-    .output(z.array(z.object({
-      id: z.string(),
-      name: z.string(),
-      color: z.string(),
-    })))
+    .output(
+      z.array(
+        z.object({
+          id: z.string(),
+          name: z.string(),
+          color: z.string(),
+        }),
+      ),
+    )
     .handler(async ({ context }) => {
       if (!context.organization?.id) {
         throw new Error("Organization not found");
       }
 
       // Get all tags for this organization
-      const organizationTags = await db
+      const organizationTags = await context.db
         .select()
         .from(tags)
         .where(eq(tags.organizationId, context.organization.id));
-
-
 
       return organizationTags;
     }),
@@ -36,14 +37,16 @@ export const tagsRouter = {
         color: z.string().default("blue"),
       }),
     )
-    .output(z.object({
-      id: z.string(),
-      name: z.string(),
-      color: z.string(),
-      organizationId: z.string(),
-      createdAt: z.date(),
-      updatedAt: z.date(),
-    }))
+    .output(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        color: z.string(),
+        organizationId: z.string(),
+        createdAt: z.date(),
+        updatedAt: z.date(),
+      }),
+    )
     .handler(async ({ input, context }) => {
       if (!context.organization?.id) {
         throw new Error("Organization not found");
@@ -51,7 +54,7 @@ export const tagsRouter = {
 
       const tagId = crypto.randomUUID();
 
-      const [newTag] = await db
+      const [newTag] = await context.db
         .insert(tags)
         .values({
           id: tagId,
@@ -70,20 +73,22 @@ export const tagsRouter = {
         id: z.string(),
       }),
     )
-    .output(z.object({
-      success: z.boolean(),
-      deletedTag: z.object({
-        id: z.string(),
-        name: z.string(),
-        color: z.string(),
+    .output(
+      z.object({
+        success: z.boolean(),
+        deletedTag: z.object({
+          id: z.string(),
+          name: z.string(),
+          color: z.string(),
+        }),
       }),
-    }))
+    )
     .handler(async ({ input, context }) => {
       if (!context.organization?.id) {
         throw new Error("Organization not found");
       }
 
-      const [deletedTag] = await db
+      const [deletedTag] = await context.db
         .delete(tags)
         .where(eq(tags.id, input.id))
         .returning();
@@ -94,4 +99,4 @@ export const tagsRouter = {
 
       return { success: true, deletedTag };
     }),
-}; 
+};

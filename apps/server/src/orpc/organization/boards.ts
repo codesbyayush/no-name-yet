@@ -1,32 +1,35 @@
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { db } from "../../db";
 import { type Board, type NewBoard, boards } from "../../db/schema/boards";
 import { adminOnlyProcedure } from "../procedures";
 
 // TODO: Implement user organization resource owner org validation
 export const boardsRouter = {
   getAll: adminOnlyProcedure
-    .output(z.array(z.object({
-      id: z.string(),
-      symbol: z.string().nullable(),
-      name: z.string(),
-      slug: z.string(),
-      description: z.string().nullable(),
-      isPrivate: z.boolean().nullable(),
-      postCount: z.number().nullable(),
-      viewCount: z.number().nullable(),
-      customFields: z.any().nullable(),
-      createdAt: z.date(),
-      updatedAt: z.date(),
-      deletedAt: z.date().nullable(),
-    })))
+    .output(
+      z.array(
+        z.object({
+          id: z.string(),
+          symbol: z.string().nullable(),
+          name: z.string(),
+          slug: z.string(),
+          description: z.string().nullable(),
+          isPrivate: z.boolean().nullable(),
+          postCount: z.number().nullable(),
+          viewCount: z.number().nullable(),
+          customFields: z.any().nullable(),
+          createdAt: z.date(),
+          updatedAt: z.date(),
+          deletedAt: z.date().nullable(),
+        }),
+      ),
+    )
     .handler(async ({ context }) => {
       if (!context.organization?.id) {
         throw new Error("Organization not found");
       }
 
-      const allBoards = await db
+      const allBoards = await context.db
         .select()
         .from(boards)
         .where(eq(boards.organizationId, context.organization.id));
@@ -49,7 +52,7 @@ export const boardsRouter = {
     .handler(async ({ input, context }) => {
       const boardId = crypto.randomUUID();
 
-      const [newBoard] = await db
+      const [newBoard] = await context.db
         .insert(boards)
         .values({
           id: boardId,
@@ -79,7 +82,7 @@ export const boardsRouter = {
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
-      const [updatedBoard] = await db
+      const [updatedBoard] = await context.db
         .update(boards)
         .set({
           ...(input.name && { name: input.name }),
@@ -109,7 +112,7 @@ export const boardsRouter = {
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
-      const [deletedBoard] = await db
+      const [deletedBoard] = await context.db
         .delete(boards)
         .where(eq(boards.id, input.id))
         .returning();

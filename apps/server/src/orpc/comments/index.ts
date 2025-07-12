@@ -1,6 +1,5 @@
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { db } from "../../db";
 import { comments } from "../../db/schema/comments";
 import { protectedProcedure } from "../procedures";
 
@@ -18,7 +17,7 @@ export const commentsRouter = {
     .handler(async ({ input, context }) => {
       const userId = context.session!.user.id;
       const commentId = crypto.randomUUID();
-      const [newComment] = await db
+      const [newComment] = await context.db
         .insert(comments)
         .values({
           id: commentId,
@@ -43,7 +42,7 @@ export const commentsRouter = {
     .output(z.any())
     .handler(async ({ input, context }) => {
       const userId = context.session!.user.id;
-      const [updatedComment] = await db
+      const [updatedComment] = await context.db
         .update(comments)
         .set({
           ...(input.content && { content: input.content }),
@@ -69,7 +68,7 @@ export const commentsRouter = {
     .output(z.any())
     .handler(async ({ input, context }) => {
       const userId = context.session!.user.id;
-      const [deletedComment] = await db
+      const [deletedComment] = await context.db
         .delete(comments)
         .where(eq(comments.id, input.id))
         .returning();

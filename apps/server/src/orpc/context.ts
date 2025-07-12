@@ -1,15 +1,18 @@
 import { eq } from "drizzle-orm";
 import type { InferSelectModel } from "drizzle-orm";
 import type { Context as HonoContext } from "hono";
-import { db } from "../db";
+import { getDb } from "../db";
 import { organization, user } from "../db/schema";
-import { auth } from "../lib/auth";
+import { getAuth } from "../lib/auth";
 
 export type CreateContextOptions = {
   context: HonoContext;
+  env: Record<string, unknown>;
 };
 
-export async function createContext({ context }: CreateContextOptions) {
+export async function createContext({ context, env }: CreateContextOptions) {
+  const db = getDb({ DATABASE_URL: env.DATABASE_URL as string });
+  const auth = getAuth(env);
   const session = await auth.api.getSession({
     headers: context.req.raw.headers,
   });
@@ -44,23 +47,26 @@ export async function createContext({ context }: CreateContextOptions) {
     session,
     organization: org,
     subdomain: subdomain || undefined,
+    db,
   };
 }
 
-export async function createAdminContext({ context }: CreateContextOptions) {
-  console.log("callign session");
+export async function createAdminContext({
+  context,
+  env,
+}: CreateContextOptions) {
+  const db = getDb({ DATABASE_URL: env.DATABASE_URL as string });
+  const auth = getAuth(env);
   const session = await auth.api.getSession({
     headers: context.req.raw.headers,
   });
 
-  console.log("session is -", session);
-
   if (!session?.user?.id) {
-    console.log("user not here");
     return {
       session: null,
       user: null,
       organization: null,
+      db,
     };
   }
 
@@ -79,6 +85,7 @@ export async function createAdminContext({ context }: CreateContextOptions) {
         session,
         user: currentUser,
         organization: null,
+        db,
       };
     }
 
@@ -94,6 +101,7 @@ export async function createAdminContext({ context }: CreateContextOptions) {
       session,
       user: currentUser,
       organization: org,
+      db,
     };
   } catch (error) {
     console.error("Error creating admin context:", error);
@@ -101,6 +109,7 @@ export async function createAdminContext({ context }: CreateContextOptions) {
       session,
       user: null,
       organization: null,
+      db,
     };
   }
 }
@@ -108,9 +117,11 @@ export async function createAdminContext({ context }: CreateContextOptions) {
 export type Context = Awaited<ReturnType<typeof createContext>> & {
   organization: InferSelectModel<typeof organization> | null;
   subdomain?: string;
+  db: ReturnType<typeof getDb>;
 };
 
 export type AdminContext = Awaited<ReturnType<typeof createAdminContext>> & {
   user: InferSelectModel<typeof user> | null;
   organization: InferSelectModel<typeof organization> | null;
+  db: ReturnType<typeof getDb>;
 };

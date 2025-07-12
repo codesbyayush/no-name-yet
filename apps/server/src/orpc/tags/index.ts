@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { db } from "../../db";
+
 import { tags } from "../../db/schema/tags";
 import { adminOnlyProcedure } from "../procedures";
 
@@ -19,7 +19,7 @@ export const tagsRouter = {
       if (!context.organization?.id) {
         throw new Error("Organization not found");
       }
-      const organizationTags = await db
+      const organizationTags = await context.db
         .select()
         .from(tags)
         .where(eq(tags.organizationId, context.organization.id));
@@ -48,7 +48,7 @@ export const tagsRouter = {
         throw new Error("Organization not found");
       }
       const tagId = crypto.randomUUID();
-      const [newTag] = await db
+      const [newTag] = await context.db
         .insert(tags)
         .values({
           id: tagId,
@@ -80,7 +80,7 @@ export const tagsRouter = {
       if (!context.organization?.id) {
         throw new Error("Organization not found");
       }
-      const [deletedTag] = await db
+      const [deletedTag] = await context.db
         .delete(tags)
         .where(eq(tags.id, input.id))
         .returning();

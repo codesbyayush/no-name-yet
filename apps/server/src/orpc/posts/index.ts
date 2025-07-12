@@ -1,4 +1,3 @@
-import { db } from "@/db";
 import {
   type Vote,
   boards,
@@ -47,7 +46,7 @@ export const postsRouter = {
         if (boardId) {
           filters.push(eq(boards.id, boardId));
         }
-        const posts = await db
+        const posts = await context.db
           .select({
             id: feedback.id,
             title: feedback.title,
@@ -67,11 +66,14 @@ export const postsRouter = {
               name: boards.name,
               slug: boards.slug,
             },
-            comments: db.$count(comments, eq(feedback.id, comments.feedbackId)),
-            votes: db.$count(votes, eq(feedback.id, votes.feedbackId)),
+            comments: context.db.$count(
+              comments,
+              eq(feedback.id, comments.feedbackId),
+            ),
+            votes: context.db.$count(votes, eq(feedback.id, votes.feedbackId)),
             hasVoted: userId
               ? exists(
-                  db
+                  context.db
                     .select()
                     .from(votes)
                     .where(
@@ -120,7 +122,7 @@ export const postsRouter = {
       }
       const userId = context.session?.user?.id;
       try {
-        const post = await db
+        const post = await context.db
           .select({
             id: feedback.id,
             title: feedback.title,
@@ -139,14 +141,17 @@ export const postsRouter = {
               name: boards.name,
               slug: boards.slug,
             },
-            totalComments: db.$count(
+            totalComments: context.db.$count(
               comments,
               eq(feedback.id, comments.feedbackId),
             ),
-            totalVotes: db.$count(votes, eq(feedback.id, votes.feedbackId)),
+            totalVotes: context.db.$count(
+              votes,
+              eq(feedback.id, votes.feedbackId),
+            ),
             hasVoted: userId
               ? exists(
-                  db
+                  context.db
                     .select()
                     .from(votes)
                     .where(
@@ -216,7 +221,7 @@ export const postsRouter = {
         throw new ORPCError("UNAUTHORIZED");
       }
       try {
-        const [newPost] = await db
+        const [newPost] = await context.db
           .insert(feedback)
           .values({
             boardId: input.boardId,
@@ -280,7 +285,7 @@ export const postsRouter = {
     .output(z.any())
     .handler(async ({ input, context }) => {
       const userId = context.session!.user.id;
-      const [updatedPost] = await db
+      const [updatedPost] = await context.db
         .update(feedback)
         .set({
           ...(input.title && { title: input.title }),
@@ -311,7 +316,7 @@ export const postsRouter = {
     .output(z.any())
     .handler(async ({ input, context }) => {
       const userId = context.session!.user.id;
-      const [deletedPost] = await db
+      const [deletedPost] = await context.db
         .delete(feedback)
         .where(eq(feedback.id, input.id))
         .returning();

@@ -1,6 +1,5 @@
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { db } from "../../db";
 import { type Board, type NewBoard, boards } from "../../db/schema/boards";
 import { adminOnlyProcedure } from "../procedures";
 
@@ -28,7 +27,7 @@ export const boardsRouter = {
       if (!context.organization?.id) {
         throw new Error("Organization not found");
       }
-      const allBoards = await db
+      const allBoards = await context.db
         .select()
         .from(boards)
         .where(eq(boards.organizationId, context.organization.id));
@@ -49,7 +48,7 @@ export const boardsRouter = {
     .output(z.any())
     .handler(async ({ input, context }) => {
       const boardId = crypto.randomUUID();
-      const [newBoard] = await db
+      const [newBoard] = await context.db
         .insert(boards)
         .values({
           id: boardId,
@@ -78,7 +77,7 @@ export const boardsRouter = {
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
-      const [updatedBoard] = await db
+      const [updatedBoard] = await context.db
         .update(boards)
         .set({
           ...(input.name && { name: input.name }),
@@ -106,7 +105,7 @@ export const boardsRouter = {
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
-      const [deletedBoard] = await db
+      const [deletedBoard] = await context.db
         .delete(boards)
         .where(eq(boards.id, input.id))
         .returning();

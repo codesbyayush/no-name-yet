@@ -1,4 +1,3 @@
-import { db } from "@/db";
 import {
   type Vote,
   boards,
@@ -59,7 +58,7 @@ export const mixedRouter = {
         }
 
         // Fetch posts for the organization with author information
-        const posts = await db
+        const posts = await context.db
           .select({
             id: feedback.id,
             title: feedback.title,
@@ -79,11 +78,14 @@ export const mixedRouter = {
               name: boards.name,
               slug: boards.slug,
             },
-            comments: db.$count(comments, eq(feedback.id, comments.feedbackId)),
-            votes: db.$count(votes, eq(feedback.id, votes.feedbackId)),
+            comments: context.db.$count(
+              comments,
+              eq(feedback.id, comments.feedbackId),
+            ),
+            votes: context.db.$count(votes, eq(feedback.id, votes.feedbackId)),
             hasVoted: userId
               ? exists(
-                  db
+                  context.db
                     .select()
                     .from(votes)
                     .where(
@@ -139,7 +141,7 @@ export const mixedRouter = {
 
       try {
         // Fetch posts for the organization with author information
-        const post = await db
+        const post = await context.db
           .select({
             id: feedback.id,
             title: feedback.title,
@@ -158,14 +160,17 @@ export const mixedRouter = {
               name: boards.name,
               slug: boards.slug,
             },
-            totalComments: db.$count(
+            totalComments: context.db.$count(
               comments,
               eq(feedback.id, comments.feedbackId),
             ),
-            totalVotes: db.$count(votes, eq(feedback.id, votes.feedbackId)),
+            totalVotes: context.db.$count(
+              votes,
+              eq(feedback.id, votes.feedbackId),
+            ),
             hasVoted: userId
               ? exists(
-                  db
+                  context.db
                     .select()
                     .from(votes)
                     .where(
