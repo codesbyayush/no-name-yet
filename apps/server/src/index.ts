@@ -69,7 +69,7 @@ const rpcHandler = new RPCHandler(apiRouter);
 app.use("/rpc/*", async (c, next) => {
   const context = await createContext({
     context: c,
-    env: c.env as any as Record<string, unknown>,
+    env: c.env as any as Record<string, string>,
   });
   const { matched, response } = await rpcHandler.handle(c.req.raw, {
     prefix: "/rpc",
@@ -86,7 +86,7 @@ const adminRpcHandler = new RPCHandler(adminRouter);
 app.use("/admin/*", async (c, next) => {
   const context = await createAdminContext({
     context: c,
-    env: c.env as unknown as Record<string, unknown>,
+    env: c.env as unknown as Record<string, string>,
   });
   const { matched, response } = await adminRpcHandler.handle(c.req.raw, {
     prefix: "/admin",

@@ -7,7 +7,7 @@ import { getAuth } from "../lib/auth";
 
 export type CreateContextOptions = {
   context: HonoContext;
-  env: Record<string, unknown>;
+  env: Record<string, string>;
 };
 
 export async function createContext({ context, env }: CreateContextOptions) {
