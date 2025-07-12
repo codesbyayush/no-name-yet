@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { useForm } from "@tanstack/react-form";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import z from "zod/v4";
@@ -19,8 +19,9 @@ import Loader from "./loader";
 
 export function LoginForm({
 	className,
+	redirect,
 	...props
-}: React.ComponentProps<"div">) {
+}: React.ComponentProps<"div"> & { redirect?: string }) {
 	const navigate = useNavigate({
 		from: "/",
 	});
@@ -63,8 +64,12 @@ export function LoginForm({
 		setIsGoogleLoading(true);
 
 		try {
+			const callbackURL = redirect
+				? (redirect.startsWith('http') ? redirect : `${window.location.origin}${redirect}`)
+				: window.location.origin + "/";
 			await authClient.signIn.social({
 				provider: "google",
+				callbackURL,
 			});
 			toast.success("Redirecting to Google...");
 		} catch (error) {
