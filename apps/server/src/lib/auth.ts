@@ -22,15 +22,10 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
       enabled: true,
       domains: [".localhost:3002"],
     },
-    cookie: {
-      sameSite: "none",
-      secure: true,
-      path: "/",
-    },
     defaultCookieAttributes: {
       secure: true,
-      // httpOnly: true,
-      sameSite: "none", // Allows CORS-based cookie sharing across subdomains
+      httpOnly: true,
+      sameSite: "none",
       // partitioned: true, // New browser standards will mandate this for foreign cookies
     },
   },
