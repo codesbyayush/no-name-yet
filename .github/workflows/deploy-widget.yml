@@ -1,0 +1,58 @@
+name: Build and Deploy Widget
+
+on:
+  push:
+    paths:
+      - 'apps/widget/**'
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source repo
+        uses: actions/checkout@v3
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: |
+          cd apps/widget
+          bun install
+
+      - name: Build widget
+        run: |
+          cd apps/widget
+          bun run build
+
+      - name: Copy dist to temp dir
+        run: |
+          rm -rf /tmp/widget-dist
+          cp -r apps/widget/dist /tmp/widget-dist
+
+      - name: Checkout public repo
+        uses: actions/checkout@v3
+        with:
+          repository: codesbyayush/widget
+          token: ${{ secrets.WIDGET_GH_ACTION }}
+          path: public-repo
+
+      - name: Copy built files to public repo
+        run: |
+          rm -rf public-repo/docs
+          mkdir -p public-repo/docs
+          cp -r /tmp/widget-dist/* public-repo/docs/
+
+      - name: Commit and push to public repo
+        run: |
+          cd public-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Deploy widget from private repo [skip ci]" || echo "No changes to commit"
+          git push

@@ -22,7 +22,7 @@ import { getAuth } from "./lib/auth";
 
 authRouter.all("*", async (c) => {
   try {
-    const auth = getAuth(c.env);
+    const auth = getAuth(c.env as Record<string, string>);
     return await auth.handler(c.req.raw);
   } catch (error) {
     return c.json(
@@ -42,7 +42,7 @@ app.use(
     origin: (origin, c) => {
       return origin.endsWith(c.env.CORS_ORIGIN!)
         ? origin
-        : "https://localhost:3002";
+        : "https://" + c.env.FRONTEND_URL;
     },
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allowHeaders: [
