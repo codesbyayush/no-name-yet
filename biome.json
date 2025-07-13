@@ -52,5 +52,39 @@
 		"formatter": {
 			"quoteStyle": "double"
 		}
-	}
+	},
+	"overrides": [
+		{
+			"include": ["apps/web/**"],
+			"formatter": {
+				"enabled": true,
+				"indentStyle": "space",
+				"indentWidth": 2
+			},
+			"linter": {
+				"enabled": true,
+				"rules": {
+					"suspicious": {
+						"noConsole": "warn"
+					}
+				}
+			}
+		},
+		{
+			"include": ["apps/server/**"],
+			"formatter": {
+				"enabled": true,
+				"indentStyle": "tab",
+				"indentWidth": 2
+			},
+			"linter": {
+				"enabled": true,
+				"rules": {
+					"suspicious": {
+						"noConsole": "error"
+					}
+				}
+			}
+		}
+	]
 }

@@ -4,14 +4,14 @@ import type { RouterClient } from "@orpc/server";
 import { type AdminRouter, adminRouter } from "../../../server/src/orpc/admin";
 
 export const adminLink = new RPCLink({
-	url: `${import.meta.env.PUBLIC_BACKEND_SERVER_URL!}/admin`,
-	fetch(url, options) {
-		return fetch(url, {
-			...options,
-			credentials: "include",
-		});
-	},
+  url: `${import.meta.env.PUBLIC_BACKEND_SERVER_URL!}/admin`,
+  fetch(url, options) {
+    return fetch(url, {
+      ...options,
+      credentials: "include",
+    });
+  },
 });
 
 export const adminClient: RouterClient<AdminRouter> =
-	createORPCClient(adminLink);
+  createORPCClient(adminLink);
