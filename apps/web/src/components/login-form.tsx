@@ -65,7 +65,9 @@ export function LoginForm({
 
 		try {
 			const callbackURL = redirect
-				? (redirect.startsWith('http') ? redirect : `${window.location.origin}${redirect}`)
+				? redirect.startsWith("http")
+					? redirect
+					: `${window.location.origin}${redirect}`
 				: window.location.origin + "/";
 			await authClient.signIn.social({
 				provider: "google",

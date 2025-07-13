@@ -1,9 +1,9 @@
-import { adminO } from "./procedures";
 import { organizationRouter } from "./organization";
+import { adminO } from "./procedures";
 
 // Admin router that uses AdminContext
 export const adminRouter = adminO.router({
-  organization: organizationRouter,
+	organization: organizationRouter,
 });
 
-export type AdminRouter = typeof adminRouter; 
+export type AdminRouter = typeof adminRouter;

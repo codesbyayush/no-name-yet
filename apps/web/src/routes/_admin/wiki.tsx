@@ -11,9 +11,5 @@ export const Route = createFileRoute("/_admin/wiki")({
 });
 
 function RouteComponent() {
-	return (
-		<div>
-			{/* <Editor /> */}
-		</div>
-	);
+	return <div>{/* <Editor /> */}</div>;
 }

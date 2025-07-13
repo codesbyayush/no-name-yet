@@ -8,8 +8,11 @@ export const Route = createFileRoute("/auth")({
 });
 
 function RouteComponent() {
-	const search = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
-	const redirect = search?.get('redirect') || undefined;
+	const search =
+		typeof window !== "undefined"
+			? new URLSearchParams(window.location.search)
+			: null;
+	const redirect = search?.get("redirect") || undefined;
 	return (
 		<div className="container mx-auto flex min-h-screen items-center justify-center py-8">
 			<div className="w-full max-w-md">

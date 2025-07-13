@@ -31,7 +31,7 @@ function PublicLayout() {
 					{/* Logo */}
 					<Link
 						to="/"
-						className="flex items-center gap-3 transition-opacity hover:opacity-80 size-10"
+						className="flex size-10 items-center gap-3 transition-opacity hover:opacity-80"
 					>
 						{/* <div className="h-8 w-8 overflow-hidden rounded-lg bg-transparent">
 							<span className="flex aspect-square size-5 items-center justify-center rounded bg-accent p-4 ">
@@ -42,7 +42,10 @@ function PublicLayout() {
 							<span className="font-medium text-gray-900 text-lg">A</span>
 						</div> */}
 
-						<BrandLogoIcon size={40} className="invert border rounded-lg p-1 border-muted/50"/>
+						<BrandLogoIcon
+							size={40}
+							className="rounded-lg border border-muted/50 p-1 invert"
+						/>
 					</Link>
 
 					{/* Separator */}

@@ -132,7 +132,7 @@ export function CreateEditPost({
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
 				{trigger || (
-					<Button className="h-10 p-0 w-full rounded-xl bg-primary font-medium text-base shadow-sm hover:bg-primary/90">
+					<Button className="h-10 w-full rounded-xl bg-primary p-0 font-medium text-base shadow-sm hover:bg-primary/90">
 						{mode === "create" ? "Submit a post" : "Edit post"}
 					</Button>
 				)}

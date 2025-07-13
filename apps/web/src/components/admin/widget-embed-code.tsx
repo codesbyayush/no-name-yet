@@ -444,8 +444,6 @@ export {};`,
 												</Select>
 											)}
 
-
-
 											{option.type === "color" && (
 												<div className="flex items-center space-x-2">
 													<Input
@@ -586,9 +584,18 @@ export {};`,
 											TypeScript Setup Options:
 										</p>
 										<ul className="space-y-1 text-muted-foreground text-sm">
-											<li>• <strong>Copy the types above</strong> into your project for immediate type safety</li>
-											<li>• <strong>No external dependencies</strong> - everything is self-contained</li>
-											<li>• <strong>Works with any TypeScript setup</strong> - just paste and go</li>
+											<li>
+												• <strong>Copy the types above</strong> into your
+												project for immediate type safety
+											</li>
+											<li>
+												• <strong>No external dependencies</strong> - everything
+												is self-contained
+											</li>
+											<li>
+												• <strong>Works with any TypeScript setup</strong> -
+												just paste and go
+											</li>
 										</ul>
 									</div>
 								</div>

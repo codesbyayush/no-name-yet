@@ -1,10 +1,7 @@
 {
 	"name": "my-better-t-app",
 	"private": true,
-	"workspaces": [
-		"apps/*",
-		"packages/*"
-	],
+	"workspaces": ["apps/*", "packages/*"],
 	"scripts": {
 		"check": "biome check --write .",
 		"dev": "bun run --filter '*' dev",

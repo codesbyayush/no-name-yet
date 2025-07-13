@@ -21,7 +21,7 @@ export interface FeedbackSubmission {
 		name?: string;
 		email?: string;
 	};
-	customData?: { [key: string]: any };
+	customData?: { [key: string]: string };
 	browserInfo: {
 		userAgent: string;
 		url: string;

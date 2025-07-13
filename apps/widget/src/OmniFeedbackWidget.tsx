@@ -10,7 +10,7 @@ interface OmniFeedbackWidgetProps {
 		name?: string;
 		email?: string;
 	};
-	customData?: { [key: string]: any };
+	customData?: { [key: string]: string };
 	apiUrl?: string;
 	theme?: {
 		primaryColor?: string;

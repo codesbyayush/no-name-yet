@@ -115,7 +115,7 @@
 		hsl(0 0% 0% / 0.05);
 	--shadow-2xl: -1px -1px 1px 0px hsl(0 0% 0% / 0.13);
 	--sb-track-color: #171717;
-	--sb-thumb-color: #ABABB5;
+	--sb-thumb-color: #ababb5;
 	--sb-size: 6px;
 }
 
@@ -189,24 +189,22 @@ body {
 	background-image: url("https://res.cloudinary.com/victoreke/image/upload/v1691779257/victoreke/noise.png");
 }
 
-
 body::-webkit-scrollbar {
-width: var(--sb-size);
+	width: var(--sb-size);
 }
 
 body::-webkit-scrollbar-track {
-background: var(--sb-track-color);
-border-radius: 10px;
+	background: var(--sb-track-color);
+	border-radius: 10px;
 }
 
 body::-webkit-scrollbar-thumb {
-background: var(--sb-thumb-color);
-border-radius: 10px;
+	background: var(--sb-thumb-color);
+	border-radius: 10px;
 }
 
 @supports not selector(::-webkit-scrollbar) {
-body {
-	scrollbar-color: var(--sb-thumb-color)
-					var(--sb-track-color);
-}
+	body {
+		scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
+	}
 }

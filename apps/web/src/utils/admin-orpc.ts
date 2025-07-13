@@ -1,7 +1,7 @@
 import { createORPCClient } from "@orpc/client";
 import { RPCLink } from "@orpc/client/fetch";
 import type { RouterClient } from "@orpc/server";
-import { adminRouter, type AdminRouter } from "../../../server/src/orpc/admin";
+import { type AdminRouter, adminRouter } from "../../../server/src/orpc/admin";
 
 export const adminLink = new RPCLink({
 	url: `${import.meta.env.PUBLIC_BACKEND_SERVER_URL!}/admin`,
@@ -13,4 +13,5 @@ export const adminLink = new RPCLink({
 	},
 });
 
-export const adminClient: RouterClient<AdminRouter> = createORPCClient(adminLink); 
+export const adminClient: RouterClient<AdminRouter> =
+	createORPCClient(adminLink);
