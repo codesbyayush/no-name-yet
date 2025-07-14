@@ -7,7 +7,7 @@ import {
 	votes,
 } from "@/db/schema";
 import { ORPCError } from "@orpc/client";
-import { and, asc, count, desc, eq, exists, isNull, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, exists, isNull, type SQL, sql } from "drizzle-orm";
 import { z } from "zod/v4";
 import { protectedProcedure } from "../procedures";
 
@@ -37,7 +37,7 @@ export const mixedRouter = {
 
 			try {
 				// Determine sort order
-				let orderBy;
+				let orderBy: SQL<unknown>;
 				switch (sortBy) {
 					case "oldest":
 						orderBy = asc(feedback.createdAt);
@@ -45,7 +45,6 @@ export const mixedRouter = {
 					case "most_voted":
 						orderBy = desc(feedback.createdAt); // TODO: Sort by vote count
 						break;
-					case "newest":
 					default:
 						orderBy = desc(feedback.createdAt);
 						break;
@@ -86,7 +85,7 @@ export const mixedRouter = {
 						hasVoted: userId
 							? exists(
 									context.db
-										.select()
+										.select({ id: votes.id })
 										.from(votes)
 										.where(
 											and(
@@ -193,7 +192,7 @@ export const mixedRouter = {
 					organizationName: context.organization.name,
 				};
 			} catch (error) {
-				console.error("Error fetching organization posts:", error);
+				console.error("Error fetching organization post:", error);
 				throw new ORPCError("INTERNAL_SERVER_ERROR");
 			}
 		}),

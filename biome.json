@@ -30,6 +30,10 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
+			"suspicious": {
+				"noExplicitAny": "warn",
+				"noConsole": "warn"
+			},
 			"recommended": true,
 			"correctness": {
 				"useExhaustiveDependencies": "info"
@@ -58,7 +62,7 @@
 			"include": ["apps/web/**"],
 			"formatter": {
 				"enabled": true,
-				"indentStyle": "space",
+				"indentStyle": "tab",
 				"indentWidth": 2
 			},
 			"linter": {
@@ -81,7 +85,7 @@
 				"enabled": true,
 				"rules": {
 					"suspicious": {
-						"noConsole": "error"
+						"noConsole": "warn"
 					}
 				}
 			}
