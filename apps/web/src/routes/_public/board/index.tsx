@@ -34,7 +34,6 @@ function BoardIndexPage() {
   const navigate = useNavigate({ from: "/board" });
   const queryClient = useQueryClient();
 
-  // Replace useQuery with useInfiniteQuery for posts
   const {
     data,
     fetchNextPage,
@@ -161,6 +160,13 @@ function BoardIndexPage() {
                     to: f.id,
                   })
                 }
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    navigate({
+                      to: f.id,
+                    });
+                  }
+                }}
                 className={`${i > 0 ? "border-muted-foreground/5 border-t-[1px]" : ""} cursor-pointer space-y-1 p-6`}
               >
                 <div className="flex items-center justify-between gap-3">
@@ -193,6 +199,7 @@ function BoardIndexPage() {
                     <div>
                       {f.author?.image ? (
                         <img
+                          alt="author"
                           src={f.author?.image || "https://picsum/64"}
                           className="h-7 rounded-full"
                         />
@@ -217,9 +224,9 @@ function BoardIndexPage() {
                     </Badge>
                     <Badge
                       variant={
-                        f.status === "InProgress"
+                        f.status === "in_progress"
                           ? "inprogress"
-                          : f.status === "Completed"
+                          : f.status === "resolved"
                             ? "completed"
                             : "secondary"
                       }

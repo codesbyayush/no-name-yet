@@ -15,11 +15,10 @@ import v1Router from "./rest";
 const app = new Hono();
 
 const authRouter = new Hono();
-
-// NOTE: You may need to re-implement this route to use getAuth(c.env) if needed
-// For now, we will leave it as a stub
 import { getAuth } from "./lib/auth";
 
+
+// NOTE: we need to look up the auth types this custom method throws error
 authRouter.all("*", async (c) => {
 	try {
 		const auth = getAuth(c.env as Record<string, string>);

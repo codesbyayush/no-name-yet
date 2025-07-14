@@ -5,7 +5,7 @@ import { UpvoteIcon } from "./upvote-icon";
 interface VoteButtonProps {
   count: number;
   isVoted?: boolean;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   disabled?: boolean;
   className?: string;
 }
