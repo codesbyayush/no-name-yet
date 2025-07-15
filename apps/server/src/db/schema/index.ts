@@ -8,3 +8,4 @@ export * from "./votes";
 // export * from "./custom-fields";
 // export * from "./integrations";
 export * from "./organization";
+export * from "./changelog";
