@@ -11,6 +11,7 @@ import {
 	user,
 	votes,
 } from "../db/schema";
+import { changelogPublicRouter } from "./changelog";
 import { mixedRouter } from "./features";
 import { protectedProcedure, publicProcedure } from "./procedures";
 import { publicRouter } from "./public";
@@ -40,6 +41,7 @@ export const apiRouter = {
 	// New router structure
 	public: publicRouter,
 	mixed: mixedRouter,
+	changelog: changelogPublicRouter,
 	...mixedRouter,
 	...publicRouter,
 

@@ -1,0 +1,67 @@
+import { sql } from "drizzle-orm";
+import {
+	index,
+	jsonb,
+	pgEnum,
+	pgTable,
+	text,
+	timestamp,
+} from "drizzle-orm/pg-core";
+import { organization } from "./organization";
+import { user } from "./auth";
+
+// Enum for changelog status
+export const changelogStatusEnum = pgEnum("changelog_status", [
+	"draft",
+	"published",
+	"archived",
+]);
+
+// Changelog table - stores all changelog entries
+export const changelog = pgTable(
+	"changelog",
+	{
+		id: text("id").primaryKey().default(sql`gen_random_uuid()::text`),
+		organizationId: text("organization_id")
+			.notNull()
+			.references(() => organization.id, { onDelete: "cascade" }),
+
+		// Content and metadata
+		title: text("title").notNull(),
+		slug: text("slug").notNull(), // URL-friendly identifier
+		content: jsonb("content").notNull().$type<any>(), // BlockNote JSON format
+		htmlContent: text("html_content"), // Pre-rendered HTML for fast display
+		excerpt: text("excerpt"), // Auto-generated or manual summary
+
+		// Publishing control
+		status: changelogStatusEnum("status").default("draft").notNull(),
+		publishedAt: timestamp("published_at"),
+
+		// Authoring
+		authorId: text("author_id")
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
+
+		// SEO and metadata
+		metaTitle: text("meta_title"),
+		metaDescription: text("meta_description"),
+		tags: jsonb("tags").default([]).$type<string[]>(),
+
+		// Versioning
+		version: text("version"), // e.g., "v2.1.0"
+
+		// Timestamps
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		updatedAt: timestamp("updated_at").defaultNow().notNull(),
+	},
+	(table) => ({
+		orgIdx: index("idx_changelog_org").on(table.organizationId),
+		statusIdx: index("idx_changelog_status").on(table.status),
+		publishedIdx: index("idx_changelog_published").on(table.publishedAt),
+		slugIdx: index("idx_changelog_slug").on(table.organizationId, table.slug),
+		authorIdx: index("idx_changelog_author").on(table.authorId),
+	}),
+);
+
+export type Changelog = typeof changelog.$inferSelect;
+export type NewChangelog = typeof changelog.$inferInsert;
