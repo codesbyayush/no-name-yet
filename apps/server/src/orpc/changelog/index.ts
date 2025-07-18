@@ -2,15 +2,16 @@ import { randomUUID } from "crypto";
 import { ORPCError } from "@orpc/server";
 import { and, desc, eq, count, asc } from "drizzle-orm";
 import { z } from "zod";
-import { changelog, organization, user } from "../../db/schema";
-import { adminOnlyProcedure, publicProcedure } from "../procedures";
-import {
-  validateChangelogInput,
-  processChangelogContent,
-  generateSlug,
-  generateUniqueSlug,
-  isValidSlug,
+import { changelog, user } from "../../db/schema";
+import { 
+  blockNoteToHTML, 
+  generateSlug, 
+  generateExcerpt, 
+  validateBlockNoteContent, 
+  validateChangelogMetadata,
+  ensureUniqueSlug 
 } from "../../utils/changelog";
+import { adminOnlyProcedure, publicProcedure } from "../procedures";
 
 // Pagination schema
 const paginationSchema = z.object({
@@ -22,18 +23,16 @@ const paginationSchema = z.object({
 export const changelogAdminRouter = {
   // Create new changelog
   createChangelog: adminOnlyProcedure
-    .input(
-      z.object({
-        title: z.string().min(1, "Title is required").max(200, "Title too long"),
-        slug: z.string().optional(),
-        content: z.any(), // BlockNote JSON content
-        excerpt: z.string().max(500, "Excerpt too long").optional(),
-        version: z.string().max(50, "Version too long").optional(),
-        tags: z.array(z.string().max(50, "Tag too long")).max(20, "Too many tags").default([]),
-        metaTitle: z.string().max(200, "Meta title too long").optional(),
-        metaDescription: z.string().max(160, "Meta description too long").optional(),
-      })
-    )
+    .input(z.object({
+      title: z.string().min(1).max(200),
+      slug: z.string().min(1).max(100).optional(),
+      content: z.any(), // BlockNote JSON content
+      excerpt: z.string().max(500).optional(),
+      version: z.string().max(50).optional(),
+      tags: z.array(z.string().max(50)).max(10).default([]),
+      metaTitle: z.string().max(200).optional(),
+      metaDescription: z.string().max(500).optional(),
+    }))
     .handler(async ({ input, context }) => {
       const userId = context.session?.user?.id;
       const organizationId = context.organization?.id;
@@ -43,44 +42,39 @@ export const changelogAdminRouter = {
       }
 
       try {
+        // Validate BlockNote content
+        const contentValidation = validateBlockNoteContent(input.content);
+        if (!contentValidation.isValid) {
+          throw new ORPCError("BAD_REQUEST", contentValidation.error);
+        }
+
         // Generate slug if not provided
         let slug = input.slug || generateSlug(input.title);
         
-        // Validate slug format
-        if (!isValidSlug(slug)) {
-          slug = generateSlug(input.title);
-        }
-
-        // Check for existing slugs in the organization
+        // Ensure slug uniqueness within organization
         const existingSlugs = await context.db
           .select({ slug: changelog.slug })
           .from(changelog)
           .where(eq(changelog.organizationId, organizationId));
-
-        const existingSlugStrings = existingSlugs.map(item => item.slug);
         
-        // Generate unique slug
-        const uniqueSlug = generateUniqueSlug(slug, existingSlugStrings);
+        slug = ensureUniqueSlug(slug, existingSlugs.map(s => s.slug));
 
-        // Validate input
-        const validation = validateChangelogInput({
+        // Validate metadata
+        const metadataValidation = validateChangelogMetadata({
           title: input.title,
-          slug: uniqueSlug,
-          content: input.content,
+          slug,
           excerpt: input.excerpt,
           version: input.version,
           tags: input.tags,
         });
 
-        if (!validation.isValid) {
-          throw new ORPCError("BAD_REQUEST", validation.errors.join(", "));
+        if (!metadataValidation.isValid) {
+          throw new ORPCError("BAD_REQUEST", metadataValidation.errors.join(", "));
         }
 
-        // Process content
-        const processedContent = await processChangelogContent(
-          input.content,
-          input.excerpt
-        );
+        // Generate HTML content and excerpt
+        const htmlContent = blockNoteToHTML(input.content);
+        const excerpt = input.excerpt || generateExcerpt(input.content);
 
         // Create changelog
         const newChangelog = await context.db
@@ -90,10 +84,10 @@ export const changelogAdminRouter = {
             organizationId,
             authorId: userId,
             title: input.title,
-            slug: uniqueSlug,
-            content: processedContent.content,
-            htmlContent: processedContent.htmlContent,
-            excerpt: processedContent.excerpt,
+            slug,
+            content: input.content,
+            htmlContent,
+            excerpt,
             version: input.version,
             tags: input.tags,
             metaTitle: input.metaTitle,
@@ -117,12 +111,10 @@ export const changelogAdminRouter = {
 
   // List all changelogs (including drafts)
   listChangelogs: adminOnlyProcedure
-    .input(
-      z.object({
-        ...paginationSchema.shape,
-        status: z.enum(["draft", "published", "archived"]).optional(),
-      })
-    )
+    .input(z.object({
+      ...paginationSchema.shape,
+      status: z.enum(["draft", "published", "archived"]).optional(),
+    }))
     .handler(async ({ input, context }) => {
       const organizationId = context.organization?.id;
 
@@ -192,7 +184,7 @@ export const changelogAdminRouter = {
 
   // Get specific changelog for editing
   getChangelog: adminOnlyProcedure
-    .input(z.object({ id: z.string().min(1, "Changelog ID is required") }))
+    .input(z.object({ id: z.string() }))
     .handler(async ({ input, context }) => {
       const organizationId = context.organization?.id;
 
@@ -241,29 +233,27 @@ export const changelogAdminRouter = {
           changelog: changelogResult[0],
         };
       } catch (error) {
-        console.error("Error fetching changelog:", error);
+        console.error("Error getting changelog:", error);
         if (error instanceof ORPCError) {
           throw error;
         }
-        throw new ORPCError("INTERNAL_SERVER_ERROR", "Failed to fetch changelog");
+        throw new ORPCError("INTERNAL_SERVER_ERROR", "Failed to get changelog");
       }
     }),
 
   // Update changelog
   updateChangelog: adminOnlyProcedure
-    .input(
-      z.object({
-        id: z.string().min(1, "Changelog ID is required"),
-        title: z.string().min(1, "Title is required").max(200, "Title too long").optional(),
-        slug: z.string().optional(),
-        content: z.any().optional(), // BlockNote JSON content
-        excerpt: z.string().max(500, "Excerpt too long").optional(),
-        version: z.string().max(50, "Version too long").optional(),
-        tags: z.array(z.string().max(50, "Tag too long")).max(20, "Too many tags").optional(),
-        metaTitle: z.string().max(200, "Meta title too long").optional(),
-        metaDescription: z.string().max(160, "Meta description too long").optional(),
-      })
-    )
+    .input(z.object({
+      id: z.string(),
+      title: z.string().min(1).max(200).optional(),
+      slug: z.string().min(1).max(100).optional(),
+      content: z.any().optional(), // BlockNote JSON content
+      excerpt: z.string().max(500).optional(),
+      version: z.string().max(50).optional(),
+      tags: z.array(z.string().max(50)).max(10).optional(),
+      metaTitle: z.string().max(200).optional(),
+      metaDescription: z.string().max(500).optional(),
+    }))
     .handler(async ({ input, context }) => {
       const organizationId = context.organization?.id;
 
@@ -272,7 +262,7 @@ export const changelogAdminRouter = {
       }
 
       try {
-        const { id, ...updateData } = input;
+        const { id, ...updates } = input;
 
         // Verify changelog exists and belongs to organization
         const existingChangelog = await context.db
@@ -290,69 +280,71 @@ export const changelogAdminRouter = {
           throw new ORPCError("NOT_FOUND", "Changelog not found");
         }
 
-        // Handle slug update
-        let finalSlug = existingChangelog[0].slug;
-        if (updateData.slug && updateData.slug !== existingChangelog[0].slug) {
-          if (!isValidSlug(updateData.slug)) {
-            throw new ORPCError("BAD_REQUEST", "Invalid slug format");
-          }
+        // Prepare update data
+        const updateData: any = {
+          updatedAt: new Date(),
+        };
 
-          // Check if new slug is unique
+        // Handle content update
+        if (updates.content) {
+          const contentValidation = validateBlockNoteContent(updates.content);
+          if (!contentValidation.isValid) {
+            throw new ORPCError("BAD_REQUEST", contentValidation.error);
+          }
+          updateData.content = updates.content;
+          updateData.htmlContent = blockNoteToHTML(updates.content);
+        }
+
+        // Handle other updates
+        if (updates.title) updateData.title = updates.title;
+        if (updates.excerpt) updateData.excerpt = updates.excerpt;
+        if (updates.version) updateData.version = updates.version;
+        if (updates.tags) updateData.tags = updates.tags;
+        if (updates.metaTitle) updateData.metaTitle = updates.metaTitle;
+        if (updates.metaDescription) updateData.metaDescription = updates.metaDescription;
+
+        // Handle slug update with uniqueness check
+        if (updates.slug) {
           const existingSlugs = await context.db
             .select({ slug: changelog.slug })
             .from(changelog)
             .where(
               and(
                 eq(changelog.organizationId, organizationId),
-                // Exclude current changelog
-                // Note: Using != instead of !== for SQL comparison
-                eq(changelog.id, id) // This will be excluded by the NOT logic
+                // Exclude current changelog from uniqueness check
+                // Note: Using != instead of <> for compatibility
+                eq(changelog.id, id) // This will be excluded in the filter
               )
             );
+          
+          // Filter out current changelog's slug
+          const otherSlugs = existingSlugs
+            .map(s => s.slug)
+            .filter(s => s !== existingChangelog[0].slug);
+          
+          updateData.slug = ensureUniqueSlug(updates.slug, otherSlugs);
+        }
 
-          const existingSlugStrings = existingSlugs
-            .filter(item => item.slug !== existingChangelog[0].slug)
-            .map(item => item.slug);
+        // Validate metadata if any metadata fields are being updated
+        if (updates.title || updates.slug || updates.excerpt || updates.version || updates.tags) {
+          const metadataToValidate = {
+            title: updates.title || existingChangelog[0].title,
+            slug: updateData.slug || existingChangelog[0].slug,
+            excerpt: updates.excerpt || existingChangelog[0].excerpt,
+            version: updates.version || existingChangelog[0].version,
+            tags: updates.tags || existingChangelog[0].tags,
+          };
 
-          if (existingSlugStrings.includes(updateData.slug)) {
-            throw new ORPCError("CONFLICT", "Slug already exists");
+          const metadataValidation = validateChangelogMetadata(metadataToValidate);
+          if (!metadataValidation.isValid) {
+            throw new ORPCError("BAD_REQUEST", metadataValidation.errors.join(", "));
           }
-
-          finalSlug = updateData.slug;
         }
-
-        // Process content if updated
-        let processedContent;
-        if (updateData.content) {
-          processedContent = await processChangelogContent(
-            updateData.content,
-            updateData.excerpt
-          );
-        }
-
-        // Build update object
-        const updateObject: any = {
-          updatedAt: new Date(),
-        };
-
-        if (updateData.title) updateObject.title = updateData.title;
-        if (finalSlug !== existingChangelog[0].slug) updateObject.slug = finalSlug;
-        if (processedContent) {
-          updateObject.content = processedContent.content;
-          updateObject.htmlContent = processedContent.htmlContent;
-          updateObject.excerpt = processedContent.excerpt;
-        } else if (updateData.excerpt !== undefined) {
-          updateObject.excerpt = updateData.excerpt;
-        }
-        if (updateData.version !== undefined) updateObject.version = updateData.version;
-        if (updateData.tags !== undefined) updateObject.tags = updateData.tags;
-        if (updateData.metaTitle !== undefined) updateObject.metaTitle = updateData.metaTitle;
-        if (updateData.metaDescription !== undefined) updateObject.metaDescription = updateData.metaDescription;
 
         // Update changelog
         const updatedChangelog = await context.db
           .update(changelog)
-          .set(updateObject)
+          .set(updateData)
           .where(eq(changelog.id, id))
           .returning();
 
@@ -371,12 +363,10 @@ export const changelogAdminRouter = {
 
   // Publish/unpublish changelog
   publishChangelog: adminOnlyProcedure
-    .input(
-      z.object({
-        id: z.string().min(1, "Changelog ID is required"),
-        publish: z.boolean(),
-      })
-    )
+    .input(z.object({
+      id: z.string(),
+      publish: z.boolean(),
+    }))
     .handler(async ({ input, context }) => {
       const organizationId = context.organization?.id;
 
@@ -385,13 +375,15 @@ export const changelogAdminRouter = {
       }
 
       try {
+        const { id, publish } = input;
+
         // Verify changelog exists and belongs to organization
         const existingChangelog = await context.db
           .select()
           .from(changelog)
           .where(
             and(
-              eq(changelog.id, input.id),
+              eq(changelog.id, id),
               eq(changelog.organizationId, organizationId)
             )
           )
@@ -401,40 +393,43 @@ export const changelogAdminRouter = {
           throw new ORPCError("NOT_FOUND", "Changelog not found");
         }
 
+        // Validate required fields for publishing
+        if (publish) {
+          const current = existingChangelog[0];
+          if (!current.title || !current.content) {
+            throw new ORPCError("BAD_REQUEST", "Title and content are required for publishing");
+          }
+        }
+
         // Update status and publishedAt
-        const updateObject: any = {
-          status: input.publish ? "published" : "draft",
+        const updateData: any = {
+          status: publish ? "published" : "draft",
+          publishedAt: publish ? new Date() : null,
           updatedAt: new Date(),
         };
 
-        if (input.publish) {
-          updateObject.publishedAt = new Date();
-        } else {
-          updateObject.publishedAt = null;
-        }
-
         const updatedChangelog = await context.db
           .update(changelog)
-          .set(updateObject)
-          .where(eq(changelog.id, input.id))
+          .set(updateData)
+          .where(eq(changelog.id, id))
           .returning();
 
         return {
           changelog: updatedChangelog[0],
-          message: input.publish ? "Changelog published successfully" : "Changelog unpublished successfully",
+          message: publish ? "Changelog published successfully" : "Changelog unpublished successfully",
         };
       } catch (error) {
-        console.error("Error publishing/unpublishing changelog:", error);
+        console.error("Error publishing changelog:", error);
         if (error instanceof ORPCError) {
           throw error;
         }
-        throw new ORPCError("INTERNAL_SERVER_ERROR", "Failed to update changelog status");
+        throw new ORPCError("INTERNAL_SERVER_ERROR", "Failed to publish changelog");
       }
     }),
 
   // Delete changelog
   deleteChangelog: adminOnlyProcedure
-    .input(z.object({ id: z.string().min(1, "Changelog ID is required") }))
+    .input(z.object({ id: z.string() }))
     .handler(async ({ input, context }) => {
       const organizationId = context.organization?.id;
 
@@ -483,7 +478,6 @@ export const changelogPublicRouter = {
   listPublishedChangelogs: publicProcedure
     .input(paginationSchema)
     .handler(async ({ input, context }) => {
-      // Check if organization exists
       if (!context.organization) {
         throw new ORPCError("NOT_FOUND", "Organization not found");
       }
@@ -553,9 +547,8 @@ export const changelogPublicRouter = {
 
   // Get specific published changelog
   getPublishedChangelog: publicProcedure
-    .input(z.object({ slug: z.string().min(1, "Changelog slug is required") }))
+    .input(z.object({ slug: z.string() }))
     .handler(async ({ input, context }) => {
-      // Check if organization exists
       if (!context.organization) {
         throw new ORPCError("NOT_FOUND", "Organization not found");
       }
@@ -566,7 +559,7 @@ export const changelogPublicRouter = {
             id: changelog.id,
             title: changelog.title,
             slug: changelog.slug,
-            htmlContent: changelog.htmlContent, // Return pre-rendered HTML for fast display
+            htmlContent: changelog.htmlContent, // Return pre-rendered HTML
             excerpt: changelog.excerpt,
             version: changelog.version,
             tags: changelog.tags,
@@ -601,11 +594,11 @@ export const changelogPublicRouter = {
           organizationName: context.organization.name,
         };
       } catch (error) {
-        console.error("Error fetching published changelog:", error);
+        console.error("Error getting published changelog:", error);
         if (error instanceof ORPCError) {
           throw error;
         }
-        throw new ORPCError("INTERNAL_SERVER_ERROR", "Failed to fetch changelog");
+        throw new ORPCError("INTERNAL_SERVER_ERROR", "Failed to get changelog");
       }
     }),
 };
