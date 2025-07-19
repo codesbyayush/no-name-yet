@@ -20,10 +20,16 @@ export async function createContext({ context, env }: CreateContextOptions) {
 	// Extract subdomain from host
 	const host = context.req.raw.headers.get("origin")?.split("//")[1];
 	let subdomain: string | undefined = undefined;
+	
 	if (host) {
 		const hostParts = host.split(".");
-		if (hostParts.length > 1 && hostParts[0] !== "localhost") {
-			subdomain = hostParts[0];
+		// Handle localhost for local development
+		if (hostParts.length > 1) {
+			if (hostParts[0] === "localhost") {
+				// Later
+			} else if (hostParts[0] !== "www" && hostParts[0] !== "api") {
+				subdomain = hostParts[0];
+			}
 		}
 	}
 
