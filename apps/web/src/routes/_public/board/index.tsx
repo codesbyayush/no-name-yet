@@ -1,6 +1,7 @@
 import { CreateEditPost } from "@/components/create-edit-post";
 import { CommentButton, VoteButton } from "@/components/svg";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getFeedbacks } from "@/lib/utils";
 import { client } from "@/utils/orpc";
 import {
@@ -25,6 +26,49 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+
+// Skeleton component for feedback items
+function FeedbackSkeleton() {
+  return (
+    <div className="space-y-1 p-6">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex-1">
+          <Skeleton className="h-6 w-3/4 mb-2" />
+          <Skeleton className="h-4 w-full" />
+        </div>
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-8 w-16" />
+          <Skeleton className="h-8 w-16" />
+        </div>
+      </div>
+      <div className="flex items-center justify-between pt-4">
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-7 w-7 rounded-full" />
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-3 w-16" />
+          </div>
+        </div>
+        <div className="flex gap-3">
+          <Skeleton className="h-6 w-16" />
+          <Skeleton className="h-6 w-20" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BoardSkeleton() {
+  return (
+    <div className="h-auto w-full justify-start p-3 text-left font-medium text-foreground">
+      <div className="flex items-center gap-2">
+        <Skeleton className="h-4 w-4" />
+        <Skeleton className="h-4 w-24" />
+      </div>
+    </div>
+  );
+}
+
 export const Route = createFileRoute("/_public/board/")({
   component: BoardIndexPage,
 });
@@ -104,9 +148,17 @@ function BoardIndexPage() {
     <div className="text-card-foreground">
       <div className="relative flex gap-4">
         <div className="w-2xl flex-1 rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card shadow-xs">
-          {isLoading && <div>Loading posts...</div>}
+          {isLoading && (
+            <div>
+              {Array.from({ length: 5 }, (_, i) => ({ id: `skeleton-${i}`, index: i })).map(({ id, index }) => (
+                <div key={id} className={index > 0 ? "border-muted-foreground/5 border-t-[1px]" : ""}>
+                  <FeedbackSkeleton />
+                </div>
+              ))}
+            </div>
+          )}
           {isError && <div>Error loading posts</div>}
-          {allPosts.map((f, i) => {
+          {!isLoading && allPosts.map((f, i) => {
             const isLastPost = i === allPosts.length - 1;
             const isSecondLastPost = i === allPosts.length - 2;
 
@@ -217,20 +269,28 @@ function BoardIndexPage() {
           <div className="z-10 w-3xs rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card p-4 shadow-xs">
             <h4 className="mb-2 font-medium capitalize">boards</h4>
             <div className="flex flex-col gap-2">
-              {boards?.boards.map((board) => (
-                <Button
-                  key={board.id}
-                  variant={"secondary"}
-                  className="h-auto w-full justify-start p-3 text-left font-medium text-foreground"
-                >
-                  <p className="flex items-center gap-2 whitespace-break-spaces capitalize">
-                    {board.symbol}
-                    <span className="break-words text-left capitalize">
-                      {board.name}
-                    </span>
-                  </p>
-                </Button>
-              ))}
+              {boards ? (
+                boards.boards.map((board) => (
+                  <Button
+                    key={board.id}
+                    variant={"secondary"}
+                    className="h-auto w-full justify-start p-3 text-left font-medium text-foreground"
+                  >
+                    <p className="flex items-center gap-2 whitespace-break-spaces capitalize">
+                      {board.symbol}
+                      <span className="break-words text-left capitalize">
+                        {board.name}
+                      </span>
+                    </p>
+                  </Button>
+                ))
+              ) : (
+                Array.from({ length: 2 }, (_, i) => ({ id: `board-skeleton-${i}` })).map(({ id }) => (
+                  <div key={id} className="h-auto w-full justify-start p-1 text-left font-medium text-foreground">
+                    <BoardSkeleton />
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
