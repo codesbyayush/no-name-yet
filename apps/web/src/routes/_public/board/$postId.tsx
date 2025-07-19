@@ -22,22 +22,6 @@ function RouteComponent() {
   const [commentInput, setCommentInput] = useState("");
   const queryClient = useQueryClient();
 
-  // Mutation to create a vote
-  const createVoteMutation = useMutation({
-    mutationFn: () => client.public.votes.create({ feedbackId: postId }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [postId, "post"] });
-    },
-  });
-
-  // Mutation to delete a vote
-  const deleteVoteMutation = useMutation({
-    mutationFn: () => client.public.votes.delete({ feedbackId: postId }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [postId, "post"] });
-    },
-  });
-
   // Replace useQuery with useInfiniteQuery for comments
   const {
     data,
@@ -121,17 +105,8 @@ function RouteComponent() {
             <CommentButton count={post?.totalComments || 0} />
             <VoteButton
               count={post?.totalVotes || 0}
-              isVoted={post?.hasVoted || false}
-              disabled={
-                createVoteMutation.isPending || deleteVoteMutation.isPending
-              }
-              onClick={() => {
-                if (post?.hasVoted) {
-                  deleteVoteMutation.mutate();
-                } else {
-                  createVoteMutation.mutate();
-                }
-              }}
+              hasVoted={post?.hasVoted || false}
+              feedbackId={postId}
             />
           </div>
           <div>

@@ -131,7 +131,7 @@ function PostCard({ post }: { post: any }) {
               {new Date(post.createdAt).toLocaleDateString()}
             </span>
             <CommentButton count={1} disabled />
-            <VoteButton count={28} isVoted={false} disabled />
+            <VoteButton count={28} hasVoted={false} desableFromParent={true} />
           </div>
         </div>
       </SheetTrigger>
@@ -245,7 +245,7 @@ function PostDetail({ post }: { post: any }) {
   return (
     <div className="relative flex gap-4 text-card-foreground">
       <div className="w-5xl flex-1 rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card px-6 shadow-xs">
-        <div className={`space-y-2 py-6`}>
+        <div className={"space-y-2 py-6"}>
           <h4 className="font-semibold text-card-foreground text-lg capitalize">
             {post?.title}
           </h4>
@@ -255,7 +255,7 @@ function PostDetail({ post }: { post: any }) {
 
           <div className="ml-auto flex max-w-max gap-3 pt-6">
             <CommentButton count={allComments.length} disabled />
-            <VoteButton count={28} isVoted={false} disabled />
+            <VoteButton count={28} hasVoted={false} desableFromParent={true} />
           </div>
         </div>
 

@@ -57,47 +57,6 @@ function BoardIndexPage() {
 
   const [position, setPosition] = useState("bottom");
 
-  // Vote mutations
-  const createVoteMutation = useMutation({
-    mutationFn: ({ feedbackId }: { feedbackId: string }) =>
-      client.public.votes.create({ feedbackId }),
-    onSuccess: () => {
-      toast.success("Vote added!");
-      // Invalidate posts to refresh vote counts and vote status
-      queryClient.invalidateQueries({ queryKey: ["all-posts"] });
-    },
-    onError: (error: any) => {
-      toast.error(error.message || "Failed to vote");
-    },
-  });
-
-  const deleteVoteMutation = useMutation({
-    mutationFn: ({ feedbackId }: { feedbackId: string }) =>
-      client.public.votes.delete({ feedbackId }),
-    onSuccess: () => {
-      toast.success("Vote removed!");
-      // Invalidate posts to refresh vote counts and vote status
-      queryClient.invalidateQueries({ queryKey: ["all-posts"] });
-    },
-    onError: (error: any) => {
-      toast.error(error.message || "Failed to remove vote");
-    },
-  });
-
-  const handleVote = (
-    feedbackId: string,
-    hasVoted: boolean,
-    e: React.MouseEvent,
-  ) => {
-    e.stopPropagation();
-
-    if (hasVoted) {
-      deleteVoteMutation.mutate({ feedbackId });
-    } else {
-      createVoteMutation.mutate({ feedbackId });
-    }
-  };
-
   const handleCommentClick = (feedbackId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     navigate({ to: feedbackId });
@@ -185,12 +144,8 @@ function BoardIndexPage() {
                     />
                     <VoteButton
                       count={f.votes || 0}
-                      isVoted={f.hasVoted || false}
-                      disabled={
-                        createVoteMutation.isPending ||
-                        deleteVoteMutation.isPending
-                      }
-                      onClick={(e) => handleVote(f.id, f.hasVoted || false, e)}
+                      feedbackId={f.id}
+                      hasVoted={f.hasVoted || false}
                     />
                   </div>
                 </div>
