@@ -1,8 +1,3 @@
-// Node.js-only imports for local dev TLS (not for Workers)
-// import { readFileSync } from "fs";
-// import { resolve } from "path";
-// import { readFileSync } from "fs";
-// import { resolve } from "path"; // Not available in Workers
 import { RPCHandler } from "@orpc/server/fetch";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
@@ -11,17 +6,19 @@ import { adminRouter } from "./orpc/admin";
 import { createAdminContext, createContext } from "./orpc/context";
 import { apiRouter } from "./orpc/index";
 import v1Router from "./rest";
+import { getAuth } from "./lib/auth";
+import { getEnvFromContext } from "./lib/env";
 
 const app = new Hono();
 
 const authRouter = new Hono();
-import { getAuth } from "./lib/auth";
 
 
 // NOTE: we need to look up the auth types this custom method throws error
 authRouter.all("*", async (c) => {
 	try {
-		const auth = getAuth(c.env as Record<string, string>);
+		const env = getEnvFromContext(c);
+		const auth = getAuth(env);
 		return await auth.handler(c.req.raw);
 	} catch (error) {
 		return c.json(
@@ -39,9 +36,10 @@ app.use(
 	"/*",
 	cors({
 		origin: (origin, c) => {
-			return origin.endsWith(c.env.CORS_ORIGIN!)
+			const env = getEnvFromContext(c);
+			return origin.endsWith(env.CORS_ORIGIN)
 				? origin
-				: `https://${c.env.FRONTEND_URL}`;
+				: `https://${env.FRONTEND_URL}`;
 		},
 		allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
 		allowHeaders: [
@@ -66,9 +64,10 @@ app.route("/api/v1", v1Router);
 // oRPC Handler for regular API routes
 const rpcHandler = new RPCHandler(apiRouter);
 app.use("/rpc/*", async (c, next) => {
+	const env = getEnvFromContext(c);
 	const context = await createContext({
 		context: c,
-		env: c.env as unknown as Record<string, string>,
+		env,
 	});
 	const { matched, response } = await rpcHandler.handle(c.req.raw, {
 		prefix: "/rpc",
@@ -83,9 +82,10 @@ app.use("/rpc/*", async (c, next) => {
 // oRPC Handler for admin routes
 const adminRpcHandler = new RPCHandler(adminRouter);
 app.use("/admin/*", async (c, next) => {
+	const env = getEnvFromContext(c);
 	const context = await createAdminContext({
 		context: c,
-		env: c.env as unknown as Record<string, string>,
+		env,
 	});
 	const { matched, response } = await adminRpcHandler.handle(c.req.raw, {
 		prefix: "/admin",
@@ -98,4 +98,36 @@ app.use("/admin/*", async (c, next) => {
 });
 
 app.get("/ping", (c) => c.text("pong"));
-export default app;
+
+
+const isLocalEnvironment = process.env.NODE_ENV === "development" || process.env.ENVIRONMENT === "local";
+
+const createExport = async () => {
+	if (isLocalEnvironment) {
+		// biome-ignore lint/style/useNodejsImportProtocol: <explanation>
+		const { readFileSync } = await import("fs");
+		// biome-ignore lint/style/useNodejsImportProtocol: <explanation>
+		const { resolve } = await import("path");
+		
+		// TLS configuration for HTTPS in development
+		const tlsConfig = {
+			key: readFileSync(
+				resolve(import.meta.dir, "../certs/localhost+2-key.pem"),
+			),
+			cert: readFileSync(
+				resolve(import.meta.dir, "../certs/localhost+2.pem"),
+			),
+		};
+
+		return {
+			port: 8080,
+			fetch: app.fetch,
+			tls: tlsConfig,
+		};
+	}
+	
+	// Production/Workers environment
+	return app;
+};
+
+export default await createExport();

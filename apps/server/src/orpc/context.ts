@@ -4,14 +4,15 @@ import type { Context as HonoContext } from "hono";
 import { getDb } from "../db";
 import { organization, user } from "../db/schema";
 import { getAuth } from "../lib/auth";
+import { getEnvFromContext, type AppEnv } from "../lib/env";
 
 export type CreateContextOptions = {
 	context: HonoContext;
-	env: Record<string, string>;
+	env: AppEnv;
 };
 
 export async function createContext({ context, env }: CreateContextOptions) {
-	const db = getDb({ DATABASE_URL: env.DATABASE_URL as string });
+	const db = getDb({ DATABASE_URL: env.DATABASE_URL });
 	const auth = getAuth(env);
 	const session = await auth.api.getSession({
 		headers: context.req.raw.headers,
@@ -61,7 +62,7 @@ export async function createAdminContext({
 	context,
 	env,
 }: CreateContextOptions) {
-	const db = getDb({ DATABASE_URL: env.DATABASE_URL as string });
+	const db = getDb({ DATABASE_URL: env.DATABASE_URL });
 	const auth = getAuth(env);
 	const session = await auth.api.getSession({
 		headers: context.req.raw.headers,

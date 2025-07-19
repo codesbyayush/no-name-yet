@@ -3,8 +3,9 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, organization } from "better-auth/plugins";
 import { getDb } from "../db";
 import * as schema from "../db/schema";
+import type { AppEnv } from "./env";
 
-export function getAuth(env: Record<string, string>): unknown {
+export function getAuth(env: AppEnv): any {
   return betterAuth({
     baseURL: env.BETTER_AUTH_URL as string,
     database: drizzleAdapter(getDb(env as { DATABASE_URL: string }), {

@@ -5,6 +5,7 @@ import { organization } from "@/db/schema/organization";
 import { and, eq, inArray, isNull, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod/v4";
+import { getEnvFromContext } from "../lib/env";
 
 type AppContext = {
 	Variables: {
@@ -29,7 +30,8 @@ publicApiRouter.use("*", async (c, next) => {
 	}
 
 	try {
-		const db = getDb(c.env as { DATABASE_URL: string });
+		const env = getEnvFromContext(c);
+		const db = getDb({ DATABASE_URL: env.DATABASE_URL });
 		const org = await db
 			.select()
 			.from(organization)
@@ -48,7 +50,7 @@ publicApiRouter.use("*", async (c, next) => {
 		//   return c.json({ error: "Forbidden", message: "This domain is not authorized to access the API." }, 403);
 		// }
 
-		c.set("organization", org);
+		c.set("organization", org[0]);
 	} catch (error) {
 		console.error("API key validation error:", error);
 		return c.json({ error: "Internal Server Error" }, 500);
@@ -66,7 +68,8 @@ publicApiRouter.get("/boards", async (c) => {
 	const org = c.get("organization");
 
 	try {
-		const db = getDb(c.env as { DATABASE_URL: string });
+		const env = getEnvFromContext(c);
+		const db = getDb({ DATABASE_URL: env.DATABASE_URL });
 		const publicBoards = await db
 			.select({
 				id: boards.id,
@@ -98,7 +101,8 @@ publicApiRouter.get("/tags", async (c) => {
 	const org = c.get("organization");
 
 	try {
-		const db = getDb(c.env as { DATABASE_URL: string });
+		const env = getEnvFromContext(c);
+		const db = getDb({ DATABASE_URL: env.DATABASE_URL });
 		const orgBoards = await db
 			.select({ id: boards.id })
 			.from(boards)
@@ -186,7 +190,8 @@ publicApiRouter.post("/feedback", async (c) => {
 	// Security Check: Verify the board belongs to the organization.
 	// This prevents a user from one org from submitting feedback to a board of another org.
 	try {
-		const db = getDb(c.env as { DATABASE_URL: string });
+		const env = getEnvFromContext(c);
+		const db = getDb({ DATABASE_URL: env.DATABASE_URL });
 		const board = await db.query.boards.findFirst({
 			where: and(eq(boards.id, boardId), eq(boards.organizationId, org.id)),
 			columns: { id: true },
