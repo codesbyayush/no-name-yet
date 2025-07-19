@@ -16,12 +16,6 @@ function PublicLayout() {
 
   const { data: session } = useSession();
 
-  const publicLinks = [
-    { to: "/board", label: "Board" },
-    { to: "/roadmap", label: "Roadmap" },
-    { to: "/changelog", label: "Changelog" },
-  ];
-
   return (
     <div className="flex h-full min-h-screen flex-col items-center bg-background bg-noise">
       {/* Navigation Header */}
@@ -52,16 +46,26 @@ function PublicLayout() {
           <div className="hidden h-6 w-px bg-gray-300 sm:block" />
 
           {/* Navigation Links */}
-          <div className="hidden items-center gap-1 sm:flex">
+          <div className="flex items-center gap-1">
             <Link
               to="/board"
-              className={`rounded-full px-4 py-2 font-medium text-sm transition-all ${
+              className={`rounded-full px-3 py-2 font-medium text-xs sm:text-sm transition-all ${
                 location.pathname.includes("/board")
                   ? "bg-gray-100 text-gray-900 shadow-sm"
                   : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
               }`}
             >
               Feedback
+            </Link>
+            <Link
+              to="/changelog"
+              className={`rounded-full px-3 py-2 font-medium text-xs sm:text-sm transition-all ${
+                location.pathname.includes("/changelog")
+                  ? "bg-gray-100 text-gray-900 shadow-sm"
+                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              }`}
+            >
+              Changelog
             </Link>
           </div>
         </div>

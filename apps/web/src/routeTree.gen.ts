@@ -24,8 +24,11 @@ import { Route as AdminEditorRouteImport } from './routes/_admin/editor'
 import { Route as AdminDashboardRouteImport } from './routes/_admin/dashboard'
 import { Route as AdminBoardsRouteImport } from './routes/_admin/boards'
 import { Route as PublicBoardIndexRouteImport } from './routes/_public/board/index'
+import { Route as AdminChangelogsIndexRouteImport } from './routes/_admin/changelogs/index'
 import { Route as PublicBoardPostIdRouteImport } from './routes/_public/board/$postId'
+import { Route as AdminChangelogsNewRouteImport } from './routes/_admin/changelogs/new'
 import { Route as AdminAyushChangelogRouteImport } from './routes/_admin/ayush/changelog'
+import { Route as AdminChangelogsEditIdRouteImport } from './routes/_admin/changelogs/edit.$id'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -100,14 +103,29 @@ const PublicBoardIndexRoute = PublicBoardIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PublicBoardRoute,
 } as any)
+const AdminChangelogsIndexRoute = AdminChangelogsIndexRouteImport.update({
+  id: '/changelogs/',
+  path: '/changelogs/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const PublicBoardPostIdRoute = PublicBoardPostIdRouteImport.update({
   id: '/$postId',
   path: '/$postId',
   getParentRoute: () => PublicBoardRoute,
 } as any)
+const AdminChangelogsNewRoute = AdminChangelogsNewRouteImport.update({
+  id: '/changelogs/new',
+  path: '/changelogs/new',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminAyushChangelogRoute = AdminAyushChangelogRouteImport.update({
   id: '/ayush/changelog',
   path: '/ayush/changelog',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminChangelogsEditIdRoute = AdminChangelogsEditIdRouteImport.update({
+  id: '/changelogs/edit/$id',
+  path: '/changelogs/edit/$id',
   getParentRoute: () => AdminRoute,
 } as any)
 
@@ -125,8 +143,11 @@ export interface FileRoutesByFullPath {
   '/changelog': typeof PublicChangelogRoute
   '/roadmap': typeof PublicRoadmapRoute
   '/ayush/changelog': typeof AdminAyushChangelogRoute
+  '/changelogs/new': typeof AdminChangelogsNewRoute
   '/board/$postId': typeof PublicBoardPostIdRoute
+  '/changelogs': typeof AdminChangelogsIndexRoute
   '/board/': typeof PublicBoardIndexRoute
+  '/changelogs/edit/$id': typeof AdminChangelogsEditIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -141,8 +162,11 @@ export interface FileRoutesByTo {
   '/changelog': typeof PublicChangelogRoute
   '/roadmap': typeof PublicRoadmapRoute
   '/ayush/changelog': typeof AdminAyushChangelogRoute
+  '/changelogs/new': typeof AdminChangelogsNewRoute
   '/board/$postId': typeof PublicBoardPostIdRoute
+  '/changelogs': typeof AdminChangelogsIndexRoute
   '/board': typeof PublicBoardIndexRoute
+  '/changelogs/edit/$id': typeof AdminChangelogsEditIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -161,8 +185,11 @@ export interface FileRoutesById {
   '/_public/changelog': typeof PublicChangelogRoute
   '/_public/roadmap': typeof PublicRoadmapRoute
   '/_admin/ayush/changelog': typeof AdminAyushChangelogRoute
+  '/_admin/changelogs/new': typeof AdminChangelogsNewRoute
   '/_public/board/$postId': typeof PublicBoardPostIdRoute
+  '/_admin/changelogs/': typeof AdminChangelogsIndexRoute
   '/_public/board/': typeof PublicBoardIndexRoute
+  '/_admin/changelogs/edit/$id': typeof AdminChangelogsEditIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -180,8 +207,11 @@ export interface FileRouteTypes {
     | '/changelog'
     | '/roadmap'
     | '/ayush/changelog'
+    | '/changelogs/new'
     | '/board/$postId'
+    | '/changelogs'
     | '/board/'
+    | '/changelogs/edit/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -196,8 +226,11 @@ export interface FileRouteTypes {
     | '/changelog'
     | '/roadmap'
     | '/ayush/changelog'
+    | '/changelogs/new'
     | '/board/$postId'
+    | '/changelogs'
     | '/board'
+    | '/changelogs/edit/$id'
   id:
     | '__root__'
     | '/'
@@ -215,8 +248,11 @@ export interface FileRouteTypes {
     | '/_public/changelog'
     | '/_public/roadmap'
     | '/_admin/ayush/changelog'
+    | '/_admin/changelogs/new'
     | '/_public/board/$postId'
+    | '/_admin/changelogs/'
     | '/_public/board/'
+    | '/_admin/changelogs/edit/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -333,6 +369,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicBoardIndexRouteImport
       parentRoute: typeof PublicBoardRoute
     }
+    '/_admin/changelogs/': {
+      id: '/_admin/changelogs/'
+      path: '/changelogs'
+      fullPath: '/changelogs'
+      preLoaderRoute: typeof AdminChangelogsIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/_public/board/$postId': {
       id: '/_public/board/$postId'
       path: '/$postId'
@@ -340,11 +383,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicBoardPostIdRouteImport
       parentRoute: typeof PublicBoardRoute
     }
+    '/_admin/changelogs/new': {
+      id: '/_admin/changelogs/new'
+      path: '/changelogs/new'
+      fullPath: '/changelogs/new'
+      preLoaderRoute: typeof AdminChangelogsNewRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/_admin/ayush/changelog': {
       id: '/_admin/ayush/changelog'
       path: '/ayush/changelog'
       fullPath: '/ayush/changelog'
       preLoaderRoute: typeof AdminAyushChangelogRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/_admin/changelogs/edit/$id': {
+      id: '/_admin/changelogs/edit/$id'
+      path: '/changelogs/edit/$id'
+      fullPath: '/changelogs/edit/$id'
+      preLoaderRoute: typeof AdminChangelogsEditIdRouteImport
       parentRoute: typeof AdminRoute
     }
   }
@@ -359,6 +416,9 @@ interface AdminRouteChildren {
   AdminWidgetRoute: typeof AdminWidgetRoute
   AdminWikiRoute: typeof AdminWikiRoute
   AdminAyushChangelogRoute: typeof AdminAyushChangelogRoute
+  AdminChangelogsNewRoute: typeof AdminChangelogsNewRoute
+  AdminChangelogsIndexRoute: typeof AdminChangelogsIndexRoute
+  AdminChangelogsEditIdRoute: typeof AdminChangelogsEditIdRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
@@ -370,6 +430,9 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminWidgetRoute: AdminWidgetRoute,
   AdminWikiRoute: AdminWikiRoute,
   AdminAyushChangelogRoute: AdminAyushChangelogRoute,
+  AdminChangelogsNewRoute: AdminChangelogsNewRoute,
+  AdminChangelogsIndexRoute: AdminChangelogsIndexRoute,
+  AdminChangelogsEditIdRoute: AdminChangelogsEditIdRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)

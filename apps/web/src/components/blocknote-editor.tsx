@@ -3,7 +3,7 @@ import type { Block } from "@blocknote/core";
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/shadcn";
 import "@blocknote/shadcn/style.css";
-import { useEffect, useMemo } from "react";
+import { forwardRef, useImperativeHandle, useMemo } from "react";
 
 export interface BlockNoteEditorProps {
   initialContent?: Block[];
@@ -13,43 +13,33 @@ export interface BlockNoteEditorProps {
   className?: string;
 }
 
-export default function BlockNoteEditor({
+export interface BlockNoteEditorRef {
+  getContent: () => Block[];
+}
+
+const BlockNoteEditor = forwardRef<BlockNoteEditorRef, BlockNoteEditorProps>(({
   initialContent,
   onChange,
   placeholder = "Start writing...",
   editable = true,
   className,
-}: BlockNoteEditorProps) {
+}, ref) => {
   // Creates a new editor instance with initial content
   const editor = useCreateBlockNote({
     initialContent: initialContent || undefined,
   });
 
-  // Handle content changes
-  useEffect(() => {
-    if (!onChange) return;
+  // Expose methods to parent component
+  useImperativeHandle(ref, () => ({
+    getContent: () => editor.document,
+  }), [editor]);
 
-    const handleChange = () => {
-      const content = editor.document;
-      onChange(content);
-    };
-
-    // Listen for document changes
-    editor.onEditorContentChange(handleChange);
-
-    // Cleanup listener on unmount
-    return () => {
-      // BlockNote doesn't provide a direct way to remove listeners
-      // The editor instance will be cleaned up when component unmounts
-    };
-  }, [editor, onChange]);
-
-  // Update editor content when initialContent changes
-  useEffect(() => {
-    if (initialContent && editor.document !== initialContent) {
-      editor.replaceBlocks(editor.document, initialContent);
-    }
-  }, [initialContent, editor]);
+  // Handle content changes if onChange is provided
+  if (onChange) {
+    editor.onChange(() => {
+      onChange(editor.document);
+    });
+  }
 
   // Memoize editor configuration to prevent unnecessary re-renders
   const editorConfig = useMemo(() => ({
@@ -68,4 +58,8 @@ export default function BlockNoteEditor({
       <BlockNoteView {...editorConfig} />
     </div>
   );
-}
+});
+
+BlockNoteEditor.displayName = "BlockNoteEditor";
+
+export default BlockNoteEditor;
