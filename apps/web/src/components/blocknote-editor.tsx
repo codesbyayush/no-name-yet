@@ -1,8 +1,8 @@
+import "@blocknote/shadcn/style.css";
 import "@blocknote/core/fonts/inter.css";
 import type { Block } from "@blocknote/core";
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/shadcn";
-import "@blocknote/shadcn/style.css";
 import { forwardRef, useImperativeHandle, useMemo } from "react";
 
 export interface BlockNoteEditorProps {

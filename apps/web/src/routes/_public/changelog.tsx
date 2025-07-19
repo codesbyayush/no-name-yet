@@ -2,6 +2,8 @@ import { client } from "@/utils/orpc";
 import { createFileRoute } from "@tanstack/react-router";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
+import "@blocknote/shadcn/style.css";
+import "@blocknote/core/fonts/inter.css";
 
 export const Route = createFileRoute("/_public/changelog")({
   component: ChangelogPage,

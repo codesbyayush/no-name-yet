@@ -18,6 +18,7 @@
 	},
 	"dependencies": {
 		"@blocknote/core": "^0.33.0",
+		"@blocknote/server-util": "^0.34.0",
 		"@cloudflare/workers-types": "^4.20250712.0",
 		"@hono/zod-validator": "^0.7.0",
 		"@neondatabase/serverless": "^1.0.1",

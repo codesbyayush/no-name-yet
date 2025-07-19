@@ -3,6 +3,7 @@ import { and, desc, eq, count, asc } from "drizzle-orm";
 import { z } from "zod";
 import { changelog, user } from "../../db/schema";
 import { adminOnlyProcedure, publicProcedure } from "../procedures";
+import { ServerBlockNoteEditor } from "@blocknote/server-util";
 
 
 const generateSlug = (title: string) => {
@@ -80,6 +81,8 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
           finalSlug = `${slug}-${slugCounter}`;
         }
 
+        const htmlContent = await ServerBlockNoteEditor.create().blocksToFullHTML(content);
+
         // Create the changelog
         const newChangelog = await context.db
           .insert(changelog)
@@ -88,6 +91,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
             title,
             slug: finalSlug,
             content,
+            htmlContent,
             excerpt,
             version,
             tags,
@@ -324,6 +328,9 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
             updateValues[key] = updateData[key as keyof typeof updateData];
           }
         }
+
+        const editor = ServerBlockNoteEditor.create();
+        updateValues.htmlContent = await editor.blocksToFullHTML(updateValues.content);
 
         // Update the changelog
         const updatedChangelog = await context.db
