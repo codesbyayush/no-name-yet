@@ -2,8 +2,52 @@ import { client } from "@/utils/orpc";
 import { createFileRoute } from "@tanstack/react-router";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 import "@blocknote/shadcn/style.css";
 import "@blocknote/core/fonts/inter.css";
+
+// Skeleton component for changelog entries
+function ChangelogSkeleton() {
+  return (
+    <div className="w-[57.5rem] rounded-lg border bg-card p-6">
+      <div className="mb-4 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-7 w-64" /> {/* text-xl height */}
+          <Skeleton className="h-6 w-20 rounded-full" /> {/* version badge */}
+        </div>
+        <Skeleton className="h-4 w-32" /> {/* date */}
+      </div>
+      
+      {/* Excerpt section */}
+      <div className="mb-4">
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-5/6 mt-2" />
+      </div>
+      
+      {/* Content section */}
+      <div className="mt-4 space-y-3">
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-11/12" />
+        <Skeleton className="h-4 w-4/5" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-3/4" />
+      </div>
+      
+      {/* Tags section */}
+      <div className="mt-4 flex flex-wrap gap-2">
+        <Skeleton className="h-6 w-16 rounded-full" />
+        <Skeleton className="h-6 w-20 rounded-full" />
+        <Skeleton className="h-6 w-14 rounded-full" />
+      </div>
+      
+      {/* Author section */}
+      <div className="mt-4 flex items-center gap-2">
+        <Skeleton className="h-5 w-5 rounded-full" />
+        <Skeleton className="h-4 w-24" />
+      </div>
+    </div>
+  );
+}
 
 export const Route = createFileRoute("/_public/changelog")({
   component: ChangelogPage,
@@ -69,21 +113,8 @@ function ChangelogPage() {
         </div>
         <div className="space-y-6">
           {/* Loading skeleton */}
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="rounded-lg border bg-card p-6">
-              <div className="mb-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="h-6 w-20 bg-muted animate-pulse rounded" />
-                  <div className="h-5 w-16 bg-muted animate-pulse rounded-full" />
-                </div>
-                <div className="h-4 w-24 bg-muted animate-pulse rounded" />
-              </div>
-              <div className="space-y-2">
-                <div className="h-4 w-full bg-muted animate-pulse rounded" />
-                <div className="h-4 w-3/4 bg-muted animate-pulse rounded" />
-                <div className="h-4 w-1/2 bg-muted animate-pulse rounded" />
-              </div>
-            </div>
+          {Array.from({ length: 3 }, (_, i) => ({ id: `changelog-skeleton-${i}` })).map(({ id }) => (
+            <ChangelogSkeleton key={id} />
           ))}
         </div>
       </div>
@@ -183,9 +214,9 @@ function ChangelogPage() {
             {/* Show tags if available */}
             {entry.tags && entry.tags.length > 0 && (
               <div className="mt-4 flex flex-wrap gap-2">
-                {entry.tags.map((tag, index) => (
+                {entry.tags.map((tag) => (
                   <span
-                    key={index}
+                    key={tag}
                     className="inline-flex items-center rounded-full bg-muted px-2 py-1 text-xs font-medium text-muted-foreground"
                   >
                     {tag}
