@@ -4,6 +4,7 @@ import type { Block } from "@blocknote/core";
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/shadcn";
 import { forwardRef, useImperativeHandle, useMemo } from "react";
+import { useTheme } from "./theme-provider";
 
 export interface BlockNoteEditorProps {
   initialContent?: Block[];
@@ -29,6 +30,8 @@ const BlockNoteEditor = forwardRef<BlockNoteEditorRef, BlockNoteEditorProps>(({
     initialContent: initialContent || undefined,
   });
 
+  const { theme } = useTheme();
+
   // Expose methods to parent component
   useImperativeHandle(ref, () => ({
     getContent: () => editor.document,
@@ -48,10 +51,10 @@ const BlockNoteEditor = forwardRef<BlockNoteEditorRef, BlockNoteEditorProps>(({
       // Pass modified ShadCN components from your project here.
       // Otherwise, the default ShadCN components will be used.
     },
-    theme: "light" as const,
+    theme: theme === "dark" ? "dark" as const : "light" as const,
     editable,
     placeholder,
-  }), [editor, editable, placeholder]);
+  }), [editor, editable, placeholder, theme]);
 
   return (
     <div className={className}>

@@ -9,6 +9,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { organization } from "./organization";
 import { user } from "./auth";
+import { tags } from "./tags";
 
 // Enum for changelog status
 export const changelogStatusEnum = pgEnum("changelog_status", [
@@ -45,7 +46,7 @@ export const changelog = pgTable(
 		// SEO and metadata
 		metaTitle: text("meta_title"),
 		metaDescription: text("meta_description"),
-		tags: jsonb("tags").default([]).$type<string[]>(),
+		tagId: text("tag_id").references(() => tags.id, { onDelete: "cascade" }),
 
 		// Versioning
 		version: text("version"), // e.g., "v2.1.0"

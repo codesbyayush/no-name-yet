@@ -1,13 +1,13 @@
 import { index, pgTable, text, timestamp, unique } from "drizzle-orm/pg-core";
 import { organization } from "./organization";
 
-// Tags table for predefined tags
 export const tags = pgTable(
 	"tags",
 	{
 		id: text("id").primaryKey(),
 		name: text("name").notNull(),
 		color: text("color").notNull().default("blue"),
+		type: text("type").notNull().default("changelog"),
 		organizationId: text("organization_id")
 			.notNull()
 			.references(() => organization.id, { onDelete: "cascade" }),
