@@ -1,3 +1,4 @@
+CREATE TYPE "public"."changelog_status" AS ENUM('draft', 'published', 'archived');--> statement-breakpoint
 CREATE TYPE "public"."feedback_type" AS ENUM('bug', 'suggestion');--> statement-breakpoint
 CREATE TYPE "public"."plan_type" AS ENUM('starter', 'pro', 'enterprise');--> statement-breakpoint
 CREATE TYPE "public"."severity" AS ENUM('low', 'medium', 'high', 'critical');--> statement-breakpoint
@@ -82,6 +83,25 @@ CREATE TABLE "boards" (
 	CONSTRAINT "boards_organization_id_slug_unique" UNIQUE("organization_id","slug")
 );
 --> statement-breakpoint
+CREATE TABLE "changelog" (
+	"id" text PRIMARY KEY DEFAULT gen_random_uuid()::text NOT NULL,
+	"organization_id" text NOT NULL,
+	"title" text NOT NULL,
+	"slug" text NOT NULL,
+	"content" jsonb NOT NULL,
+	"html_content" text,
+	"excerpt" text,
+	"status" "changelog_status" DEFAULT 'draft' NOT NULL,
+	"published_at" timestamp,
+	"author_id" text NOT NULL,
+	"meta_title" text,
+	"meta_description" text,
+	"tag_id" text,
+	"version" text,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "comments" (
 	"id" text PRIMARY KEY NOT NULL,
 	"feedback_id" text NOT NULL,
@@ -126,6 +146,7 @@ CREATE TABLE "tags" (
 	"id" text PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
 	"color" text DEFAULT 'blue' NOT NULL,
+	"type" text DEFAULT 'changelog' NOT NULL,
 	"organization_id" text NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
@@ -186,6 +207,9 @@ ALTER TABLE "account" ADD CONSTRAINT "account_user_id_user_id_fk" FOREIGN KEY ("
 ALTER TABLE "session" ADD CONSTRAINT "session_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "user" ADD CONSTRAINT "user_organization_id_organization_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organization"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "boards" ADD CONSTRAINT "boards_organization_id_organization_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organization"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "changelog" ADD CONSTRAINT "changelog_organization_id_organization_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organization"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "changelog" ADD CONSTRAINT "changelog_author_id_user_id_fk" FOREIGN KEY ("author_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "changelog" ADD CONSTRAINT "changelog_tag_id_tags_id_fk" FOREIGN KEY ("tag_id") REFERENCES "public"."tags"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "comments" ADD CONSTRAINT "comments_feedback_id_feedback_id_fk" FOREIGN KEY ("feedback_id") REFERENCES "public"."feedback"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "comments" ADD CONSTRAINT "comments_parent_comment_id_comments_id_fk" FOREIGN KEY ("parent_comment_id") REFERENCES "public"."comments"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "comments" ADD CONSTRAINT "comments_author_id_user_id_fk" FOREIGN KEY ("author_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -204,6 +228,11 @@ ALTER TABLE "team" ADD CONSTRAINT "team_organization_id_organization_id_fk" FORE
 CREATE INDEX "idx_users_organization" ON "user" USING btree ("organization_id");--> statement-breakpoint
 CREATE INDEX "idx_users_email" ON "user" USING btree ("email");--> statement-breakpoint
 CREATE INDEX "idx_boards_organization" ON "boards" USING btree ("organization_id");--> statement-breakpoint
+CREATE INDEX "idx_changelog_org" ON "changelog" USING btree ("organization_id");--> statement-breakpoint
+CREATE INDEX "idx_changelog_status" ON "changelog" USING btree ("status");--> statement-breakpoint
+CREATE INDEX "idx_changelog_published" ON "changelog" USING btree ("published_at");--> statement-breakpoint
+CREATE INDEX "idx_changelog_slug" ON "changelog" USING btree ("organization_id","slug");--> statement-breakpoint
+CREATE INDEX "idx_changelog_author" ON "changelog" USING btree ("author_id");--> statement-breakpoint
 CREATE INDEX "idx_comments_feedback" ON "comments" USING btree ("feedback_id");--> statement-breakpoint
 CREATE INDEX "idx_comments_parent" ON "comments" USING btree ("parent_comment_id");--> statement-breakpoint
 CREATE INDEX "idx_feedback_boards" ON "feedback" USING btree ("board_id");--> statement-breakpoint

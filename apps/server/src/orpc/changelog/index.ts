@@ -1,7 +1,7 @@
 import { ORPCError } from "@orpc/server";
 import { and, desc, eq, count, asc } from "drizzle-orm";
 import { z } from "zod";
-import { changelog, user } from "../../db/schema";
+import { changelog, tags, user } from "../../db/schema";
 import { adminOnlyProcedure, publicProcedure } from "../procedures";
 import { ServerBlockNoteEditor } from "@blocknote/server-util";
 
@@ -144,7 +144,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
             excerpt: changelog.excerpt,
             status: changelog.status,
             version: changelog.version,
-            tags: changelog.tags,
+            tag: tags.name,
             publishedAt: changelog.publishedAt,
             createdAt: changelog.createdAt,
             updatedAt: changelog.updatedAt,
@@ -156,6 +156,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
             },
           })
           .from(changelog)
+          .leftJoin(tags, eq(changelog.tagId, tags.id))
           .leftJoin(user, eq(changelog.authorId, user.id))
           .where(and(...whereConditions))
           .orderBy(desc(changelog.createdAt))
@@ -207,7 +208,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
             excerpt: changelog.excerpt,
             status: changelog.status,
             version: changelog.version,
-            tags: changelog.tags,
+            tag: tags.name,
             metaTitle: changelog.metaTitle,
             metaDescription: changelog.metaDescription,
             publishedAt: changelog.publishedAt,
@@ -221,6 +222,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
             },
           })
           .from(changelog)
+          .leftJoin(tags, eq(changelog.tagId, tags.id))
           .leftJoin(user, eq(changelog.authorId, user.id))
           .where(
             and(
@@ -497,7 +499,7 @@ export const changelogPublicRouter = publicProcedure.router({
             htmlContent: changelog.htmlContent,
             excerpt: changelog.excerpt,
             version: changelog.version,
-            tags: changelog.tags,
+            tag: tags.name,
             publishedAt: changelog.publishedAt,
             author: {
               id: user.id,
@@ -506,6 +508,7 @@ export const changelogPublicRouter = publicProcedure.router({
             },
           })
           .from(changelog)
+          .leftJoin(tags, eq(changelog.tagId, tags.id))
           .leftJoin(user, eq(changelog.authorId, user.id))
           .where(
             and(
@@ -568,7 +571,7 @@ export const changelogPublicRouter = publicProcedure.router({
             htmlContent: changelog.htmlContent,
             excerpt: changelog.excerpt,
             version: changelog.version,
-            tags: changelog.tags,
+            tag: tags.name,
             metaTitle: changelog.metaTitle,
             metaDescription: changelog.metaDescription,
             publishedAt: changelog.publishedAt,
@@ -579,6 +582,7 @@ export const changelogPublicRouter = publicProcedure.router({
             },
           })
           .from(changelog)
+          .leftJoin(tags, eq(changelog.tagId, tags.id))
           .leftJoin(user, eq(changelog.authorId, user.id))
           .where(
             and(
