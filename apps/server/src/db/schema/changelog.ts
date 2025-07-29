@@ -7,8 +7,8 @@ import {
 	text,
 	timestamp,
 } from "drizzle-orm/pg-core";
-import { organization } from "./organization";
 import { user } from "./auth";
+import { organization } from "./organization";
 import { tags } from "./tags";
 
 // Enum for changelog status

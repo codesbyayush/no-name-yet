@@ -2,17 +2,16 @@ import { RPCHandler } from "@orpc/server/fetch";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
+import { getAuth } from "./lib/auth";
+import { getEnvFromContext } from "./lib/env";
 import { adminRouter } from "./orpc/admin";
 import { createAdminContext, createContext } from "./orpc/context";
 import { apiRouter } from "./orpc/index";
 import v1Router from "./rest";
-import { getAuth } from "./lib/auth";
-import { getEnvFromContext } from "./lib/env";
 
 const app = new Hono();
 
 const authRouter = new Hono();
-
 
 // NOTE: we need to look up the auth types this custom method throws error
 authRouter.all("*", async (c) => {
@@ -99,8 +98,8 @@ app.use("/admin/*", async (c, next) => {
 
 app.get("/ping", (c) => c.text("pong"));
 
-
-const isLocalEnvironment = process.env.NODE_ENV === "development" || process.env.ENVIRONMENT === "local";
+const isLocalEnvironment =
+	process.env.NODE_ENV === "development" || process.env.ENVIRONMENT === "local";
 
 const createExport = async () => {
 	if (isLocalEnvironment) {
@@ -108,15 +107,13 @@ const createExport = async () => {
 		const { readFileSync } = await import("fs");
 		// biome-ignore lint/style/useNodejsImportProtocol: <explanation>
 		const { resolve } = await import("path");
-		
+
 		// TLS configuration for HTTPS in development
 		const tlsConfig = {
 			key: readFileSync(
 				resolve(import.meta.dir, "../certs/localhost+2-key.pem"),
 			),
-			cert: readFileSync(
-				resolve(import.meta.dir, "../certs/localhost+2.pem"),
-			),
+			cert: readFileSync(resolve(import.meta.dir, "../certs/localhost+2.pem")),
 		};
 
 		return {
@@ -125,7 +122,7 @@ const createExport = async () => {
 			tls: tlsConfig,
 		};
 	}
-	
+
 	// Production/Workers environment
 	return app;
 };

@@ -4,7 +4,7 @@ import type { Context as HonoContext } from "hono";
 import { getDb } from "../db";
 import { organization, user } from "../db/schema";
 import { getAuth } from "../lib/auth";
-import { getEnvFromContext, type AppEnv } from "../lib/env";
+import { type AppEnv, getEnvFromContext } from "../lib/env";
 
 export type CreateContextOptions = {
 	context: HonoContext;
@@ -21,7 +21,7 @@ export async function createContext({ context, env }: CreateContextOptions) {
 	// Extract subdomain from host
 	const host = context.req.raw.headers.get("origin")?.split("//")[1];
 	let subdomain: string | undefined = undefined;
-	
+
 	if (host) {
 		const hostParts = host.split(".");
 		// Handle localhost for local development
@@ -45,9 +45,7 @@ export async function createContext({ context, env }: CreateContextOptions) {
 				.limit(1);
 
 			org = orgResult[0] || null;
-		} catch (error) {
-			console.error("Error fetching organization:", error);
-		}
+		} catch (error) {}
 	}
 
 	return {
@@ -111,7 +109,6 @@ export async function createAdminContext({
 			db,
 		};
 	} catch (error) {
-		console.error("Error creating admin context:", error);
 		return {
 			session,
 			user: null,

@@ -1,4 +1,4 @@
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
 import { ORPCError } from "@orpc/server";
 import { type SQL, and, asc, count, desc, eq } from "drizzle-orm";
 import { z } from "zod";
@@ -45,6 +45,296 @@ export const apiRouter = {
 	...mixedRouter,
 	...publicRouter,
 
+	// Get onboarding status for user
+	getOnboardingStatus: protectedProcedure.handler(async ({ context }) => {
+		const userId = context.session?.user?.id;
+
+		if (!userId) {
+			throw new ORPCError("UNAUTHORIZED");
+		}
+
+		try {
+			// Get user's organization
+			const userData = await context.db
+				.select({ organizationId: user.organizationId })
+				.from(user)
+				.where(eq(user.id, userId))
+				.limit(1);
+
+			let userOrganizationId = userData[0]?.organizationId;
+
+			// If user doesn't have organizationId, check member table
+			if (!userOrganizationId) {
+				const memberData = await context.db
+					.select({ organizationId: member.organizationId })
+					.from(member)
+					.where(eq(member.userId, userId))
+					.limit(1);
+
+				userOrganizationId = memberData[0]?.organizationId;
+			}
+
+			// If no organization, user needs to create one
+			if (!userOrganizationId) {
+				return {
+					needsOrganization: true,
+					needsBoards: false,
+					isComplete: false,
+					step: "organization",
+					organizationId: null,
+				};
+			}
+
+			// Get organization details including onboarding status
+			const orgData = await context.db
+				.select({
+					id: organization.id,
+					name: organization.name,
+					slug: organization.slug,
+					isOnboarded: organization.isOnboarded,
+					onboardingStep: organization.onboardingStep,
+					onboardingCompletedAt: organization.onboardingCompletedAt,
+				})
+				.from(organization)
+				.where(eq(organization.id, userOrganizationId))
+				.limit(1);
+
+			if (!orgData[0]) {
+				return {
+					needsOrganization: true,
+					needsBoards: false,
+					isComplete: false,
+					step: "organization",
+					organizationId: null,
+				};
+			}
+
+			const org = orgData[0];
+
+			// If organization is onboarded, check if it has boards
+			if (org.isOnboarded) {
+				const boardCount = await context.db
+					.select({ count: count() })
+					.from(boards)
+					.where(eq(boards.organizationId, org.id));
+
+				const hasBoards = (boardCount[0]?.count || 0) > 0;
+
+				return {
+					needsOrganization: false,
+					needsBoards: !hasBoards,
+					isComplete: hasBoards,
+					step: hasBoards ? "complete" : "board",
+					organizationId: org.id,
+					organizationName: org.name,
+					organizationSlug: org.slug,
+				};
+			}
+
+			// Organization exists but not onboarded
+			return {
+				needsOrganization: false,
+				needsBoards: org.onboardingStep === "organization",
+				isComplete: false,
+				step: org.onboardingStep,
+				organizationId: org.id,
+				organizationName: org.name,
+				organizationSlug: org.slug,
+			};
+		} catch (error) {
+			throw new ORPCError("INTERNAL_SERVER_ERROR");
+		}
+	}),
+
+	// Complete onboarding step
+	completeOnboardingStep: protectedProcedure
+		.input(
+			z.object({
+				step: z.enum(["organization", "board", "complete"]),
+			}),
+		)
+		.handler(async ({ input, context }) => {
+			const userId = context.session?.user?.id;
+
+			if (!userId) {
+				throw new ORPCError("UNAUTHORIZED");
+			}
+
+			try {
+				// Get user's organization
+				const userData = await context.db
+					.select({ organizationId: user.organizationId })
+					.from(user)
+					.where(eq(user.id, userId))
+					.limit(1);
+
+				let userOrganizationId = userData[0]?.organizationId;
+
+				// If user doesn't have organizationId, check member table
+				if (!userOrganizationId) {
+					const memberData = await context.db
+						.select({ organizationId: member.organizationId })
+						.from(member)
+						.where(eq(member.userId, userId))
+						.limit(1);
+
+					userOrganizationId = memberData[0]?.organizationId;
+				}
+
+				if (!userOrganizationId) {
+					throw new ORPCError("BAD_REQUEST");
+				}
+
+				// Update organization onboarding status
+				const updateData: {
+					onboardingStep: string;
+					isOnboarded?: boolean;
+					onboardingCompletedAt?: Date;
+				} = {
+					onboardingStep: input.step,
+				};
+
+				if (input.step === "complete") {
+					updateData.isOnboarded = true;
+					updateData.onboardingCompletedAt = new Date();
+				}
+
+				await context.db
+					.update(organization)
+					.set(updateData)
+					.where(eq(organization.id, userOrganizationId));
+
+				return { success: true };
+			} catch (error) {
+				throw new ORPCError("INTERNAL_SERVER_ERROR");
+			}
+		}),
+
+	// Skip onboarding with defaults
+	skipOnboarding: protectedProcedure.handler(async ({ context }) => {
+		const userId = context.session?.user?.id;
+
+		if (!userId) {
+			throw new ORPCError("UNAUTHORIZED");
+		}
+
+		try {
+			// Get user's organization
+			const userData = await context.db
+				.select({ organizationId: user.organizationId })
+				.from(user)
+				.where(eq(user.id, userId))
+				.limit(1);
+
+			let userOrganizationId = userData[0]?.organizationId;
+
+			// If user doesn't have organizationId, check member table
+			if (!userOrganizationId) {
+				const memberData = await context.db
+					.select({ organizationId: member.organizationId })
+					.from(member)
+					.where(eq(member.userId, userId))
+					.limit(1);
+
+				userOrganizationId = memberData[0]?.organizationId;
+			}
+
+			if (!userOrganizationId) {
+				throw new ORPCError("BAD_REQUEST");
+			}
+
+			// Create default board if none exists
+			const existingBoards = await context.db
+				.select({ id: boards.id })
+				.from(boards)
+				.where(eq(boards.organizationId, userOrganizationId))
+				.limit(1);
+
+			if (existingBoards.length === 0) {
+				// Create default board
+				await context.db.insert(boards).values({
+					id: randomUUID(),
+					organizationId: userOrganizationId,
+					name: "General Feedback",
+					slug: "general",
+					description: "Default feedback board for your organization",
+					isPrivate: false,
+					createdAt: new Date(),
+					updatedAt: new Date(),
+				});
+			}
+
+			// Mark onboarding as complete
+			await context.db
+				.update(organization)
+				.set({
+					isOnboarded: true,
+					onboardingStep: "complete",
+					onboardingCompletedAt: new Date(),
+				})
+				.where(eq(organization.id, userOrganizationId));
+
+			return { success: true };
+		} catch (error) {
+			throw new ORPCError("INTERNAL_SERVER_ERROR");
+		}
+	}),
+
+	// Create organization and update user's organizationId
+	createOrganizationWithUserUpdate: protectedProcedure
+		.input(
+			z.object({
+				name: z.string().min(1, "Organization name is required"),
+				slug: z.string().min(1, "Organization slug is required"),
+			}),
+		)
+		.handler(async ({ input, context }) => {
+			const userId = context.session?.user?.id;
+
+			if (!userId) {
+				throw new ORPCError("UNAUTHORIZED");
+			}
+
+			try {
+				// First, create the organization using Better Auth
+				// This will be handled by the Better Auth plugin
+				// We'll need to get the organization ID after creation
+
+				// For now, let's create the organization directly in our database
+				// and then update the user's organizationId
+				const organizationId = randomUUID();
+
+				await Promise.all([
+					context.db.insert(organization).values({
+						id: organizationId,
+						name: input.name,
+						slug: input.slug,
+						createdAt: new Date(),
+						isOnboarded: false,
+						onboardingStep: "organization",
+					}),
+
+					// Update user's organizationId
+					context.db
+						.update(user)
+						.set({ organizationId })
+						.where(eq(user.id, userId)),
+				]);
+
+				return {
+					success: true,
+					organizationId,
+					organization: {
+						id: organizationId,
+						name: input.name,
+						slug: input.slug,
+					},
+				};
+			} catch (error) {
+				throw new ORPCError("INTERNAL_SERVER_ERROR");
+			}
+		}),
+
 	// Get all public boards for the current organization
 	getAllPublicBoards: publicProcedure.handler(async ({ context }) => {
 		// Check if organization exists
@@ -81,7 +371,6 @@ export const apiRouter = {
 				organizationName: context.organization.name,
 			};
 		} catch (error) {
-			console.error("Error fetching public boards:", error);
 			throw new ORPCError("INTERNAL_SERVER_ERROR");
 		}
 	}),
@@ -141,7 +430,6 @@ export const apiRouter = {
 				count: userBoards.length,
 			};
 		} catch (error) {
-			console.error("Error fetching user boards:", error);
 			throw new ORPCError("INTERNAL_SERVER_ERROR");
 		}
 	}),
@@ -162,12 +450,6 @@ export const apiRouter = {
 			if (!userId) {
 				throw new ORPCError("UNAUTHORIZED");
 			}
-
-			console.log("Creating board for user:", userId);
-			console.log("Session data:", JSON.stringify(context.session, null, 2));
-
-			console.log("Creating board for user:", userId);
-			console.log("Session data:", context.session);
 
 			// Try to get user's organization ID from user table first
 			const userData = await context.db
@@ -192,19 +474,14 @@ export const apiRouter = {
 			// Also try to get organization from Better Auth session
 			// Note: This might not be available in the current context
 			if (context.session?.user) {
-				console.log("User session keys:", Object.keys(context.session.user));
 			}
 
 			if (!userOrganizationId) {
-				console.log("No organization found for user:", userId);
-				console.log("User data:", userData[0]);
-
 				// Check if any organizations exist for this user in member table
 				const allMemberships = await context.db
 					.select()
 					.from(member)
 					.where(eq(member.userId, userId));
-				console.log("User memberships:", allMemberships);
 
 				throw new ORPCError("BAD_REQUEST");
 			}
@@ -246,7 +523,6 @@ export const apiRouter = {
 					success: true,
 				};
 			} catch (error) {
-				console.error("Error creating board:", error);
 				if (error instanceof ORPCError) {
 					throw error;
 				}
@@ -419,7 +695,6 @@ export const apiRouter = {
 						// For now, defaulting to newest
 						orderBy = desc(feedback.createdAt);
 						break;
-					case "newest":
 					default:
 						orderBy = desc(feedback.createdAt);
 						break;
@@ -555,7 +830,6 @@ export const apiRouter = {
 					case "most_voted":
 						orderBy = desc(feedback.createdAt); // TODO: Sort by vote count
 						break;
-					case "newest":
 					default:
 						orderBy = desc(feedback.createdAt);
 						break;
@@ -645,7 +919,6 @@ export const apiRouter = {
 					},
 				};
 			} catch (error) {
-				console.error("Error fetching organization posts:", error);
 				throw new ORPCError("INTERNAL_SERVER_ERROR");
 			}
 		}),
@@ -742,7 +1015,6 @@ export const apiRouter = {
 				if (error instanceof ORPCError) {
 					throw error;
 				}
-				console.error("Error fetching post:", error);
 				throw new ORPCError("INTERNAL_SERVER_ERROR");
 			}
 		}),
@@ -796,7 +1068,6 @@ export const apiRouter = {
 					case "most_voted":
 						orderBy = desc(feedback.createdAt); // TODO: Sort by vote count
 						break;
-					case "newest":
 					default:
 						orderBy = desc(feedback.createdAt);
 						break;
@@ -877,7 +1148,6 @@ export const apiRouter = {
 					},
 				};
 			} catch (error) {
-				console.error("Error fetching board posts:", error);
 				if (error instanceof ORPCError) {
 					throw error;
 				}
@@ -968,7 +1238,6 @@ export const apiRouter = {
 					message: "Post created successfully",
 				};
 			} catch (error) {
-				console.error("Error creating post:", error);
 				if (error instanceof ORPCError) {
 					throw error;
 				}
@@ -1067,7 +1336,6 @@ export const apiRouter = {
 					message: "Comment created successfully",
 				};
 			} catch (error) {
-				console.error("Error creating comment:", error);
 				if (error instanceof ORPCError) {
 					throw error;
 				}
@@ -1125,37 +1393,34 @@ export const apiRouter = {
 							message: "Vote updated successfully",
 							vote: { type, weight },
 						};
-					} else {
-						// Remove vote if same type (toggle)
-						await context.db
-							.delete(votes)
-							.where(eq(votes.id, existingVote[0].id));
-
-						return {
-							message: "Vote removed successfully",
-							vote: null,
-						};
 					}
-				} else {
-					// Create new vote
-					const newVote = await context.db
-						.insert(votes)
-						.values({
-							id: randomUUID(),
-							feedbackId,
-							userId,
-							type,
-							weight,
-						})
-						.returning();
+					// Remove vote if same type (toggle)
+					await context.db
+						.delete(votes)
+						.where(eq(votes.id, existingVote[0].id));
 
 					return {
-						message: "Vote created successfully",
-						vote: newVote[0],
+						message: "Vote removed successfully",
+						vote: null,
 					};
 				}
+				// Create new vote
+				const newVote = await context.db
+					.insert(votes)
+					.values({
+						id: randomUUID(),
+						feedbackId,
+						userId,
+						type,
+						weight,
+					})
+					.returning();
+
+				return {
+					message: "Vote created successfully",
+					vote: newVote[0],
+				};
 			} catch (error) {
-				console.error("Error voting on post:", error);
 				if (error instanceof ORPCError) {
 					throw error;
 				}
@@ -1211,37 +1476,34 @@ export const apiRouter = {
 							message: "Vote updated successfully",
 							vote: { type, weight },
 						};
-					} else {
-						// Remove vote if same type (toggle)
-						await context.db
-							.delete(votes)
-							.where(eq(votes.id, existingVote[0].id));
-
-						return {
-							message: "Vote removed successfully",
-							vote: null,
-						};
 					}
-				} else {
-					// Create new vote
-					const newVote = await context.db
-						.insert(votes)
-						.values({
-							id: randomUUID(),
-							commentId,
-							userId,
-							type,
-							weight,
-						})
-						.returning();
+					// Remove vote if same type (toggle)
+					await context.db
+						.delete(votes)
+						.where(eq(votes.id, existingVote[0].id));
 
 					return {
-						message: "Vote created successfully",
-						vote: newVote[0],
+						message: "Vote removed successfully",
+						vote: null,
 					};
 				}
+				// Create new vote
+				const newVote = await context.db
+					.insert(votes)
+					.values({
+						id: randomUUID(),
+						commentId,
+						userId,
+						type,
+						weight,
+					})
+					.returning();
+
+				return {
+					message: "Vote created successfully",
+					vote: newVote[0],
+				};
 			} catch (error) {
-				console.error("Error voting on comment:", error);
 				if (error instanceof ORPCError) {
 					throw error;
 				}
@@ -1342,7 +1604,6 @@ export const apiRouter = {
 					},
 				};
 			} catch (error) {
-				console.error("Error fetching threaded comments:", error);
 				if (error instanceof ORPCError) {
 					throw error;
 				}
@@ -1386,7 +1647,6 @@ export const apiRouter = {
 					votes: userVotes,
 				};
 			} catch (error) {
-				console.error("Error fetching user votes:", error);
 				throw new ORPCError("INTERNAL_SERVER_ERROR");
 			}
 		}),
@@ -1444,7 +1704,6 @@ export const apiRouter = {
 					case "most_voted":
 						orderBy = desc(feedback.createdAt); // TODO: Sort by vote count
 						break;
-					case "newest":
 					default:
 						orderBy = desc(feedback.createdAt);
 						break;
@@ -1536,7 +1795,6 @@ export const apiRouter = {
 					},
 				};
 			} catch (error) {
-				console.error("Error fetching organization member posts:", error);
 				if (error instanceof ORPCError) {
 					throw error;
 				}
@@ -1648,7 +1906,6 @@ export const apiRouter = {
 					message: "Comment created successfully",
 				};
 			} catch (error) {
-				console.error("Error creating comment:", error);
 				if (error instanceof ORPCError) {
 					throw error;
 				}

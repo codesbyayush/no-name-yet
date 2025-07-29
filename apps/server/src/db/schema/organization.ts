@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { index, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, index, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 import { user } from "./auth";
 
 // Organization table
@@ -13,6 +13,10 @@ export const organization = pgTable(
 		metadata: text("metadata"),
 		publicKey: text("public_key").default(sql`gen_random_uuid()::text`),
 		createdAt: timestamp("created_at").notNull(),
+		// Onboarding fields
+		isOnboarded: boolean("is_onboarded").default(false).notNull(),
+		onboardingStep: text("onboarding_step").default("organization").notNull(), // "organization", "board", "complete"
+		onboardingCompletedAt: timestamp("onboarding_completed_at"),
 	},
 	(table) => ({
 		slugIdx: index("idx_organization_slug").on(table.slug),

@@ -52,7 +52,6 @@ publicApiRouter.use("*", async (c, next) => {
 
 		c.set("organization", org[0]);
 	} catch (error) {
-		console.error("API key validation error:", error);
 		return c.json({ error: "Internal Server Error" }, 500);
 	}
 
@@ -88,7 +87,6 @@ publicApiRouter.get("/boards", async (c) => {
 
 		return c.json(publicBoards);
 	} catch (error) {
-		console.error(`Error fetching public boards for org ${org.id}:`, error);
 		return c.json({ error: "Internal Server Error" }, 500);
 	}
 });
@@ -125,7 +123,6 @@ publicApiRouter.get("/tags", async (c) => {
 
 		return c.json(tags);
 	} catch (error) {
-		console.error(`Error fetching tags for org ${org.id}:`, error);
 		return c.json({ error: "Internal Server Error" }, 500);
 	}
 });
@@ -228,7 +225,6 @@ publicApiRouter.post("/feedback", async (c) => {
 
 		return c.json({ success: true, feedbackId: newFeedbackItem.id }, 201);
 	} catch (error) {
-		console.error(`Error submitting feedback for org ${org.id}:`, error);
 		return c.json({ error: "Internal Server Error" }, 500);
 	}
 });

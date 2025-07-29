@@ -1,19 +1,18 @@
-import * as React from "react";
 import {
-	closestCenter,
 	DndContext,
+	type DragEndEvent,
 	KeyboardSensor,
 	MouseSensor,
 	TouchSensor,
+	type UniqueIdentifier,
+	closestCenter,
 	useSensor,
 	useSensors,
-	type DragEndEvent,
-	type UniqueIdentifier,
 } from "@dnd-kit/core";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import {
-	arrayMove,
 	SortableContext,
+	arrayMove,
 	useSortable,
 	verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
@@ -35,6 +34,9 @@ import {
 import {
 	type ColumnDef,
 	type ColumnFiltersState,
+	type Row,
+	type SortingState,
+	type VisibilityState,
 	flexRender,
 	getCoreRowModel,
 	getFacetedRowModel,
@@ -42,16 +44,13 @@ import {
 	getFilteredRowModel,
 	getPaginationRowModel,
 	getSortedRowModel,
-	type Row,
-	type SortingState,
 	useReactTable,
-	type VisibilityState,
 } from "@tanstack/react-table";
+import * as React from "react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { useIsMobile } from "@/hooks/use-mobile";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -98,6 +97,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export const schema = z.object({
 	id: z.number(),
@@ -643,14 +643,26 @@ const chartConfig = {
 function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
 	// We'll use placeholder comments for now
 	const comments = [
-		{ id: 1, author: { name: "Eddie Lake", image: "https://picsum.photos/64" }, content: "Great section!", createdAt: new Date() },
-		{ id: 2, author: { name: "Emily Whalen", image: "https://picsum.photos/64" }, content: "Needs more detail.", createdAt: new Date() },
+		{
+			id: 1,
+			author: { name: "Eddie Lake", image: "https://picsum.photos/64" },
+			content: "Great section!",
+			createdAt: new Date(),
+		},
+		{
+			id: 2,
+			author: { name: "Emily Whalen", image: "https://picsum.photos/64" },
+			content: "Needs more detail.",
+			createdAt: new Date(),
+		},
 	];
 	const [commentText, setCommentText] = React.useState("");
 	const [isSubmitting, setIsSubmitting] = React.useState(false);
 
 	const handleSubmitComment = async () => {
-		if (!commentText.trim()) return;
+		if (!commentText.trim()) {
+			return;
+		}
 		setIsSubmitting(true);
 		setTimeout(() => {
 			setCommentText("");
@@ -665,7 +677,7 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
 		}
 	};
 
-  const isMobile = useIsMobile();
+	const isMobile = useIsMobile();
 
 	return (
 		<Drawer direction={isMobile ? "bottom" : "right"}>
@@ -685,7 +697,9 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
 								{item.type} | {item.status}
 							</p>
 							<div className="ml-auto flex max-w-max gap-3 pt-6">
-								<span className="text-muted-foreground text-sm">Meta: {item.target} / {item.limit}</span>
+								<span className="text-muted-foreground text-sm">
+									Meta: {item.target} / {item.limit}
+								</span>
 							</div>
 						</div>
 						<div className="mt-6 flex flex-col items-end gap-3 rounded-2xl border border-muted-foreground/10 bg-muted p-4">
@@ -744,17 +758,27 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
 						<div className="z-10 w-3xs rounded-2xl border-1 border-muted-foreground/10 bg-background/90 bg-noise p-4 shadow-2xs">
 							<div className="flex items-center gap-3">
 								<div>
-									<img src="https://picsum.photos/32" className="h-8 rounded-full" alt="Reviewer avatar" />
+									<img
+										src="https://picsum.photos/32"
+										className="h-8 rounded-full"
+										alt="Reviewer avatar"
+									/>
 								</div>
 								<div>
-									<h4 className="py-1 font-medium text-sm capitalize">Reviewer: {item.reviewer}</h4>
-									<p className="pl-px text-muted-foreground text-xs">Status: {item.status}</p>
+									<h4 className="py-1 font-medium text-sm capitalize">
+										Reviewer: {item.reviewer}
+									</h4>
+									<p className="pl-px text-muted-foreground text-xs">
+										Status: {item.status}
+									</p>
 								</div>
 							</div>
 							<div>
 								<div className="pt-4 pl-px">
 									<span className="pr-4 font-medium text-sm">Target</span>
-									<span className="rounded-md bg-green-100 p-1.5 px-2 font-medium text-green-800 text-xs">{item.target}</span>
+									<span className="rounded-md bg-green-100 p-1.5 px-2 font-medium text-green-800 text-xs">
+										{item.target}
+									</span>
 								</div>
 							</div>
 						</div>

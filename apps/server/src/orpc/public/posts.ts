@@ -77,7 +77,6 @@ export const postsRouter = {
 
 				return newPost;
 			} catch (error) {
-				console.error(error);
 				throw new ORPCError("INTERNAL_SERVER_ERROR");
 			}
 		}),

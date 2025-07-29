@@ -21,8 +21,7 @@
 	},
 	"formatter": {
 		"enabled": true,
-		"indentStyle": "tab",
-		"indentWidth": 2
+		"indentStyle": "tab"
 	},
 	"organizeImports": {
 		"enabled": true
@@ -59,17 +58,57 @@
 	},
 	"overrides": [
 		{
-			"include": ["apps/web/**"],
+			"include": ["apps/admin/**"],
 			"formatter": {
 				"enabled": true,
-				"indentStyle": "tab",
-				"indentWidth": 2
+				"indentStyle": "tab"
 			},
 			"linter": {
 				"enabled": true,
 				"rules": {
 					"suspicious": {
 						"noConsole": "warn"
+					},
+					"style": {
+						"useSelfClosingElements": "error",
+						"useImportType": "error",
+						"useNodejsImportProtocol": "error",
+						"useShorthandArrayType": "error",
+						"useTemplate": "error",
+						"useConst": "error",
+						"useBlockStatements": "error",
+						"useShorthandAssign": "error"
+					},
+					"complexity": {
+						"useSimplifiedLogicExpression": "error"
+					}
+				}
+			}
+		},
+		{
+			"include": ["apps/public/**"],
+			"formatter": {
+				"enabled": true,
+				"indentStyle": "tab"
+			},
+			"linter": {
+				"enabled": true,
+				"rules": {
+					"suspicious": {
+						"noConsole": "warn"
+					},
+					"style": {
+						"useSelfClosingElements": "error",
+						"useImportType": "error",
+						"useNodejsImportProtocol": "error",
+						"useShorthandArrayType": "error",
+						"useTemplate": "error",
+						"useConst": "error",
+						"useBlockStatements": "error",
+						"useShorthandAssign": "error"
+					},
+					"complexity": {
+						"useSimplifiedLogicExpression": "error"
 					}
 				}
 			}
@@ -78,14 +117,26 @@
 			"include": ["apps/server/**"],
 			"formatter": {
 				"enabled": true,
-				"indentStyle": "tab",
-				"indentWidth": 2
+				"indentStyle": "tab"
 			},
 			"linter": {
 				"enabled": true,
 				"rules": {
 					"suspicious": {
 						"noConsole": "warn"
+					},
+					"style": {
+						"useSelfClosingElements": "error",
+						"useImportType": "error",
+						"useNodejsImportProtocol": "error",
+						"useShorthandArrayType": "error",
+						"useTemplate": "error",
+						"useConst": "error",
+						"useBlockStatements": "error",
+						"useShorthandAssign": "error"
+					},
+					"complexity": {
+						"useSimplifiedLogicExpression": "error"
 					}
 				}
 			}

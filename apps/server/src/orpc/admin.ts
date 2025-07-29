@@ -1,5 +1,5 @@
-import { organizationRouter } from "./organization";
 import { changelogAdminRouter } from "./changelog";
+import { organizationRouter } from "./organization";
 import { adminO } from "./procedures";
 
 // Admin router that uses AdminContext

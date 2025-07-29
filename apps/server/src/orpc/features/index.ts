@@ -7,7 +7,17 @@ import {
 	votes,
 } from "@/db/schema";
 import { ORPCError } from "@orpc/client";
-import { and, asc, count, desc, eq, exists, isNull, type SQL, sql } from "drizzle-orm";
+import {
+	type SQL,
+	and,
+	asc,
+	count,
+	desc,
+	eq,
+	exists,
+	isNull,
+	sql,
+} from "drizzle-orm";
 import { z } from "zod/v4";
 import { protectedProcedure } from "../procedures";
 
@@ -117,7 +127,6 @@ export const mixedRouter = {
 					},
 				};
 			} catch (error) {
-				console.error("Error fetching organization posts:", error);
 				throw new ORPCError("INTERNAL_SERVER_ERROR");
 			}
 		}),
@@ -132,7 +141,7 @@ export const mixedRouter = {
 			const { feedbackId } = input;
 
 			// Check if organization exists
-			if (!context.organization || !feedbackId) {
+			if (!(context.organization && feedbackId)) {
 				throw new ORPCError("NOT_FOUND");
 			}
 
@@ -192,7 +201,6 @@ export const mixedRouter = {
 					organizationName: context.organization.name,
 				};
 			} catch (error) {
-				console.error("Error fetching organization post:", error);
 				throw new ORPCError("INTERNAL_SERVER_ERROR");
 			}
 		}),

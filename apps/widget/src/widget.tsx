@@ -177,12 +177,7 @@ if (typeof document !== "undefined" && typeof window !== "undefined") {
 						customData,
 						jwtAuthToken,
 					});
-				} catch (error) {
-					console.error(
-						"OmniFeedback Widget auto-initialization failed:",
-						error,
-					);
-				}
+				} catch (error) {}
 			}
 		}
 	};

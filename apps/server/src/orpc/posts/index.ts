@@ -37,7 +37,6 @@ export const postsRouter = {
 					case "most_voted":
 						orderBy = desc(feedback.createdAt); // TODO: Sort by vote count
 						break;
-					case "newest":
 					default:
 						orderBy = desc(feedback.createdAt);
 						break;
@@ -104,7 +103,6 @@ export const postsRouter = {
 					},
 				};
 			} catch (error) {
-				console.error("Error fetching organization posts:", error);
 				throw new ORPCError("INTERNAL_SERVER_ERROR");
 			}
 		}),
@@ -117,7 +115,7 @@ export const postsRouter = {
 		)
 		.handler(async ({ input, context }) => {
 			const { feedbackId } = input;
-			if (!context.organization || !feedbackId) {
+			if (!(context.organization && feedbackId)) {
 				throw new ORPCError("NOT_FOUND");
 			}
 			const userId = context.session?.user?.id;
@@ -173,7 +171,6 @@ export const postsRouter = {
 					organizationName: context.organization.name,
 				};
 			} catch (error) {
-				console.error("Error fetching organization posts:", error);
 				throw new ORPCError("INTERNAL_SERVER_ERROR");
 			}
 		}),
@@ -242,7 +239,6 @@ export const postsRouter = {
 					.returning();
 				return newPost;
 			} catch (error) {
-				console.error(error);
 				throw new ORPCError("INTERNAL_SERVER_ERROR");
 			}
 		}),
