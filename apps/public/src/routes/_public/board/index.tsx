@@ -2,39 +2,20 @@ import { CreateEditPost } from "@/components/create-edit-post";
 import { BoardSkeleton, FeedbackSkeleton } from "@/components/loading";
 import { CommentButton, VoteButton } from "@/components/svg";
 import { Button } from "@/components/ui/button";
-import { getFeedbacks } from "@/lib/utils";
 import { client } from "@/utils/orpc";
-import {
-	useInfiniteQuery,
-	useMutation,
-	useQuery,
-	useQueryClient,
-} from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 import { Badge } from "@/components/ui/badge";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuRadioGroup,
-	DropdownMenuRadioItem,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
+import { useCallback, useEffect, useRef } from "react";
 
 export const Route = createFileRoute("/_public/board/")({
 	component: BoardIndexPage,
 });
 
 function BoardIndexPage() {
-	const AllFeedbacks = getFeedbacks();
 	const navigate = useNavigate({ from: "/board" });
-	const queryClient = useQueryClient();
 
 	const {
 		data,
@@ -57,8 +38,6 @@ function BoardIndexPage() {
 	// Flatten all posts from all pages
 	const allPosts = data?.pages.flatMap((page) => page.posts) ?? [];
 
-	const [position, setPosition] = useState("bottom");
-
 	const handleCommentClick = (feedbackId: string, e: React.MouseEvent) => {
 		e.stopPropagation();
 		navigate({ to: feedbackId });
@@ -71,7 +50,6 @@ function BoardIndexPage() {
 
 	// Intersection Observer for infinite scroll
 	const observerRef = useRef<IntersectionObserver | null>(null);
-	const triggerRef = useRef<HTMLDivElement | null>(null);
 
 	const lastPostCallback = useCallback(
 		(node: HTMLDivElement | null) => {
@@ -155,10 +133,10 @@ function BoardIndexPage() {
 								>
 									<div className="flex items-center justify-between gap-3">
 										<div>
-											<h4 className="font-semibold text-card-foreground text-lg capitalize">
+											<h4 className="line-clamp-2 font-semibold text-card-foreground text-lg capitalize">
 												{f.title}
 											</h4>
-											<p className="text-pretty font-medium text-muted-foreground text-sm capitalize">
+											<p className="line-clamp-2 text-pretty font-medium text-muted-foreground text-sm capitalize">
 												{f.content}
 											</p>
 										</div>
