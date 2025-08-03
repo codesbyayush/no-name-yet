@@ -1,3 +1,4 @@
+import type { InfiniteData } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 import type React from 'react';
 import { toast } from 'sonner';
@@ -23,6 +24,19 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
   className = '',
   boardId,
 }) => {
+  type PostSummary = {
+    id: string;
+    hasVoted?: boolean;
+    voteCount?: number;
+  } & Record<string, unknown>;
+
+  type PostsPage = {
+    posts: PostSummary[];
+  } & Record<string, unknown>;
+
+  type PostsInfiniteData = InfiniteData<PostsPage>;
+
+  type SinglePost = PostSummary;
   const handleVote = (e: React.MouseEvent) => {
     e.stopPropagation();
 
@@ -45,46 +59,77 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
       await queryClient.cancelQueries({
         queryKey: ['all-posts', boardId],
       });
+      await queryClient.cancelQueries({
+        queryKey: [fbId, 'post'],
+      });
 
       // Snapshot the previous value
-      const previousPosts = queryClient.getQueryData(['all-posts', boardId]);
+      const previousPosts = queryClient.getQueryData<PostsInfiniteData>([
+        'all-posts',
+        boardId,
+      ]);
+      const previousPost = queryClient.getQueryData<SinglePost>([fbId, 'post']);
 
       // Optimistically update the posts data
-      queryClient.setQueryData(['all-posts', boardId], (old: any) => {
-        if (!old?.pages) {
+      queryClient.setQueryData<PostsInfiniteData>(
+        ['all-posts', boardId],
+        (old) => {
+          if (!old?.pages) {
+            return old;
+          }
+
+          return {
+            ...old,
+            pages: old.pages.map((page) => ({
+              ...page,
+              posts: page.posts.map((post) => {
+                if (post.id === fbId) {
+                  return {
+                    ...post,
+                    hasVoted: true,
+                    voteCount: (post.voteCount ?? 0) + 1,
+                  };
+                }
+                return post;
+              }),
+            })),
+          };
+        }
+      );
+
+      // Optimistically update the single post data
+      queryClient.setQueryData<SinglePost>([fbId, 'post'], (old) => {
+        if (!old) {
           return old;
         }
-
         return {
           ...old,
-          pages: old.pages.map((page: any) => ({
-            ...page,
-            posts: page.posts.map((post: any) => {
-              if (post.id === fbId) {
-                return {
-                  ...post,
-                  hasVoted: true,
-                  voteCount: post.voteCount + 1,
-                };
-              }
-              return post;
-            }),
-          })),
+          hasVoted: true,
+          voteCount: (old.voteCount ?? 0) + 1,
         };
       });
 
       // Return a context object with the snapshotted value
-      return { previousPosts };
+      return { previousPosts, previousPost };
     },
     onError: (_err, _variables, context) => {
       // If the mutation fails, use the context returned from onMutate to roll back
       if (context?.previousPosts) {
         queryClient.setQueryData(['all-posts', boardId], context.previousPosts);
       }
+      if (context?.previousPost) {
+        queryClient.setQueryData(
+          [_variables.fbId, 'post'],
+          context.previousPost
+        );
+      }
       toast.error('Failed to vote');
     },
-    onSettled: () => {
+    onSettled: (_data, _error, variables) => {
       queryClient.invalidateQueries({ queryKey: ['all-posts'] });
+      if (variables?.fbId) {
+        queryClient.invalidateQueries({ queryKey: [variables.fbId, 'post'] });
+      }
     },
   });
 
@@ -96,46 +141,77 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
       await queryClient.cancelQueries({
         queryKey: ['all-posts', boardId],
       });
+      await queryClient.cancelQueries({
+        queryKey: [fbId, 'post'],
+      });
 
       // Snapshot the previous value
-      const previousPosts = queryClient.getQueryData(['all-posts', boardId]);
+      const previousPosts = queryClient.getQueryData<PostsInfiniteData>([
+        'all-posts',
+        boardId,
+      ]);
+      const previousPost = queryClient.getQueryData<SinglePost>([fbId, 'post']);
 
       // Optimistically update the posts data
-      queryClient.setQueryData(['all-posts', boardId], (old: any) => {
-        if (!old?.pages) {
+      queryClient.setQueryData<PostsInfiniteData>(
+        ['all-posts', boardId],
+        (old) => {
+          if (!old?.pages) {
+            return old;
+          }
+
+          return {
+            ...old,
+            pages: old.pages.map((page) => ({
+              ...page,
+              posts: page.posts.map((post) => {
+                if (post.id === fbId) {
+                  return {
+                    ...post,
+                    hasVoted: false,
+                    voteCount: Math.max(0, (post.voteCount ?? 0) - 1),
+                  };
+                }
+                return post;
+              }),
+            })),
+          };
+        }
+      );
+
+      // Optimistically update the single post data
+      queryClient.setQueryData<SinglePost>([fbId, 'post'], (old) => {
+        if (!old) {
           return old;
         }
-
         return {
           ...old,
-          pages: old.pages.map((page: any) => ({
-            ...page,
-            posts: page.posts.map((post: any) => {
-              if (post.id === fbId) {
-                return {
-                  ...post,
-                  hasVoted: false,
-                  voteCount: Math.max(0, post.voteCount - 1),
-                };
-              }
-              return post;
-            }),
-          })),
+          hasVoted: false,
+          voteCount: Math.max(0, (old.voteCount ?? 0) - 1),
         };
       });
 
       // Return a context object with the snapshotted value
-      return { previousPosts };
+      return { previousPosts, previousPost };
     },
     onError: (_err, _variables, context) => {
       // If the mutation fails, use the context returned from onMutate to roll back
       if (context?.previousPosts) {
         queryClient.setQueryData(['all-posts', boardId], context.previousPosts);
       }
+      if (context?.previousPost) {
+        queryClient.setQueryData(
+          [_variables.fbId, 'post'],
+          context.previousPost
+        );
+      }
       toast.error('Failed to remove vote');
     },
-    onSettled: () => {
+    onSettled: (_data, _error, variables) => {
       queryClient.invalidateQueries({ queryKey: ['all-posts'] });
+      if (variables?.fbId) {
+        queryClient.invalidateQueries({ queryKey: [variables.fbId, 'post'] });
+      }
     },
   });
 

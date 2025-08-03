@@ -57,19 +57,12 @@ function PublicLayout() {
                   ? 'bg-gray-100 text-gray-900 shadow-sm'
                   : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
               }`}
+              search={{
+                board: undefined,
+              }}
               to="/board"
             >
               Feedback
-            </Link>
-            <Link
-              className={`rounded-full px-3 py-2 font-medium text-xs transition-all sm:text-sm ${
-                location.pathname.includes('/changelog')
-                  ? 'bg-gray-100 text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-              }`}
-              to="/changelog"
-            >
-              Changelog
             </Link>
           </div>
         </div>
