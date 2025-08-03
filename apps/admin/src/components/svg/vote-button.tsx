@@ -11,6 +11,7 @@ interface VoteButtonProps {
 	feedbackId?: string;
 	hasVoted?: boolean;
 	desableFromParent?: boolean;
+	iconSize?: number;
 	className?: string;
 }
 
@@ -19,6 +20,7 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
 	feedbackId,
 	hasVoted = false,
 	desableFromParent = false,
+	iconSize = 16,
 	className = "",
 }) => {
 	const handleVote = (e: React.MouseEvent) => {
@@ -78,7 +80,7 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
 			data-filled={hasVoted}
 		>
 			<UpvoteIcon
-				size={16}
+				size={iconSize}
 				filled={hasVoted}
 				className={cn(
 					"transition-all duration-300",

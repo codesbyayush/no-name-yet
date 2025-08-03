@@ -11,6 +11,8 @@ import {
 } from "@tanstack/react-query";
 import {
 	Calendar,
+	Check,
+	Circle,
 	MessageCircle,
 	ThumbsDown,
 	ThumbsUp,
@@ -83,36 +85,75 @@ export function RenderPostsList() {
 	}, []);
 
 	return (
-		<div className="space-y-4 py-8">
+		<div className="space-y-8">
 			{isLoading && <div className="py-4 text-center">Loading posts...</div>}
 			{isError && (
 				<div className="py-4 text-center text-red-500">Error loading posts</div>
 			)}
 
-			<div className="grid gap-4">
-				{allPosts.map((post, i) => {
-					const isSecondLastPost = i === allPosts.length - 2;
+			{/* Original Card View */}
+			{/* <div>
+				<h3 className="mb-4 font-semibold text-lg">Card View</h3>
+				<div className="grid gap-4">
+					{allPosts.map((post, i) => {
+						const isSecondLastPost = i === allPosts.length - 2;
 
-					return (
-						<div key={post.id} ref={isSecondLastPost ? lastPostCallback : null}>
-							<PostCard post={post} />
+						return (
+							<div
+								key={post.id}
+								ref={isSecondLastPost ? lastPostCallback : null}
+							>
+								<PostCard post={post} />
+							</div>
+						);
+					})} */}
+
+			{/* Loading indicator for next page */}
+			{/* {isFetchingNextPage && (
+						<div className="py-4 text-center">
+							<div className="text-gray-500 text-sm">Loading more posts...</div>
 						</div>
-					);
-				})}
+					)} */}
 
-				{/* Loading indicator for next page */}
-				{isFetchingNextPage && (
-					<div className="py-4 text-center">
-						<div className="text-gray-500 text-sm">Loading more posts...</div>
-					</div>
-				)}
+			{/* End of posts indicator */}
+			{/* {!hasNextPage && allPosts.length > 0 && (
+						<div className="py-4 text-center">
+							<div className="text-gray-500 text-sm">No more posts to load</div>
+						</div>
+					)}
+				</div>
+			</div> */}
 
-				{/* End of posts indicator */}
-				{!hasNextPage && allPosts.length > 0 && (
-					<div className="py-4 text-center">
-						<div className="text-gray-500 text-sm">No more posts to load</div>
-					</div>
-				)}
+			{/* Linear-style List View */}
+			<div>
+				<div className="space-y-1">
+					{allPosts.map((post, i) => {
+						const isSecondLastPost = i === allPosts.length - 2;
+
+						return (
+							<div
+								key={post.id}
+								ref={isSecondLastPost ? lastPostCallback : null}
+							>
+								<PostListItem post={post} />
+							</div>
+						);
+					})}
+
+					{/* Loading indicator for next page */}
+					{isFetchingNextPage && (
+						<div className="py-4 text-center">
+							<div className="text-gray-500 text-sm">Loading more posts...</div>
+						</div>
+					)}
+
+					{/* End of posts indicator */}
+					{!hasNextPage && allPosts.length > 0 && (
+						<div className="py-4 text-center">
+							<div className="text-gray-500 text-sm">No more posts to load</div>
+						</div>
+					)}
+				</div>
 			</div>
 		</div>
 	);
@@ -367,7 +408,11 @@ function PostDetail({ post }: { post: any }) {
 					<div className="flex items-center gap-3">
 						<div>
 							{post?.author?.image ? (
-								<img src={post?.author?.image} className="h-8 rounded-full" />
+								<img
+									src={post?.author?.image}
+									alt="Avatar"
+									className="h-8 rounded-full"
+								/>
 							) : (
 								<span className="rounded-full bg-gray-800">A</span>
 							)}
@@ -396,5 +441,141 @@ function PostDetail({ post }: { post: any }) {
 				</div>
 			</div>
 		</div>
+	);
+}
+
+// Linear-style list item component
+function PostListItem({ post }: { post: any }) {
+	const [isChecked, setIsChecked] = useState(false);
+
+	// Generate random progress for demo (in real app, this would come from post data)
+	const progress = Math.floor(Math.random() * 10) + 1;
+	const total = Math.floor(Math.random() * 10) + 1;
+
+	// Generate random status colors for demo
+	const statusColors = [
+		"bg-blue-500",
+		"bg-red-500",
+		"bg-green-500",
+		"bg-yellow-500",
+		"bg-gray-400",
+	];
+	const statusColor =
+		statusColors[Math.floor(Math.random() * statusColors.length)];
+
+	// Generate random tags for demo
+	const tags = [
+		{ name: "Improvement", color: "bg-orange-500" },
+		{ name: "Prod Bugs", color: "bg-red-500" },
+		{ name: "Tech Bugs", color: "bg-red-500" },
+		{ name: "New Feature", color: "bg-blue-500" },
+		{ name: "Bug Fix", color: "bg-purple-500" },
+	];
+	const randomTags = tags.slice(0, Math.floor(Math.random() * 3) + 1);
+
+	// Generate random user initials for demo
+	const userInitials = ["NKC", "SK", "AB", "CD", "EF"];
+	const userInitial = post?.author?.name?.slice(0, 2);
+
+	return (
+		<Sheet>
+			<SheetTrigger asChild>
+				<div className="group flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-muted/50">
+					{/* Checkbox */}
+					<div className="flex h-4 w-4 items-center justify-center">
+						<button
+							type="button"
+							onClick={(e) => {
+								e.stopPropagation();
+								setIsChecked(!isChecked);
+							}}
+							className={`flex h-4 w-4 items-center justify-center rounded border-2 transition-colors ${
+								isChecked
+									? "border-blue-500 bg-blue-500"
+									: "border-muted-foreground/30 hover:border-muted-foreground/50"
+							}`}
+						>
+							{isChecked && <Check className="h-3 w-3 text-white" />}
+						</button>
+					</div>
+
+					{/* Status Indicator */}
+					<div className="flex h-4 w-4 items-center justify-center">
+						<div className={`h-3 w-3 rounded-full ${statusColor}`} />
+					</div>
+
+					{/* Task Description */}
+					<div className="min-w-0 flex-1">
+						<span className="block truncate font-medium text-foreground text-sm">
+							{post.title}
+						</span>
+					</div>
+
+					{/* Tags */}
+					<div className="flex items-center gap-1">
+						{randomTags.map((tag, index) => (
+							<div
+								key={`${tag.name}-${index}`}
+								className="flex items-center gap-1 rounded-md bg-muted/50 px-2 py-1 text-xs"
+							>
+								<div className={`h-2 w-2 rounded-full ${tag.color}`} />
+								<span className="text-muted-foreground">{tag.name}</span>
+							</div>
+						))}
+					</div>
+
+					{/* Tags */}
+					<div className="flex items-center gap-1">
+						<div className="flex items-center gap-1 rounded-md bg-muted/50 px-2 py-1 text-xs">
+							<div className={`h-2 w-2 rounded-full ${post.board?.color}`} />
+							<span className="text-muted-foreground">{post.board?.icon}</span>
+							<span className="text-muted-foreground">{post.board?.name}</span>
+						</div>
+					</div>
+
+					{/* Assigned User */}
+					<div className="flex h-6 w-6 items-center justify-center">
+						<div className="flex h-6 w-6 items-center justify-center rounded-full bg-muted">
+							{post.author?.image ? (
+								<img
+									src={post.author?.image}
+									alt="Avatar"
+									className="h-6 rounded-full"
+								/>
+							) : (
+								<span className=" font-medium text-muted-foreground text-xs uppercase">
+									{userInitial || "?"}
+								</span>
+							)}
+						</div>
+					</div>
+
+					{/* Date */}
+					<div className="min-w-[40px] text-right text-muted-foreground text-xs">
+						{new Date(post.createdAt).toLocaleDateString("en-US", {
+							month: "short",
+							day: "numeric",
+						})}
+					</div>
+
+					<CommentButton
+						count={1}
+						disabled
+						iconSize={8}
+						className="size-8 flex-row border-none"
+					/>
+					<VoteButton
+						count={28}
+						hasVoted={false}
+						desableFromParent={true}
+						iconSize={16}
+						className="size-8 w-10 flex-row items-center gap-1 border-none"
+					/>
+				</div>
+			</SheetTrigger>
+			<SheetContent className="m-4 h-[calc(100vh-2rem)] w-[90%] max-w-[90%] overflow-y-auto rounded-3xl border-1 border-muted-foreground/10 bg-card p-6 shadow-xl sm:max-w-[600px] md:w-[700px] lg:w-[1000px] lg:max-w-[1000px]">
+				<PostDetail post={post} />
+			</SheetContent>
+		</Sheet>
 	);
 }

@@ -66,6 +66,9 @@
 			"linter": {
 				"enabled": true,
 				"rules": {
+					"a11y": {
+						"useSemanticElements": "off"
+					},
 					"suspicious": {
 						"noConsole": "warn"
 					},
@@ -94,6 +97,9 @@
 			"linter": {
 				"enabled": true,
 				"rules": {
+					"a11y": {
+						"useSemanticElements": "off"
+					},
 					"suspicious": {
 						"noConsole": "warn"
 					},
@@ -122,6 +128,9 @@
 			"linter": {
 				"enabled": true,
 				"rules": {
+					"a11y": {
+						"useSemanticElements": "off"
+					},
 					"suspicious": {
 						"noConsole": "warn"
 					},
