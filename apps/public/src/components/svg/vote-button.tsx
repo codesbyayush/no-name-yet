@@ -24,6 +24,10 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
 	const handleVote = (e: React.MouseEvent) => {
 		e.stopPropagation();
 
+		if (!feedbackId) {
+			return;
+		}
+
 		if (hasVoted) {
 			deleteVoteMutation.mutate({ feedbackId });
 		} else {
@@ -34,26 +38,100 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
 	const createVoteMutation = useMutation({
 		mutationFn: ({ feedbackId }: { feedbackId: string }) =>
 			client.public.votes.create({ feedbackId }),
-		onSuccess: () => {
-			toast.success("Vote added!");
-			// Invalidate posts to refresh vote counts and vote status
-			queryClient.invalidateQueries({ queryKey: ["all-posts"] });
+		onMutate: async ({ feedbackId }) => {
+			// Cancel any outgoing refetches
+			await queryClient.cancelQueries({ queryKey: ["all-posts"] });
+
+			// Snapshot the previous value
+			const previousPosts = queryClient.getQueryData(["all-posts"]);
+
+			// Optimistically update the posts data
+			queryClient.setQueryData(["all-posts"], (old: any) => {
+				if (!old?.pages) {
+					return old;
+				}
+
+				return {
+					...old,
+					pages: old.pages.map((page: any) => ({
+						...page,
+						posts: page.posts.map((post: any) => {
+							if (post.id === feedbackId) {
+								return {
+									...post,
+									hasVoted: true,
+									votes: post.votes + 1,
+								};
+							}
+							return post;
+						}),
+					})),
+				};
+			});
+
+			// Return a context object with the snapshotted value
+			return { previousPosts };
 		},
-		onError: (error: any) => {
-			toast.error(error.message || "Failed to vote");
+		onError: (err, variables, context) => {
+			// If the mutation fails, use the context returned from onMutate to roll back
+			if (context?.previousPosts) {
+				queryClient.setQueryData(["all-posts"], context.previousPosts);
+			}
+			toast.error("Failed to vote");
+		},
+		onSettled: () => {
+			// Always refetch after error or success to ensure data consistency
+			queryClient.invalidateQueries({ queryKey: ["all-posts"] });
 		},
 	});
 
 	const deleteVoteMutation = useMutation({
 		mutationFn: ({ feedbackId }: { feedbackId: string }) =>
 			client.public.votes.delete({ feedbackId }),
-		onSuccess: () => {
-			toast.success("Vote removed!");
-			// Invalidate posts to refresh vote counts and vote status
-			queryClient.invalidateQueries({ queryKey: ["all-posts"] });
+		onMutate: async ({ feedbackId }) => {
+			// Cancel any outgoing refetches
+			await queryClient.cancelQueries({ queryKey: ["all-posts"] });
+
+			// Snapshot the previous value
+			const previousPosts = queryClient.getQueryData(["all-posts"]);
+
+			// Optimistically update the posts data
+			queryClient.setQueryData(["all-posts"], (old: any) => {
+				if (!old?.pages) {
+					return old;
+				}
+
+				return {
+					...old,
+					pages: old.pages.map((page: any) => ({
+						...page,
+						posts: page.posts.map((post: any) => {
+							if (post.id === feedbackId) {
+								return {
+									...post,
+									hasVoted: false,
+									votes: Math.max(0, post.votes - 1),
+								};
+							}
+							return post;
+						}),
+					})),
+				};
+			});
+
+			// Return a context object with the snapshotted value
+			return { previousPosts };
 		},
-		onError: (error: any) => {
-			toast.error(error.message || "Failed to remove vote");
+		onError: (err, variables, context) => {
+			// If the mutation fails, use the context returned from onMutate to roll back
+			if (context?.previousPosts) {
+				queryClient.setQueryData(["all-posts"], context.previousPosts);
+			}
+			toast.error("Failed to remove vote");
+		},
+		onSettled: () => {
+			// Always refetch after error or success to ensure data consistency
+			queryClient.invalidateQueries({ queryKey: ["all-posts"] });
 		},
 	});
 

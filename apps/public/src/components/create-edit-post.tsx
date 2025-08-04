@@ -1,17 +1,14 @@
 import { AutosizeTextarea } from "@/components/ui/autosize-textarea";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
 	DialogContent,
-	DialogDescription,
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
 	Select,
 	SelectContent,
@@ -21,10 +18,8 @@ import {
 } from "@/components/ui/select";
 import { client } from "@/utils/orpc";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, X } from "lucide-react";
 import type React from "react";
-import { useEffect, useState } from "react";
-import { set } from "react-hook-form";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 interface PostFormData {
@@ -75,11 +70,11 @@ export function CreateEditPost({
 			setFormData({
 				title: "",
 				description: "",
-				board: boards?.boards[0].id || "",
+				board: boards?.boards[0]?.id || "",
 			});
 			setNewTag("");
 		}
-	}, [open, mode]);
+	}, [open, mode /* eslint-disable-line react-hooks/exhaustive-deps */]);
 
 	// Create post mutation
 	const createPostMutation = useMutation({
@@ -104,6 +99,11 @@ export function CreateEditPost({
 		queryKey: ["public-boards"],
 		queryFn: () => client.getAllPublicBoards(),
 	});
+
+	const selectedBoardName = useMemo(
+		() => boards?.boards.find((b) => b.id === formData.board)?.name,
+		[boards, formData.board],
+	);
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
@@ -137,53 +137,32 @@ export function CreateEditPost({
 					</Button>
 				)}
 			</DialogTrigger>
-			<DialogContent className="max-h-[90vh] w-11/12 overflow-y-auto rounded-3xl border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card shadow-xl backdrop-blur-3xl sm:max-w-[600px]">
-				<DialogHeader className="pb-2">
-					<DialogTitle className="font-semibold text-2xl text-card-foreground">
-						{mode === "create" ? "Create New Post" : "Edit Post"}
+			{/* Linear-like frosted panel with subtle gradient, no visible borders */}
+			<DialogContent className="max-h-[90vh] w-[820px] max-w-[95vw] overflow-y-auto rounded-2xl border-0 bg-gradient-to-br from-background/70 to-background/40 p-0 shadow-2xl backdrop-blur-2xl">
+				<DialogHeader className="px-6 pt-6 pb-0">
+					<DialogTitle className="font-semibold text-[15px] text-muted-foreground">
+						{mode === "create" ? "New issue" : "Edit issue"}
 					</DialogTitle>
-					<DialogDescription className="text-base text-muted-foreground">
-						{mode === "create"
-							? "Share your feedback, suggestion, or report a bug."
-							: "Update your post details."}
-					</DialogDescription>
 				</DialogHeader>
 
-				<form onSubmit={handleSubmit} className="pt-2">
-					{/* Title */}
-					<div className="space-y-3">
-						<Label
-							htmlFor="title"
-							className="font-medium text-base text-card-foreground"
-						>
-							Title *
-						</Label>
+				<form onSubmit={handleSubmit} className="px-6 pt-2">
+					{/* Title — borderless, no label, large placeholder */}
+					<div className="space-y-1">
 						<Input
 							id="title"
 							value={formData.title}
 							onChange={(e) =>
 								setFormData((prev) => ({ ...prev, title: e.target.value }))
 							}
-							placeholder="Enter post title..."
+							placeholder="Issue title"
 							maxLength={250}
 							required
-							className="!bg-muted h-12 rounded-xl border-muted-foreground/20 px-4 text-base text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20"
+							className="h-16 rounded-2xl border-0 bg-transparent px-0 font-semibold text-2xl text-foreground leading-tight tracking-[-0.01em] shadow-none outline-none ring-0 placeholder:text-foreground/40 focus-visible:outline-none focus-visible:ring-0 dark:bg-transparent"
 						/>
-						<div
-							className={`text-right text-xs ${formData.title.length > 200 ? "text-destructive" : formData.title.length > 150 ? "text-yellow-600" : "text-muted-foreground"}`}
-						>
-							{formData.title.length}/250 characters
-						</div>
 					</div>
 
-					{/* Description */}
-					<div className="space-y-3">
-						<Label
-							htmlFor="description"
-							className="font-medium text-base text-card-foreground"
-						>
-							Description *
-						</Label>
+					{/* Description — borderless, no label, subtle guide text */}
+					<div className="space-y-2">
 						<AutosizeTextarea
 							id="description"
 							value={formData.description}
@@ -193,109 +172,85 @@ export function CreateEditPost({
 									description: e.target.value,
 								}))
 							}
-							placeholder="Describe your feedback in detail..."
+							placeholder="Add a clear description, steps, and context"
 							maxLength={5000}
-							minHeight={120}
+							minHeight={100}
 							required
-							className="!bg-muted rounded-xl border-muted-foreground/20 px-4 py-3 text-base text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20"
+							className="rounded-2xl border-0 bg-transparent px-2 py-3 text-base text-foreground leading-6 shadow-none outline-none ring-0 ring-transparent placeholder:text-foreground/40 focus-within:ring-0 focus-visible:outline-none focus-visible:ring-0 dark:ring-transparent dark:focus-within:ring-0"
 						/>
-						<div
-							className={`text-right text-xs ${formData.description.length > 4500 ? "text-destructive" : formData.description.length > 3500 ? "text-yellow-600" : "text-muted-foreground"}`}
-						>
-							{formData.description.length}/5000 characters
-						</div>
 					</div>
 
-					{/* Tags */}
-					{/* <div className="space-y-2">
-            <Label htmlFor="tags">Tags</Label>
-            <div className="flex gap-2">
-              <Input
-                id="tags"
-                value={newTag}
-                onChange={(e) => setNewTag(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Add a tag..."
-                maxLength={50}
-              />
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                onClick={addTag}
-                disabled={
-                  !newTag.trim() || formData.tags.includes(newTag.trim())
-                }
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
-
-            {formData.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {formData.tags.map((tag, index) => (
-                  <Badge
-                    key={index}
-                    variant="secondary"
-                    className="flex items-center gap-1"
-                  >
-                    {tag}
-                    <button
-                      type="button"
-                      onClick={() => removeTag(tag)}
-                      className="ml-1 hover:bg-destructive/20 rounded-full p-0.5"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                ))}
-              </div>
-            )}
-          </div> */}
+					{/* Character counter — subtle, aligns to Linear minimalism */}
+					<div className="mt-1 text-right text-muted-foreground/60 text-xs">
+						{formData.description.length}/5000
+					</div>
 				</form>
 
-				<div>
-					<div className="space-y-3">
-						<Label
-							htmlFor="board"
-							className="font-medium text-base text-card-foreground"
-						>
-							Board
-						</Label>
+				{/* Bottom action bar — pill buttons that open dropdowns */}
+				<div className="px-6">
+					<div className="flex flex-wrap items-center gap-2">
+						{/* Board picker */}
 						<Select
 							value={formData.board}
 							onValueChange={(value: string) =>
 								setFormData((prev) => ({ ...prev, board: value }))
 							}
 						>
-							<SelectTrigger className="!bg-muted hover:!bg-muted focus:!bg-muted h-12 rounded-lg border-muted-foreground/20 p-2 px-4 text-base text-foreground capitalize">
+							<SelectTrigger className="h-9 rounded-full border-0 bg-foreground/[0.04] px-3 font-medium text-foreground text-sm shadow-none backdrop-blur-sm transition-colors hover:bg-foreground/[0.06] focus:ring-0 focus-visible:ring-0">
 								<SelectValue
 									placeholder="Select board"
 									className="text-foreground"
-								/>
+								>
+									{selectedBoardName || "Select board"}
+								</SelectValue>
 							</SelectTrigger>
-							<SelectContent className="!bg-muted rounded-sm border-muted-foreground/10 shadow-xl">
+							<SelectContent className="rounded-xl border border-muted-foreground/10 bg-popover p-1 shadow-2xl">
 								{boards?.boards.map((board) => (
 									<SelectItem
 										key={board.id}
 										value={board.id}
-										className="cursor-pointer rounded-xs text-base"
+										className="cursor-pointer rounded-lg text-sm"
 									>
 										{board.name}
 									</SelectItem>
 								))}
 							</SelectContent>
 						</Select>
+
+						{/* Placeholder pills (non-functional for now, mainly for admin visits) */}
+						{/* <Button
+							type="button"
+							variant="ghost"
+							className="h-9 rounded-full bg-foreground/[0.04] px-3 font-medium text-foreground text-sm hover:bg-foreground/[0.06]"
+						>
+							Priority
+						</Button>
+						<Button
+							type="button"
+							variant="ghost"
+							className="h-9 rounded-full bg-foreground/[0.04] px-3 font-medium text-foreground text-sm hover:bg-foreground/[0.06]"
+						>
+							Assignee
+						</Button>
+						<Button
+							type="button"
+							variant="ghost"
+							className="h-9 rounded-full bg-foreground/[0.04] px-3 font-medium text-foreground text-sm hover:bg-foreground/[0.06]"
+						>
+							Labels
+						</Button> */}
+
+						<div className="ml-auto" />
 					</div>
 				</div>
 
-				<DialogFooter className="gap-3">
+				<DialogFooter className="sticky bottom-0 z-10 gap-3 border-muted border-t bg-gradient-to-t from-background/40 to-transparent px-6 py-3 backdrop-blur-md">
 					<Button
 						type="button"
-						variant="outline"
+						variant="ghost"
 						onClick={() => setOpen(false)}
 						disabled={isLoading}
-						className="h-12 rounded-xl border-muted-foreground/20 bg-background px-6 text-base text-foreground hover:bg-muted/50"
+						className="h-9 rounded-xl px-4 text-foreground text-sm hover:bg-foreground/[0.06]"
 					>
 						Cancel
 					</Button>
@@ -307,7 +262,7 @@ export function CreateEditPost({
 							!formData.title.trim() ||
 							!formData.description.trim()
 						}
-						className="h-12 rounded-xl bg-primary px-8 text-base shadow-lg hover:bg-primary/90"
+						className="h-9 rounded-xl bg-primary px-5 font-semibold text-sm shadow-sm hover:bg-primary/90"
 					>
 						{isLoading ? (
 							<>
@@ -315,9 +270,9 @@ export function CreateEditPost({
 								{mode === "create" ? "Creating..." : "Updating..."}
 							</>
 						) : mode === "create" ? (
-							"Create Post"
+							"Create issue"
 						) : (
-							"Update Post"
+							"Update issue"
 						)}
 					</Button>
 				</DialogFooter>
