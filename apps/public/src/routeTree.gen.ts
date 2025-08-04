@@ -11,10 +11,13 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as PublicRouteImport } from './routes/_public'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as LandingRouteImport } from './routes/_landing'
+import { Route as LandingIndexRouteImport } from './routes/_landing/index'
 import { Route as PublicRoadmapRouteImport } from './routes/_public/roadmap'
 import { Route as PublicChangelogRouteImport } from './routes/_public/changelog'
 import { Route as PublicBoardRouteImport } from './routes/_public/board'
+import { Route as LandingContactRouteImport } from './routes/_landing/contact'
+import { Route as LandingAboutRouteImport } from './routes/_landing/about'
 import { Route as PublicBoardIndexRouteImport } from './routes/_public/board/index'
 import { Route as PublicBoardPostIdRouteImport } from './routes/_public/board/$postId'
 
@@ -27,10 +30,14 @@ const PublicRoute = PublicRouteImport.update({
   id: '/_public',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
+const LandingRoute = LandingRouteImport.update({
+  id: '/_landing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LandingIndexRoute = LandingIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => LandingRoute,
 } as any)
 const PublicRoadmapRoute = PublicRoadmapRouteImport.update({
   id: '/roadmap',
@@ -47,6 +54,16 @@ const PublicBoardRoute = PublicBoardRouteImport.update({
   path: '/board',
   getParentRoute: () => PublicRoute,
 } as any)
+const LandingContactRoute = LandingContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => LandingRoute,
+} as any)
+const LandingAboutRoute = LandingAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => LandingRoute,
+} as any)
 const PublicBoardIndexRoute = PublicBoardIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -59,59 +76,79 @@ const PublicBoardPostIdRoute = PublicBoardPostIdRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/about': typeof LandingAboutRoute
+  '/contact': typeof LandingContactRoute
   '/board': typeof PublicBoardRouteWithChildren
   '/changelog': typeof PublicChangelogRoute
   '/roadmap': typeof PublicRoadmapRoute
+  '/': typeof LandingIndexRoute
   '/board/$postId': typeof PublicBoardPostIdRoute
   '/board/': typeof PublicBoardIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/about': typeof LandingAboutRoute
+  '/contact': typeof LandingContactRoute
   '/changelog': typeof PublicChangelogRoute
   '/roadmap': typeof PublicRoadmapRoute
+  '/': typeof LandingIndexRoute
   '/board/$postId': typeof PublicBoardPostIdRoute
   '/board': typeof PublicBoardIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/_landing': typeof LandingRouteWithChildren
   '/_public': typeof PublicRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_landing/about': typeof LandingAboutRoute
+  '/_landing/contact': typeof LandingContactRoute
   '/_public/board': typeof PublicBoardRouteWithChildren
   '/_public/changelog': typeof PublicChangelogRoute
   '/_public/roadmap': typeof PublicRoadmapRoute
+  '/_landing/': typeof LandingIndexRoute
   '/_public/board/$postId': typeof PublicBoardPostIdRoute
   '/_public/board/': typeof PublicBoardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
     | '/auth'
+    | '/about'
+    | '/contact'
     | '/board'
     | '/changelog'
     | '/roadmap'
+    | '/'
     | '/board/$postId'
     | '/board/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/changelog' | '/roadmap' | '/board/$postId' | '/board'
+  to:
+    | '/auth'
+    | '/about'
+    | '/contact'
+    | '/changelog'
+    | '/roadmap'
+    | '/'
+    | '/board/$postId'
+    | '/board'
   id:
     | '__root__'
-    | '/'
+    | '/_landing'
     | '/_public'
     | '/auth'
+    | '/_landing/about'
+    | '/_landing/contact'
     | '/_public/board'
     | '/_public/changelog'
     | '/_public/roadmap'
+    | '/_landing/'
     | '/_public/board/$postId'
     | '/_public/board/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  LandingRoute: typeof LandingRouteWithChildren
   PublicRoute: typeof PublicRouteWithChildren
   AuthRoute: typeof AuthRoute
 }
@@ -132,12 +169,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
+    '/_landing': {
+      id: '/_landing'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof LandingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_landing/': {
+      id: '/_landing/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof LandingIndexRouteImport
+      parentRoute: typeof LandingRoute
     }
     '/_public/roadmap': {
       id: '/_public/roadmap'
@@ -160,6 +204,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicBoardRouteImport
       parentRoute: typeof PublicRoute
     }
+    '/_landing/contact': {
+      id: '/_landing/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof LandingContactRouteImport
+      parentRoute: typeof LandingRoute
+    }
+    '/_landing/about': {
+      id: '/_landing/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof LandingAboutRouteImport
+      parentRoute: typeof LandingRoute
+    }
     '/_public/board/': {
       id: '/_public/board/'
       path: '/'
@@ -176,6 +234,21 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface LandingRouteChildren {
+  LandingAboutRoute: typeof LandingAboutRoute
+  LandingContactRoute: typeof LandingContactRoute
+  LandingIndexRoute: typeof LandingIndexRoute
+}
+
+const LandingRouteChildren: LandingRouteChildren = {
+  LandingAboutRoute: LandingAboutRoute,
+  LandingContactRoute: LandingContactRoute,
+  LandingIndexRoute: LandingIndexRoute,
+}
+
+const LandingRouteWithChildren =
+  LandingRoute._addFileChildren(LandingRouteChildren)
 
 interface PublicBoardRouteChildren {
   PublicBoardPostIdRoute: typeof PublicBoardPostIdRoute
@@ -207,7 +280,7 @@ const PublicRouteWithChildren =
   PublicRoute._addFileChildren(PublicRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  LandingRoute: LandingRouteWithChildren,
   PublicRoute: PublicRouteWithChildren,
   AuthRoute: AuthRoute,
 }
