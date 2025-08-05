@@ -89,7 +89,7 @@ export function CustomTagsForm({
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {/* Preview */}
           <div className="rounded-xl border p-4">
-            <div className="mb-2 text-sm font-medium text-foreground">
+            <div className="mb-2 font-medium text-foreground text-sm">
               Preview
             </div>
             <div className="flex flex-wrap gap-2">
@@ -98,7 +98,7 @@ export function CustomTagsForm({
                 .map((r, i) => (
                   <span
                     key={`${r.name}-${i}`}
-                    className="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium"
+                    className="inline-flex items-center rounded-full px-3 py-1 font-medium text-xs"
                     style={{
                       backgroundColor: `${r.color}1a`,
                       color: r.color,

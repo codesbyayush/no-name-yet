@@ -56,15 +56,8 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
 	createChangelog: adminOnlyProcedure
 		.input(createChangelogSchema)
 		.handler(async ({ input, context }) => {
-			const {
-				title,
-				content,
-				excerpt,
-				version,
-				tags,
-				metaTitle,
-				metaDescription,
-			} = input;
+			const { title, content, excerpt, version, metaTitle, metaDescription } =
+				input;
 			const userId = context.session?.user?.id;
 			const organizationId = context.organization?.id;
 
@@ -114,7 +107,6 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
 						htmlContent,
 						excerpt,
 						version,
-						tags,
 						metaTitle,
 						metaDescription,
 						authorId: userId,

@@ -269,8 +269,8 @@ function OnboardingPreview({
 }) {
   return (
     <div className="rounded-xl border p-4">
-      <div className="text-sm font-semibold">{title}</div>
-      <div className="mt-1 text-sm text-muted-foreground">{description}</div>
+      <div className="font-semibold text-sm">{title}</div>
+      <div className="mt-1 text-muted-foreground text-sm">{description}</div>
       <div className="mt-3 space-y-2">
         <div className="h-2 w-2/3 rounded bg-muted" />
         <div className="h-2 w-1/2 rounded bg-muted" />

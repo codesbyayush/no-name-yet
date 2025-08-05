@@ -18,8 +18,8 @@ export const Route = createFileRoute("/_landing/about")({
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4 text-center">
-      <div className="text-2xl font-semibold text-white">{value}</div>
-      <div className="mt-1 text-sm text-neutral-400">{label}</div>
+      <div className="font-semibold text-2xl text-white">{value}</div>
+      <div className="mt-1 text-neutral-400 text-sm">{label}</div>
     </div>
   );
 }
@@ -29,12 +29,12 @@ function AboutPage() {
     <>
       {/* Hero */}
       <section className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
-        <div className="border-b border-white/10 bg-[linear-gradient(180deg,rgba(160,120,255,0.18),rgba(160,120,255,0)_70%)] p-8 md:p-10">
+        <div className="border-white/10 border-b bg-[linear-gradient(180deg,rgba(160,120,255,0.18),rgba(160,120,255,0)_70%)] p-8 md:p-10">
           <motion.h1
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="text-3xl font-bold md:text-5xl"
+            className="font-bold text-3xl md:text-5xl"
           >
             About Better T-App
           </motion.h1>
@@ -53,22 +53,22 @@ function AboutPage() {
           {/* Mission / Vision / Values */}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6">
-              <h3 className="text-lg font-semibold">Our Mission</h3>
-              <p className="mt-2 text-sm text-neutral-300">
+              <h3 className="font-semibold text-lg">Our Mission</h3>
+              <p className="mt-2 text-neutral-300 text-sm">
                 Empower teams to build products customers love by turning
                 feedback into focused action.
               </p>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6">
-              <h3 className="text-lg font-semibold">Our Vision</h3>
-              <p className="mt-2 text-sm text-neutral-300">
+              <h3 className="font-semibold text-lg">Our Vision</h3>
+              <p className="mt-2 text-neutral-300 text-sm">
                 A world where every product decision is transparent,
                 data‑driven, and customer‑centric.
               </p>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6">
-              <h3 className="text-lg font-semibold">Our Values</h3>
-              <ul className="mt-2 list-disc space-y-1 pl-4 text-sm text-neutral-300">
+              <h3 className="font-semibold text-lg">Our Values</h3>
+              <ul className="mt-2 list-disc space-y-1 pl-4 text-neutral-300 text-sm">
                 <li>Clarity over complexity</li>
                 <li>Respect for users and their time</li>
                 <li>Craft and iteration</li>
@@ -86,26 +86,26 @@ function AboutPage() {
 
           {/* Timeline */}
           <div className="mt-10 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-            <h3 className="text-lg font-semibold">Timeline</h3>
+            <h3 className="font-semibold text-lg">Timeline</h3>
             <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
               <div className="rounded-lg border border-white/10 bg-white/[0.02] p-4">
-                <div className="text-sm text-neutral-400">2024 Q1</div>
+                <div className="text-neutral-400 text-sm">2024 Q1</div>
                 <div className="mt-1 font-medium">Public launch</div>
-                <p className="mt-1 text-sm text-neutral-300">
+                <p className="mt-1 text-neutral-300 text-sm">
                   Forums, in‑app widgets, and changelogs are available.
                 </p>
               </div>
               <div className="rounded-lg border border-white/10 bg-white/[0.02] p-4">
-                <div className="text-sm text-neutral-400">2024 Q2</div>
+                <div className="text-neutral-400 text-sm">2024 Q2</div>
                 <div className="mt-1 font-medium">Custom domain</div>
-                <p className="mt-1 text-sm text-neutral-300">
+                <p className="mt-1 text-neutral-300 text-sm">
                   Bring your own domain for a fully branded experience.
                 </p>
               </div>
               <div className="rounded-lg border border-white/10 bg-white/[0.02] p-4">
-                <div className="text-sm text-neutral-400">2024 H2</div>
+                <div className="text-neutral-400 text-sm">2024 H2</div>
                 <div className="mt-1 font-medium">Integrations</div>
-                <p className="mt-1 text-sm text-neutral-300">
+                <p className="mt-1 text-neutral-300 text-sm">
                   Integrations with your favorite tools—coming soon.
                 </p>
               </div>
@@ -115,8 +115,8 @@ function AboutPage() {
           {/* CTA card */}
           <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-              <h3 className="text-lg font-semibold">Join us</h3>
-              <p className="mt-2 text-sm text-neutral-300">
+              <h3 className="font-semibold text-lg">Join us</h3>
+              <p className="mt-2 text-neutral-300 text-sm">
                 Help shape the future of feedback. We’re always looking for
                 great people and partners.
               </p>
@@ -128,8 +128,8 @@ function AboutPage() {
               </a>
             </div>
             <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-              <h3 className="text-lg font-semibold">Contact</h3>
-              <p className="mt-2 text-sm text-neutral-300">
+              <h3 className="font-semibold text-lg">Contact</h3>
+              <p className="mt-2 text-neutral-300 text-sm">
                 Prefer a quick chat? We’ll add calendar booking soon.
               </p>
               <a
@@ -138,7 +138,7 @@ function AboutPage() {
               >
                 Go to contact
               </a>
-              <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/5 blur-2xl" />
+              <div className="-right-10 -top-10 pointer-events-none absolute h-40 w-40 rounded-full bg-white/5 blur-2xl" />
             </div>
           </div>
         </div>

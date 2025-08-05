@@ -142,7 +142,7 @@ export function StatusFlowEditor({
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {/* Preview Column */}
           <div className="rounded-xl border p-4">
-            <div className="mb-2 text-sm font-medium text-foreground">
+            <div className="mb-2 font-medium text-foreground text-sm">
               Preview
             </div>
             <div className="space-y-2">
@@ -156,10 +156,10 @@ export function StatusFlowEditor({
                       className="inline-block h-3 w-3 rounded-full"
                       style={{ backgroundColor: s.color }}
                     />
-                    <span className="text-sm font-medium">{s.label}</span>
+                    <span className="font-medium text-sm">{s.label}</span>
                   </div>
                   {s.isDefault ? (
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-muted-foreground text-xs">
                       Default
                     </span>
                   ) : null}
@@ -180,7 +180,7 @@ export function StatusFlowEditor({
                   )}
                 >
                   <div className="flex items-center justify-between">
-                    <div className="text-sm font-medium">{s.key}</div>
+                    <div className="font-medium text-sm">{s.key}</div>
                     <div className="flex items-center gap-2">
                       <Button
                         type="button"
@@ -235,11 +235,11 @@ export function StatusFlowEditor({
                         checked={!!s.isDefault}
                         onCheckedChange={() => setDefault(i)}
                       />
-                      <span className="text-sm text-muted-foreground">
+                      <span className="text-muted-foreground text-sm">
                         Set as default
                       </span>
                     </div>
-                    <div className="text-xs text-muted-foreground">
+                    <div className="text-muted-foreground text-xs">
                       Order: {s.order + 1}
                     </div>
                   </div>
