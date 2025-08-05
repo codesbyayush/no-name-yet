@@ -1,0 +1,13 @@
+name = "public"
+compatibility_date = "2025-02-13"
+
+routes = [
+  { pattern = "*.openfeedback.tech/*", zone_name = "openfeedback.tech" },
+  { pattern = "openfeedback.tech/*", zone_name = "openfeedback.tech" },
+  { pattern = "openfeedback.tech", custom_domain = true },
+]
+
+[assets]
+directory = "./dist"
+not_found_handling = "single-page-application" 
+

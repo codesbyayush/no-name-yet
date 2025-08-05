@@ -14,7 +14,8 @@
 		"db:migrate": "drizzle-kit migrate",
 		"db:reset": "bun run scripts/reset-db.ts",
 		"wrangler:dev": "wrangler dev",
-		"wrangler:deploy": "wrangler deploy"
+		"wrangler:deploy": "wrangler deploy",
+		"deploy": "wrangler deploy"
 	},
 	"dependencies": {
 		"@blocknote/core": "^0.33.0",
