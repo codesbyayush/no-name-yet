@@ -98,8 +98,7 @@ app.use("/admin/*", async (c, next) => {
 
 app.get("/ping", (c) => c.text("pong"));
 
-const isLocalEnvironment =
-	process.env.NODE_ENV === "development" || process.env.ENVIRONMENT === "local";
+const isLocalEnvironment = process.env.NODE_ENV === "development";
 
 const createExport = async () => {
 	if (isLocalEnvironment) {
