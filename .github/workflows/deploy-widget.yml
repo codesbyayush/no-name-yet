@@ -5,13 +5,13 @@ on:
     paths:
       - 'apps/widget/**'
       - 'apps/public/**'
+      - 'apps/admin/**'
     branches:
       - main
 
 jobs:
   build-and-deploy-widget:
     runs-on: ubuntu-latest
-    if: contains(github.event.head_commit.modified, 'apps/widget/') || contains(github.event.head_commit.added, 'apps/widget/') || contains(github.event.head_commit.removed, 'apps/widget/')
 
     steps:
       - name: Checkout source repo
@@ -61,7 +61,6 @@ jobs:
 
   build-and-deploy-public:
     runs-on: ubuntu-latest
-    if: contains(github.event.head_commit.modified, 'apps/public/') || contains(github.event.head_commit.added, 'apps/public/') || contains(github.event.head_commit.removed, 'apps/public/')
 
     steps:
       - name: Checkout source repo
@@ -94,7 +93,6 @@ jobs:
 
   build-and-deploy-admin:
     runs-on: ubuntu-latest
-    if: contains(github.event.head_commit.modified, 'apps/admin/') || contains(github.event.head_commit.added, 'apps/admin/') || contains(github.event.head_commit.removed, 'apps/admin/')
 
     steps:
       - name: Checkout source repo
