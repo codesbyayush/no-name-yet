@@ -1,15 +1,17 @@
-name: Build and Deploy Widget
+name: Build and Deploy Widget and Public Routes
 
 on:
   push:
     paths:
       - 'apps/widget/**'
+      - 'apps/public/**'
     branches:
       - main
 
 jobs:
-  build-and-deploy:
+  build-and-deploy-widget:
     runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.modified, 'apps/widget/') || contains(github.event.head_commit.added, 'apps/widget/') || contains(github.event.head_commit.removed, 'apps/widget/')
 
     steps:
       - name: Checkout source repo
@@ -56,3 +58,68 @@ jobs:
           git add .
           git commit -m "Deploy widget from private repo [skip ci]" || echo "No changes to commit"
           git push
+
+  build-and-deploy-public:
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.modified, 'apps/public/') || contains(github.event.head_commit.added, 'apps/public/') || contains(github.event.head_commit.removed, 'apps/public/')
+
+    steps:
+      - name: Checkout source repo
+        uses: actions/checkout@v3
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: |
+          cd apps/public
+          bun install
+
+      - name: Build public routes
+        run: |
+          cd apps/public
+          echo "PUBLIC_BACKEND_SERVER_URL=${{ secrets.BACKEND_URL }}" >> .env.production
+          echo "PUBLIC_ADMIN_URL=${{ secrets.ADMIN_URL }}" >> .env.production
+          bun run build
+
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+          packageManager: bun
+
+  build-and-deploy-admin:
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.modified, 'apps/admin/') || contains(github.event.head_commit.added, 'apps/admin/') || contains(github.event.head_commit.removed, 'apps/admin/')
+
+    steps:
+      - name: Checkout source repo
+        uses: actions/checkout@v3
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: |
+          cd apps/admin
+          bun install
+
+      - name: Build admin routes
+        run: |
+          cd apps/admin
+          echo "PUBLIC_BACKEND_SERVER_URL=${{ secrets.BACKEND_URL }}" >> .env.production
+          bun run build
+
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+          packageManager: bun
