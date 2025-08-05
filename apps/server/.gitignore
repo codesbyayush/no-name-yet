@@ -52,5 +52,3 @@ lerna-debug.log*
 next-env.d.ts
 
 llm-*
-
-wrangler.*

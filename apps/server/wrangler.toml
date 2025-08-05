@@ -1,0 +1,5 @@
+name = "api"
+main = "src/index.js"
+compatibility_date = "2025-02-13"
+
+route = { pattern = "api.openfeedback.tech/*", zone_name = "openfeedback.tech" }
