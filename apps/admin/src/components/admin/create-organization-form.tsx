@@ -92,9 +92,10 @@ export function CreateOrganizationForm({
 			}
 
 			// Create the organization using our custom procedure
-			const createResult = await client.createOrganizationWithUserUpdate({
+			const createResult = await authClient.organization.create({
 				name,
 				slug,
+				userId: session?.user?.id,
 			});
 
 			// Set the newly created organization as active using Better Auth

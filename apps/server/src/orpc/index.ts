@@ -304,22 +304,20 @@ export const apiRouter = {
 				// and then update the user's organizationId
 				const organizationId = randomUUID();
 
-				await Promise.all([
-					context.db.insert(organization).values({
-						id: organizationId,
-						name: input.name,
-						slug: input.slug,
-						createdAt: new Date(),
-						isOnboarded: false,
-						onboardingStep: "organization",
-					}),
+				await context.db.insert(organization).values({
+					id: organizationId,
+					name: input.name,
+					slug: input.slug,
+					createdAt: new Date(),
+					isOnboarded: false,
+					onboardingStep: "organization",
+				});
 
-					// Update user's organizationId
-					context.db
-						.update(user)
-						.set({ organizationId })
-						.where(eq(user.id, userId)),
-				]);
+				// Update user's organizationId
+				await context.db
+					.update(user)
+					.set({ organizationId })
+					.where(eq(user.id, userId));
 
 				return {
 					success: true,
@@ -331,6 +329,7 @@ export const apiRouter = {
 					},
 				};
 			} catch (error) {
+				console.error(error);
 				throw new ORPCError("INTERNAL_SERVER_ERROR");
 			}
 		}),

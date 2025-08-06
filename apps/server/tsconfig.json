@@ -14,8 +14,7 @@
 		"outDir": "./dist",
 		"types": ["bun-types", "@cloudflare/workers-types", "bun"],
 		"composite": true,
-		"jsx": "react-jsx",
-		"jsxImportSource": "hono/jsx"
+		"jsx": "react"
 	},
 	"tsc-alias": {
 		"resolveFullPaths": true

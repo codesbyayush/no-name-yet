@@ -25,7 +25,7 @@
 		"@neondatabase/serverless": "^1.0.1",
 		"@orpc/client": "^1.5.0",
 		"@orpc/server": "^1.5.0",
-		"@react-email/components": "0.4.0",
+		"@react-email/components": "0.0.36",
 		"better-auth": "^1.2.8",
 		"dotenv": "^17.1.0",
 		"drizzle-orm": "^0.44.2",
@@ -33,14 +33,15 @@
 		"pg": "^8.14.1",
 		"react": "19.0.0",
 		"react-dom": "19.0.0",
+		"react-email": "4.0.7",
 		"resend": "^4.8.0",
 		"zod": "^3.25.16"
 	},
 	"devDependencies": {
 		"@types/bun": "^1.2.6",
 		"@types/pg": "^8.11.11",
+		"@types/react": "^19.1.9",
 		"drizzle-kit": "^0.30.5",
-		"react-email": "4.2.8",
 		"tsc-alias": "^1.8.11",
 		"typescript": "^5.8.2",
 		"wrangler": "^4.24.3"

@@ -49,14 +49,15 @@ export function getAuth(env: AppEnv): any {
 			admin(),
 			organization({
 				organizationCreation: {
-					afterCreate: async ({ user }) => {
-						await sendEmail(
-							env,
-							user.email,
-							WelcomeSubject,
-							WelcomeEmail({ firstname: user.name }),
-							"Ayush <ayush@openfeedback.tech>",
-						);
+					afterCreate: async ({ user, organization }) => {
+						await sendEmail(env, user.email, "welcome", user.name);
+
+						await getDb(env as { DATABASE_URL: string })
+							.update(schema.user)
+							.set({
+								organizationId: organization.id,
+							})
+							.where(eq(schema.user.id, user.id));
 					},
 				},
 			}),
