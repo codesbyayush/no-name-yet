@@ -51,6 +51,7 @@ export function getAuth(env: AppEnv): any {
 				organizationCreation: {
 					afterCreate: async ({ user }) => {
 						await sendEmail(
+							env,
 							user.email,
 							WelcomeSubject,
 							WelcomeEmail({ firstname: user.name }),

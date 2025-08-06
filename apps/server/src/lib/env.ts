@@ -14,6 +14,7 @@ export interface AppEnv {
 	PORT: string;
 	GEMINI_API_KEY: string;
 	GOOGLE_GENERATIVE_AI_API_KEY: string;
+	RESEND_DOMAIN_KEY: string;
 }
 
 // Use Hono's official env adapter to get environment variables
