@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, anonymous, organization } from "better-auth/plugins";
+import { eq } from "drizzle-orm";
 import { getDb } from "../db";
 import * as schema from "../db/schema";
 import type { AppEnv } from "./env";
@@ -49,6 +50,30 @@ export function getAuth(env: AppEnv): any {
 				emailDomainName: "anon.us",
 				onLinkAccount: async ({ anonymousUser, newUser }) => {
 					// TODO: When we allow user to post without signup, update here to migrate post on linking account
+					const db = getDb(env as { DATABASE_URL: string });
+					const anonymousUserId = anonymousUser.user.id;
+					const newUserId = newUser.user.id;
+
+					// Run all migrations concurrently with Promise.allSettled
+					await Promise.allSettled([
+						// Migrate votes
+						db
+							.update(schema.votes)
+							.set({ userId: newUserId })
+							.where(eq(schema.votes.userId, anonymousUserId)),
+
+						// Migrate posts (feedback)
+						db
+							.update(schema.feedback)
+							.set({ userId: newUserId })
+							.where(eq(schema.feedback.userId, anonymousUserId)),
+
+						// Migrate comments
+						db
+							.update(schema.comments)
+							.set({ authorId: newUserId })
+							.where(eq(schema.comments.authorId, anonymousUserId)),
+					]);
 				},
 			}),
 		],
