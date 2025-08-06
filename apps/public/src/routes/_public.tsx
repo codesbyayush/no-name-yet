@@ -1,11 +1,12 @@
 import { BrandLogoIcon } from "@/components/svg/logo";
-import { useSession } from "@/lib/auth-client";
+import { authClient, useSession } from "@/lib/auth-client";
 import {
 	Link,
 	Outlet,
 	createFileRoute,
 	useLocation,
 } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/_public")({
 	component: PublicLayout,
@@ -15,6 +16,15 @@ function PublicLayout() {
 	const location = useLocation();
 
 	const { data: session } = useSession();
+
+	useEffect(() => {
+		(async () => {
+			const session = await authClient.getSession();
+			if (session.error !== null) {
+				authClient.signIn.anonymous();
+			}
+		})();
+	}, []);
 
 	return (
 		<div className="flex h-full min-h-screen flex-col items-center bg-background bg-noise">

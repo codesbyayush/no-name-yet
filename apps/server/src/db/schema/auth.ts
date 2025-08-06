@@ -21,6 +21,7 @@ export const user = pgTable(
 		image: text("image"),
 		createdAt: timestamp("created_at").notNull(),
 		updatedAt: timestamp("updated_at").notNull(),
+		isAnonymous: boolean("is_anonymous").notNull().default(false),
 		// Extended fields for multi-tenancy and enhanced user management
 		organizationId: text("organization_id").references(() => organization.id, {
 			onDelete: "cascade",

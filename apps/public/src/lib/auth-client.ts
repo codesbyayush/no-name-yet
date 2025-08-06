@@ -1,9 +1,13 @@
-import { adminClient, organizationClient } from "better-auth/client/plugins";
+import {
+	adminClient,
+	anonymousClient,
+	organizationClient,
+} from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
 export const authClient = createAuthClient({
 	baseURL: `${import.meta.env.PUBLIC_BACKEND_SERVER_URL!}/`,
-	plugins: [adminClient(), organizationClient()],
+	plugins: [adminClient(), organizationClient(), anonymousClient()],
 	fetchOptions: {
 		credentials: "include",
 		// headers: {

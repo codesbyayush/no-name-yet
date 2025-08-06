@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { admin, organization } from "better-auth/plugins";
+import { admin, anonymous, organization } from "better-auth/plugins";
 import { getDb } from "../db";
 import * as schema from "../db/schema";
 import type { AppEnv } from "./env";
@@ -42,6 +42,15 @@ export function getAuth(env: AppEnv): any {
 				clientSecret: (env.GOOGLE_CLIENT_SECRET as string) || "",
 			},
 		},
-		plugins: [admin(), organization()],
+		plugins: [
+			admin(),
+			organization(),
+			anonymous({
+				emailDomainName: "anon.us",
+				onLinkAccount: async ({ anonymousUser, newUser }) => {
+					// TODO: When we allow user to post without signup, update here to migrate post on linking account
+				},
+			}),
+		],
 	});
 }

@@ -1,5 +1,5 @@
 {
-  "id": "70d3dfc2-c68f-4290-b317-96eec2c405d2",
+  "id": "8844b255-2889-48c8-8b16-7e872cd8f20a",
   "prevId": "d7897ced-be84-47c2-a196-fbd1873b5e9a",
   "version": "7",
   "dialect": "postgresql",
@@ -249,6 +249,13 @@
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true
+        },
+        "is_anonymous": {
+          "name": "is_anonymous",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         },
         "organization_id": {
           "name": "organization_id",
