@@ -4,6 +4,8 @@ import { admin, anonymous, organization } from "better-auth/plugins";
 import { eq } from "drizzle-orm";
 import { getDb } from "../db";
 import * as schema from "../db/schema";
+import { sendEmail } from "../email";
+import { WelcomeEmail, WelcomeSubject } from "../email/templates/welcome-email";
 import type { AppEnv } from "./env";
 
 export function getAuth(env: AppEnv): any {
@@ -45,7 +47,18 @@ export function getAuth(env: AppEnv): any {
 		},
 		plugins: [
 			admin(),
-			organization(),
+			organization({
+				organizationCreation: {
+					afterCreate: async ({ user }) => {
+						await sendEmail(
+							user.email,
+							WelcomeSubject,
+							WelcomeEmail({ firstname: user.name }),
+							"Ayush <ayush@openfeedback.tech>",
+						);
+					},
+				},
+			}),
 			anonymous({
 				emailDomainName: "anon.us",
 				onLinkAccount: async ({ anonymousUser, newUser }) => {
