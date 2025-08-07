@@ -56,7 +56,7 @@ const container = {
 };
 
 const box = {
-	padding: "0 48px",
+	padding: "0 32px",
 };
 
 const paragraph = {
