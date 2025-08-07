@@ -3,15 +3,27 @@ import OmniFeedbackWidget from "@/components/feedback-widget";
 import { OnboardingGuard } from "@/components/onboarding-guard";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AuthProvider } from "@/contexts/auth-context";
-import { Outlet, createFileRoute } from "@tanstack/react-router";
+import { authClient } from "@/lib/auth-client";
+import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_admin")({
+	beforeLoad: async ({ location }) => {
+		const { data: session } = await authClient.getSession();
+		if (!session) {
+			throw redirect({
+				to: "/auth",
+				search: { redirect: location.pathname },
+				replace: true,
+			});
+		}
+		return { session };
+	},
 	component: AdminLayout,
 });
 
 function AdminLayout() {
 	return (
-		<AuthProvider requireAuth={true} adminOnly={false}>
+		<AuthProvider>
 			<OnboardingGuard requiresOnboarding={true}>
 				<SidebarProvider
 					style={
