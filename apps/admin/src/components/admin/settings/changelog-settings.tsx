@@ -19,7 +19,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { adminClient } from "@/utils/admin-orpc";
-import { client, queryClient } from "@/utils/orpc";
+import { queryClient } from "@/utils/orpc";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { EditIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -297,6 +297,7 @@ export function ChangelogSettings() {
 										<div className="absolute top-12 left-0 z-10 grid w-48 grid-cols-6 gap-1 rounded-md border border-border bg-card p-2 shadow-lg">
 											{availableEmojis.map((emoji) => (
 												<button
+													type="button"
 													key={emoji}
 													onClick={() => {
 														setNewBoardEmoji(emoji);
@@ -375,6 +376,7 @@ export function ChangelogSettings() {
 									>
 										{tag.name}
 										<button
+											type="button"
 											onClick={() => deleteTag(tag.id)}
 											className="-translate-y-1/2 absolute top-1/2 right-1 cursor-pointer rounded-full p-0.5 opacity-0 transition-opacity hover:bg-black/10 group-hover:opacity-100"
 										>
