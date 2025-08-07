@@ -6,13 +6,16 @@ import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_admin/boards")({
 	component: RouteComponent,
-	validateSearch: (search: Record<string, unknown>) => ({
-		search: (search.search as string) || "",
-		tag: (search.tag as string) || "all",
-		status: (search.status as string) || "all",
-		order: (search.order as string) || "name-asc",
-		tab: (search.tab as string) || "all",
-	}),
+	validateSearch: (search?: Record<string, unknown>) =>
+		search
+			? {
+					search: (search.search as string) || "",
+					tag: (search.tag as string) || "all",
+					status: (search.status as string) || "all",
+					order: (search.order as string) || "name-asc",
+					tab: (search.tab as string) || "all",
+				}
+			: {},
 });
 
 function RouteComponent() {

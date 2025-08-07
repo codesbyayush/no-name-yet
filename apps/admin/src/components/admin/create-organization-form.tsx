@@ -39,7 +39,7 @@ export function CreateOrganizationForm({
 	const { data: session } = useSession();
 
 	const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		// Convert to lowercase and replace spaces and special chars with dashes
+		//TODO: can't add dash in input but can be added if copy pasted
 		const newSlug = e.target.value
 			.toLowerCase()
 			.replace(/[^a-z0-9]+/g, "-")
@@ -49,22 +49,12 @@ export function CreateOrganizationForm({
 
 	const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setName(e.target.value);
-
-		// Auto-generate slug from name if slug is empty
-		if (!slug) {
-			const generatedSlug = e.target.value
-				.toLowerCase()
-				.replace(/[^a-z0-9]+/g, "-")
-				.replace(/^-+|-+$/g, "");
-			setSlug(generatedSlug);
-		}
 	};
 
 	const checkSlugAvailability = async () => {
 		if (!slug) {
 			return;
 		}
-
 		try {
 			const response = await authClient.organization.checkSlug({
 				slug,
@@ -81,7 +71,6 @@ export function CreateOrganizationForm({
 		setError(null);
 
 		try {
-			// Check if the slug is available
 			const isSlugAvailable = await checkSlugAvailability();
 			if (!isSlugAvailable) {
 				setError(
@@ -91,19 +80,16 @@ export function CreateOrganizationForm({
 				return;
 			}
 
-			// Create the organization using our custom procedure
-			const createResult = await authClient.organization.create({
+			await authClient.organization.create({
 				name,
 				slug,
 				userId: session?.user?.id,
 			});
-
-			// Set the newly created organization as active using Better Auth
-			const setActiveResult = await authClient.organization.setActive({
+			await authClient.organization.setActive({
 				organizationSlug: slug,
 			});
 
-			// Mark organization step as complete
+			// Mark organization step as complete - TODO: remove this shittty logic
 			try {
 				await client.completeOnboardingStep({ step: "organization" });
 			} catch (error) {}
@@ -111,14 +97,13 @@ export function CreateOrganizationForm({
 			// Invalidate queries to refresh data
 			queryClient.invalidateQueries({ queryKey: ["onboarding-status"] });
 
-			// Small delay to ensure organization creation is complete
-			await new Promise((resolve) => setTimeout(resolve, 1000));
-
 			if (onSuccess) {
 				onSuccess();
 			} else {
-				// Redirect to the dashboard route
-				navigate({ to: "/dashboard" });
+				navigate({
+					to: "/boards",
+					replace: true,
+				});
 			}
 		} catch (err) {
 			const errorMessage =
@@ -135,14 +120,8 @@ export function CreateOrganizationForm({
 
 	return (
 		<Card className={className}>
-			<CardHeader>
-				<CardTitle>Create Organization</CardTitle>
-				<CardDescription>
-					Set up a new organization to collaborate with your team
-				</CardDescription>
-			</CardHeader>
 			<CardContent>
-				<form onSubmit={handleSubmit} className="space-y-4">
+				<form onSubmit={handleSubmit} className="space-y-6">
 					<div className="space-y-2">
 						<Label htmlFor="name">Organization Name</Label>
 						<Input
@@ -157,11 +136,8 @@ export function CreateOrganizationForm({
 					</div>
 
 					<div className="space-y-2">
-						<Label htmlFor="slug">Organization Slug</Label>
+						<Label htmlFor="slug">Public url</Label>
 						<div className="flex items-center space-x-2">
-							<span className="text-muted-foreground text-sm">
-								example.com/
-							</span>
 							<Input
 								id="slug"
 								type="text"
@@ -172,15 +148,15 @@ export function CreateOrganizationForm({
 								disabled={isSubmitting}
 								className="flex-1"
 							/>
+							<span className="text-muted-foreground text-sm">
+								.omnifeedback.tech/
+							</span>
 						</div>
-						<p className="text-muted-foreground text-xs">
-							This will be used in URLs and cannot be changed later.
-						</p>
 					</div>
 
 					{error && (
 						<Alert variant="destructive">
-							<AlertTitle>Error</AlertTitle>
+							<AlertTitle className="sr-only">Error</AlertTitle>
 							<AlertDescription>{error}</AlertDescription>
 						</Alert>
 					)}
