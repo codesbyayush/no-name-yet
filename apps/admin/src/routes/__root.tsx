@@ -1,4 +1,3 @@
-import Header from "@/components/header";
 import Loader from "@/components/loader";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -12,6 +11,7 @@ import {
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import "../index.css";
 
+// biome-ignore lint/complexity/noBannedTypes: <explanation>
 export type RouterAppContext = {};
 
 export const Route = createRootRouteWithContext<RouterAppContext>()({
@@ -19,11 +19,12 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 	head: () => ({
 		meta: [
 			{
-				title: "My App",
+				title: "OmniFeedback Admin",
 			},
 			{
 				name: "description",
-				content: "My App is a web application",
+				content:
+					"OmniFeedback Admin is a bug/feature tracking tool admin dashboard.",
 			},
 		],
 		links: [
