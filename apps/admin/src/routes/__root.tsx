@@ -49,16 +49,21 @@ function RootComponent() {
 			<ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
 				{isLandingPage ? (
 					<div className="min-h-screen">
-						{isFetching ? <Loader /> : <Outlet />}
+						<Outlet />
 					</div>
 				) : (
 					<div className="grid h-svh grid-rows-[auto_1fr]">
-						{isFetching ? <Loader /> : <Outlet />}
+						<Outlet />
+					</div>
+				)}
+				{isFetching && (
+					<div className="pointer-events-none fixed inset-0 z-50 flex items-start justify-center">
+						<Loader />
 					</div>
 				)}
 				<Toaster richColors />
 			</ThemeProvider>
-			<TanStackRouterDevtools position="bottom-left" />
+			<TanStackRouterDevtools position="bottom-right" />
 		</>
 	);
 }

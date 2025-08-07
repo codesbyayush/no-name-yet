@@ -15,7 +15,7 @@ export const tags = pgTable(
 		updatedAt: timestamp("updated_at").defaultNow().notNull(),
 	},
 	(table) => ({
-		uniqueOrganizationName: unique().on(table.organizationId, table.name),
+		uniqueOrganizationName: unique().on(table.organizationId, table.type),
 		organizationIdx: index("idx_tags_organization").on(table.organizationId),
 	}),
 );

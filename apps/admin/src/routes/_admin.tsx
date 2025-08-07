@@ -28,14 +28,14 @@ function AdminLayout() {
 				<SidebarProvider
 					style={
 						{
-							"--sidebar-width": "calc(var(--spacing) * 72)",
+							"--sidebar-width": "350px",
 							"--header-height": "calc(var(--spacing) * 12)",
 						} as React.CSSProperties
 					}
 				>
 					<OmniFeedbackWidget />
-					<AppSidebar variant="inset" />
-					<SidebarInset className="!mt-0 min-h-max">
+					<AppSidebar />
+					<SidebarInset className="!mt-0 !mx-0 min-h-max">
 						<Outlet />
 					</SidebarInset>
 				</SidebarProvider>

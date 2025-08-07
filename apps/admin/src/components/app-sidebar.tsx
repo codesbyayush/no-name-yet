@@ -1,37 +1,36 @@
-import {
-	IconCamera,
-	IconChartBar,
-	IconCode,
-	IconDashboard,
-	IconDatabase,
-	IconFileAi,
-	IconFileDescription,
-	IconFileWord,
-	IconFolder,
-	IconHelp,
-	IconInnerShadowTop,
-	IconListDetails,
-	IconReport,
-	IconSearch,
-	IconSettings,
-	IconUsers,
-} from "@tabler/icons-react";
-import type * as React from "react";
+"use client";
 
-import { NavDocuments } from "@/components/nav-documents";
-import { NavMain } from "@/components/nav-main";
-import { NavSecondary } from "@/components/nav-secondary";
+import { Link, useLocation } from "@tanstack/react-router";
+import {
+	Bell,
+	ClipboardList,
+	Command,
+	MessageSquare,
+	Route,
+	ScrollText,
+	Settings,
+	Users,
+} from "lucide-react";
+import * as React from "react";
+
 import { NavUser } from "@/components/nav-user";
+import { Label } from "@/components/ui/label";
 import {
 	Sidebar,
 	SidebarContent,
 	SidebarFooter,
+	SidebarGroup,
+	SidebarGroupContent,
 	SidebarHeader,
+	SidebarInput,
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
+	useSidebar,
 } from "@/components/ui/sidebar";
+import { Switch } from "@/components/ui/switch";
 
+// This is sample data
 const data = {
 	user: {
 		name: "shadcn",
@@ -40,152 +39,262 @@ const data = {
 	},
 	navMain: [
 		{
-			title: "Public View",
-			url: "#",
-			icon: IconDashboard,
-		},
-		// {
-		//   title: "Analytics",
-		//   url: "#",
-		//   icon: IconListDetails,
-		// },
-		// {
-		//   title: "Projects",
-		//   url: "#",
-		//   icon: IconFolder,
-		// },
-		// {
-		//   title: "Team",
-		//   url: "#",
-		//   icon: IconUsers,
-		// },
-	],
-	// navClouds: [
-	//   {
-	//     title: "Capture",
-	//     icon: IconCamera,
-	//     isActive: true,
-	//     url: "#",
-	//     items: [
-	//       {
-	//         title: "Active Proposals",
-	//         url: "#",
-	//       },
-	//       {
-	//         title: "Archived",
-	//         url: "#",
-	//       },
-	//     ],
-	//   },
-	//   {
-	//     title: "Proposal",
-	//     icon: IconFileDescription,
-	//     url: "#",
-	//     items: [
-	//       {
-	//         title: "Active Proposals",
-	//         url: "#",
-	//       },
-	//       {
-	//         title: "Archived",
-	//         url: "#",
-	//       },
-	//     ],
-	//   },
-	//   {
-	//     title: "Prompts",
-	//     icon: IconFileAi,
-	//     url: "#",
-	//     items: [
-	//       {
-	//         title: "Active Proposals",
-	//         url: "#",
-	//       },
-	//       {
-	//         title: "Archived",
-	//         url: "#",
-	//       },
-	//     ],
-	//   },
-	// ],
-	navSecondary: [
-		{
-			title: "Help & Feedback",
-			url: "#",
-			icon: IconHelp,
-		},
-	],
-	services: [
-		{
-			name: "Boards",
+			title: "Feedback",
 			url: "/boards",
-			icon: IconDatabase,
+			icon: MessageSquare,
+			isActive: true,
 		},
 		{
-			name: "Roadmap",
-			url: "/roadmap",
-			icon: IconReport,
+			title: "Roadmap",
+			url: "/roadmaps",
+			icon: Route,
+			isActive: false,
 		},
 		{
-			name: "Changelog",
+			title: "Changelog",
 			url: "/changelogs",
-			icon: IconFileWord,
-		},
-	],
-	insights: [
-		{
-			name: "Analytics",
-			url: "/analytics",
-			icon: IconChartBar,
+			icon: ScrollText,
+			isActive: false,
 		},
 		{
-			name: "Users",
+			title: "Surveys",
+			url: "/surveys",
+			icon: ClipboardList,
+			isActive: false,
+		},
+		{
+			title: "Users",
 			url: "/users",
-			icon: IconUsers,
+			icon: Users,
+			isActive: false,
 		},
 	],
-	settings: [
+	mails: [
 		{
-			name: "Widget",
-			url: "/widget",
-			icon: IconCode,
+			name: "William Smith",
+			email: "williamsmith@example.com",
+			subject: "Meeting Tomorrow",
+			date: "09:34 AM",
+			teaser:
+				"Hi team, just a reminder about our meeting tomorrow at 10 AM.\nPlease come prepared with your project updates.",
 		},
 		{
-			name: "Settings",
-			url: "/settings",
-			icon: IconSettings,
+			name: "Alice Smith",
+			email: "alicesmith@example.com",
+			subject: "Re: Project Update",
+			date: "Yesterday",
+			teaser:
+				"Thanks for the update. The progress looks great so far.\nLet's schedule a call to discuss the next steps.",
+		},
+		{
+			name: "Bob Johnson",
+			email: "bobjohnson@example.com",
+			subject: "Weekend Plans",
+			date: "2 days ago",
+			teaser:
+				"Hey everyone! I'm thinking of organizing a team outing this weekend.\nWould you be interested in a hiking trip or a beach day?",
+		},
+		{
+			name: "Emily Davis",
+			email: "emilydavis@example.com",
+			subject: "Re: Question about Budget",
+			date: "2 days ago",
+			teaser:
+				"I've reviewed the budget numbers you sent over.\nCan we set up a quick call to discuss some potential adjustments?",
+		},
+		{
+			name: "Michael Wilson",
+			email: "michaelwilson@example.com",
+			subject: "Important Announcement",
+			date: "1 week ago",
+			teaser:
+				"Please join us for an all-hands meeting this Friday at 3 PM.\nWe have some exciting news to share about the company's future.",
+		},
+		{
+			name: "Sarah Brown",
+			email: "sarahbrown@example.com",
+			subject: "Re: Feedback on Proposal",
+			date: "1 week ago",
+			teaser:
+				"Thank you for sending over the proposal. I've reviewed it and have some thoughts.\nCould we schedule a meeting to discuss my feedback in detail?",
+		},
+		{
+			name: "David Lee",
+			email: "davidlee@example.com",
+			subject: "New Project Idea",
+			date: "1 week ago",
+			teaser:
+				"I've been brainstorming and came up with an interesting project concept.\nDo you have time this week to discuss its potential impact and feasibility?",
+		},
+		{
+			name: "Olivia Wilson",
+			email: "oliviawilson@example.com",
+			subject: "Vacation Plans",
+			date: "1 week ago",
+			teaser:
+				"Just a heads up that I'll be taking a two-week vacation next month.\nI'll make sure all my projects are up to date before I leave.",
+		},
+		{
+			name: "James Martin",
+			email: "jamesmartin@example.com",
+			subject: "Re: Conference Registration",
+			date: "1 week ago",
+			teaser:
+				"I've completed the registration for the upcoming tech conference.\nLet me know if you need any additional information from my end.",
+		},
+		{
+			name: "Sophia White",
+			email: "sophiawhite@example.com",
+			subject: "Team Dinner",
+			date: "1 week ago",
+			teaser:
+				"To celebrate our recent project success, I'd like to organize a team dinner.\nAre you available next Friday evening? Please let me know your preferences.",
 		},
 	],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+	const [mails, setMails] = React.useState(data.mails);
+	const { setOpen } = useSidebar();
+	const location = useLocation();
+
+	const currentNavItem = React.useMemo(() => {
+		return (
+			data.navMain.find((item) => location.pathname.startsWith(item.url)) ||
+			data.navMain[0]
+		);
+	}, [location.pathname]);
+
 	return (
-		<Sidebar collapsible="offcanvas" {...props}>
-			<SidebarHeader>
-				<SidebarMenu>
-					<SidebarMenuItem>
-						<SidebarMenuButton
-							asChild
-							className="data-[slot=sidebar-menu-button]:!p-1.5"
-						>
-							<a href="#">
-								<IconInnerShadowTop className="!size-5" />
-								<span className="font-semibold text-base">Acme Inc.</span>
-							</a>
-						</SidebarMenuButton>
-					</SidebarMenuItem>
-				</SidebarMenu>
-			</SidebarHeader>
-			<SidebarContent>
-				<NavMain items={data.navMain} />
-				<NavDocuments items={data.services} heading={"Services"} />
-				<NavDocuments items={data.insights} heading={"Insights"} />
-				<NavDocuments items={data.settings} heading={"Workspace"} />
-				<NavSecondary items={data.navSecondary} className="mt-auto" />
-			</SidebarContent>
-			<SidebarFooter>
-				<NavUser />
-			</SidebarFooter>
+		<Sidebar
+			collapsible="icon"
+			className="overflow-hidden border-muted *:data-[sidebar=sidebar]:flex-row"
+			{...props}
+		>
+			<Sidebar
+				collapsible="none"
+				className="w-[calc(var(--sidebar-width-icon)+1px)]! border-muted border-r"
+			>
+				<SidebarHeader>
+					<SidebarMenu>
+						<SidebarMenuItem>
+							<SidebarMenuButton size="lg" asChild className="md:h-8 md:p-0">
+								<button type="button">
+									<div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+										<Command className="size-4" />
+									</div>
+									<div className="grid flex-1 text-left text-sm leading-tight">
+										<span className="truncate font-medium">Acme Inc</span>
+										<span className="truncate text-xs">Enterprise</span>
+									</div>
+								</button>
+							</SidebarMenuButton>
+						</SidebarMenuItem>
+					</SidebarMenu>
+				</SidebarHeader>
+				<SidebarContent>
+					<SidebarGroup>
+						<SidebarGroupContent className="px-1.5 md:px-0">
+							<SidebarMenu>
+								{data.navMain.map((item) => (
+									<SidebarMenuItem key={item.title}>
+										<SidebarMenuButton
+											tooltip={{ children: item.title, hidden: false }}
+											isActive={location.pathname.startsWith(item.url)}
+											className="px-2.5 md:px-2"
+											asChild
+										>
+											<Link
+												to={item.url}
+												onClick={() => {
+													const mail = data.mails.sort(
+														() => Math.random() - 0.5,
+													);
+													setMails(
+														mail.slice(
+															0,
+															Math.max(5, Math.floor(Math.random() * 10) + 1),
+														),
+													);
+												}}
+											>
+												<item.icon />
+												<span>{item.title}</span>
+											</Link>
+										</SidebarMenuButton>
+									</SidebarMenuItem>
+								))}
+							</SidebarMenu>
+						</SidebarGroupContent>
+					</SidebarGroup>
+				</SidebarContent>
+				<SidebarFooter>
+					<SidebarMenu>
+						<SidebarMenuItem>
+							<SidebarMenuButton
+								tooltip={{ children: "Notifications", hidden: false }}
+								className="px-2.5 md:px-2"
+							>
+								<Bell />
+								<span>Notifications</span>
+							</SidebarMenuButton>
+						</SidebarMenuItem>
+						<SidebarMenuItem>
+							<SidebarMenuButton
+								tooltip={{ children: "Settings", hidden: false }}
+								className="px-2.5 md:px-2"
+								asChild
+							>
+								<Link to="/settings" search={{ tab: "general" }}>
+									<Settings />
+									<span>Settings</span>
+								</Link>
+							</SidebarMenuButton>
+						</SidebarMenuItem>
+					</SidebarMenu>
+					<NavUser />
+				</SidebarFooter>
+			</Sidebar>
+
+			<Sidebar
+				collapsible="none"
+				className="hidden flex-1 border-muted md:flex"
+			>
+				<SidebarHeader className="gap-3.5 border-muted border-b p-4">
+					<div className="flex w-full items-center justify-between">
+						<div className="font-medium text-base text-foreground">
+							{currentNavItem?.title}
+						</div>
+						<Label className="flex items-center gap-2 text-sm">
+							<span>Unreads</span>
+							<Switch className="shadow-none" />
+						</Label>
+					</div>
+					<SidebarInput placeholder="Type to search..." />
+				</SidebarHeader>
+				<SidebarContent>
+					<SidebarGroup className="px-0">
+						<SidebarGroupContent className="overflow-x-hidden">
+							{mails.map((mail) => (
+								<button
+									type="button"
+									key={mail.email}
+									className="flex flex-col items-start gap-2 whitespace-nowrap border-b p-4 text-left text-sm leading-tight last:border-b-0 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+								>
+									<div className="flex w-full items-center gap-2">
+										<span>{mail.name}</span>{" "}
+										<span className="ml-auto text-xs">{mail.date}</span>
+									</div>
+									<span className="font-medium">{mail.subject}</span>
+									<span className="line-clamp-2 w-[260px] whitespace-break-spaces text-xs">
+										{mail.teaser}
+									</span>
+								</button>
+							))}
+						</SidebarGroupContent>
+					</SidebarGroup>
+				</SidebarContent>
+			</Sidebar>
 		</Sidebar>
 	);
 }
