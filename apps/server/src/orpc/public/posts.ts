@@ -1,12 +1,17 @@
 import { ORPCError } from "@orpc/client";
-import { eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { z } from "zod";
+import {
+	boards,
+	feedbackTags,
+	statuses,
+	tags as tagsTable,
+} from "../../db/schema";
 import {
 	type Feedback,
 	type NewFeedback,
 	feedback,
 	feedbackTypeEnum,
-	statusEnum,
 } from "../../db/schema/feedback";
 import { protectedProcedure } from "../procedures";
 
@@ -55,6 +60,26 @@ export const postsRouter = {
 			}
 
 			try {
+				// Resolve default statusId (open) for the organization's board
+				const boardOrg = await context.db
+					.select({ organizationId: boards.organizationId })
+					.from(boards)
+					.where(eq(boards.id, input.boardId))
+					.limit(1);
+				if (!boardOrg[0]) {
+					throw new ORPCError("BAD_REQUEST");
+				}
+				const openStatus = await context.db
+					.select({ id: statuses.id })
+					.from(statuses)
+					.where(
+						and(
+							eq(statuses.organizationId, boardOrg[0].organizationId),
+							eq(statuses.key, "open"),
+						),
+					)
+					.limit(1);
+				const statusIdToUse = openStatus[0]?.id as string;
 				const [newPost] = await context.db
 					.insert(feedback)
 					.values({
@@ -68,12 +93,39 @@ export const postsRouter = {
 						userAgent: input.userAgent,
 						url: input.url,
 						priority: input.priority,
-						tags: input.tags,
+						statusId: statusIdToUse,
 						browserInfo: input.browserInfo,
 						attachments: input.attachments,
 						isAnonymous: false,
 					})
 					.returning();
+				// Attach tags via junction table if any were provided
+				if (input.tags.length > 0) {
+					const orgId = (
+						await context.db
+							.select({ organizationId: boards.organizationId })
+							.from(boards)
+							.where(eq(boards.id, input.boardId))
+							.limit(1)
+					)[0]?.organizationId as string;
+					const tagRows = await context.db
+						.select({ id: tagsTable.id })
+						.from(tagsTable)
+						.where(
+							and(
+								eq(tagsTable.organizationId, orgId),
+								inArray(tagsTable.name, input.tags),
+							),
+						);
+					if (tagRows.length > 0) {
+						await context.db.insert(feedbackTags).values(
+							tagRows.map((t: { id: string }) => ({
+								feedbackId: newPost.id,
+								tagId: t.id,
+							})),
+						);
+					}
+				}
 
 				return newPost;
 			} catch (error) {
@@ -87,9 +139,7 @@ export const postsRouter = {
 				id: z.string(),
 				title: z.string().optional(),
 				description: z.string().min(1).optional(),
-				status: z
-					.enum(["open", "in_progress", "resolved", "closed"])
-					.optional(),
+				statusId: z.string().optional(),
 				priority: z.enum(["low", "medium", "high"]).optional(),
 				tags: z.array(z.string()).optional(),
 				url: z.string().optional(),
@@ -125,9 +175,8 @@ export const postsRouter = {
 				.set({
 					...(input.title && { title: input.title }),
 					...(input.description && { description: input.description }),
-					...(input.status && { status: input.status }),
+					...(input.statusId && { statusId: input.statusId }),
 					...(input.priority && { priority: input.priority }),
-					...(input.tags && { tags: input.tags }),
 					...(input.url && { url: input.url }),
 					...(input.userAgent && { userAgent: input.userAgent }),
 					...(input.browserInfo && { browserInfo: input.browserInfo }),

@@ -1,5 +1,12 @@
 import { sql } from "drizzle-orm";
-import { boolean, index, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import {
+	boolean,
+	index,
+	pgTable,
+	text,
+	timestamp,
+	unique,
+} from "drizzle-orm/pg-core";
 import { user } from "./auth";
 
 // Organization table
@@ -19,7 +26,7 @@ export const organization = pgTable(
 		onboardingCompletedAt: timestamp("onboarding_completed_at"),
 	},
 	(table) => ({
-		slugIdx: index("idx_organization_slug").on(table.slug),
+		slugUnique: unique().on(table.slug),
 	}),
 );
 
@@ -35,7 +42,6 @@ export const member = pgTable(
 			.notNull()
 			.references(() => organization.id, { onDelete: "cascade" }),
 		role: text("role").notNull(),
-		teamId: text("team_id").references(() => team.id, { onDelete: "set null" }),
 		createdAt: timestamp("created_at").notNull(),
 	},
 	(table) => ({
@@ -44,7 +50,6 @@ export const member = pgTable(
 			table.organizationId,
 		),
 		orgIdx: index("idx_member_org").on(table.organizationId),
-		teamIdx: index("idx_member_team").on(table.teamId),
 	}),
 );
 
@@ -62,7 +67,6 @@ export const invitation = pgTable(
 			.references(() => organization.id, { onDelete: "cascade" }),
 		role: text("role").notNull(),
 		status: text("status").notNull(),
-		teamId: text("team_id").references(() => team.id, { onDelete: "set null" }),
 		expiresAt: timestamp("expires_at").notNull(),
 		createdAt: timestamp("created_at").notNull(),
 	},
@@ -73,22 +77,5 @@ export const invitation = pgTable(
 		),
 		statusIdx: index("idx_invitation_status").on(table.status),
 		expiresIdx: index("idx_invitation_expires").on(table.expiresAt),
-	}),
-);
-
-// Team table - optional teams within organizations
-export const team = pgTable(
-	"team",
-	{
-		id: text("id").primaryKey(),
-		name: text("name").notNull(),
-		organizationId: text("organization_id")
-			.notNull()
-			.references(() => organization.id, { onDelete: "cascade" }),
-		createdAt: timestamp("created_at").notNull(),
-		updatedAt: timestamp("updated_at"),
-	},
-	(table) => ({
-		orgIdx: index("idx_team_org").on(table.organizationId),
 	}),
 );

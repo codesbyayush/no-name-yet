@@ -3,11 +3,23 @@ import {
 	boards,
 	comments,
 	feedback,
+	feedbackTags,
+	statuses,
+	tags as tagsTable,
 	user,
 	votes,
 } from "@/db/schema";
 import { ORPCError } from "@orpc/client";
-import { and, asc, desc, eq, exists, sql } from "drizzle-orm";
+import {
+	type SQL,
+	and,
+	asc,
+	desc,
+	eq,
+	exists,
+	inArray,
+	sql,
+} from "drizzle-orm";
 import { z } from "zod";
 import { protectedProcedure } from "../procedures";
 
@@ -29,7 +41,7 @@ export const postsRouter = {
 			}
 			const userId = context.session?.user?.id;
 			try {
-				let orderBy;
+				let orderBy: SQL<unknown>;
 				switch (sortBy) {
 					case "oldest":
 						orderBy = asc(feedback.createdAt);
@@ -53,7 +65,7 @@ export const postsRouter = {
 						boardId: feedback.boardId,
 						createdAt: feedback.createdAt,
 						updatedAt: feedback.updatedAt,
-						status: feedback.status,
+						status: statuses.key,
 						author: {
 							id: user.id,
 							name: user.name,
@@ -87,6 +99,7 @@ export const postsRouter = {
 					.from(feedback)
 					.leftJoin(user, eq(feedback.userId, user.id))
 					.leftJoin(boards, eq(feedback.boardId, boards.id))
+					.leftJoin(statuses, eq(feedback.statusId, statuses.id))
 					.where(and(...filters))
 					.orderBy(orderBy)
 					.offset(offset)
@@ -164,6 +177,7 @@ export const postsRouter = {
 					.from(feedback)
 					.leftJoin(user, eq(feedback.userId, user.id))
 					.leftJoin(boards, eq(feedback.boardId, boards.id))
+					.leftJoin(statuses, eq(feedback.statusId, statuses.id))
 					.where(eq(feedback.id, feedbackId));
 				return {
 					post: post[0],
@@ -186,6 +200,7 @@ export const postsRouter = {
 				url: z.string().optional(),
 				priority: z.enum(["low", "medium", "high"]).default("low"),
 				tags: z.array(z.string()).default([]),
+				statusId: z.string().optional(),
 				userAgent: z.string().optional(),
 				browserInfo: z
 					.object({
@@ -218,6 +233,29 @@ export const postsRouter = {
 				throw new ORPCError("UNAUTHORIZED");
 			}
 			try {
+				// Resolve default status if not provided
+				let statusIdToUse: string | undefined = input.statusId;
+				if (!statusIdToUse) {
+					const boardOrg = await context.db
+						.select({ organizationId: boards.organizationId })
+						.from(boards)
+						.where(eq(boards.id, input.boardId))
+						.limit(1);
+					if (!boardOrg[0]) {
+						throw new ORPCError("BAD_REQUEST");
+					}
+					const openStatus = await context.db
+						.select({ id: statuses.id })
+						.from(statuses)
+						.where(
+							and(
+								eq(statuses.organizationId, boardOrg[0].organizationId),
+								eq(statuses.key, "open"),
+							),
+						)
+						.limit(1);
+					statusIdToUse = openStatus[0]?.id as string;
+				}
 				const [newPost] = await context.db
 					.insert(feedback)
 					.values({
@@ -231,12 +269,40 @@ export const postsRouter = {
 						userAgent: input.userAgent,
 						url: input.url,
 						priority: input.priority,
-						tags: input.tags,
+						statusId: statusIdToUse,
 						browserInfo: input.browserInfo,
 						attachments: input.attachments,
 						isAnonymous: false,
 					})
 					.returning();
+				// Attach tags via junction table if any were provided
+				if (input.tags.length > 0) {
+					const orgId = (
+						await context.db
+							.select({ organizationId: boards.organizationId })
+							.from(boards)
+							.where(eq(boards.id, newPost.boardId))
+							.limit(1)
+					)[0]?.organizationId as string;
+					// Resolve tag ids by name scoped to org
+					const tagRows = await context.db
+						.select({ id: tagsTable.id })
+						.from(tagsTable)
+						.where(
+							and(
+								eq(tagsTable.organizationId, orgId),
+								inArray(tagsTable.name, input.tags),
+							),
+						);
+					if (tagRows.length > 0) {
+						await context.db.insert(feedbackTags).values(
+							tagRows.map((t: { id: string }) => ({
+								feedbackId: newPost.id,
+								tagId: t.id,
+							})),
+						);
+					}
+				}
 				return newPost;
 			} catch (error) {
 				throw new ORPCError("INTERNAL_SERVER_ERROR");
@@ -249,9 +315,7 @@ export const postsRouter = {
 				id: z.string(),
 				title: z.string().optional(),
 				description: z.string().min(1).optional(),
-				status: z
-					.enum(["open", "in_progress", "resolved", "closed"])
-					.optional(),
+				statusId: z.string().optional(),
 				priority: z.enum(["low", "medium", "high"]).optional(),
 				tags: z.array(z.string()).optional(),
 				url: z.string().optional(),
@@ -286,9 +350,8 @@ export const postsRouter = {
 				.set({
 					...(input.title && { title: input.title }),
 					...(input.description && { description: input.description }),
-					...(input.status && { status: input.status }),
+					...(input.statusId && { statusId: input.statusId }),
 					...(input.priority && { priority: input.priority }),
-					...(input.tags && { tags: input.tags }),
 					...(input.url && { url: input.url }),
 					...(input.userAgent && { userAgent: input.userAgent }),
 					...(input.browserInfo && { browserInfo: input.browserInfo }),

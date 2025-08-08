@@ -2,6 +2,8 @@ export * from "./auth";
 export * from "./feedback";
 export * from "./boards";
 export * from "./tags";
+export * from "./statuses";
+export * from "./feedback-tags";
 // export * from "./posts";
 export * from "./comments";
 export * from "./votes";

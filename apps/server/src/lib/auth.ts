@@ -4,11 +4,11 @@ import { admin, anonymous, organization } from "better-auth/plugins";
 import { eq } from "drizzle-orm";
 import { getDb } from "../db";
 import * as schema from "../db/schema";
+import { boards, statuses, tags } from "../db/schema";
 import { sendEmail } from "../email";
-import { WelcomeEmail, WelcomeSubject } from "../email/templates/welcome-email";
 import type { AppEnv } from "./env";
 
-export function getAuth(env: AppEnv): any {
+export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> {
 	return betterAuth({
 		baseURL: env.BETTER_AUTH_URL as string,
 		database: drizzleAdapter(getDb(env as { DATABASE_URL: string }), {
@@ -52,12 +52,101 @@ export function getAuth(env: AppEnv): any {
 					afterCreate: async ({ user, organization }) => {
 						await sendEmail(env, user.email, "welcome", user.name);
 
-						await getDb(env as { DATABASE_URL: string })
+						const db = getDb(env as { DATABASE_URL: string });
+
+						await db
 							.update(schema.user)
-							.set({
-								organizationId: organization.id,
-							})
+							.set({ organizationId: organization.id })
 							.where(eq(schema.user.id, user.id));
+
+						// Seed defaults (idempotent)
+						try {
+							const existingBoards = await db
+								.select({ id: boards.id })
+								.from(boards)
+								.where(eq(boards.organizationId, organization.id))
+								.limit(1);
+
+							if (existingBoards.length === 0) {
+								// Boards
+								await db.insert(boards).values([
+									{
+										id: crypto.randomUUID(),
+										organizationId: organization.id,
+										name: "Feature Requests",
+										slug: "features",
+										description: "Collect ideas and feature requests",
+										isPrivate: false,
+									},
+									{
+										id: crypto.randomUUID(),
+										organizationId: organization.id,
+										name: "Bugs",
+										slug: "bugs",
+										description: "Report and track bugs",
+										isPrivate: false,
+									},
+								]);
+
+								// Statuses
+								const defaultStatuses = [
+									{
+										key: "open",
+										name: "Under Review",
+										color: "#9CA3AF",
+										order: 1,
+										isTerminal: false,
+									},
+									{
+										key: "in_progress",
+										name: "In Progress",
+										color: "#F59E0B",
+										order: 2,
+										isTerminal: false,
+									},
+									{
+										key: "resolved",
+										name: "Completed",
+										color: "#10B981",
+										order: 3,
+										isTerminal: true,
+									},
+									{
+										key: "closed",
+										name: "Closed",
+										color: "#EF4444",
+										order: 4,
+										isTerminal: true,
+									},
+								];
+								await db.insert(statuses).values(
+									defaultStatuses.map((s) => ({
+										id: crypto.randomUUID(),
+										organizationId: organization.id,
+										key: s.key,
+										name: s.name,
+										color: s.color,
+										order: s.order,
+										isTerminal: s.isTerminal,
+									})),
+								);
+
+								// Tags
+								const defaultTags = [
+									{ name: "bug", color: "#EF4444" },
+									{ name: "feature", color: "#22C55E" },
+									{ name: "improvement", color: "#3B82F6" },
+								];
+								await db.insert(tags).values(
+									defaultTags.map((t) => ({
+										id: crypto.randomUUID(),
+										organizationId: organization.id,
+										name: t.name,
+										color: t.color,
+									})),
+								);
+							}
+						} catch {}
 					},
 				},
 			}),

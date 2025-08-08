@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { getAuth } from "@/lib/auth";
 import { ORPCError } from "@orpc/server";
 import { type SQL, and, asc, count, desc, eq } from "drizzle-orm";
 import { z } from "zod";
@@ -8,6 +9,8 @@ import {
 	feedback,
 	member,
 	organization,
+	statuses,
+	tags,
 	user,
 	votes,
 } from "../db/schema";
@@ -296,36 +299,25 @@ export const apiRouter = {
 			}
 
 			try {
-				// First, create the organization using Better Auth
-				// This will be handled by the Better Auth plugin
-				// We'll need to get the organization ID after creation
-
-				// For now, let's create the organization directly in our database
-				// and then update the user's organizationId
-				const organizationId = randomUUID();
-
-				await context.db.insert(organization).values({
-					id: organizationId,
+				// Create org via Better Auth server API, then mirror user orgId
+				const org = await getAuth(context.env).createOrganization({
 					name: input.name,
 					slug: input.slug,
-					createdAt: new Date(),
-					isOnboarded: false,
-					onboardingStep: "organization",
+					userId,
 				});
 
-				// Update user's organizationId
 				await context.db
 					.update(user)
-					.set({ organizationId })
+					.set({ organizationId: org.id })
 					.where(eq(user.id, userId));
 
 				return {
 					success: true,
-					organizationId,
+					organizationId: org.id,
 					organization: {
-						id: organizationId,
-						name: input.name,
-						slug: input.slug,
+						id: org.id,
+						name: org.name,
+						slug: org.slug,
 					},
 				};
 			} catch (error) {
@@ -684,7 +676,7 @@ export const apiRouter = {
 
 			try {
 				// Determine sort order
-				let orderBy;
+				let orderBy: SQL<unknown>;
 				switch (sortBy) {
 					case "oldest":
 						orderBy = asc(feedback.createdAt);
@@ -821,7 +813,7 @@ export const apiRouter = {
 
 			try {
 				// Determine sort order
-				let orderBy;
+				let orderBy: SQL<unknown>;
 				switch (sortBy) {
 					case "oldest":
 						orderBy = asc(feedback.createdAt);
@@ -1059,7 +1051,7 @@ export const apiRouter = {
 				}
 
 				// Determine sort order
-				let orderBy;
+				let orderBy: SQL<unknown>;
 				switch (sortBy) {
 					case "oldest":
 						orderBy = asc(feedback.createdAt);
@@ -1225,10 +1217,20 @@ export const apiRouter = {
 						userEmail: isAnonymous ? null : context.session?.user?.email,
 						userName: isAnonymous ? null : context.session?.user?.name,
 						priority,
-						tags,
 						isAnonymous,
 						attachments,
-						status: "open",
+						statusId: (
+							await context.db
+								.select({ id: statuses.id })
+								.from(statuses)
+								.where(
+									and(
+										eq(statuses.organizationId, board[0].organizationId),
+										eq(statuses.key, "open"),
+									),
+								)
+								.limit(1)
+						)[0]?.id as string,
 					})
 					.returning();
 
@@ -1695,7 +1697,7 @@ export const apiRouter = {
 				}
 
 				// Determine sort order
-				let orderBy;
+				let orderBy: SQL<unknown>;
 				switch (sortBy) {
 					case "oldest":
 						orderBy = asc(feedback.createdAt);
@@ -1730,11 +1732,12 @@ export const apiRouter = {
 							slug: boards.slug,
 							isPrivate: boards.isPrivate,
 						},
-						status: feedback.status,
+						status: statuses.key,
 					})
 					.from(feedback)
 					.leftJoin(user, eq(feedback.userId, user.id))
 					.leftJoin(boards, eq(feedback.boardId, boards.id))
+					.leftJoin(statuses, eq(feedback.statusId, statuses.id))
 					.where(eq(boards.organizationId, userOrganizationId))
 					.orderBy(orderBy)
 					.offset(offset)

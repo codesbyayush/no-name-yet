@@ -18,18 +18,23 @@ export async function createContext({ context, env }: CreateContextOptions) {
 		headers: context.req.raw.headers,
 	});
 
-	// Extract subdomain from host
-	const host = context.req.raw.headers.get("origin")?.split("//")[1];
-	let subdomain: string | undefined = undefined;
-
-	if (host) {
-		const hostParts = host.split(".");
-		// Handle localhost for local development
-		if (hostParts.length > 1) {
-			if (hostParts[0] === "localhost") {
-				// Later
-			} else if (hostParts[0] !== "www" && hostParts[0] !== "api") {
-				subdomain = hostParts[0];
+	// Extract subdomain from trusted proxy headers or host
+	const xfHost = context.req.raw.headers.get("x-forwarded-host");
+	let host =
+		(xfHost
+			? xfHost.split(",")[0]
+			: context.req.raw.headers.get("host")
+		)?.trim() || "";
+	if (host.includes(":")) {
+		host = host.split(":")[0];
+	}
+	let subdomain: string | undefined;
+	if (host && !host.startsWith("localhost")) {
+		const parts = host.split(".");
+		if (parts.length > 2) {
+			const candidate = parts[0];
+			if (candidate !== "www" && candidate !== "api") {
+				subdomain = candidate;
 			}
 		}
 	}
@@ -53,6 +58,7 @@ export async function createContext({ context, env }: CreateContextOptions) {
 		organization: org,
 		subdomain: subdomain || undefined,
 		db,
+		env,
 	};
 }
 
@@ -72,6 +78,7 @@ export async function createAdminContext({
 			user: null,
 			organization: null,
 			db,
+			env,
 		};
 	}
 
@@ -91,6 +98,7 @@ export async function createAdminContext({
 				user: currentUser,
 				organization: null,
 				db,
+				env,
 			};
 		}
 
@@ -107,6 +115,7 @@ export async function createAdminContext({
 			user: currentUser,
 			organization: org,
 			db,
+			env,
 		};
 	} catch (error) {
 		return {
@@ -114,6 +123,7 @@ export async function createAdminContext({
 			user: null,
 			organization: null,
 			db,
+			env,
 		};
 	}
 }
@@ -122,10 +132,12 @@ export type Context = Awaited<ReturnType<typeof createContext>> & {
 	organization: InferSelectModel<typeof organization> | null;
 	subdomain?: string;
 	db: ReturnType<typeof getDb>;
+	env: AppEnv;
 };
 
 export type AdminContext = Awaited<ReturnType<typeof createAdminContext>> & {
 	user: InferSelectModel<typeof user> | null;
 	organization: InferSelectModel<typeof organization> | null;
 	db: ReturnType<typeof getDb>;
+	env: AppEnv;
 };

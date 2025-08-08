@@ -10,6 +10,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { boards } from "./boards";
 import { organization } from "./organization";
+import { statuses } from "./statuses";
 import { tags } from "./tags";
 
 // Enum for feedback types
@@ -21,14 +22,6 @@ export const severityEnum = pgEnum("severity", [
 	"medium",
 	"high",
 	"critical",
-]);
-
-// Enum for feedback status
-export const statusEnum = pgEnum("status", [
-	"open",
-	"in_progress",
-	"resolved",
-	"closed",
 ]);
 
 // Enum for plan types
@@ -49,7 +42,9 @@ export const feedback = pgTable(
 		type: feedbackTypeEnum("type").notNull(),
 		title: text("title"),
 		description: text("description").notNull(),
-		status: statusEnum("status").default("open").notNull(),
+		statusId: text("status_id")
+			.notNull()
+			.references(() => statuses.id, { onDelete: "restrict" }),
 		// Need to rethink there: user can be from tenant that we do not have in our db
 		userId: text("user_id"),
 		userEmail: text("user_email"),
@@ -90,23 +85,17 @@ export const feedback = pgTable(
 		// Custom data from the user
 		metadata: jsonb("metadata").$type<Record<string, unknown>>(),
 
-		// Tags for categorization
-		tags: jsonb("tags").default([]).$type<string[]>(),
-
 		// Metadata
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 		updatedAt: timestamp("updated_at").defaultNow().notNull(),
 
 		// For future features
 		isAnonymous: boolean("is_anonymous").default(false).notNull(),
-
-		// TODO: Find why foreign key contraint fails
-		tagIds: text("tag_ids").array().default([]),
 		priority: text("priority").default("medium"), // low, medium, high
 	},
 	(table) => ({
 		boardsIdx: index("idx_feedback_boards").on(table.boardId),
-		statusIdx: index("idx_feedback_status").on(table.status),
+		statusIdx: index("idx_feedback_status").on(table.statusId),
 		typeIdx: index("idx_feedback_type").on(table.type),
 	}),
 );

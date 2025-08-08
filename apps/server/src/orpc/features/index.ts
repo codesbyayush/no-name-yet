@@ -3,6 +3,7 @@ import {
 	boards,
 	comments,
 	feedback,
+	statuses,
 	user,
 	votes,
 } from "@/db/schema";
@@ -75,7 +76,7 @@ export const mixedRouter = {
 						boardId: feedback.boardId,
 						createdAt: feedback.createdAt,
 						updatedAt: feedback.updatedAt,
-						status: feedback.status,
+						status: statuses.key,
 						author: {
 							id: user.id,
 							name: user.name,
@@ -109,6 +110,7 @@ export const mixedRouter = {
 					.from(feedback)
 					.leftJoin(user, eq(feedback.userId, user.id))
 					.leftJoin(boards, eq(feedback.boardId, boards.id))
+					.leftJoin(statuses, eq(feedback.statusId, statuses.id))
 					.where(and(...filters))
 					.orderBy(orderBy)
 					.offset(offset)
