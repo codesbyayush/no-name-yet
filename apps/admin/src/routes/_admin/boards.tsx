@@ -8,22 +8,41 @@ import {
 } from "@/components/ui/sidebar";
 import { SidebarRightPortal } from "@/contexts/sidebar-right";
 import { createFileRoute } from "@tanstack/react-router";
-import * as React from "react";
 
 export const Route = createFileRoute("/_admin/boards")({
 	component: RouteComponent,
 	validateSearch: (search?: Record<string, unknown>) => ({
-		search: (search?.search as string) || "",
-		tag: (search?.tag as string) || "all",
-		status: (search?.status as string) || "all",
-		order: (search?.order as string) || "name-asc",
-		tab: (search?.tab as string) || "all",
+		search: search?.search as string | undefined,
+		tag: search?.tag as string | undefined,
+		status: search?.status as string | undefined,
+		order: search?.order as string | undefined,
+		tab: search?.tab as string | undefined,
 	}),
 });
 
 function RouteComponent() {
 	const search = Route.useSearch();
 	const navigate = Route.useNavigate();
+
+	const stripDefaults = (s: Partial<typeof search>) => {
+		const next = { ...s } as Record<string, string | undefined>;
+		if (!next.search || next.search === "") {
+			next.search = undefined;
+		}
+		if (!next.tag || next.tag === "all") {
+			next.tag = undefined;
+		}
+		if (!next.status || next.status === "all") {
+			next.status = undefined;
+		}
+		if (!next.order || next.order === "name-asc") {
+			next.order = undefined;
+		}
+		if (!next.tab || next.tab === "all") {
+			next.tab = undefined;
+		}
+		return next as typeof search;
+	};
 
 	// Hardcoded sections (Statuses, Boards, Tags)
 	const statuses = [
@@ -44,7 +63,7 @@ function RouteComponent() {
 
 	const setParam = (patch: Partial<typeof search>) => {
 		void navigate({
-			search: (prev) => ({ ...prev, ...patch }),
+			search: (prev) => stripDefaults({ ...prev, ...patch }),
 			replace: false,
 		});
 	};
@@ -180,10 +199,11 @@ function RouteComponent() {
 
 							const onChange = (categoryKey: string, values: string[]) => {
 								void navigate({
-									search: (prev) => ({
-										...prev,
-										[categoryKey]: values.length ? values.join(",") : "all",
-									}),
+									search: (prev) =>
+										stripDefaults({
+											...prev,
+											[categoryKey]: values.length ? values.join(",") : "all",
+										}),
 									replace: false,
 								});
 							};

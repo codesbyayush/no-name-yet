@@ -10,7 +10,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authClient, useSession } from "@/lib/auth-client";
-import { client } from "@/utils/orpc";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import type React from "react";
@@ -80,30 +79,20 @@ export function CreateOrganizationForm({
 				return;
 			}
 
-			await authClient.organization.create({
+			const org = await authClient.organization.create({
 				name,
 				slug,
 				userId: session?.user?.id,
 			});
 			await authClient.organization.setActive({
-				organizationSlug: slug,
+				organizationSlug: org.data?.slug,
+				organizationId: org.data?.id,
 			});
-
-			// Mark organization step as complete - TODO: remove this shittty logic
-			try {
-				await client.completeOnboardingStep({ step: "organization" });
-			} catch (error) {}
-
-			// Invalidate queries to refresh data
-			queryClient.invalidateQueries({ queryKey: ["onboarding-status"] });
 
 			if (onSuccess) {
 				onSuccess();
 			} else {
-				navigate({
-					to: "/boards",
-					replace: true,
-				});
+				navigate({ to: "/boards", replace: true, search: {} as any });
 			}
 		} catch (err) {
 			const errorMessage =

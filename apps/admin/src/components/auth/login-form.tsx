@@ -11,7 +11,13 @@ import { signIn } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
-export default function SignIn({ redirect }: { redirect: string }) {
+export default function SignIn({
+	redirect,
+	newUserCallbackURL,
+}: {
+	redirect: string;
+	newUserCallbackURL: string;
+}) {
 	const [loading, setLoading] = useState(false);
 
 	return (
@@ -39,7 +45,7 @@ export default function SignIn({ redirect }: { redirect: string }) {
 									{
 										provider: "google",
 										callbackURL: redirect,
-										newUserCallbackURL: `${window.location.pathname}/onboarding`,
+										newUserCallbackURL,
 									},
 									{
 										onRequest: (ctx) => {
@@ -86,7 +92,7 @@ export default function SignIn({ redirect }: { redirect: string }) {
 									{
 										provider: "github",
 										callbackURL: redirect,
-										newUserCallbackURL: `${window.location.pathname}/onboarding`,
+										newUserCallbackURL,
 									},
 									{
 										onRequest: (ctx) => {
@@ -121,7 +127,7 @@ export default function SignIn({ redirect }: { redirect: string }) {
 									{
 										provider: "gitlab",
 										callbackURL: redirect,
-										newUserCallbackURL: `${window.location.pathname}/onboarding`,
+										newUserCallbackURL,
 									},
 									{
 										onRequest: (ctx) => {
