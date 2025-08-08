@@ -147,16 +147,16 @@ body {
 	background-image: url("https://res.cloudinary.com/victoreke/image/upload/v1691779257/victoreke/noise.png");
 }
 
-body::-webkit-scrollbar {
+*::-webkit-scrollbar {
 	width: var(--sb-size);
 }
 
-body::-webkit-scrollbar-track {
+*::-webkit-scrollbar-track {
 	background: var(--sb-track-color);
 	border-radius: 10px;
 }
 
-body::-webkit-scrollbar-thumb {
+*::-webkit-scrollbar-thumb {
 	background: var(--sb-thumb-color);
 	border-radius: 10px;
 }

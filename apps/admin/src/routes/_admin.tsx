@@ -3,6 +3,7 @@ import OmniFeedbackWidget from "@/components/feedback-widget";
 import { OnboardingGuard } from "@/components/onboarding-guard";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AuthProvider } from "@/contexts/auth-context";
+import { SidebarRightProvider } from "@/contexts/sidebar-right";
 import { authClient } from "@/lib/auth-client";
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 
@@ -28,16 +29,18 @@ function AdminLayout() {
 				<SidebarProvider
 					style={
 						{
-							"--sidebar-width": "350px",
+							"--sidebar-width": "300px",
 							"--header-height": "calc(var(--spacing) * 12)",
 						} as React.CSSProperties
 					}
 				>
-					<OmniFeedbackWidget />
-					<AppSidebar />
-					<SidebarInset className="!mt-0 !mx-0 min-h-max">
-						<Outlet />
-					</SidebarInset>
+					<SidebarRightProvider>
+						<OmniFeedbackWidget />
+						<AppSidebar />
+						<SidebarInset className="!mt-0 !mx-0 min-h-max">
+							<Outlet />
+						</SidebarInset>
+					</SidebarRightProvider>
 				</SidebarProvider>
 			</OnboardingGuard>
 		</AuthProvider>

@@ -4,13 +4,18 @@ import {
 	GeneralSettings,
 } from "@/components/admin/settings";
 import { SiteHeader } from "@/components/site-header";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import {
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
+} from "@/components/ui/sidebar";
+import { SidebarRightPortal } from "@/contexts/sidebar-right";
 import {
 	IconApps,
 	IconArrowUp,
+	IconBook,
+	IconBrandDiscord,
 	IconBuilding,
-	IconClock,
 	IconDownload,
 	IconFileText,
 	IconGlobe,
@@ -19,15 +24,13 @@ import {
 	IconPalette,
 	IconProgress,
 	IconSettings,
+	IconShield,
+	IconTags,
 	IconUser,
 	IconUsers,
 	IconX,
 } from "@tabler/icons-react";
-import {
-	createFileRoute,
-	useNavigate,
-	useSearch,
-} from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useCallback, useState } from "react";
 
 export const Route = createFileRoute("/_admin/settings/")({
@@ -64,29 +67,90 @@ const settingsSections: SettingsSection[] = [
 
 import { ChangelogSettings } from "@/components/admin/settings/changelog-settings";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Copy } from "lucide-react";
-const tabs = [
+const contentByKey: Record<string, React.ComponentType | undefined> = {
+	general: GeneralSettings,
+	boards: BoardsSettings,
+	feedback: FeedbackSettings,
+	changelog: ChangelogSettings,
+};
+
+type NavItem = {
+	key: string;
+	label: string;
+	icon?: React.ComponentType<{ className?: string }>;
+};
+type NavGroup = { title: string; items: NavItem[] };
+
+const navGroups: NavGroup[] = [
 	{
-		name: "feedback",
-		value: "feedback",
-		content: <FeedbackSettings />,
-		component: FeedbackSettings,
+		title: "General",
+		items: [
+			{ key: "team-members", label: "Team Members", icon: IconUsers },
+			{ key: "pricing-plan", label: "Pricing Plan", icon: IconArrowUp },
+		],
 	},
 	{
-		name: "changelog",
-		value: "changelog",
-		content: <ChangelogSettings />,
-		component: ChangelogSettings,
+		title: "Branding & Customizations",
+		items: [
+			{ key: "branding", label: "Branding", icon: IconPalette },
+			{
+				key: "notification-emails",
+				label: "Notification Emails",
+				icon: IconMessageCircle,
+			},
+			{ key: "modules", label: "Customize/disable modules", icon: IconApps },
+			{ key: "custom-domains", label: "Custom Domains", icon: IconGlobe },
+		],
 	},
 	{
-		name: "branding",
-		value: "branding",
-		content: <BoardsSettings />,
-		component: BoardsSettings,
+		title: "Access & Authentication",
+		items: [
+			{ key: "org-access", label: "Organization Access", icon: IconBuilding },
+			{ key: "auth-security", label: "Auth & security", icon: IconShield },
+		],
+	},
+	{
+		title: "Modules",
+		items: [
+			{ key: "support", label: "Support", icon: IconMoodSmile },
+			{ key: "feedback", label: "Feedback & Roadmap", icon: IconMessageCircle },
+			{ key: "changelog", label: "Changelog", icon: IconFileText },
+			{ key: "help-center", label: "Help Center", icon: IconBook },
+		],
+	},
+	{
+		title: "User data",
+		items: [
+			{ key: "user-tags", label: "User Tags", icon: IconTags },
+			{ key: "banned-users", label: "Banned Users", icon: IconUser },
+		],
+	},
+	{
+		title: "Other",
+		items: [
+			{ key: "widgets", label: "Widgets & Embeds", icon: IconApps },
+			{ key: "integrations", label: "Integrations", icon: IconDownload },
+			{ key: "advanced", label: "Advanced", icon: IconProgress },
+			{ key: "danger-zone", label: "Danger Zone", icon: IconX },
+		],
+	},
+	{
+		title: "Resources",
+		items: [
+			{ key: "docs", label: "Visit Developer Docs", icon: IconBook },
+			{
+				key: "discord",
+				label: "Join our Discord community",
+				icon: IconBrandDiscord,
+			},
+		],
 	},
 ];
 
 function RouteComponent() {
+	const search = Route.useSearch();
+	const Active = contentByKey[search.tab] ?? undefined;
+
 	return (
 		<div>
 			<div className="sticky top-0 z-20 bg-background">
@@ -94,35 +158,36 @@ function RouteComponent() {
 					<SiteHeader title="Settings" />
 				</div>
 			</div>
+			<SidebarRightPortal>
+				<div className="space-y-4 px-2 py-2">
+					{navGroups.map((group) => (
+						<div key={group.title}>
+							<div className="px-2 pt-1 pb-2 text-muted-foreground text-xs">
+								{group.title}
+							</div>
+							<SidebarMenu>
+								{group.items.map((item) => {
+									const Icon = item.icon ?? IconSettings;
+									const isActive = search.tab === item.key;
+									return (
+										<SidebarMenuItem key={item.key}>
+											<SidebarMenuButton asChild isActive={isActive}>
+												<Link to="/settings" search={{ tab: item.key }}>
+													<Icon className="size-4" />
+													<span>{item.label}</span>
+												</Link>
+											</SidebarMenuButton>
+										</SidebarMenuItem>
+									);
+								})}
+							</SidebarMenu>
+						</div>
+					))}
+				</div>
+			</SidebarRightPortal>
 			<div className="px-4 py-3">
-				<div className="flex h-screen flex-col">
-					<Tabs
-						defaultValue={tabs[0].value}
-						className="flex w-full flex-col items-start justify-center px-6 sm:px-10"
-					>
-						<TabsList className="inline-flex h-9 w-full items-center justify-start rounded-none bg-transparent p-0 text-muted-foreground">
-							{tabs.map((tab) => (
-								<TabsTrigger
-									key={tab.value}
-									value={tab.value}
-									className="relative inline-flex h-9 items-center justify-center whitespace-nowrap rounded-none border-b-2 border-b-transparent bg-transparent px-4 py-1 pt-2 pb-3 font-semibold text-muted-foreground text-sm shadow-none ring-offset-background transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:border-b-primary data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-none"
-								>
-									<code className="text-sm">{tab.name}</code>
-								</TabsTrigger>
-							))}
-						</TabsList>
-						{tabs.map((tab) => (
-							<TabsContent
-								key={tab.value}
-								value={tab.value}
-								className="mx-auto w-full max-w-5xl"
-							>
-								<div className="space-y-6">
-									<tab.component />
-								</div>
-							</TabsContent>
-						))}
-					</Tabs>
+				<div className="mx-auto w-full max-w-6xl">
+					<div className="space-y-6">{Active ? <Active /> : null}</div>
 				</div>
 			</div>
 		</div>
