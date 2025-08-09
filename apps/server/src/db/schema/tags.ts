@@ -17,6 +17,10 @@ export const tags = pgTable(
 	(table) => ({
 		uniqueOrganizationName: unique().on(table.organizationId, table.name),
 		organizationIdx: index("idx_tags_organization").on(table.organizationId),
+		nameLowerIdx: index("idx_tags_org_name_lower").on(
+			table.organizationId,
+			table.name,
+		),
 	}),
 );
 

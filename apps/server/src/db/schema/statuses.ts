@@ -29,6 +29,10 @@ export const statuses = pgTable(
 	(table) => ({
 		uniqueOrgKey: unique().on(table.organizationId, table.key),
 		orgIdx: index("idx_statuses_organization").on(table.organizationId),
+		orderIdx: index("idx_statuses_org_order").on(
+			table.organizationId,
+			table.order,
+		),
 	}),
 );
 

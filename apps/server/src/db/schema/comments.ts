@@ -38,6 +38,10 @@ export const comments = pgTable(
 	},
 	(table) => ({
 		feedbackIdx: index("idx_comments_feedback").on(table.feedbackId),
+		feedbackCreatedIdx: index("idx_comments_feedback_created").on(
+			table.feedbackId,
+			table.createdAt,
+		),
 		parentIdx: index("idx_comments_parent").on(table.parentCommentId),
 	}),
 );

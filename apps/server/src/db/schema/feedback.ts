@@ -96,6 +96,15 @@ export const feedback = pgTable(
 	(table) => ({
 		boardsIdx: index("idx_feedback_boards").on(table.boardId),
 		statusIdx: index("idx_feedback_status").on(table.statusId),
+		boardStatusCreatedIdx: index("idx_feedback_board_status_created").on(
+			table.boardId,
+			table.statusId,
+			table.createdAt.desc(),
+		),
+		statusCreatedIdx: index("idx_feedback_status_created").on(
+			table.statusId,
+			table.createdAt.desc(),
+		),
 		typeIdx: index("idx_feedback_type").on(table.type),
 	}),
 );

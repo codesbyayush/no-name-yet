@@ -34,6 +34,7 @@ export const boards = pgTable(
 	(table) => ({
 		uniqueOrganizationSlug: unique().on(table.organizationId, table.slug),
 		organizationIdx: index("idx_boards_organization").on(table.organizationId),
+		slugIdx: index("idx_boards_slug").on(table.slug),
 	}),
 );
 
