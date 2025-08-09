@@ -2,6 +2,7 @@ import {
 	type Vote,
 	boards,
 	comments,
+	feedbackCounters as fc,
 	feedback,
 	feedbackTags,
 	statuses,
@@ -77,11 +78,8 @@ export const postsRouter = {
 							name: boards.name,
 							slug: boards.slug,
 						},
-						comments: context.db.$count(
-							comments,
-							eq(feedback.id, comments.feedbackId),
-						),
-						votes: context.db.$count(votes, eq(feedback.id, votes.feedbackId)),
+						commentCount: fc.commentCount,
+						voteCount: fc.upvoteCount,
 						hasVoted: userId
 							? exists(
 									context.db
@@ -100,6 +98,7 @@ export const postsRouter = {
 					.leftJoin(user, eq(feedback.userId, user.id))
 					.leftJoin(boards, eq(feedback.boardId, boards.id))
 					.leftJoin(statuses, eq(feedback.statusId, statuses.id))
+					.leftJoin(fc, eq(fc.feedbackId, feedback.id))
 					.where(and(...filters))
 					.orderBy(orderBy)
 					.offset(offset)
@@ -152,14 +151,8 @@ export const postsRouter = {
 							name: boards.name,
 							slug: boards.slug,
 						},
-						totalComments: context.db.$count(
-							comments,
-							eq(feedback.id, comments.feedbackId),
-						),
-						totalVotes: context.db.$count(
-							votes,
-							eq(feedback.id, votes.feedbackId),
-						),
+						commentCount: fc.commentCount,
+						voteCount: fc.upvoteCount,
 						hasVoted: userId
 							? exists(
 									context.db
@@ -177,6 +170,7 @@ export const postsRouter = {
 					.from(feedback)
 					.leftJoin(user, eq(feedback.userId, user.id))
 					.leftJoin(boards, eq(feedback.boardId, boards.id))
+					.leftJoin(fc, eq(fc.feedbackId, feedback.id))
 					.leftJoin(statuses, eq(feedback.statusId, statuses.id))
 					.where(eq(feedback.id, feedbackId));
 				return {

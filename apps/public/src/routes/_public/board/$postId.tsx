@@ -108,10 +108,10 @@ function RouteComponent() {
 					</p>
 
 					<div className="ml-auto flex max-w-max gap-3 pt-6">
-						<CommentButton count={post?.totalComments || 0} />
+						<CommentButton count={post?.commentCount || 0} />
 						<VoteButton
-							count={post?.totalVotes || 0}
-							hasVoted={post?.hasVoted}
+							count={post?.voteCount || 0}
+							hasVoted={!!post?.hasVoted}
 							feedbackId={postId}
 						/>
 					</div>
@@ -172,6 +172,7 @@ function RouteComponent() {
 									<span>{comment.createdAt.toLocaleDateString()}</span>
 									<span className="ml-auto">
 										<svg
+											aria-hidden="true"
 											width={16}
 											height={16}
 											viewBox="0 0 24 24"
@@ -216,7 +217,11 @@ function RouteComponent() {
 					<div className="flex items-center gap-3">
 						<div>
 							{post?.author?.image ? (
-								<img src={post?.author?.image} className="h-8 rounded-full" />
+								<img
+									src={post?.author?.image}
+									alt="Author"
+									className="h-8 rounded-full"
+								/>
 							) : (
 								<span className="rounded-full bg-gray-800">A</span>
 							)}
