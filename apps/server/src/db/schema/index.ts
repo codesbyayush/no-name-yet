@@ -11,3 +11,4 @@ export * from "./votes";
 // export * from "./integrations";
 export * from "./organization";
 export * from "./changelog";
+export * from "./feedback-counter";

@@ -1,5 +1,5 @@
-import { feedback, votes } from "@/db/schema";
-import { and, eq } from "drizzle-orm";
+import { feedbackCounters as fc, feedback, votes } from "@/db/schema";
+import { and, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 
 import { protectedProcedure } from "../procedures";
@@ -33,6 +33,18 @@ export const votesRouter = {
 					weight: input.weight,
 				})
 				.returning();
+			if (newVote.feedbackId) {
+				await context.db
+					.insert(fc)
+					.values({
+						feedbackId: newVote.feedbackId,
+						upvoteCount: 1,
+					})
+					.onConflictDoUpdate({
+						target: fc.feedbackId,
+						set: { upvoteCount: sql`${fc.upvoteCount} + 1` },
+					});
+			}
 			return newVote;
 		}),
 
@@ -57,6 +69,18 @@ export const votesRouter = {
 				.returning();
 			if (!updatedVote) {
 				throw new Error("Vote not found");
+			}
+			if (updatedVote.feedbackId && input.type) {
+				await context.db
+					.insert(fc)
+					.values({
+						feedbackId: updatedVote.feedbackId,
+						upvoteCount: 1,
+					})
+					.onConflictDoUpdate({
+						target: fc.feedbackId,
+						set: { upvoteCount: sql`${fc.upvoteCount} + 1` },
+					});
 			}
 			return updatedVote;
 		}),
@@ -83,6 +107,18 @@ export const votesRouter = {
 				.returning();
 			if (!deletedVote) {
 				throw new Error("Vote not found");
+			}
+			if (deletedVote.feedbackId) {
+				await context.db
+					.insert(fc)
+					.values({
+						feedbackId: deletedVote.feedbackId,
+						upvoteCount: -1,
+					})
+					.onConflictDoUpdate({
+						target: fc.feedbackId,
+						set: { upvoteCount: sql`${fc.upvoteCount} - 1` },
+					});
 			}
 			return { success: true, deletedVote };
 		}),

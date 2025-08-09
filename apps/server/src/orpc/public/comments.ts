@@ -1,4 +1,6 @@
+import { feedbackCounters as fc } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import { z } from "zod";
 import {
 	type Comment,
@@ -34,7 +36,16 @@ export const commentsRouter = {
 					isInternal: input.isInternal,
 				})
 				.returning();
-
+			await context.db
+				.insert(fc)
+				.values({
+					feedbackId: input.feedbackId,
+					commentCount: 1,
+				})
+				.onConflictDoUpdate({
+					target: fc.feedbackId,
+					set: { commentCount: sql`${fc.commentCount} + 1` },
+				});
 			return newComment;
 		}),
 
@@ -87,7 +98,18 @@ export const commentsRouter = {
 			if (!deletedComment) {
 				throw new Error("Comment not found");
 			}
-
+			if (deletedComment.feedbackId) {
+				await context.db
+					.insert(fc)
+					.values({
+						feedbackId: deletedComment.feedbackId,
+						commentCount: -1,
+					})
+					.onConflictDoUpdate({
+						target: fc.feedbackId,
+						set: { commentCount: sql`${fc.commentCount} - 1` },
+					});
+			}
 			return { success: true, deletedComment };
 		}),
 };
