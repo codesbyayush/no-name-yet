@@ -1,6 +1,72 @@
 import type React from "react";
-import { useEffect, useRef, useState } from "react";
-import { type Board, type FeedbackSubmission, createApiClient } from "./api";
+import { useEffect, useState } from "react";
+
+// Inline icon components for the bottom navigation
+const AskIcon: React.FC<{ className?: string }> = ({ className }) => (
+	<svg
+		viewBox="0 0 24 24"
+		width="20"
+		height="20"
+		aria-hidden="true"
+		focusable="false"
+		className={className}
+		fill="none"
+		stroke="currentColor"
+		strokeWidth={2}
+		strokeLinecap="round"
+		strokeLinejoin="round"
+	>
+		{/* Chat bubble */}
+		<path d="M4 5H20V17H8L4 21V5Z" />
+		{/* Three lines */}
+		<path d="M7 9H17" />
+		<path d="M7 12H15" />
+	</svg>
+);
+
+const RoadmapIcon: React.FC<{ className?: string }> = ({ className }) => (
+	<svg
+		viewBox="0 0 24 24"
+		width="20"
+		height="20"
+		aria-hidden="true"
+		focusable="false"
+		className={className}
+		fill="none"
+		stroke="currentColor"
+		strokeWidth={2}
+		strokeLinecap="round"
+		strokeLinejoin="round"
+	>
+		{/* Folded map */}
+		<path d="M9 4L15 6L21 4V18L15 20L9 18L3 20V6L9 4Z" />
+		<path d="M9 4V18" />
+		<path d="M15 6V20" />
+	</svg>
+);
+
+const ChangelogIcon: React.FC<{ className?: string }> = ({ className }) => (
+	<svg
+		viewBox="0 0 24 24"
+		width="20"
+		height="20"
+		aria-hidden="true"
+		focusable="false"
+		className={className}
+		fill="none"
+		stroke="currentColor"
+		strokeWidth={2}
+		strokeLinecap="round"
+		strokeLinejoin="round"
+	>
+		{/* Newspaper */}
+		<rect x="3" y="4" width="18" height="16" rx="2" />
+		<path d="M7 8H16" />
+		<path d="M7 12H17" />
+		<path d="M7 16H13" />
+	</svg>
+);
+import CreatePostForm from "./components/CreatePostForm";
 
 interface OmniFeedbackWidgetProps {
 	publicKey: string;
@@ -10,7 +76,7 @@ interface OmniFeedbackWidgetProps {
 		name?: string;
 		email?: string;
 	};
-	customData?: { [key: string]: string };
+	customData?: { [key: string]: string | undefined };
 	apiUrl?: string;
 	theme?: {
 		primaryColor?: string;
@@ -18,379 +84,283 @@ interface OmniFeedbackWidgetProps {
 	};
 	position?: "center" | "above-button";
 	onClose?: () => void;
+	/** Base URL of your public portal to embed roadmap/changelog within the widget */
+	portalUrl?: string;
 }
 
 const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
 	publicKey,
 	boardId,
-	user,
-	customData,
 	apiUrl = "https://localhost:8080",
 	theme = {},
 	position = "above-button",
 	onClose,
+	portalUrl,
 }) => {
 	const [isOpen, setIsOpen] = useState(false);
-	const [currentStep, setCurrentStep] = useState<
-		"type" | "details" | "submit" | "success"
-	>("type");
-
-	// State for feedback content
-	const [feedbackType, setFeedbackType] = useState<"bug" | "suggestion">("bug");
-	const [description, setDescription] = useState("");
-	const [severity, setSeverity] = useState<
-		"low" | "medium" | "high" | "critical"
-	>("medium");
-
-	// State for board selection
-	const [boards, setBoards] = useState<Board[]>([]);
-	const [selectedBoardId, setSelectedBoardId] = useState<string | undefined>(
-		boardId,
-	);
-	const [isLoadingBoards, setIsLoadingBoards] = useState<boolean>(!boardId);
-
-	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [error, setError] = useState<string | null>(null);
-
-	const fileInputRef = useRef<HTMLInputElement>(null);
-
-	const [apiClient] = useState(() => createApiClient({ apiUrl, publicKey }));
-
-	useEffect(() => {
-		// If no boardId is provided, fetch the public boards for the user to choose from.
-		if (!boardId) {
-			setIsLoadingBoards(true);
-			setError(null);
-			apiClient
-				.getPublicBoards()
-				.then((fetchedBoards) => {
-					setBoards(fetchedBoards);
-					if (fetchedBoards && fetchedBoards.length > 0) {
-						setSelectedBoardId(fetchedBoards[0].id);
-					} else {
-						setError("No public boards are available.");
-					}
-				})
-				.catch(() => {
-					setError("Could not load boards. Please check your public key.");
-				})
-				.finally(() => {
-					setIsLoadingBoards(false);
-				});
-		}
-	}, [boardId, apiClient]);
-
-	// Collect browser context
-	const getBrowserContext = () => ({
-		userAgent: navigator.userAgent,
-		url: window.location.href,
-		timestamp: new Date().toISOString(),
-		viewport: {
-			width: window.innerWidth,
-			height: window.innerHeight,
-		},
-	});
-
-	const handleTypeSelection = (type: "bug" | "suggestion") => {
-		setFeedbackType(type);
-		setCurrentStep("details");
-	};
-
-	// const handleFileUpload = (files: FileList | null) => {
-	//   if (files) {
-	//     const fileArray = Array.from(files);
-	//     setFeedbackData((prev) => ({ ...prev, attachments: fileArray }));
-	//   }
-	// };
-
-	const submitFeedback = async () => {
-		if (!description.trim()) {
-			setError("Please provide a description.");
-			return;
-		}
-		if (!selectedBoardId) {
-			setError("Please select a board.");
-			return;
-		}
-
-		setIsSubmitting(true);
-		setError(null);
-
-		const browserContext = getBrowserContext();
-
-		const submission: FeedbackSubmission = {
-			boardId: selectedBoardId,
-			type: feedbackType,
-			description,
-			severity: feedbackType === "bug" ? severity : undefined,
-			user,
-			customData,
-			browserInfo: {
-				userAgent: browserContext.userAgent,
-				url: browserContext.url,
-				platform: navigator.platform,
-				language: navigator.language,
-				cookieEnabled: navigator.cookieEnabled,
-				onLine: navigator.onLine,
-				screenResolution: `${window.screen.width}x${window.screen.height}`,
-			},
-		};
-
-		try {
-			const result = await apiClient.submitFeedback(submission);
-			if (result.success) {
-				setCurrentStep("success");
-			} else {
-				throw new Error("Submission was not successful.");
-			}
-		} catch (err) {
-			setError(
-				err instanceof Error ? err.message : "Failed to submit feedback",
-			);
-		} finally {
-			setIsSubmitting(false);
-		}
-	};
-
-	const resetWidget = () => {
-		setCurrentStep("type");
-		setDescription("");
-		setFeedbackType("bug");
-		setSeverity("medium");
-		setError(null);
-		setIsSubmitting(false);
-	};
+	const [isClosing, setIsClosing] = useState(false);
+	const [isOpening, setIsOpening] = useState(false);
+	const [isFabBouncing, setIsFabBouncing] = useState(false);
+	const [activeTab, setActiveTab] = useState<
+		"submit" | "roadmap" | "changelog"
+	>("submit");
 
 	const closeWidget = () => {
 		setIsOpen(false);
-		resetWidget();
 		onClose?.();
 	};
 
-	const renderStepContent = () => {
-		switch (currentStep) {
-			case "type":
-				return (
-					<div className="fade-in animate-in duration-200">
-						<h3 className="mb-5 font-semibold text-gray-900 text-lg">
-							How can we help you today?
-						</h3>
-						<div className="flex flex-col gap-3">
-							<button
-								className="flex cursor-pointer flex-col gap-2 rounded-lg border-2 border-gray-200 bg-white p-5 text-left transition-all duration-200 hover:border-blue-500 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-								onClick={() => handleTypeSelection("bug")}
-							>
-								<span className="mb-1 text-2xl">🐛</span>
-								<span className="font-medium">Report a Bug</span>
-								<span className="mt-1 text-gray-500 text-xs">
-									Something isn't working as expected
-								</span>
-							</button>
-							<button
-								className="flex cursor-pointer flex-col gap-2 rounded-lg border-2 border-gray-200 bg-white p-5 text-left transition-all duration-200 hover:border-blue-500 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-								onClick={() => handleTypeSelection("suggestion")}
-							>
-								<span className="mb-1 text-2xl">💡</span>
-								<span className="font-medium">Suggest Improvement</span>
-								<span className="mt-1 text-gray-500 text-xs">
-									Share ideas for better processes or tools
-								</span>
-							</button>
-						</div>
-					</div>
-				);
+	const startCloseAnimation = () => {
+		setIsClosing(true);
+		window.setTimeout(() => {
+			setIsClosing(false);
+			closeWidget();
+		}, 200);
+	};
 
-			case "details":
-				return (
-					<div className="fade-in animate-in duration-200">
-						<h3 className="mb-5 font-semibold text-gray-900 text-lg">
-							{feedbackType === "bug"
-								? "Describe the issue"
-								: "Share your suggestion"}
-						</h3>
+	// Prevent background page scroll while the widget is open
+	useEffect(() => {
+		if (!isOpen) return;
+		const prevBodyOverflow = document.body.style.overflow;
+		const prevHtmlOverflow = document.documentElement.style.overflow;
+		const scrollbarWidth =
+			window.innerWidth - document.documentElement.clientWidth;
+		const prevBodyPaddingRight = document.body.style.paddingRight;
+		document.body.style.overflow = "hidden";
+		document.documentElement.style.overflow = "hidden";
+		if (scrollbarWidth > 0) {
+			document.body.style.paddingRight = `${scrollbarWidth}px`;
+		}
+		return () => {
+			document.body.style.overflow = prevBodyOverflow;
+			document.documentElement.style.overflow = prevHtmlOverflow;
+			document.body.style.paddingRight = prevBodyPaddingRight;
+		};
+	}, [isOpen]);
 
-						{!boardId && ( // Only show board selector if no specific board was passed in
-							<div className="mb-5">
-								<label
-									htmlFor="board-select"
-									className="mb-2 block font-medium text-gray-700"
-								>
-									Select a Board
-								</label>
-								{isLoadingBoards ? (
-									<div className="w-full animate-pulse rounded-md border-2 border-gray-200 bg-gray-100 p-3">
-										Loading boards...
-									</div>
-								) : (
-									<select
-										id="board-select"
-										className="w-full rounded-md border-2 border-gray-200 p-3 font-inherit text-sm transition-colors duration-200 focus:border-blue-500 focus:outline-none disabled:bg-gray-100"
-										value={selectedBoardId}
-										onChange={(e) => setSelectedBoardId(e.target.value)}
-										disabled={boards.length === 0}
-									>
-										{boards.length === 0 && (
-											<option>No boards available</option>
-										)}
-										{boards.map((b) => (
-											<option key={b.id} value={b.id}>
-												{b.name}
-											</option>
-										))}
-									</select>
-								)}
+	const animateClasses =
+		position === "center"
+			? isClosing
+				? "zoom-out-95 fade-out animate-out duration-200 origin-center"
+				: "zoom-in-95 fade-in animate-in duration-300 origin-center"
+			: isClosing
+				? "shrink-out-br fade-out animate-out duration-200 origin-bottom-right"
+				: "grow-in-br fade-in animate-in duration-300 origin-bottom-right";
+
+	const containerClass =
+		position === "center"
+			? "fixed inset-0 z-[1000001] p-0 md:flex md:items-center md:justify-center md:p-5"
+			: "fixed inset-0 z-[1000001] p-0 md:inset-auto md:right-5 md:bottom-20 md:w-96 md:max-w-[calc(100vw-40px)]";
+
+	const panelClass = (() => {
+		const mdSizeClasses = position === "center" ? "md:w-full md:max-w-lg" : "";
+		return `${animateClasses} relative h-full w-full overflow-hidden rounded-none bg-white shadow-2xl md:h-auto md:w-auto md:rounded-xl ${mdSizeClasses}`;
+	})();
+
+	const panelBodyHeightClass = "h-full md:h-[80vh] md:max-h-[700px]";
+
+	// Compute FAB icon animation classes
+	const chatIconAnimClass = (() => {
+		if (isOpening) return "fab-icon-out";
+		if (isOpen && isClosing) return "fab-icon-in";
+		if (isOpen) return "opacity-0";
+		return "opacity-100";
+	})();
+
+	const chevronIconAnimClass = (() => {
+		if (isOpening) return "fab-icon-in";
+		if (isOpen && isClosing) return "fab-icon-out";
+		if (isOpen) return "opacity-100";
+		return "opacity-0";
+	})();
+
+	const renderMainContent = () => {
+		if (activeTab === "submit") {
+			return (
+				<>
+					<div className="bg-gradient-to-b from-blue-800 via-60% via-blue-700 to-transparent pb-8 text-white">
+						<div className="p-5">
+							<div className="mb-8 flex items-center gap-3 ">
+								<div className="h-8 w-8 rounded-full bg-white/20" />
 							</div>
-						)}
-
-						<textarea
-							className="mb-5 min-h-[100px] w-full resize-y rounded-md border-2 border-gray-200 p-3 font-inherit text-sm transition-colors duration-200 placeholder:text-gray-500 focus:border-blue-500 focus:outline-none"
-							placeholder={
-								feedbackType === "bug"
-									? "Please describe what happened and what you expected..."
-									: "Tell us about your improvement idea..."
-							}
-							value={description}
-							onChange={(e) => setDescription(e.target.value)}
-							rows={4}
-						/>
-
-						{feedbackType === "bug" && (
-							<div className="mb-5">
-								<label className="mb-2 block font-medium text-gray-700">
-									How urgent is this issue?
-								</label>
-								<div className="flex flex-wrap gap-2">
-									{(["low", "medium", "high", "critical"] as const).map((s) => (
-										<button
-											key={s}
-											className={`cursor-pointer rounded-full border-2 px-4 py-2 font-medium text-xs capitalize transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-												severity === s
-													? "border-blue-500 bg-blue-500 text-white"
-													: "border-gray-200 bg-white text-gray-700 hover:border-blue-500"
-											}`}
-											onClick={() => setSeverity(s)}
-										>
-											{s.charAt(0).toUpperCase() + s.slice(1)}
-										</button>
-									))}
+							<div className="space-y-1">
+								<div className="font-semibold text-xl leading-6">
+									Share your feedback
+								</div>
+								<div className="font-bold text-2xl leading-7">
+									Tell us what’s working and what’s not
+								</div>
+								<div className="text-sm opacity-90">
+									Your message goes straight to the team, we read every
+									submission.
 								</div>
 							</div>
-						)}
-
-						{/* File upload commented out */}
-
-						{error && (
-							<div className="mb-4 rounded-md border border-red-200 bg-red-100 p-3 text-red-800 text-sm">
-								{error}
-							</div>
-						)}
-
-						<div className="mt-6 flex justify-end gap-3">
-							<button
-								className="min-w-[100px] cursor-pointer rounded-md border border-gray-200 bg-gray-100 px-6 py-3 font-medium text-gray-700 text-sm transition-all duration-200 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-								onClick={() => setCurrentStep("type")}
-							>
-								Back
-							</button>
-							<button
-								className="min-w-[100px] cursor-pointer rounded-md border-none bg-blue-500 px-6 py-3 font-medium text-sm text-white transition-all duration-200 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-500"
-								onClick={submitFeedback}
-								disabled={
-									isSubmitting ||
-									!description.trim() ||
-									isLoadingBoards ||
-									!selectedBoardId
-								}
-							>
-								{isSubmitting ? "Submitting..." : "Submit Feedback"}
-							</button>
 						</div>
 					</div>
-				);
-
-			case "success":
-				return (
-					<div className="fade-in animate-in duration-200">
-						<div className="py-5 text-center">
-							<div className="mb-4 text-5xl">✅</div>
-							<h3 className="mb-3 font-semibold text-green-600 text-lg">
-								Thank you for your feedback!
-							</h3>
-							<p className="mb-6 text-gray-500 leading-relaxed">
-								We've received your{" "}
-								{feedbackType === "bug" ? "bug report" : "suggestion"} and will
-								review it soon.
-							</p>
-							<button
-								className="min-w-[100px] cursor-pointer rounded-md border-none bg-blue-500 px-6 py-3 font-medium text-sm text-white transition-all duration-200 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-								onClick={closeWidget}
-							>
-								Done
-							</button>
-						</div>
-					</div>
-				);
-
-			default:
-				return null;
+					<CreatePostForm
+						publicKey={publicKey}
+						apiUrl={apiUrl}
+						defaultBoardId={boardId}
+						onSuccess={startCloseAnimation}
+					/>
+				</>
+			);
 		}
+		if (activeTab === "roadmap") {
+			return (
+				<div className="h-full w-full">
+					{portalUrl ? (
+						<iframe
+							className="iframe-container"
+							src={`${portalUrl.replace(/\/$/, "")}/roadmap`}
+							title="Roadmap"
+						/>
+					) : (
+						<div className="p-4 text-center text-gray-500">
+							Connect portalUrl to show roadmap here.
+						</div>
+					)}
+				</div>
+			);
+		}
+		return (
+			<div className="h-full w-full">
+				{portalUrl ? (
+					<iframe
+						className="iframe-container"
+						src={`${portalUrl.replace(/\/$/, "")}/changelog`}
+						title="Changelog"
+					/>
+				) : (
+					<div className="p-4 text-center text-gray-500">
+						Connect portalUrl to show changelog here.
+					</div>
+				)}
+			</div>
+		);
 	};
 
 	return (
 		<div className="omni-feedback-widget fixed z-[999999] font-sans text-gray-800 text-sm leading-relaxed">
 			{/* Floating Action Button */}
 			<button
-				className="fixed right-5 bottom-5 z-[1000000] flex h-15 w-15 cursor-pointer items-center justify-center rounded-full border-none shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+				type="button"
+				className={`fixed right-5 bottom-5 z-[1000000] flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border-none shadow-lg transition-transform duration-300 hover:scale-105 hover:shadow-xl focus:outline-none active:scale-90 ${isFabBouncing ? "fab-bounce-slow" : ""}`}
 				style={{ backgroundColor: theme.primaryColor || "#007bff" }}
-				onClick={() => setIsOpen(!isOpen)}
+				onClick={() => {
+					// Re-trigger bounce
+					setIsFabBouncing(false);
+					// Force reflow to restart animation on next tick
+					void document.body.offsetHeight;
+					setIsFabBouncing(true);
+					setTimeout(() => setIsFabBouncing(false), 450);
+
+					if (isOpen) {
+						startCloseAnimation();
+					} else {
+						setIsOpening(true);
+						setActiveTab("submit");
+						setIsOpen(true);
+						window.setTimeout(() => setIsOpening(false), 340);
+					}
+				}}
 				aria-label={isOpen ? "Close feedback widget" : "Open feedback widget"}
 			>
-				<span className="text-2xl text-white">💬</span>
+				<span className="relative flex h-5 w-5 items-center justify-center text-white">
+					{/* Chat icon (closed state) - message-square-plus */}
+					<svg
+						viewBox="0 0 24 24"
+						width="20"
+						height="20"
+						aria-hidden="true"
+						focusable="false"
+						fill="none"
+						stroke="currentColor"
+						strokeWidth="2"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						className={`-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 ${chatIconAnimClass}`}
+					>
+						<path d="M21 14a4 4 0 0 1-4 4H9l-4 4v-4H5a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4v7Z" />
+						<path d="M12 8v5" />
+						<path d="M9.5 10.5H14.5" />
+					</svg>
+
+					{/* Chevron icon (open state) */}
+					<svg
+						viewBox="0 0 24 24"
+						width="20"
+						height="20"
+						aria-hidden="true"
+						focusable="false"
+						fill="none"
+						stroke="currentColor"
+						strokeWidth="2"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						className={`-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 ${chevronIconAnimClass}`}
+					>
+						<path d="M6 9L12 15L18 9" />
+					</svg>
+				</span>
 			</button>
 
-			{/* Widget Modal */}
-			{isOpen &&
-				(position === "center" ? (
-					<div className="fixed inset-0 z-[1000001] flex items-center justify-center p-5">
-						<div className="zoom-in-95 fade-in max-h-[90vh] w-full max-w-lg animate-in overflow-hidden rounded-xl bg-white shadow-2xl duration-300">
-							<div className="flex items-center justify-between border-gray-200 border-b p-5 pb-4">
-								<h2 className="m-0 font-semibold text-gray-900 text-xl">
-									Feedback
-								</h2>
-								<button
-									className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border-none bg-none p-0 text-2xl text-gray-500 transition-all duration-200 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-									onClick={closeWidget}
-									aria-label="Close"
-								>
-									×
-								</button>
+			{/* Widget Panel */}
+			{isOpen && (
+				<div className={containerClass}>
+					<div className={panelClass}>
+						{/* Mobile-only close button overlay */}
+						<button
+							type="button"
+							className="absolute top-3 right-3 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-white/80 text-2xl text-gray-700 leading-none shadow-md backdrop-blur md:hidden"
+							onClick={startCloseAnimation}
+							aria-label="Close"
+						>
+							×
+						</button>
+						<div className={`flex flex-col ${panelBodyHeightClass}`}>
+							<div className="flex-1 overflow-y-auto bg-white">
+								<div className="p-0">{renderMainContent()}</div>
 							</div>
-							<div className="max-h-[calc(90vh-80px)] overflow-y-auto p-6">
-								{renderStepContent()}
+
+							{/* Bottom nav tabs */}
+							<div className="border-gray-200 border-t bg-white">
+								<div className="grid grid-cols-3">
+									{["submit", "roadmap", "changelog"].map((key) => {
+										const isActive = activeTab === (key as typeof activeTab);
+										const baseClasses = isActive
+											? "text-blue-600"
+											: "text-gray-500 hover:text-gray-700";
+										return (
+											<button
+												type="button"
+												key={key}
+												className={`flex cursor-pointer flex-col items-center gap-1 py-3 text-xs transition-colors ${baseClasses}`}
+												onClick={() => setActiveTab(key as typeof activeTab)}
+												aria-selected={isActive}
+												role="tab"
+											>
+												{key === "submit" && <AskIcon className="h-5 w-5" />}
+												{key === "roadmap" && (
+													<RoadmapIcon className="h-5 w-5" />
+												)}
+												{key === "changelog" && (
+													<ChangelogIcon className="h-5 w-5" />
+												)}
+												<span className="mt-1">
+													{key === "submit"
+														? "Ask"
+														: key.charAt(0).toUpperCase() + key.slice(1)}
+												</span>
+											</button>
+										);
+									})}
+								</div>
 							</div>
 						</div>
 					</div>
-				) : (
-					<div className="fixed right-5 bottom-20 z-[1000001] w-96 max-w-[calc(100vw-40px)]">
-						<div className="zoom-in-95 fade-in max-h-[calc(100vh-140px)] animate-in overflow-hidden rounded-xl bg-white shadow-2xl duration-300">
-							<div className="flex items-center justify-between border-gray-200 border-b p-5 pb-4">
-								<h2 className="m-0 font-semibold text-gray-900 text-xl">
-									Feedback
-								</h2>
-								<button
-									className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border-none bg-none p-0 text-2xl text-gray-500 transition-all duration-200 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-									onClick={closeWidget}
-									aria-label="Close"
-								>
-									×
-								</button>
-							</div>
-							<div className="max-h-[calc(100vh-220px)] overflow-y-auto p-6">
-								{renderStepContent()}
-							</div>
-						</div>
-					</div>
-				))}
+				</div>
+			)}
 		</div>
 	);
 };

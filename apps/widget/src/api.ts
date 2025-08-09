@@ -15,7 +15,6 @@ export interface FeedbackSubmission {
 	boardId: string;
 	type: "bug" | "suggestion";
 	description: string;
-	severity?: "low" | "medium" | "high" | "critical";
 	user?: {
 		id?: string;
 		name?: string;
@@ -34,9 +33,11 @@ export interface FeedbackSubmission {
 	// attachments metadata might be added here later
 }
 
+const boardsCache = new Map<string, Promise<Board[]>>();
+
 const handleResponse = async <T>(response: Response): Promise<T> => {
 	if (!response.ok) {
-		let error;
+		let error: Error | undefined;
 		try {
 			const errorBody = await response.json();
 			error = new Error(
@@ -67,6 +68,26 @@ export const createApiClient = ({ apiUrl, publicKey }: ApiClientOptions) => {
 				method: "GET",
 				headers,
 			}).then((res) => handleResponse<Board[]>(res));
+		},
+
+		/**
+		 * Cached version of getPublicBoards. Cached per (apiUrl|publicKey) for this tab lifetime.
+		 */
+		getPublicBoardsCached: (): Promise<Board[]> => {
+			const cacheKey = `${baseUrl}|${publicKey}`;
+			const existing = boardsCache.get(cacheKey);
+			if (existing) return existing;
+			const promise = fetch(`${baseUrl}/boards`, {
+				method: "GET",
+				headers,
+			})
+				.then((res) => handleResponse<Board[]>(res))
+				.catch((err) => {
+					boardsCache.delete(cacheKey);
+					throw err;
+				});
+			boardsCache.set(cacheKey, promise);
+			return promise;
 		},
 
 		/**

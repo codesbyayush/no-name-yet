@@ -31,28 +31,70 @@ authRouter.all("*", async (c) => {
 });
 
 app.use(logger());
+
 app.use(
-	"/*",
+	"/api/v1/*",
+	cors({
+		origin: "*",
+		allowMethods: ["GET", "POST", "OPTIONS"],
+		allowHeaders: ["Content-Type", "X-Public-Key"],
+		credentials: false,
+		maxAge: 86400,
+	}),
+);
+
+app.use(
+	"/rpc/*",
 	cors({
 		origin: (origin, c) => {
 			const env = getEnvFromContext(c);
-			return origin.endsWith(env.CORS_ORIGIN)
-				? origin
-				: `https://${env.FRONTEND_URL}`;
+			const allowList = [env.FRONTEND_URL, env.CORS_ORIGIN].filter(Boolean);
+			if (!origin) {
+				return `https://${env.FRONTEND_URL}`;
+			}
+			const allowed = allowList.some((d) => origin.endsWith(d as string));
+			return allowed ? origin : `https://${env.FRONTEND_URL}`;
 		},
-		allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+		allowMethods: ["GET", "POST", "OPTIONS", "PUT", "DELETE", "PATCH"],
 		allowHeaders: [
 			"Content-Type",
 			"Authorization",
 			"X-Tenant-ID",
-			"X-Public-Key",
 			"Cookie",
 			"Set-Cookie",
 			"X-Requested-With",
 		],
 		exposeHeaders: ["Set-Cookie"],
 		credentials: true,
-		maxAge: 86400, // 24 hours
+		maxAge: 86400,
+	}),
+);
+
+// 3) Admin RPC (same policy as RPC)
+app.use(
+	"/admin/*",
+	cors({
+		origin: (origin, c) => {
+			const env = getEnvFromContext(c);
+			const allowList = [env.FRONTEND_URL, env.CORS_ORIGIN].filter(Boolean);
+			if (!origin) {
+				return `https://${env.FRONTEND_URL}`;
+			}
+			const allowed = allowList.some((d) => origin.endsWith(d as string));
+			return allowed ? origin : `https://${env.FRONTEND_URL}`;
+		},
+		allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+		allowHeaders: [
+			"Content-Type",
+			"Authorization",
+			"X-Tenant-ID",
+			"Cookie",
+			"Set-Cookie",
+			"X-Requested-With",
+		],
+		exposeHeaders: ["Set-Cookie"],
+		credentials: true,
+		maxAge: 86400,
 	}),
 );
 app.get("/docs", (c) => c.redirect("/api/docs"));

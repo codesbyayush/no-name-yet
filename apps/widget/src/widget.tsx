@@ -20,6 +20,8 @@ interface OmniFeedbackWidgetOptions {
 	};
 	targetElement?: string | HTMLElement;
 	position?: "center" | "above-button";
+	/** Optional portal base URL to embed roadmap/changelog in the widget */
+	portalUrl?: string;
 }
 
 interface OmniFeedbackWidgetInstance {
@@ -31,8 +33,10 @@ interface OmniFeedbackWidgetInstance {
 }
 
 class OmniFeedbackWidgetManager {
-	private instances: Map<string, { root: any; container: HTMLElement }> =
-		new Map();
+	private instances: Map<
+		string,
+		{ root: ReturnType<typeof createRoot>; container: HTMLElement }
+	> = new Map();
 
 	init(options: OmniFeedbackWidgetOptions): OmniFeedbackWidgetInstance {
 		const {
@@ -105,10 +109,10 @@ class OmniFeedbackWidgetManager {
 
 	// Cleanup all instances
 	destroyAll() {
-		this.instances.forEach((instance) => {
+		for (const instance of this.instances.values()) {
 			instance.root.unmount();
 			instance.container.remove();
-		});
+		}
 		this.instances.clear();
 	}
 }
@@ -123,9 +127,17 @@ const OmniFeedbackWidgetAPI = {
 	version: "1.0.0",
 };
 
-// For UMD export - ensure it's available globally
+// For UMD export - ensure it's available globally without using 'any'
+declare global {
+	interface Window {
+		OmniFeedbackWidget?: typeof OmniFeedbackWidgetAPI;
+	}
+}
+
 if (typeof window !== "undefined") {
-	(window as any).OmniFeedbackWidget = OmniFeedbackWidgetAPI;
+	(
+		window as Window & { OmniFeedbackWidget?: typeof OmniFeedbackWidgetAPI }
+	).OmniFeedbackWidget = OmniFeedbackWidgetAPI;
 }
 
 // For UMD export
@@ -151,6 +163,7 @@ if (typeof document !== "undefined" && typeof window !== "undefined") {
 				userName,
 				userEmail,
 				jwtAuthToken,
+				portalUrl,
 				...customData // Capture all other data-* attributes as customData
 			} = scriptTag.dataset;
 
@@ -174,8 +187,15 @@ if (typeof document !== "undefined" && typeof window !== "undefined") {
 							name: userName,
 							email: userEmail,
 						},
-						customData,
+						customData: (() => {
+							const result: Record<string, string> = {};
+							for (const [k, v] of Object.entries(customData)) {
+								if (typeof v === "string") result[k] = v;
+							}
+							return result;
+						})(),
 						jwtAuthToken,
+						portalUrl,
 					});
 				} catch (error) {}
 			}

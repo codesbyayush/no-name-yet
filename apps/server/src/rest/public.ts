@@ -2,7 +2,8 @@ import { getDb } from "@/db";
 import { boards } from "@/db/schema/boards";
 import { feedback } from "@/db/schema/feedback";
 import { organization } from "@/db/schema/organization";
-import { and, eq, inArray, isNull, sql } from "drizzle-orm";
+import { statuses } from "@/db/schema/statuses";
+import { and, asc, eq, inArray, isNull, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod/v4";
 import { getEnvFromContext } from "../lib/env";
@@ -37,7 +38,7 @@ publicApiRouter.use("*", async (c, next) => {
 			.from(organization)
 			.where(eq(organization.publicKey, publicKey));
 
-		if (!org) {
+		if (!org || org.length === 0) {
 			return c.json(
 				{ error: "Unauthorized", message: "Invalid API key." },
 				401,
@@ -86,6 +87,74 @@ publicApiRouter.get("/boards", async (c) => {
 			);
 
 		return c.json(publicBoards);
+	} catch (error) {
+		return c.json({ error: "Internal Server Error" }, 500);
+	}
+});
+
+/**
+ * GET /public/roadmap
+ * Returns statuses and up to 50 items per status for the organization.
+ */
+publicApiRouter.get("/roadmap", async (c) => {
+	const org = c.get("organization");
+
+	try {
+		const env = getEnvFromContext(c);
+		const db = getDb({ DATABASE_URL: env.DATABASE_URL });
+
+		const orgStatuses = await db
+			.select({
+				id: statuses.id,
+				key: statuses.key,
+				name: statuses.name,
+				color: statuses.color,
+				order: statuses.order,
+			})
+			.from(statuses)
+			.where(eq(statuses.organizationId, org.id))
+			.orderBy(asc(statuses.order));
+
+		const results = [] as Array<{
+			id: string;
+			key: string;
+			name: string;
+			color: string | null;
+			order: number | null;
+			items: Array<{
+				id: string;
+				title: string | null;
+				description: string;
+				boardId: string;
+				createdAt: Date | null;
+			}>;
+		}>;
+
+		for (const st of orgStatuses) {
+			const items = await db
+				.select({
+					id: feedback.id,
+					title: feedback.title,
+					description: feedback.description,
+					boardId: feedback.boardId,
+					createdAt: feedback.createdAt,
+				})
+				.from(feedback)
+				.innerJoin(boards, eq(feedback.boardId, boards.id))
+				.where(
+					and(
+						eq(feedback.statusId, st.id),
+						eq(boards.organizationId, org.id),
+						eq(boards.isPrivate, false),
+						isNull(boards.deletedAt),
+					),
+				)
+				.limit(50);
+
+			results.push({ ...st, items });
+		}
+
+		return c.json({ statuses: results });
 	} catch (error) {
 		return c.json({ error: "Internal Server Error" }, 500);
 	}
@@ -203,6 +272,18 @@ publicApiRouter.post("/feedback", async (c) => {
 
 		const { userAgent, url, ...restOfBrowserInfo } = browserInfo;
 
+		// Determine default status for new feedback (prefer key "open"; otherwise first by order)
+		const defaultStatus = await db
+			.select({ id: statuses.id, key: statuses.key, order: statuses.order })
+			.from(statuses)
+			.where(eq(statuses.organizationId, org.id))
+			.orderBy(asc(statuses.order))
+			.limit(1);
+		const statusId = defaultStatus[0]?.id;
+		if (!statusId) {
+			return c.json({ error: "No statuses configured for organization" }, 500);
+		}
+
 		const [newFeedbackItem] = await db
 			.insert(feedback)
 			.values({
@@ -211,6 +292,7 @@ publicApiRouter.post("/feedback", async (c) => {
 				description,
 				// Auto-generate a title from the description
 				title: `${type.charAt(0).toUpperCase() + type.slice(1)}: ${description.substring(0, 50)}`,
+				statusId,
 				// Note: The 'severity' field is not present in the current database schema.
 				userId: user?.id,
 				userName: user?.name,
