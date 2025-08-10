@@ -1,4 +1,4 @@
-import { betterAuth } from "better-auth";
+import { type Auth, betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, anonymous, organization } from "better-auth/plugins";
 import { eq } from "drizzle-orm";
@@ -8,7 +8,7 @@ import { boards, statuses, tags } from "../db/schema";
 import { sendEmail } from "../email";
 import type { AppEnv } from "./env";
 
-export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> {
+export function getAuth(env: AppEnv) {
 	return betterAuth({
 		baseURL: env.BETTER_AUTH_URL as string,
 		database: drizzleAdapter(getDb(env as { DATABASE_URL: string }), {
@@ -50,7 +50,9 @@ export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> {
 			organization({
 				organizationCreation: {
 					afterCreate: async ({ user, organization }) => {
-						await sendEmail(env, user.email, "welcome", user.name);
+						if (env.NODE_ENV === "production") {
+							await sendEmail(env, user.email, "welcome", user.name);
+						}
 
 						const db = getDb(env as { DATABASE_URL: string });
 

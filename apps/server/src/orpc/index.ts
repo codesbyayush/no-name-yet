@@ -300,11 +300,17 @@ export const apiRouter = {
 
 			try {
 				// Create org via Better Auth server API, then mirror user orgId
-				const org = await getAuth(context.env).createOrganization({
-					name: input.name,
-					slug: input.slug,
-					userId,
+				const org = await getAuth(context.env).api.createOrganization({
+					body: {
+						name: input.name,
+						slug: input.slug,
+						userId,
+					},
 				});
+
+				if (!org) {
+					throw new ORPCError("INTERNAL_SERVER_ERROR");
+				}
 
 				await context.db
 					.update(user)

@@ -97,6 +97,32 @@ app.use(
 		maxAge: 86400,
 	}),
 );
+
+app.use(
+	"/api/auth/*",
+	cors({
+		origin: (origin, c) => {
+			const env = getEnvFromContext(c);
+			return origin.endsWith(env.CORS_ORIGIN)
+				? origin
+				: `https://${env.FRONTEND_URL}`;
+		},
+		allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+		allowHeaders: [
+			"Content-Type",
+			"Authorization",
+			"X-Tenant-ID",
+			"X-Public-Key",
+			"Cookie",
+			"Set-Cookie",
+			"X-Requested-With",
+		],
+		exposeHeaders: ["Set-Cookie"],
+		credentials: true,
+		maxAge: 86400, // 24 hours
+	}),
+);
+
 app.get("/docs", (c) => c.redirect("/api/docs"));
 
 app.route("/api/auth", authRouter);
