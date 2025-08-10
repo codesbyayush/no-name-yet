@@ -1,4 +1,4 @@
-import { type Auth, betterAuth } from "better-auth";
+import { type Auth, type BetterAuthOptions, betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, anonymous, organization } from "better-auth/plugins";
 import { eq } from "drizzle-orm";
@@ -9,7 +9,7 @@ import { sendEmail } from "../email";
 import type { AppEnv } from "./env";
 
 export function getAuth(env: AppEnv) {
-	return betterAuth({
+	const config = {
 		baseURL: env.BETTER_AUTH_URL as string,
 		database: drizzleAdapter(getDb(env as { DATABASE_URL: string }), {
 			provider: "pg",
@@ -183,5 +183,7 @@ export function getAuth(env: AppEnv) {
 				},
 			}),
 		],
-	});
+	} satisfies BetterAuthOptions;
+
+	return betterAuth(config) as ReturnType<typeof betterAuth<typeof config>>;
 }
