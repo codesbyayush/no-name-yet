@@ -7,6 +7,6 @@ keep_vars = true
 route = { pattern = "api.openfeedback.tech/*", zone_name = "openfeedback.tech" }
 
 [[hyperdrive]]
-binding = "HYPERDRIVE",
-id = "93d625eb7bcb407a95ba9fa864cf5413",
+binding = "HYPERDRIVE"
+id = "93d625eb7bcb407a95ba9fa864cf5413"
 
