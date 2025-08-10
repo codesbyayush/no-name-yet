@@ -35,7 +35,7 @@ interface OmniFeedbackWidgetInstance {
 class OmniFeedbackWidgetManager {
 	private instances: Map<
 		string,
-		{ root: ReturnType<typeof createRoot>; container: HTMLElement }
+		{ root: ReturnType<typeof createRoot> | null; container: HTMLElement }
 	> = new Map();
 
 	init(options: OmniFeedbackWidgetOptions): OmniFeedbackWidgetInstance {
@@ -56,61 +56,146 @@ class OmniFeedbackWidgetManager {
 			container = targetElement;
 		}
 
-		// Create a unique container for this widget instance
-		const widgetContainer = document.createElement("div");
-		widgetContainer.className = "omnifeedback-widget-container";
-		widgetContainer.style.position = "relative";
-		widgetContainer.style.zIndex = "999999";
+		// Create an isolated iframe overlay
+		const iframe = document.createElement("iframe");
+		iframe.title = "OmniFeedbackWidget";
+		iframe.setAttribute("aria-label", "Omni Feedback Widget");
+		iframe.style.position = "fixed";
+		iframe.style.border = "0";
+		iframe.style.background = "transparent";
+		iframe.style.zIndex = "2147483646"; // very high
 
-		// Generate unique ID for this instance
-		const instanceId = `omnifeedback-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-		widgetContainer.id = instanceId;
+		let prevTimeout: number | null = null;
+		const setFrameClosedSize = (timeout = 500) => {
+			iframe.style.backgroundColor = "transparent";
+			iframe.style.backdropFilter = "none";
+			if (prevTimeout) window.clearTimeout(prevTimeout);
+			prevTimeout = window.setTimeout(() => {
+				iframe.style.top = "";
+				iframe.style.left = "";
+				iframe.style.right = "0px";
+				iframe.style.bottom = "0px";
+				iframe.style.width = "70px";
+				iframe.style.height = "70px";
+				iframe.style.pointerEvents = "auto";
+			}, timeout);
+		};
+		const setFrameOpenSize = () => {
+			if (prevTimeout) window.clearTimeout(prevTimeout);
+			iframe.style.top = "0";
+			iframe.style.left = "0";
+			iframe.style.right = "0";
+			iframe.style.bottom = "0";
+			iframe.style.width = "100%";
+			iframe.style.height = "100%";
+			iframe.style.pointerEvents = "auto";
+			iframe.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+			iframe.style.backdropFilter = "blur(1px)";
+		};
+		setFrameClosedSize(0);
 
-		container.appendChild(widgetContainer);
+		container.appendChild(iframe);
 
-		// Create React root and render widget
-		const root = createRoot(widgetContainer);
+		// Prepare iframe doc
+		iframe.srcdoc = `<!doctype html><html><head>
+<meta charset='utf-8'/>
+<meta name='viewport' content='width=device-width, initial-scale=1'/>
+<style>html,body{margin:0;height:100%;background:transparent !important;overflow: hidden;}</style>
+</head><body><div id='root'></div></body></html>`;
 
-		const renderWidget = (visible = true) => {
-			root.render(
-				<div style={{ display: visible ? "block" : "none" }}>
-					<OmniFeedbackWidget
-						{...widgetProps}
-						position={position}
-						onClose={() => {
-							// Widget handles its own visibility, but we can add hooks here
-						}}
-					/>
-				</div>,
+		let root: ReturnType<typeof createRoot> | null = null;
+
+		const onFrameLoad = () => {
+			const doc = iframe.contentDocument || iframe.contentWindow?.document;
+			if (!doc) return;
+			// Clone host styles to iframe so widget styles apply inside
+			const head = doc.head;
+			const hostLinks = document.querySelectorAll<HTMLLinkElement>(
+				'link[rel="stylesheet"]',
 			);
+			for (const link of Array.from(hostLinks)) {
+				const cloned = doc.createElement("link");
+				cloned.rel = "stylesheet";
+				cloned.href = link.href;
+				head.appendChild(cloned);
+			}
+			const hostStyles = document.querySelectorAll<HTMLStyleElement>("style");
+			for (const style of Array.from(hostStyles)) {
+				const cloned = doc.createElement("style");
+				cloned.textContent = style.textContent || "";
+				head.appendChild(cloned);
+			}
+
+			const mount = doc.getElementById("root");
+			if (!mount) return;
+			root = createRoot(mount);
+
+			const handleOpenChange = (open: boolean) => {
+				if (open) setFrameOpenSize();
+				else setFrameClosedSize();
+			};
+
+			const renderWidget = (visible = true) => {
+				if (!root) return;
+				root.render(
+					<div style={{ display: visible ? "block" : "none" }}>
+						<OmniFeedbackWidget
+							{...widgetProps}
+							position={position}
+							onClose={() => {}}
+							onOpenChange={handleOpenChange}
+						/>
+					</div>,
+				);
+			};
+
+			renderWidget();
+
+			// Save root reference into instance for cleanup
+			const instance = this.instances.get(instanceId);
+			if (instance) instance.root = root;
 		};
 
-		renderWidget();
+		iframe.addEventListener("load", onFrameLoad, { once: true });
 
-		// Store instance for cleanup
-		this.instances.set(instanceId, { root, container: widgetContainer });
+		// Generate unique ID and store instance
+		const instanceId = `omnifeedback-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+		this.instances.set(instanceId, { root, container: iframe });
 
 		// Return instance control object
 		return {
 			destroy: () => {
 				const instance = this.instances.get(instanceId);
 				if (instance) {
-					instance.root.unmount();
+					try {
+						instance.root?.unmount?.();
+					} catch {}
 					instance.container.remove();
 					this.instances.delete(instanceId);
 				}
 			},
-			show: () => renderWidget(true),
-			hide: () => renderWidget(false),
-			isVisible: () => true,
-			getElement: () => widgetContainer,
+			show: () => {
+				(
+					this.instances.get(instanceId)?.container as HTMLElement
+				).style.display = "block";
+			},
+			hide: () => {
+				(
+					this.instances.get(instanceId)?.container as HTMLElement
+				).style.display = "none";
+			},
+			isVisible: () =>
+				(this.instances.get(instanceId)?.container as HTMLElement).style
+					.display !== "none",
+			getElement: () =>
+				this.instances.get(instanceId)?.container as HTMLElement,
 		};
 	}
 
 	// Cleanup all instances
 	destroyAll() {
 		for (const instance of this.instances.values()) {
-			instance.root.unmount();
+			instance.root?.unmount?.();
 			instance.container.remove();
 		}
 		this.instances.clear();

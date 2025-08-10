@@ -86,6 +86,7 @@ interface OmniFeedbackWidgetProps {
 	onClose?: () => void;
 	/** Base URL of your public portal to embed roadmap/changelog within the widget */
 	portalUrl?: string;
+	onOpenChange?: (open: boolean) => void;
 }
 
 const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
@@ -96,6 +97,7 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
 	position = "above-button",
 	onClose,
 	portalUrl,
+	onOpenChange,
 }) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [isClosing, setIsClosing] = useState(false);
@@ -108,6 +110,7 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
 	const closeWidget = () => {
 		setIsOpen(false);
 		onClose?.();
+		onOpenChange?.(false);
 	};
 
 	const startCloseAnimation = () => {
@@ -116,6 +119,7 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
 			setIsClosing(false);
 			closeWidget();
 		}, 200);
+		onOpenChange?.(false);
 	};
 
 	// Prevent background page scroll while the widget is open
@@ -147,17 +151,38 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
 				? "shrink-out-br fade-out animate-out duration-200 origin-bottom-right"
 				: "grow-in-br fade-in animate-in duration-300 origin-bottom-right";
 
+	// Use window dimensions to decide breakpoint behavior (works correctly inside iframe)
+	const [isDesktop, setIsDesktop] = useState(
+		typeof window !== "undefined" && window.innerWidth >= 768,
+	);
+
+	useEffect(() => {
+		const checkIsDesktop = () => {
+			setIsDesktop(window.innerWidth >= 768);
+		};
+
+		checkIsDesktop();
+		window.addEventListener("resize", checkIsDesktop);
+		return () => window.removeEventListener("resize", checkIsDesktop);
+	}, []);
 	const containerClass =
 		position === "center"
-			? "fixed inset-0 z-[1000001] p-0 md:flex md:items-center md:justify-center md:p-5"
-			: "fixed inset-0 z-[1000001] p-0 md:inset-auto md:right-5 md:bottom-20 md:w-96 md:max-w-[calc(100vw-40px)]";
+			? isDesktop
+				? "fixed inset-0 z-[1000001] p-5 flex items-center justify-center"
+				: "fixed inset-0 z-[1000001] p-0"
+			: isDesktop
+				? "fixed inset-0 z-[1000001] p-0 md:inset-auto md:right-5 md:bottom-20 md:w-96 md:max-w-[calc(100vw-40px)]"
+				: "fixed inset-0 z-[1000001] p-0";
 
 	const panelClass = (() => {
-		const mdSizeClasses = position === "center" ? "md:w-full md:max-w-lg" : "";
-		return `${animateClasses} relative h-full w-full overflow-hidden rounded-none bg-white shadow-2xl md:h-auto md:w-auto md:rounded-xl ${mdSizeClasses}`;
+		const desktopSize = position === "center" ? "max-w-lg" : "";
+		const common = `${animateClasses} relative w-full overflow-hidden bg-white shadow-2xl`;
+		return isDesktop
+			? `${common} h-auto rounded-xl ${desktopSize}`
+			: `${common} h-full rounded-none`;
 	})();
 
-	const panelBodyHeightClass = "h-full md:h-[80vh] md:max-h-[700px]";
+	const panelBodyHeightClass = isDesktop ? "h-[80vh] max-h-[700px]" : "h-full";
 
 	// Compute FAB icon animation classes
 	const chatIconAnimClass = (() => {
@@ -262,6 +287,7 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
 						setActiveTab("submit");
 						setIsOpen(true);
 						window.setTimeout(() => setIsOpening(false), 340);
+						onOpenChange?.(true);
 					}
 				}}
 				aria-label={isOpen ? "Close feedback widget" : "Open feedback widget"}

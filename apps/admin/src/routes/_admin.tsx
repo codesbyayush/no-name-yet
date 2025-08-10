@@ -33,7 +33,7 @@ function AdminLayout() {
 				}
 			>
 				<SidebarRightProvider>
-					<OmniFeedbackWidget />
+					{/* <OmniFeedbackWidget /> */}
 					<AppSidebar />
 					<SidebarInset className="!mt-0 !mx-0 min-h-max">
 						<Outlet />
