@@ -12,7 +12,7 @@ export type CreateContextOptions = {
 };
 
 export async function createContext({ context, env }: CreateContextOptions) {
-	const db = getDb({ HYPERDRIVE: env.HYPERDRIVE });
+	const db = getDb(env);
 	const auth = getAuth(env);
 	const session = await auth.api.getSession({
 		headers: context.req.raw.headers,
@@ -66,7 +66,7 @@ export async function createAdminContext({
 	context,
 	env,
 }: CreateContextOptions) {
-	const db = getDb({ HYPERDRIVE: env.HYPERDRIVE });
+	const db = getDb(env);
 	const auth = getAuth(env);
 	const session = await auth.api.getSession({
 		headers: context.req.raw.headers,

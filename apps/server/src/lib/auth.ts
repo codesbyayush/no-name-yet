@@ -11,7 +11,7 @@ import type { AppEnv } from "./env";
 export function getAuth(env: AppEnv) {
 	const config = {
 		baseURL: env.BETTER_AUTH_URL as string,
-		database: drizzleAdapter(getDb(env as { DATABASE_URL: string }), {
+		database: drizzleAdapter(getDb(env), {
 			provider: "pg",
 			schema: schema,
 		}),
@@ -54,7 +54,7 @@ export function getAuth(env: AppEnv) {
 							await sendEmail(env, user.email, "welcome", user.name);
 						}
 
-						const db = getDb(env as { DATABASE_URL: string });
+						const db = getDb(env);
 
 						await db
 							.update(schema.user)
@@ -156,7 +156,7 @@ export function getAuth(env: AppEnv) {
 				emailDomainName: "anon.us",
 				onLinkAccount: async ({ anonymousUser, newUser }) => {
 					// TODO: When we allow user to post without signup, update here to migrate post on linking account
-					const db = getDb(env as { DATABASE_URL: string });
+					const db = getDb(env);
 					const anonymousUserId = anonymousUser.user.id;
 					const newUserId = newUser.user.id;
 

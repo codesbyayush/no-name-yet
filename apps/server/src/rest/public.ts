@@ -32,7 +32,7 @@ publicApiRouter.use("*", async (c, next) => {
 
 	try {
 		const env = getEnvFromContext(c);
-		const db = getDb({ HYPERDRIVE: env.HYPERDRIVE });
+		const db = getDb(env);
 		const org = await db
 			.select()
 			.from(organization)
@@ -69,7 +69,7 @@ publicApiRouter.get("/boards", async (c) => {
 
 	try {
 		const env = getEnvFromContext(c);
-		const db = getDb({ HYPERDRIVE: env.HYPERDRIVE });
+		const db = getDb(env);
 		const publicBoards = await db
 			.select({
 				id: boards.id,
@@ -101,7 +101,7 @@ publicApiRouter.get("/roadmap", async (c) => {
 
 	try {
 		const env = getEnvFromContext(c);
-		const db = getDb({ HYPERDRIVE: env.HYPERDRIVE });
+		const db = getDb(env);
 
 		const orgStatuses = await db
 			.select({
@@ -169,7 +169,7 @@ publicApiRouter.get("/tags", async (c) => {
 
 	try {
 		const env = getEnvFromContext(c);
-		const db = getDb({ HYPERDRIVE: env.HYPERDRIVE });
+		const db = getDb(env);
 		const orgBoards = await db
 			.select({ id: boards.id })
 			.from(boards)
@@ -257,7 +257,7 @@ publicApiRouter.post("/feedback", async (c) => {
 	// This prevents a user from one org from submitting feedback to a board of another org.
 	try {
 		const env = getEnvFromContext(c);
-		const db = getDb({ HYPERDRIVE: env.HYPERDRIVE });
+		const db = getDb(env);
 		const board = await db.query.boards.findFirst({
 			where: and(eq(boards.id, boardId), eq(boards.organizationId, org.id)),
 			columns: { id: true },
