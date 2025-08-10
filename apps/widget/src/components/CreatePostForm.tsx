@@ -133,9 +133,16 @@ export default function CreatePostForm({
 	};
 
 	return (
-		<form onSubmit={handleSubmit} className="flex h-full flex-col">
-			<div className="p-5">
-				<div className="space-y-1">
+		<form
+			onSubmit={handleSubmit}
+			style={{
+				display: "flex",
+				height: "100%",
+				flexDirection: "column",
+			}}
+		>
+			<div style={{ padding: "20px" }}>
+				<div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
 					<input
 						type="text"
 						value={form.title}
@@ -143,10 +150,34 @@ export default function CreatePostForm({
 						placeholder="Issue title"
 						maxLength={250}
 						required
-						className="w-full rounded-xl border border-gray-200 px-3 py-3 font-medium text-base focus:border-blue-500 focus:outline-none"
+						style={{
+							width: "100%",
+							borderRadius: "12px",
+							border: "1px solid #e5e7eb",
+							paddingLeft: "12px",
+							paddingRight: "12px",
+							paddingTop: "12px",
+							paddingBottom: "12px",
+							fontWeight: 500,
+							fontSize: "16px",
+							outline: "none",
+						}}
+						onFocus={(e) => {
+							e.target.style.borderColor = "#3b82f6";
+						}}
+						onBlur={(e) => {
+							e.target.style.borderColor = "#e5e7eb";
+						}}
 					/>
 				</div>
-				<div className="mt-3 space-y-2">
+				<div
+					style={{
+						marginTop: "12px",
+						display: "flex",
+						flexDirection: "column",
+						gap: "8px",
+					}}
+				>
 					<textarea
 						value={form.description}
 						onChange={(e) =>
@@ -156,14 +187,45 @@ export default function CreatePostForm({
 						maxLength={5000}
 						rows={5}
 						required
-						className="w-full rounded-xl border border-gray-200 px-3 py-3 text-sm focus:border-blue-500 focus:outline-none"
+						style={{
+							width: "100%",
+							borderRadius: "12px",
+							border: "1px solid #e5e7eb",
+							paddingLeft: "12px",
+							paddingRight: "12px",
+							paddingTop: "12px",
+							paddingBottom: "12px",
+							fontSize: "14px",
+							outline: "none",
+							resize: "vertical",
+						}}
+						onFocus={(e) => {
+							e.target.style.borderColor = "#3b82f6";
+						}}
+						onBlur={(e) => {
+							e.target.style.borderColor = "#e5e7eb";
+						}}
 					/>
-					<div className="text-right text-gray-500 text-xs">
+					<div
+						style={{
+							textAlign: "right",
+							color: "#6b7280",
+							fontSize: "12px",
+						}}
+					>
 						{form.description.length}/5000
 					</div>
 				</div>
-				<div className="mt-4 flex items-center justify-between gap-2">
-					<div className="relative" ref={boardDropdownRef}>
+				<div
+					style={{
+						marginTop: "16px",
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "space-between",
+						gap: "8px",
+					}}
+				>
+					<div style={{ position: "relative" }} ref={boardDropdownRef}>
 						<button
 							type="button"
 							onClick={() => {
@@ -176,20 +238,73 @@ export default function CreatePostForm({
 							disabled={isLoadingBoards || boards.length === 0}
 							aria-haspopup="listbox"
 							aria-expanded={isBoardOpen}
-							className="flex min-w-[12rem] items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-left text-sm focus:border-blue-500 focus:outline-none disabled:opacity-60"
+							style={{
+								display: "flex",
+								minWidth: "12rem",
+								alignItems: "center",
+								justifyContent: "space-between",
+								borderRadius: "8px",
+								border: "1px solid #e5e7eb",
+								backgroundColor: "#f9fafb",
+								paddingLeft: "12px",
+								paddingRight: "12px",
+								paddingTop: "8px",
+								paddingBottom: "8px",
+								textAlign: "left",
+								fontSize: "14px",
+								outline: "none",
+								opacity: isLoadingBoards || boards.length === 0 ? 0.6 : 1,
+								cursor: "pointer",
+							}}
+							onFocus={(e) => {
+								e.target.style.borderColor = "#3b82f6";
+							}}
+							onBlur={(e) => {
+								e.target.style.borderColor = "#e5e7eb";
+							}}
 						>
-							<span className="truncate">
+							<span
+								style={{
+									textOverflow: "ellipsis",
+									whiteSpace: "nowrap",
+									overflow: "hidden",
+								}}
+							>
 								{selectedBoardName || boards[0]?.name || "Select board"}
 							</span>
-							<span className="ml-2 text-gray-500">▾</span>
+							<span
+								style={{
+									marginLeft: "8px",
+									color: "#6b7280",
+								}}
+							>
+								▾
+							</span>
 						</button>
 						{isBoardOpen && (
 							<div
-								className={
-									"absolute bottom-full left-0 z-[1000002] mb-1 w-full rounded-md border border-gray-200 bg-white shadow-lg"
-								}
+								style={{
+									position: "absolute",
+									bottom: "100%",
+									left: 0,
+									zIndex: 1000002,
+									marginBottom: "4px",
+									width: "100%",
+									borderRadius: "6px",
+									border: "1px solid #e5e7eb",
+									backgroundColor: "white",
+									boxShadow:
+										"0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)",
+								}}
 							>
-								<div className="max-h-60 overflow-auto py-1">
+								<div
+									style={{
+										maxHeight: "240px",
+										overflow: "auto",
+										paddingTop: "4px",
+										paddingBottom: "4px",
+									}}
+								>
 									{boards.map((b) => (
 										<button
 											key={b.id}
@@ -198,11 +313,48 @@ export default function CreatePostForm({
 												setForm((p) => ({ ...p, board: b.id }));
 												setIsBoardOpen(false);
 											}}
-											className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-gray-100 ${form.board === b.id ? "bg-gray-50" : ""}`}
+											style={{
+												display: "flex",
+												width: "100%",
+												alignItems: "center",
+												justifyContent: "space-between",
+												paddingLeft: "12px",
+												paddingRight: "12px",
+												paddingTop: "8px",
+												paddingBottom: "8px",
+												textAlign: "left",
+												fontSize: "14px",
+												backgroundColor:
+													form.board === b.id ? "#f9fafb" : "transparent",
+												border: "none",
+												cursor: "pointer",
+											}}
+											onMouseEnter={(e) => {
+												e.currentTarget.style.backgroundColor = "#f3f4f6";
+											}}
+											onMouseLeave={(e) => {
+												e.currentTarget.style.backgroundColor =
+													form.board === b.id ? "#f9fafb" : "transparent";
+											}}
 										>
-											<span className="truncate">{b.name}</span>
+											<span
+												style={{
+													textOverflow: "ellipsis",
+													whiteSpace: "nowrap",
+													overflow: "hidden",
+												}}
+											>
+												{b.name}
+											</span>
 											{form.board === b.id ? (
-												<span className="ml-2 text-blue-600">✓</span>
+												<span
+													style={{
+														marginLeft: "8px",
+														color: "#2563eb",
+													}}
+												>
+													✓
+												</span>
 											) : null}
 										</button>
 									))}
@@ -218,13 +370,50 @@ export default function CreatePostForm({
 							!form.description.trim() ||
 							!form.board
 						}
-						className="rounded-lg bg-blue-600 px-4 py-2 font-semibold text-sm text-white disabled:cursor-not-allowed disabled:bg-gray-400"
+						style={{
+							borderRadius: "8px",
+							backgroundColor:
+								isSubmitting ||
+								!form.title.trim() ||
+								!form.description.trim() ||
+								!form.board
+									? "#9ca3af"
+									: "#2563eb",
+							paddingLeft: "16px",
+							paddingRight: "16px",
+							paddingTop: "8px",
+							paddingBottom: "8px",
+							fontWeight: 600,
+							fontSize: "14px",
+							color: "white",
+							cursor:
+								isSubmitting ||
+								!form.title.trim() ||
+								!form.description.trim() ||
+								!form.board
+									? "not-allowed"
+									: "pointer",
+							border: "none",
+						}}
 					>
 						{isSubmitting ? "Creating..." : "Create issue"}
 					</button>
 				</div>
 				{error && (
-					<div className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-red-700 text-sm">
+					<div
+						style={{
+							marginTop: "12px",
+							borderRadius: "6px",
+							border: "1px solid #fecaca",
+							backgroundColor: "#fef2f2",
+							paddingLeft: "12px",
+							paddingRight: "12px",
+							paddingTop: "8px",
+							paddingBottom: "8px",
+							color: "#b91c1c",
+							fontSize: "14px",
+						}}
+					>
 						{error}
 					</div>
 				)}

@@ -2,7 +2,10 @@ import type React from "react";
 import { useEffect, useState } from "react";
 
 // Inline icon components for the bottom navigation
-const AskIcon: React.FC<{ className?: string }> = ({ className }) => (
+const AskIcon: React.FC<{
+	className?: string;
+	style?: React.CSSProperties;
+}> = ({ className, style }) => (
 	<svg
 		viewBox="0 0 24 24"
 		width="20"
@@ -10,6 +13,7 @@ const AskIcon: React.FC<{ className?: string }> = ({ className }) => (
 		aria-hidden="true"
 		focusable="false"
 		className={className}
+		style={style}
 		fill="none"
 		stroke="currentColor"
 		strokeWidth={2}
@@ -24,7 +28,10 @@ const AskIcon: React.FC<{ className?: string }> = ({ className }) => (
 	</svg>
 );
 
-const RoadmapIcon: React.FC<{ className?: string }> = ({ className }) => (
+const RoadmapIcon: React.FC<{
+	className?: string;
+	style?: React.CSSProperties;
+}> = ({ className, style }) => (
 	<svg
 		viewBox="0 0 24 24"
 		width="20"
@@ -32,6 +39,7 @@ const RoadmapIcon: React.FC<{ className?: string }> = ({ className }) => (
 		aria-hidden="true"
 		focusable="false"
 		className={className}
+		style={style}
 		fill="none"
 		stroke="currentColor"
 		strokeWidth={2}
@@ -45,7 +53,10 @@ const RoadmapIcon: React.FC<{ className?: string }> = ({ className }) => (
 	</svg>
 );
 
-const ChangelogIcon: React.FC<{ className?: string }> = ({ className }) => (
+const ChangelogIcon: React.FC<{
+	className?: string;
+	style?: React.CSSProperties;
+}> = ({ className, style }) => (
 	<svg
 		viewBox="0 0 24 24"
 		width="20"
@@ -53,6 +64,7 @@ const ChangelogIcon: React.FC<{ className?: string }> = ({ className }) => (
 		aria-hidden="true"
 		focusable="false"
 		className={className}
+		style={style}
 		fill="none"
 		stroke="currentColor"
 		strokeWidth={2}
@@ -165,24 +177,83 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
 		window.addEventListener("resize", checkIsDesktop);
 		return () => window.removeEventListener("resize", checkIsDesktop);
 	}, []);
-	const containerClass =
-		position === "center"
-			? isDesktop
-				? "fixed inset-0 z-[1000001] p-5 flex items-center justify-center"
-				: "fixed inset-0 z-[1000001] p-0"
-			: isDesktop
-				? "fixed inset-0 z-[1000001] p-0 md:inset-auto md:right-5 md:bottom-20 md:w-96 md:max-w-[calc(100vw-40px)]"
-				: "fixed inset-0 z-[1000001] p-0";
-
-	const panelClass = (() => {
-		const desktopSize = position === "center" ? "max-w-lg" : "";
-		const common = `${animateClasses} relative w-full overflow-hidden bg-white shadow-2xl`;
-		return isDesktop
-			? `${common} h-auto rounded-xl ${desktopSize}`
-			: `${common} h-full rounded-none`;
+	const containerStyle = (() => {
+		if (position === "center") {
+			return isDesktop
+				? {
+						position: "fixed" as const,
+						top: 0,
+						right: 0,
+						bottom: 0,
+						left: 0,
+						zIndex: 1000001,
+						padding: "20px",
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "center",
+					}
+				: {
+						position: "fixed" as const,
+						top: 0,
+						right: 0,
+						bottom: 0,
+						left: 0,
+						zIndex: 1000001,
+						padding: 0,
+					};
+		} else {
+			return isDesktop
+				? {
+						position: "fixed" as const,
+						top: "auto",
+						right: "20px",
+						bottom: "80px",
+						left: "auto",
+						zIndex: 1000001,
+						padding: 0,
+						width: "384px",
+						maxWidth: "calc(100vw - 40px)",
+					}
+				: {
+						position: "fixed" as const,
+						top: 0,
+						right: 0,
+						bottom: 0,
+						left: 0,
+						zIndex: 1000001,
+						padding: 0,
+					};
+		}
 	})();
 
-	const panelBodyHeightClass = isDesktop ? "h-[80vh] max-h-[700px]" : "h-full";
+	const panelStyle = (() => {
+		const baseStyle = {
+			position: "relative" as const,
+			width: "100%",
+			overflow: "hidden",
+			backgroundColor: "white",
+			boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+		};
+
+		if (isDesktop) {
+			return {
+				...baseStyle,
+				height: "auto",
+				borderRadius: "12px",
+				...(position === "center" ? { maxWidth: "512px" } : {}),
+			};
+		} else {
+			return {
+				...baseStyle,
+				height: "100%",
+				borderRadius: 0,
+			};
+		}
+	})();
+
+	const panelBodyHeightStyle = isDesktop
+		? { height: "80vh", maxHeight: "700px" }
+		: { height: "100%" };
 
 	// Compute FAB icon animation classes
 	const chatIconAnimClass = (() => {
@@ -203,19 +274,59 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
 		if (activeTab === "submit") {
 			return (
 				<>
-					<div className="bg-gradient-to-b from-blue-800 via-60% via-blue-700 to-transparent pb-8 text-white">
-						<div className="p-5">
-							<div className="mb-8 flex items-center gap-3 ">
-								<div className="h-8 w-8 rounded-full bg-white/20" />
+					<div
+						style={{
+							background:
+								"linear-gradient(to bottom, #1e40af 0%, #1d4ed8 60%, transparent 100%)",
+							paddingBottom: "32px",
+							color: "white",
+						}}
+					>
+						<div style={{ padding: "20px" }}>
+							<div
+								style={{
+									marginBottom: "32px",
+									display: "flex",
+									alignItems: "center",
+									gap: "12px",
+								}}
+							>
+								<div
+									style={{
+										height: "32px",
+										width: "32px",
+										borderRadius: "50%",
+										backgroundColor: "rgba(255, 255, 255, 0.2)",
+									}}
+								/>
 							</div>
-							<div className="space-y-1">
-								<div className="font-semibold text-xl leading-6">
+							<div
+								style={{ display: "flex", flexDirection: "column", gap: "4px" }}
+							>
+								<div
+									style={{
+										fontWeight: 600,
+										fontSize: "20px",
+										lineHeight: "24px",
+									}}
+								>
 									Share your feedback
 								</div>
-								<div className="font-bold text-2xl leading-7">
+								<div
+									style={{
+										fontWeight: 700,
+										fontSize: "24px",
+										lineHeight: "28px",
+									}}
+								>
 									Tell us what’s working and what’s not
 								</div>
-								<div className="text-sm opacity-90">
+								<div
+									style={{
+										fontSize: "14px",
+										opacity: 0.9,
+									}}
+								>
 									Your message goes straight to the team, we read every
 									submission.
 								</div>
@@ -233,7 +344,7 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
 		}
 		if (activeTab === "roadmap") {
 			return (
-				<div className="h-full w-full">
+				<div style={{ height: "100%", width: "100%" }}>
 					{portalUrl ? (
 						<iframe
 							className="iframe-container"
@@ -241,7 +352,13 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
 							title="Roadmap"
 						/>
 					) : (
-						<div className="p-4 text-center text-gray-500">
+						<div
+							style={{
+								padding: "16px",
+								textAlign: "center",
+								color: "#6b7280",
+							}}
+						>
 							Connect portalUrl to show roadmap here.
 						</div>
 					)}
@@ -249,7 +366,7 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
 			);
 		}
 		return (
-			<div className="h-full w-full">
+			<div style={{ height: "100%", width: "100%" }}>
 				{portalUrl ? (
 					<iframe
 						className="iframe-container"
@@ -257,7 +374,13 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
 						title="Changelog"
 					/>
 				) : (
-					<div className="p-4 text-center text-gray-500">
+					<div
+						style={{
+							padding: "16px",
+							textAlign: "center",
+							color: "#6b7280",
+						}}
+					>
 						Connect portalUrl to show changelog here.
 					</div>
 				)}
@@ -266,12 +389,59 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
 	};
 
 	return (
-		<div className="omni-feedback-widget fixed z-[999999] font-sans text-gray-800 text-sm leading-relaxed">
+		<div
+			className="omni-feedback-widget"
+			style={{
+				position: "fixed",
+				zIndex: 999999,
+				fontFamily:
+					'-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif',
+				color: "#374151",
+				fontSize: "14px",
+				lineHeight: "1.625",
+			}}
+		>
 			{/* Floating Action Button */}
 			<button
 				type="button"
-				className={`fixed right-5 bottom-5 z-[1000000] flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border-none shadow-lg transition-transform duration-300 hover:scale-105 hover:shadow-xl focus:outline-none active:scale-90 ${isFabBouncing ? "fab-bounce-slow" : ""}`}
-				style={{ backgroundColor: theme.primaryColor || "#007bff" }}
+				className={isFabBouncing ? "fab-bounce-slow" : ""}
+				style={{
+					position: "fixed",
+					right: "20px",
+					bottom: "20px",
+					zIndex: 1000000,
+					display: "flex",
+					height: "44px",
+					width: "44px",
+					cursor: "pointer",
+					alignItems: "center",
+					justifyContent: "center",
+					borderRadius: "50%",
+					border: "none",
+					boxShadow:
+						"0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)",
+					transition: "transform 0.3s ease",
+					backgroundColor: theme.primaryColor || "#007bff",
+				}}
+				onMouseEnter={(e) => {
+					e.currentTarget.style.transform = "scale(1.05)";
+					e.currentTarget.style.boxShadow =
+						"0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)";
+				}}
+				onMouseLeave={(e) => {
+					e.currentTarget.style.transform = "scale(1)";
+					e.currentTarget.style.boxShadow =
+						"0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)";
+				}}
+				onMouseDown={(e) => {
+					e.currentTarget.style.transform = "scale(0.9)";
+				}}
+				onMouseUp={(e) => {
+					e.currentTarget.style.transform = "scale(1.05)";
+				}}
+				onFocus={(e) => {
+					e.currentTarget.style.outline = "none";
+				}}
 				onClick={() => {
 					// Re-trigger bounce
 					setIsFabBouncing(false);
@@ -292,7 +462,17 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
 				}}
 				aria-label={isOpen ? "Close feedback widget" : "Open feedback widget"}
 			>
-				<span className="relative flex h-5 w-5 items-center justify-center text-white">
+				<span
+					style={{
+						position: "relative",
+						display: "flex",
+						height: "20px",
+						width: "20px",
+						alignItems: "center",
+						justifyContent: "center",
+						color: "white",
+					}}
+				>
 					{/* Chat icon (closed state) - message-square-plus */}
 					<svg
 						viewBox="0 0 24 24"
@@ -305,7 +485,13 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
 						strokeWidth="2"
 						strokeLinecap="round"
 						strokeLinejoin="round"
-						className={`-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 ${chatIconAnimClass}`}
+						className={chatIconAnimClass}
+						style={{
+							position: "absolute",
+							top: "50%",
+							left: "50%",
+							transform: "translate(-50%, -50%)",
+						}}
 					>
 						<path d="M21 14a4 4 0 0 1-4 4H9l-4 4v-4H5a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4v7Z" />
 						<path d="M12 8v5" />
@@ -324,7 +510,13 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
 						strokeWidth="2"
 						strokeLinecap="round"
 						strokeLinejoin="round"
-						className={`-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 ${chevronIconAnimClass}`}
+						className={chevronIconAnimClass}
+						style={{
+							position: "absolute",
+							top: "50%",
+							left: "50%",
+							transform: "translate(-50%, -50%)",
+						}}
 					>
 						<path d="M6 9L12 15L18 9" />
 					</svg>
@@ -333,47 +525,116 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
 
 			{/* Widget Panel */}
 			{isOpen && (
-				<div className={containerClass}>
-					<div className={panelClass}>
+				<div style={containerStyle}>
+					<div className={animateClasses} style={panelStyle}>
 						{/* Mobile-only close button overlay */}
 						<button
 							type="button"
-							className="absolute top-3 right-3 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-white/80 text-2xl text-gray-700 leading-none shadow-md backdrop-blur md:hidden"
+							style={{
+								position: "absolute",
+								top: "12px",
+								right: "12px",
+								zIndex: 20,
+								display: isDesktop ? "none" : "flex",
+								height: "36px",
+								width: "36px",
+								alignItems: "center",
+								justifyContent: "center",
+								borderRadius: "50%",
+								backgroundColor: "rgba(255, 255, 255, 0.8)",
+								color: "#374151",
+								fontSize: "24px",
+								lineHeight: 1,
+								boxShadow:
+									"0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)",
+								backdropFilter: "blur(8px)",
+								border: "none",
+								cursor: "pointer",
+							}}
 							onClick={startCloseAnimation}
 							aria-label="Close"
 						>
 							×
 						</button>
-						<div className={`flex flex-col ${panelBodyHeightClass}`}>
-							<div className="flex-1 overflow-y-auto bg-white">
-								<div className="p-0">{renderMainContent()}</div>
+						<div
+							style={{
+								display: "flex",
+								flexDirection: "column",
+								...panelBodyHeightStyle,
+							}}
+						>
+							<div
+								style={{
+									flex: 1,
+									overflowY: "auto",
+									backgroundColor: "white",
+								}}
+							>
+								<div style={{ padding: 0 }}>{renderMainContent()}</div>
 							</div>
 
 							{/* Bottom nav tabs */}
-							<div className="border-gray-200 border-t bg-white">
-								<div className="grid grid-cols-3">
+							<div
+								style={{
+									borderTop: "1px solid #e5e7eb",
+									backgroundColor: "white",
+								}}
+							>
+								<div
+									style={{
+										display: "grid",
+										gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+									}}
+								>
 									{["submit", "roadmap", "changelog"].map((key) => {
 										const isActive = activeTab === (key as typeof activeTab);
-										const baseClasses = isActive
-											? "text-blue-600"
-											: "text-gray-500 hover:text-gray-700";
+										const baseStyle = {
+											display: "flex",
+											cursor: "pointer",
+											flexDirection: "column" as const,
+											alignItems: "center",
+											gap: "4px",
+											paddingTop: "12px",
+											paddingBottom: "12px",
+											fontSize: "12px",
+											transition: "color 0.15s ease",
+											color: isActive ? "#2563eb" : "#6b7280",
+											border: "none",
+											backgroundColor: "transparent",
+										};
 										return (
 											<button
 												type="button"
 												key={key}
-												className={`flex cursor-pointer flex-col items-center gap-1 py-3 text-xs transition-colors ${baseClasses}`}
+												style={baseStyle}
+												onMouseEnter={(e) => {
+													if (!isActive) {
+														e.currentTarget.style.color = "#374151";
+													}
+												}}
+												onMouseLeave={(e) => {
+													if (!isActive) {
+														e.currentTarget.style.color = "#6b7280";
+													}
+												}}
 												onClick={() => setActiveTab(key as typeof activeTab)}
 												aria-selected={isActive}
 												role="tab"
 											>
-												{key === "submit" && <AskIcon className="h-5 w-5" />}
+												{key === "submit" && (
+													<AskIcon style={{ height: "20px", width: "20px" }} />
+												)}
 												{key === "roadmap" && (
-													<RoadmapIcon className="h-5 w-5" />
+													<RoadmapIcon
+														style={{ height: "20px", width: "20px" }}
+													/>
 												)}
 												{key === "changelog" && (
-													<ChangelogIcon className="h-5 w-5" />
+													<ChangelogIcon
+														style={{ height: "20px", width: "20px" }}
+													/>
 												)}
-												<span className="mt-1">
+												<span style={{ marginTop: "4px" }}>
 													{key === "submit"
 														? "Ask"
 														: key.charAt(0).toUpperCase() + key.slice(1)}
