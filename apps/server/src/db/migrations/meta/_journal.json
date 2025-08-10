@@ -8,6 +8,13 @@
       "when": 1754689851015,
       "tag": "0000_dizzy_speed_demon",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1754860462505,
+      "tag": "0001_faithful_robin_chapel",
+      "breakpoints": true
     }
   ]
 }

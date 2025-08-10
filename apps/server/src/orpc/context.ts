@@ -39,6 +39,13 @@ export async function createContext({ context, env }: CreateContextOptions) {
 		}
 	}
 
+	if (!subdomain) {
+		subdomain = context.req.raw.headers
+			.get("origin")
+			?.replaceAll("https://", "")
+			.split(".")[0];
+	}
+
 	// Fetch organization based on subdomain
 	let org = null;
 	if (subdomain) {
