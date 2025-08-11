@@ -26,6 +26,10 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
 	const handleVote = (e: React.MouseEvent) => {
 		e.stopPropagation();
 
+		if (!feedbackId) {
+			return;
+		}
+
 		if (hasVoted) {
 			deleteVoteMutation.mutate({ feedbackId });
 		} else {

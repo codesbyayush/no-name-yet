@@ -1,5 +1,5 @@
-import { feedback } from "@/db/schema";
-import { and, eq } from "drizzle-orm";
+import { feedback, feedbackCounters } from "@/db/schema";
+import { and, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import {
 	type NewVote,
@@ -29,19 +29,37 @@ export const votesRouter = {
 
 			const voteId = crypto.randomUUID();
 
-			const [newVote] = await context.db
-				.insert(votes)
-				.values({
-					id: voteId,
-					feedbackId: input.feedbackId || null,
-					commentId: input.commentId || null,
-					userId,
-					type: input.type || "upvote",
-					weight: input.weight,
-				})
-				.returning();
+			try {
+				const [newVote] = await context.db
+					.insert(votes)
+					.values({
+						id: voteId,
+						feedbackId: input.feedbackId || null,
+						commentId: input.commentId || null,
+						userId,
+						type: input.type || "upvote",
+						weight: input.weight,
+					})
+					.returning();
 
-			return newVote;
+				await context.db
+					.insert(feedbackCounters)
+					.values({
+						feedbackId: input.feedbackId || "",
+						upvoteCount: 1,
+						commentCount: 0,
+					})
+					.onConflictDoUpdate({
+						target: [feedbackCounters.feedbackId],
+						set: {
+							upvoteCount: sql`${feedbackCounters.upvoteCount} + 1`,
+						},
+					});
+
+				return newVote;
+			} catch (error) {
+				throw new Error("Failed to create vote");
+			}
 		}),
 
 	update: protectedProcedure
@@ -95,6 +113,15 @@ export const votesRouter = {
 				.delete(votes)
 				.where(and(...filters))
 				.returning();
+
+			if (deletedVote) {
+				await context.db
+					.update(feedbackCounters)
+					.set({
+						upvoteCount: sql`${feedbackCounters.upvoteCount} - 1`,
+					})
+					.where(eq(feedbackCounters.feedbackId, input.feedbackId || ""));
+			}
 
 			if (!deletedVote) {
 				throw new Error("Vote not found");

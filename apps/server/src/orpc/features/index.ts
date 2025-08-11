@@ -91,19 +91,13 @@ export const mixedRouter = {
 						},
 						commentCount: fc.commentCount,
 						voteCount: fc.upvoteCount,
-						hasVoted: userId
-							? exists(
-									context.db
-										.select({ id: votes.id })
-										.from(votes)
-										.where(
-											and(
-												eq(votes.feedbackId, feedback.id),
-												eq(votes.userId, userId),
-											),
-										),
-								)
-							: sql`false`,
+						hasVoted: sql<boolean>`COALESCE((
+							SELECT EXISTS(
+								SELECT 1 FROM ${votes} 
+								WHERE ${votes.feedbackId} = ${feedback.id} 
+								AND ${votes.userId} = ${userId || null}
+							)
+						), false)`,
 					})
 					.from(feedback)
 					.leftJoin(user, eq(feedback.userId, user.id))
@@ -171,19 +165,13 @@ export const mixedRouter = {
 						},
 						commentCount: fc.commentCount,
 						voteCount: fc.upvoteCount,
-						hasVoted: userId
-							? exists(
-									context.db
-										.select()
-										.from(votes)
-										.where(
-											and(
-												eq(votes.feedbackId, feedback.id),
-												eq(votes.userId, userId),
-											),
-										),
-								)
-							: sql`false`,
+						hasVoted: sql<boolean>`COALESCE((
+							SELECT EXISTS(
+								SELECT 1 FROM ${votes} 
+								WHERE ${votes.feedbackId} = ${feedback.id} 
+								AND ${votes.userId} = ${userId || null}
+							)
+						), false)`,
 					})
 					.from(feedback)
 					.leftJoin(user, eq(feedback.userId, user.id))

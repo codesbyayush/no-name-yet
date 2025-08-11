@@ -4,7 +4,7 @@ import { CommentIcon } from "./comment-icon";
 
 interface CommentButtonProps {
 	count: number;
-	onClick?: () => void;
+	onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 	disabled?: boolean;
 	className?: string;
 }

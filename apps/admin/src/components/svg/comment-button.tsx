@@ -7,6 +7,7 @@ interface CommentButtonProps {
 	onClick?: () => void;
 	disabled?: boolean;
 	className?: string;
+	iconSize?: number;
 }
 
 export const CommentButton: React.FC<CommentButtonProps> = ({
@@ -14,6 +15,7 @@ export const CommentButton: React.FC<CommentButtonProps> = ({
 	onClick,
 	disabled = false,
 	className = "",
+	iconSize = 16,
 }) => {
 	return (
 		<button

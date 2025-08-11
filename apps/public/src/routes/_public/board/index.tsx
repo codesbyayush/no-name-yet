@@ -38,7 +38,10 @@ function BoardIndexPage() {
 	// Flatten all posts from all pages
 	const allPosts = data?.pages.flatMap((page) => page.posts) ?? [];
 
-	const handleCommentClick = (feedbackId: string, e: React.MouseEvent) => {
+	const handleCommentClick = (
+		feedbackId: string,
+		e: React.MouseEvent<HTMLButtonElement>,
+	) => {
 		e.stopPropagation();
 		navigate({ to: feedbackId });
 	};
@@ -142,11 +145,13 @@ function BoardIndexPage() {
 										</div>
 										<div className="flex items-center justify-end gap-3">
 											<CommentButton
-												count={f.comments || 0}
-												onClick={(e) => handleCommentClick(f.id, e)}
+												count={f.commentCount || 0}
+												onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
+													handleCommentClick(f.id, e)
+												}
 											/>
 											<VoteButton
-												count={f.votes || 0}
+												count={f.voteCount || 0}
 												feedbackId={f.id}
 												hasVoted={f.hasVoted}
 											/>
