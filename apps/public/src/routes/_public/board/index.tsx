@@ -12,10 +12,14 @@ import { useCallback, useEffect, useRef } from "react";
 
 export const Route = createFileRoute("/_public/board/")({
 	component: BoardIndexPage,
+	validateSearch: (search?: Record<string, unknown>) => ({
+		board: search?.board as string | undefined,
+	}),
 });
 
 function BoardIndexPage() {
 	const navigate = useNavigate({ from: "/board" });
+	const search = Route.useSearch();
 
 	const {
 		data,
@@ -25,9 +29,13 @@ function BoardIndexPage() {
 		isLoading,
 		isError,
 	} = useInfiniteQuery({
-		queryKey: ["all-posts"],
+		queryKey: ["all-posts", search.board],
 		queryFn: ({ pageParam = 0 }) =>
-			client.mixed.getDetailedPosts({ offset: pageParam, take: 10 }),
+			client.mixed.getDetailedPosts({
+				offset: pageParam,
+				take: 10,
+				...(search.board && { boardId: search.board }),
+			}),
 		getNextPageParam: (lastPage) =>
 			lastPage.pagination.hasMore
 				? lastPage.pagination.offset + lastPage.pagination.take
@@ -50,6 +58,20 @@ function BoardIndexPage() {
 		queryKey: ["public-boards"],
 		queryFn: () => client.getAllPublicBoards(),
 	});
+
+	const handleBoardClick = (boardId: string) => {
+		if (search.board === boardId) {
+			navigate({
+				search: { board: undefined },
+				replace: false,
+			});
+		} else {
+			navigate({
+				search: { board: boardId },
+				replace: false,
+			});
+		}
+	};
 
 	// Intersection Observer for infinite scroll
 	const observerRef = useRef<IntersectionObserver | null>(null);
@@ -226,20 +248,24 @@ function BoardIndexPage() {
 						<h4 className="mb-2 font-medium capitalize">boards</h4>
 						<div className="flex flex-col gap-2">
 							{boards
-								? boards.boards.map((board) => (
-										<Button
-											key={board.id}
-											variant={"secondary"}
-											className="h-auto w-full justify-start p-3 text-left font-medium text-foreground"
-										>
-											<p className="flex items-center gap-2 whitespace-break-spaces capitalize">
-												{board.symbol}
-												<span className="break-words text-left capitalize">
-													{board.name}
-												</span>
-											</p>
-										</Button>
-									))
+								? boards.boards.map((board) => {
+										const isActive = search.board === board.id;
+										return (
+											<Button
+												key={board.id}
+												variant={isActive ? "default" : "secondary"}
+												className="h-10 w-full rounded-xl p-0 font-medium text-base shadow-sm hover:bg-primary/90"
+												onClick={() => handleBoardClick(board.id)}
+											>
+												<p className="flex items-center gap-2 whitespace-break-spaces capitalize">
+													{board.symbol}
+													<span className="break-words text-left capitalize">
+														{board.name}
+													</span>
+												</p>
+											</Button>
+										);
+									})
 								: Array.from({ length: 2 }, (_, i) => ({
 										id: `board-skeleton-${i}`,
 									})).map(({ id }) => (

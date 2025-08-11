@@ -80,7 +80,7 @@ export function CreateEditPost({
 	const createPostMutation = useMutation({
 		mutationFn: (data: PostFormData) =>
 			client.public.posts.create({
-				boardId,
+				boardId: data.board,
 				type: "suggestion",
 				...data,
 			}),
