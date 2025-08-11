@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { adminClient } from "@/utils/admin-orpc";
 import type { Block } from "@blocknote/core";
 import { useForm } from "@tanstack/react-form";
@@ -12,21 +13,15 @@ import BlockNoteEditor, { type BlockNoteEditorRef } from "../blocknote-editor";
 // Form validation schema
 const changelogFormSchema = z.object({
 	title: z.string().min(1, "Title is required").max(200, "Title too long"),
-	excerpt: z.string().max(500, "Excerpt too long").optional(),
-	version: z.string().max(50, "Version too long").optional(),
-	tags: z.array(z.string()).default([]),
-	metaTitle: z.string().max(200, "Meta title too long").optional(),
-	metaDescription: z.string().max(500, "Meta description too long").optional(),
+	status: z.enum(["draft", "published", "archived"]).default("draft"),
+	tag: z.string().optional(),
 });
 
 export interface ChangelogFormData {
 	title: string;
 	content?: Block[];
-	excerpt?: string;
-	version?: string;
-	tags: string[];
-	metaTitle?: string;
-	metaDescription?: string;
+	status?: "draft" | "published" | "archived";
+	tag?: string;
 }
 
 export interface ChangelogFormProps {
@@ -50,11 +45,11 @@ export function ChangelogForm({
 	const form = useForm({
 		defaultValues: {
 			title: initialData?.title || "",
-			excerpt: initialData?.excerpt || "",
-			version: initialData?.version || "",
-			tags: initialData?.tags || [],
-			metaTitle: initialData?.metaTitle || "",
-			metaDescription: initialData?.metaDescription || "",
+			status: (initialData?.status || "draft") as
+				| "draft"
+				| "published"
+				| "archived",
+			tag: initialData?.tag || "",
 		},
 		onSubmit: async ({ value }) => {
 			setIsLoading(true);
@@ -73,26 +68,20 @@ export function ChangelogForm({
 				} else {
 					// Default save behavior
 					if (mode === "create") {
-						const result = await adminClient.changelog.createChangelog({
+						await adminClient.changelog.add({
 							title: formData.title,
 							content: formData.content,
-							excerpt: formData.excerpt,
-							version: formData.version,
-							tags: formData.tags,
-							metaTitle: formData.metaTitle,
-							metaDescription: formData.metaDescription,
+							status: formData.status || "draft",
+							tagId: formData.tag || undefined,
 						});
-						toast.success("Changelog saved as draft successfully");
+						toast.success("Changelog saved successfully");
 					} else if (mode === "edit" && changelogId) {
-						const result = await adminClient.changelog.updateChangelog({
+						await adminClient.changelog.update({
 							id: changelogId,
 							title: formData.title,
 							content: formData.content,
-							excerpt: formData.excerpt,
-							version: formData.version,
-							tags: formData.tags,
-							metaTitle: formData.metaTitle,
-							metaDescription: formData.metaDescription,
+							status: formData.status,
+							tagId: formData.tag || undefined,
 						});
 						toast.success("Changelog updated successfully");
 					}
@@ -111,7 +100,7 @@ export function ChangelogForm({
 			onSubmit: ({ value }) => {
 				const result = changelogFormSchema.safeParse(value);
 				if (!result.success) {
-					return result.error.formErrors.fieldErrors;
+					return result.error.message;
 				}
 				return undefined;
 			},
@@ -156,58 +145,6 @@ export function ChangelogForm({
 					)}
 				/>
 
-				{/* Version Field */}
-				<form.Field
-					name="version"
-					children={(field) => (
-						<div className="space-y-2">
-							<Label htmlFor={field.name}>Version</Label>
-							<Input
-								id={field.name}
-								name={field.name}
-								value={field.state.value}
-								onBlur={field.handleBlur}
-								onChange={(e) => field.handleChange(e.target.value)}
-								placeholder="e.g., v1.2.0"
-								className={
-									field.state.meta.errors.length > 0 ? "border-red-500" : ""
-								}
-							/>
-							{field.state.meta.errors.length > 0 && (
-								<p className="text-red-500 text-sm">
-									{field.state.meta.errors[0]}
-								</p>
-							)}
-						</div>
-					)}
-				/>
-
-				{/* Excerpt Field */}
-				<form.Field
-					name="excerpt"
-					children={(field) => (
-						<div className="space-y-2">
-							<Label htmlFor={field.name}>Excerpt</Label>
-							<Input
-								id={field.name}
-								name={field.name}
-								value={field.state.value}
-								onBlur={field.handleBlur}
-								onChange={(e) => field.handleChange(e.target.value)}
-								placeholder="Brief description of the changelog..."
-								className={
-									field.state.meta.errors.length > 0 ? "border-red-500" : ""
-								}
-							/>
-							{field.state.meta.errors.length > 0 && (
-								<p className="text-red-500 text-sm">
-									{field.state.meta.errors[0]}
-								</p>
-							)}
-						</div>
-					)}
-				/>
-
 				{/* Content Editor */}
 				<div className="space-y-2">
 					<Label>
@@ -223,49 +160,45 @@ export function ChangelogForm({
 					</div>
 				</div>
 
-				{/* Meta Title Field */}
+				{/* Status Field */}
 				<form.Field
-					name="metaTitle"
+					name="status"
 					children={(field) => (
-						<div className="space-y-2">
-							<Label htmlFor={field.name}>Meta Title (SEO)</Label>
-							<Input
-								id={field.name}
-								name={field.name}
+						<div className="space-y-3">
+							<Label>Status</Label>
+							<RadioGroup
 								value={field.state.value}
-								onBlur={field.handleBlur}
-								onChange={(e) => field.handleChange(e.target.value)}
-								placeholder="SEO title for search engines..."
-								className={
-									field.state.meta.errors.length > 0 ? "border-red-500" : ""
-								}
-							/>
-							{field.state.meta.errors.length > 0 && (
-								<p className="text-red-500 text-sm">
-									{field.state.meta.errors[0]}
-								</p>
-							)}
-						</div>
-					)}
-				/>
-
-				{/* Meta Description Field */}
-				<form.Field
-					name="metaDescription"
-					children={(field) => (
-						<div className="space-y-2">
-							<Label htmlFor={field.name}>Meta Description (SEO)</Label>
-							<Input
-								id={field.name}
-								name={field.name}
-								value={field.state.value}
-								onBlur={field.handleBlur}
-								onChange={(e) => field.handleChange(e.target.value)}
-								placeholder="SEO description for search engines..."
-								className={
-									field.state.meta.errors.length > 0 ? "border-red-500" : ""
-								}
-							/>
+								onValueChange={field.handleChange}
+								className="grid w-full grid-cols-3 gap-4"
+							>
+								<div className="flex items-center space-x-2 rounded-lg border border-input bg-background pl-2 text-sm ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+									<RadioGroupItem value="draft" id="draft" />
+									<Label
+										htmlFor="draft"
+										className="flex-1 cursor-pointer px-3 py-2 font-normal"
+									>
+										Draft
+									</Label>
+								</div>
+								<div className="flex items-center space-x-2 rounded-lg border border-input bg-background pl-2 text-sm ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+									<RadioGroupItem value="published" id="published" />
+									<Label
+										htmlFor="published"
+										className="flex-1 cursor-pointer px-3 py-2 font-normal"
+									>
+										Published
+									</Label>
+								</div>
+								<div className="flex items-center space-x-2 rounded-lg border border-input bg-background pl-2 text-sm ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+									<RadioGroupItem value="archived" id="archived" />
+									<Label
+										htmlFor="archived"
+										className="flex-1 cursor-pointer px-3 py-2 font-normal"
+									>
+										Archived
+									</Label>
+								</div>
+							</RadioGroup>
 							{field.state.meta.errors.length > 0 && (
 								<p className="text-red-500 text-sm">
 									{field.state.meta.errors[0]}

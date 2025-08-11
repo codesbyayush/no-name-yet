@@ -22,8 +22,8 @@ function EditChangelogPage() {
 	} = useQuery({
 		queryKey: ["changelog", id],
 		queryFn: async () => {
-			const response = await adminClient.changelog.getChangelog({ id });
-			return response.changelog;
+			const response = await adminClient.changelog.get({ id });
+			return response.data;
 		},
 	});
 
@@ -135,11 +135,8 @@ function EditChangelogPage() {
 									initialData={{
 										title: changelogData.title,
 										content: changelogData.content,
-										excerpt: changelogData.excerpt || "",
-										version: changelogData.version || "",
-										tags: changelogData.tags || [],
-										metaTitle: changelogData.metaTitle || "",
-										metaDescription: changelogData.metaDescription || "",
+										status: changelogData.status,
+										tag: changelogData.tag?.id,
 									}}
 									onSuccess={handleSuccess}
 								/>

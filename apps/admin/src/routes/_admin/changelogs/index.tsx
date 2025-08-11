@@ -1,3 +1,4 @@
+import { Filters } from "@/components/filters";
 import { SiteHeader } from "@/components/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,7 +15,13 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
+} from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SidebarRightPortal } from "@/contexts/sidebar-right";
 import { adminClient } from "@/utils/admin-orpc";
 import {
 	IconCalendar,
@@ -22,32 +29,54 @@ import {
 	IconEdit,
 	IconEye,
 	IconFileWord,
-	IconFilter,
 	IconPlus,
 	IconTrash,
 	IconUser,
 } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_admin/changelogs/")({
 	component: ChangelogListPage,
+	validateSearch: (search?: Record<string, unknown>) => ({
+		status: search?.status as string | undefined,
+		tag: search?.tag as string | undefined,
+	}),
 });
 
 type ChangelogStatus = "draft" | "published" | "archived" | undefined;
 
 function ChangelogListPage() {
-	const [statusFilter, setStatusFilter] = useState<ChangelogStatus>(undefined);
+	const search = Route.useSearch();
+	const navigate = Route.useNavigate();
+
+	const stripDefaults = (s: Partial<typeof search>) => {
+		const next = { ...s } as Record<string, string | undefined>;
+		if (!next.status || next.status === "all") {
+			next.status = undefined;
+		}
+		if (!next.tag || next.tag === "all") {
+			next.tag = undefined;
+		}
+		return next as typeof search;
+	};
+
+	// Convert URL params to filter values
+	const statusFilter =
+		search.status && search.status !== "all"
+			? (search.status as ChangelogStatus)
+			: undefined;
+	const tagFilter = search.tag && search.tag !== "all" ? search.tag : undefined;
 
 	const { data, isLoading, error, refetch } = useQuery({
-		queryKey: ["changelogs", statusFilter],
+		queryKey: ["changelogs", statusFilter, tagFilter],
 		queryFn: async () => {
-			const response = await adminClient.changelog.listChangelogs({
+			const response = await adminClient.changelog.getAll({
 				offset: 0,
-				take: 50,
+				limit: 50,
 				status: statusFilter,
+				tagId: tagFilter,
 			});
 			return response;
 		},
@@ -59,7 +88,7 @@ function ChangelogListPage() {
 		}
 
 		try {
-			await adminClient.changelog.deleteChangelog({ id });
+			await adminClient.changelog.delete({ id });
 			toast.success("Changelog deleted successfully");
 			refetch();
 		} catch (error) {
@@ -80,9 +109,9 @@ function ChangelogListPage() {
 		}
 
 		try {
-			await adminClient.changelog.publishChangelog({
+			await adminClient.changelog.update({
 				id,
-				publish: !isPublished,
+				status: isPublished ? "draft" : "published",
 			});
 			toast.success(`Changelog ${action}ed successfully`);
 			refetch();
@@ -108,7 +137,7 @@ function ChangelogListPage() {
 		}
 	};
 
-	const formatDate = (dateString: string) => {
+	const formatDate = (dateString: string | Date) => {
 		return new Date(dateString).toLocaleDateString("en-US", {
 			year: "numeric",
 			month: "short",
@@ -116,37 +145,160 @@ function ChangelogListPage() {
 		});
 	};
 
+	// Hardcoded statuses and tags for filtering
+	const statuses = [
+		{ key: "draft", label: "Draft" },
+		{ key: "published", label: "Published" },
+		{ key: "archived", label: "Archived" },
+	] as const;
+
+	// TODO: Fetch these from API later
+	const tags = [
+		{ key: "new", label: "New", dot: "bg-green-500" },
+		{ key: "improved", label: "Improved", dot: "bg-blue-500" },
+		{ key: "fixed", label: "Fixed", dot: "bg-purple-500" },
+	];
+
+	const sidebarFilters = (
+		<div className="space-y-4 px-2 py-2">
+			<div className="px-1 pt-1 pb-2 text-muted-foreground text-sm">Status</div>
+			<SidebarMenu>
+				{statuses.map((status) => {
+					const active = statusFilter === status.key;
+					return (
+						<SidebarMenuItem key={status.key}>
+							<SidebarMenuButton
+								isActive={active}
+								onClick={() =>
+									navigate({
+										search: (prev) =>
+											stripDefaults({
+												...prev,
+												status: active ? "all" : status.key,
+											}),
+										replace: false,
+									})
+								}
+							>
+								<span
+									className={`mr-1 inline-block size-2 rounded-full ${
+										status.key === "draft"
+											? "bg-gray-400"
+											: status.key === "published"
+												? "bg-green-500"
+												: "bg-red-400"
+									}`}
+								/>
+								<span>{status.label}</span>
+							</SidebarMenuButton>
+						</SidebarMenuItem>
+					);
+				})}
+			</SidebarMenu>
+
+			<div className="px-1 pt-4 pb-2 text-muted-foreground text-sm">
+				Categories
+			</div>
+			<SidebarMenu>
+				{tags.map((tag) => {
+					const active = tagFilter === tag.key;
+					return (
+						<SidebarMenuItem key={tag.key}>
+							<SidebarMenuButton
+								isActive={active}
+								onClick={() =>
+									navigate({
+										search: (prev) =>
+											stripDefaults({
+												...prev,
+												tag: active ? "all" : tag.key,
+											}),
+										replace: false,
+									})
+								}
+							>
+								<span
+									className={`mr-2 inline-block size-2 rounded-full ${tag.dot}`}
+								/>
+								<span>{tag.label}</span>
+							</SidebarMenuButton>
+						</SidebarMenuItem>
+					);
+				})}
+			</SidebarMenu>
+
+			<div className="px-1 pt-4 pb-2 text-muted-foreground text-sm">More</div>
+			<SidebarMenu>
+				<SidebarMenuItem>
+					<SidebarMenuButton>
+						<IconFileWord className="h-4 w-4" />
+						<span>Analytics</span>
+					</SidebarMenuButton>
+				</SidebarMenuItem>
+			</SidebarMenu>
+		</div>
+	);
+
 	return (
 		<>
 			<SiteHeader title="Changelogs">
 				<div className="flex items-center gap-2">
-					<DropdownMenu>
-						<DropdownMenuTrigger asChild>
-							<Button variant="outline" size="sm">
-								<IconFilter className="mr-2 h-4 w-4" />
-								Filter
-								{statusFilter && (
-									<Badge variant="secondary" className="ml-2 capitalize">
-										{statusFilter}
-									</Badge>
-								)}
-							</Button>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent align="end">
-							<DropdownMenuItem onClick={() => setStatusFilter(undefined)}>
-								All Changelogs
-							</DropdownMenuItem>
-							<DropdownMenuItem onClick={() => setStatusFilter("draft")}>
-								Draft
-							</DropdownMenuItem>
-							<DropdownMenuItem onClick={() => setStatusFilter("published")}>
-								Published
-							</DropdownMenuItem>
-							<DropdownMenuItem onClick={() => setStatusFilter("archived")}>
-								Archived
-							</DropdownMenuItem>
-						</DropdownMenuContent>
-					</DropdownMenu>
+					{(() => {
+						const categories = [
+							{
+								key: "status",
+								label: "Status",
+								type: "multi" as const,
+								options: statuses.map((s) => ({
+									id: s.key,
+									label: s.label,
+									colorClass:
+										s.key === "draft"
+											? "bg-gray-400"
+											: s.key === "published"
+												? "bg-green-500"
+												: "bg-red-400",
+								})),
+							},
+							{
+								key: "tag",
+								label: "Category",
+								type: "multi" as const,
+								options: tags.map((t) => ({
+									id: t.key,
+									label: t.label,
+									colorClass: t.dot,
+								})),
+							},
+						];
+
+						const toArray = (value?: string) =>
+							!value || value === "all" ? [] : value.split(",").filter(Boolean);
+
+						const selected = {
+							status: toArray(search.status),
+							tag: toArray(search.tag),
+						};
+
+						const onChange = (categoryKey: string, values: string[]) => {
+							navigate({
+								search: (prev) =>
+									stripDefaults({
+										...prev,
+										[categoryKey]: values.length ? values.join(",") : "all",
+									}),
+								replace: false,
+							});
+						};
+
+						return (
+							<Filters
+								categories={categories}
+								selected={selected}
+								onChange={onChange}
+							/>
+						);
+					})()}
 					<Button asChild>
 						<Link to="/changelogs/new">
 							<IconPlus className="mr-2 h-4 w-4" />
@@ -155,6 +307,7 @@ function ChangelogListPage() {
 					</Button>
 				</div>
 			</SiteHeader>
+			<SidebarRightPortal>{sidebarFilters}</SidebarRightPortal>
 
 			<div className="flex flex-1 flex-col">
 				<div className="@container/main flex flex-1 flex-col gap-2">
@@ -200,9 +353,9 @@ function ChangelogListPage() {
 										</Card>
 									))}
 								</div>
-							) : data?.changelogs && data.changelogs.length > 0 ? (
+							) : data?.data && data.data.length > 0 ? (
 								<div className="grid gap-4">
-									{data.changelogs.map((changelog) => (
+									{data.data.map((changelog) => (
 										<Card
 											key={changelog.id}
 											className="transition-shadow hover:shadow-md"
@@ -218,10 +371,10 @@ function ChangelogListPage() {
 																{changelog.excerpt}
 															</CardDescription>
 														)}
-														{changelog.version && (
+														{changelog.tag && (
 															<div className="flex items-center gap-2">
 																<Badge variant="outline" className="text-xs">
-																	v{changelog.version}
+																	{changelog.tag.name}
 																</Badge>
 															</div>
 														)}
@@ -299,24 +452,6 @@ function ChangelogListPage() {
 																: `Created ${formatDate(changelog.createdAt)}`}
 														</span>
 													</div>
-													{changelog.tags && changelog.tags.length > 0 && (
-														<div className="flex flex-wrap items-center gap-1">
-															{changelog.tags.slice(0, 3).map((tag, index) => (
-																<Badge
-																	key={index}
-																	variant="outline"
-																	className="text-xs"
-																>
-																	{tag}
-																</Badge>
-															))}
-															{changelog.tags.length > 3 && (
-																<span className="text-xs">
-																	+{changelog.tags.length - 3} more
-																</span>
-															)}
-														</div>
-													)}
 												</div>
 											</CardContent>
 										</Card>
@@ -344,10 +479,10 @@ function ChangelogListPage() {
 								</Card>
 							)}
 
-							{data?.pagination && data.pagination.totalCount > 0 && (
+							{data?.pagination && data.pagination.total > 0 && (
 								<div className="mt-6 text-center text-muted-foreground text-sm">
-									Showing {data.changelogs.length} of{" "}
-									{data.pagination.totalCount} changelogs
+									Showing {data.data.length} of {data.pagination.total}{" "}
+									changelogs
 								</div>
 							)}
 						</div>

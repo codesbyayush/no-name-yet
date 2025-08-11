@@ -14,10 +14,10 @@ import {
 	user,
 	votes,
 } from "../db/schema";
-import { changelogPublicRouter } from "./changelog";
 import { mixedRouter } from "./features";
 import { protectedProcedure, publicProcedure } from "./procedures";
 import { publicRouter } from "./public";
+import { changelogPublicRouter } from "./tables";
 
 // Pagination schema for reuse
 const paginationSchema = z.object({
