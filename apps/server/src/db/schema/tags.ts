@@ -7,7 +7,7 @@ export const tags = pgTable(
 		id: text("id").primaryKey(),
 		name: text("name").notNull(),
 		color: text("color").notNull().default("blue"),
-		type: text("type").notNull().default("changelog"),
+		type: text("type").notNull().default("post"),
 		organizationId: text("organization_id")
 			.notNull()
 			.references(() => organization.id, { onDelete: "cascade" }),

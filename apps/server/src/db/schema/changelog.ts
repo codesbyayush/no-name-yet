@@ -48,9 +48,6 @@ export const changelog = pgTable(
 		metaDescription: text("meta_description"),
 		tagId: text("tag_id").references(() => tags.id, { onDelete: "cascade" }),
 
-		// Versioning
-		version: text("version"), // e.g., "v2.1.0"
-
 		// Timestamps
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 		updatedAt: timestamp("updated_at").defaultNow().notNull(),
