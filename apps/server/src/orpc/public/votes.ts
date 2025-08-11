@@ -58,7 +58,7 @@ export const votesRouter = {
 
 				return newVote;
 			} catch (error) {
-				throw new Error("Failed to create vote");
+				// TODO: failing silently for now need to handle the multiple clicks on different boards but same post
 			}
 		}),
 

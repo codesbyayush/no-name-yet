@@ -176,6 +176,7 @@ function BoardIndexPage() {
 												count={f.voteCount || 0}
 												feedbackId={f.id}
 												hasVoted={f.hasVoted}
+												boardId={search.board}
 											/>
 										</div>
 									</div>

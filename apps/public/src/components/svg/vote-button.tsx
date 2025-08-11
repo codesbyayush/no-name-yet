@@ -13,6 +13,7 @@ interface VoteButtonProps {
 	disableFromParent?: boolean;
 	iconSize?: number;
 	className?: string;
+	boardId?: string;
 }
 
 export const VoteButton: React.FC<VoteButtonProps> = ({
@@ -21,6 +22,7 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
 	hasVoted = false,
 	disableFromParent = false,
 	className = "",
+	boardId,
 }) => {
 	const handleVote = (e: React.MouseEvent) => {
 		e.stopPropagation();
@@ -41,13 +43,15 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
 			client.public.votes.create({ feedbackId }),
 		onMutate: async ({ feedbackId }) => {
 			// Cancel any outgoing refetches
-			await queryClient.cancelQueries({ queryKey: ["all-posts"] });
+			await queryClient.cancelQueries({
+				queryKey: ["all-posts", boardId],
+			});
 
 			// Snapshot the previous value
-			const previousPosts = queryClient.getQueryData(["all-posts"]);
+			const previousPosts = queryClient.getQueryData(["all-posts", boardId]);
 
 			// Optimistically update the posts data
-			queryClient.setQueryData(["all-posts"], (old: any) => {
+			queryClient.setQueryData(["all-posts", boardId], (old: any) => {
 				if (!old?.pages) {
 					return old;
 				}
@@ -76,9 +80,12 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
 		onError: (err, variables, context) => {
 			// If the mutation fails, use the context returned from onMutate to roll back
 			if (context?.previousPosts) {
-				queryClient.setQueryData(["all-posts"], context.previousPosts);
+				queryClient.setQueryData(["all-posts", boardId], context.previousPosts);
 			}
 			toast.error("Failed to vote");
+		},
+		onSettled: () => {
+			queryClient.invalidateQueries({ queryKey: ["all-posts"] });
 		},
 	});
 
@@ -87,13 +94,15 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
 			client.public.votes.delete({ feedbackId }),
 		onMutate: async ({ feedbackId }) => {
 			// Cancel any outgoing refetches
-			await queryClient.cancelQueries({ queryKey: ["all-posts"] });
+			await queryClient.cancelQueries({
+				queryKey: ["all-posts", boardId],
+			});
 
 			// Snapshot the previous value
-			const previousPosts = queryClient.getQueryData(["all-posts"]);
+			const previousPosts = queryClient.getQueryData(["all-posts", boardId]);
 
 			// Optimistically update the posts data
-			queryClient.setQueryData(["all-posts"], (old: any) => {
+			queryClient.setQueryData(["all-posts", boardId], (old: any) => {
 				if (!old?.pages) {
 					return old;
 				}
@@ -122,9 +131,12 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
 		onError: (err, variables, context) => {
 			// If the mutation fails, use the context returned from onMutate to roll back
 			if (context?.previousPosts) {
-				queryClient.setQueryData(["all-posts"], context.previousPosts);
+				queryClient.setQueryData(["all-posts", boardId], context.previousPosts);
 			}
 			toast.error("Failed to remove vote");
+		},
+		onSettled: () => {
+			queryClient.invalidateQueries({ queryKey: ["all-posts"] });
 		},
 	});
 
