@@ -25,12 +25,13 @@ import {
 	SidebarMenuItem,
 	useSidebar,
 } from "@/components/ui/sidebar";
-import { useSession } from "@/lib/auth-client";
+import { signOut, useSession } from "@/lib/auth-client";
+import { useRouter } from "@tanstack/react-router";
 
 export function NavUser() {
 	const { isMobile } = useSidebar();
 	const { data: session } = useSession();
-
+	const router = useRouter();
 	const user = {
 		...session?.user,
 		avatar: session?.user?.image || "",
@@ -97,7 +98,15 @@ export function NavUser() {
 							</DropdownMenuItem>
 						</DropdownMenuGroup>
 						<DropdownMenuSeparator />
-						<DropdownMenuItem>
+						<DropdownMenuItem
+							onClick={() => {
+								signOut();
+								router.navigate({
+									to: "/auth",
+									search: { redirect: "/boards" },
+								});
+							}}
+						>
 							<LogOut />
 							Log out
 						</DropdownMenuItem>
