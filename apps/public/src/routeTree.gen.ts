@@ -14,6 +14,7 @@ import { Route as PublicRouteImport } from './routes/_public'
 import { Route as LandingRouteImport } from './routes/_landing'
 import { Route as LandingIndexRouteImport } from './routes/_landing/index'
 import { Route as PublicRoadmapRouteImport } from './routes/_public/roadmap'
+import { Route as PublicProfileRouteImport } from './routes/_public/profile'
 import { Route as PublicChangelogRouteImport } from './routes/_public/changelog'
 import { Route as PublicBoardRouteImport } from './routes/_public/board'
 import { Route as LandingContactRouteImport } from './routes/_landing/contact'
@@ -42,6 +43,11 @@ const LandingIndexRoute = LandingIndexRouteImport.update({
 const PublicRoadmapRoute = PublicRoadmapRouteImport.update({
   id: '/roadmap',
   path: '/roadmap',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicProfileRoute = PublicProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => PublicRoute,
 } as any)
 const PublicChangelogRoute = PublicChangelogRouteImport.update({
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof LandingContactRoute
   '/board': typeof PublicBoardRouteWithChildren
   '/changelog': typeof PublicChangelogRoute
+  '/profile': typeof PublicProfileRoute
   '/roadmap': typeof PublicRoadmapRoute
   '/': typeof LandingIndexRoute
   '/board/$postId': typeof PublicBoardPostIdRoute
@@ -91,6 +98,7 @@ export interface FileRoutesByTo {
   '/about': typeof LandingAboutRoute
   '/contact': typeof LandingContactRoute
   '/changelog': typeof PublicChangelogRoute
+  '/profile': typeof PublicProfileRoute
   '/roadmap': typeof PublicRoadmapRoute
   '/': typeof LandingIndexRoute
   '/board/$postId': typeof PublicBoardPostIdRoute
@@ -105,6 +113,7 @@ export interface FileRoutesById {
   '/_landing/contact': typeof LandingContactRoute
   '/_public/board': typeof PublicBoardRouteWithChildren
   '/_public/changelog': typeof PublicChangelogRoute
+  '/_public/profile': typeof PublicProfileRoute
   '/_public/roadmap': typeof PublicRoadmapRoute
   '/_landing/': typeof LandingIndexRoute
   '/_public/board/$postId': typeof PublicBoardPostIdRoute
@@ -118,6 +127,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/board'
     | '/changelog'
+    | '/profile'
     | '/roadmap'
     | '/'
     | '/board/$postId'
@@ -128,6 +138,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/contact'
     | '/changelog'
+    | '/profile'
     | '/roadmap'
     | '/'
     | '/board/$postId'
@@ -141,6 +152,7 @@ export interface FileRouteTypes {
     | '/_landing/contact'
     | '/_public/board'
     | '/_public/changelog'
+    | '/_public/profile'
     | '/_public/roadmap'
     | '/_landing/'
     | '/_public/board/$postId'
@@ -188,6 +200,13 @@ declare module '@tanstack/react-router' {
       path: '/roadmap'
       fullPath: '/roadmap'
       preLoaderRoute: typeof PublicRoadmapRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/profile': {
+      id: '/_public/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof PublicProfileRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_public/changelog': {
@@ -267,12 +286,14 @@ const PublicBoardRouteWithChildren = PublicBoardRoute._addFileChildren(
 interface PublicRouteChildren {
   PublicBoardRoute: typeof PublicBoardRouteWithChildren
   PublicChangelogRoute: typeof PublicChangelogRoute
+  PublicProfileRoute: typeof PublicProfileRoute
   PublicRoadmapRoute: typeof PublicRoadmapRoute
 }
 
 const PublicRouteChildren: PublicRouteChildren = {
   PublicBoardRoute: PublicBoardRouteWithChildren,
   PublicChangelogRoute: PublicChangelogRoute,
+  PublicProfileRoute: PublicProfileRoute,
   PublicRoadmapRoute: PublicRoadmapRoute,
 }
 

@@ -1,8 +1,5 @@
 import { Link, useLocation, useParams } from "@tanstack/react-router";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
 
-import { ModeToggle } from "./mode-toggle";
 import UserMenu from "./user-menu";
 
 export default function Header() {
@@ -10,7 +7,10 @@ export default function Header() {
 	const params = useParams({ strict: false });
 
 	// Check if we're in a tenant context
-	const tenantSlug = (params as any)?.tenantSlug;
+	const tenantSlug =
+		params && "tenantSlug" in params
+			? (params.tenantSlug as string)
+			: undefined;
 	const isInTenant = Boolean(tenantSlug);
 
 	const mainLinks = [
@@ -145,33 +145,6 @@ export default function Header() {
 				</nav>
 
 				<div className="flex items-center gap-2">
-					{/* Tenant Indicator */}
-					{isInTenant && (
-						<div className="flex items-center gap-2">
-							<Badge variant="outline" className="text-xs">
-								{tenantSlug}
-							</Badge>
-							<Link to="/$tenantSlug" params={{ tenantSlug }}>
-								<Button variant="ghost" size="sm">
-									🏠 Tenant Home
-								</Button>
-							</Link>
-						</div>
-					)}
-
-					{/* Tenant Switcher for non-tenant pages */}
-					{!isInTenant && (
-						<div className="flex items-center gap-2">
-							<span className="text-muted-foreground text-sm">Try:</span>
-							<Link to="/$tenantSlug" params={{ tenantSlug: "demo-tenant" }}>
-								<Button variant="outline" size="sm">
-									Demo Tenant
-								</Button>
-							</Link>
-						</div>
-					)}
-
-					<ModeToggle />
 					<UserMenu />
 				</div>
 			</div>
