@@ -44,7 +44,7 @@ function RouteComponent() {
 	// Flatten all comments from all pages
 	const allComments = data?.pages.flatMap((page) => page.comments) ?? [];
 
-	const { data: post } = useQuery({
+	const { data: post, isPending } = useQuery({
 		queryKey: [postId, "post"],
 		queryFn: () =>
 			client.mixed
@@ -113,6 +113,7 @@ function RouteComponent() {
 							count={post?.voteCount || 0}
 							hasVoted={!!post?.hasVoted}
 							feedbackId={postId}
+							disableFromParent={isPending}
 						/>
 					</div>
 					<div>

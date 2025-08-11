@@ -10,7 +10,8 @@ interface VoteButtonProps {
 	count: number;
 	feedbackId?: string;
 	hasVoted?: boolean;
-	desableFromParent?: boolean;
+	disableFromParent?: boolean;
+	iconSize?: number;
 	className?: string;
 }
 
@@ -18,7 +19,7 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
 	count,
 	feedbackId,
 	hasVoted = false,
-	desableFromParent = false,
+	disableFromParent = false,
 	className = "",
 }) => {
 	const handleVote = (e: React.MouseEvent) => {
@@ -60,7 +61,7 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
 								return {
 									...post,
 									hasVoted: true,
-									votes: post.votes + 1,
+									voteCount: post.voteCount + 1,
 								};
 							}
 							return post;
@@ -78,10 +79,6 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
 				queryClient.setQueryData(["all-posts"], context.previousPosts);
 			}
 			toast.error("Failed to vote");
-		},
-		onSettled: () => {
-			// Always refetch after error or success to ensure data consistency
-			queryClient.invalidateQueries({ queryKey: ["all-posts"] });
 		},
 	});
 
@@ -110,7 +107,7 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
 								return {
 									...post,
 									hasVoted: false,
-									votes: Math.max(0, post.votes - 1),
+									voteCount: Math.max(0, post.voteCount - 1),
 								};
 							}
 							return post;
@@ -129,16 +126,12 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
 			}
 			toast.error("Failed to remove vote");
 		},
-		onSettled: () => {
-			// Always refetch after error or success to ensure data consistency
-			queryClient.invalidateQueries({ queryKey: ["all-posts"] });
-		},
 	});
 
 	const disabled =
 		createVoteMutation.isPending ||
 		deleteVoteMutation.isPending ||
-		desableFromParent;
+		disableFromParent;
 
 	return (
 		<button
