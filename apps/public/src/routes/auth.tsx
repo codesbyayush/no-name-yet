@@ -1,6 +1,4 @@
-import { LoginForm } from "@/components/login-form";
-import SignUpForm from "@/components/sign-up-form";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import SignIn from "@/components/auth/login-form";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/auth")({
@@ -12,22 +10,24 @@ function RouteComponent() {
 		typeof window !== "undefined"
 			? new URLSearchParams(window.location.search)
 			: null;
-	const redirect = search?.get("redirect") || undefined;
+	const redirect = search?.get("redirect") || "/board";
+	const newUserCallbackURL = `${window.location.origin}/board`;
+	const callbackURL = redirect
+		? redirect.startsWith("http")
+			? redirect
+			: `${window.location.origin}${redirect}`
+		: `${window.location.origin}/board`;
+
 	return (
-		<div className="container mx-auto flex min-h-screen items-center justify-center py-8">
-			<div className="w-full max-w-md">
-				<Tabs defaultValue="login" className="w-full">
-					<TabsList className="grid w-full grid-cols-2">
-						<TabsTrigger value="login">Login</TabsTrigger>
-						<TabsTrigger value="signup">Sign Up</TabsTrigger>
-					</TabsList>
-					<TabsContent value="login" className="mt-6">
-						<LoginForm redirect={redirect} />
-					</TabsContent>
-					<TabsContent value="signup" className="mt-6">
-						<SignUpForm />
-					</TabsContent>
-				</Tabs>
+		<div className="mx-auto flex min-h-screen w-full items-center justify-center bg-gradient-to-b from-card via-90% to-black py-8">
+			<div className="mx-auto flex w-full max-w-2xs flex-col items-center justify-center">
+				<p className="relative top-2 rounded-full bg-primary-foreground/50 px-3.5 py-2 font-bold text-4xl">
+					A
+				</p>
+				<SignIn
+					redirect={callbackURL}
+					newUserCallbackURL={newUserCallbackURL}
+				/>
 			</div>
 		</div>
 	);
