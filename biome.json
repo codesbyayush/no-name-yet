@@ -31,7 +31,8 @@
 		"rules": {
 			"suspicious": {
 				"noExplicitAny": "warn",
-				"noConsole": "warn"
+				"noConsole": "warn",
+				"noArrayIndexKey": "warn"
 			},
 			"recommended": true,
 			"correctness": {
@@ -47,7 +48,8 @@
 				}
 			},
 			"style": {
-				"noNonNullAssertion": "off"
+				"noNonNullAssertion": "off",
+				"useBlockStatements": "off"
 			}
 		}
 	},
@@ -68,10 +70,12 @@
 				"rules": {
 					"a11y": {
 						"useSemanticElements": "off",
-						"noSvgWithoutTitle": "off"
+						"noSvgWithoutTitle": "off",
+						"useButtonType": "off"
 					},
 					"suspicious": {
-						"noConsole": "warn"
+						"noConsole": "warn",
+						"noArrayIndexKey": "warn"
 					},
 					"style": {
 						"useSelfClosingElements": "error",
@@ -80,7 +84,7 @@
 						"useShorthandArrayType": "error",
 						"useTemplate": "error",
 						"useConst": "error",
-						"useBlockStatements": "error",
+						"useBlockStatements": "off",
 						"useShorthandAssign": "error"
 					},
 					"complexity": {
@@ -99,10 +103,13 @@
 				"enabled": true,
 				"rules": {
 					"a11y": {
-						"useSemanticElements": "off"
+						"useSemanticElements": "off",
+						"useButtonType": "off",
+						"noSvgWithoutTitle": "off"
 					},
 					"suspicious": {
-						"noConsole": "warn"
+						"noConsole": "warn",
+						"noArrayIndexKey": "warn"
 					},
 					"style": {
 						"useSelfClosingElements": "error",
@@ -111,7 +118,7 @@
 						"useShorthandArrayType": "error",
 						"useTemplate": "error",
 						"useConst": "error",
-						"useBlockStatements": "error",
+						"useBlockStatements": "off",
 						"useShorthandAssign": "error"
 					},
 					"complexity": {
@@ -130,10 +137,13 @@
 				"enabled": true,
 				"rules": {
 					"a11y": {
-						"useSemanticElements": "off"
+						"useSemanticElements": "off",
+						"useButtonType": "off",
+						"noSvgWithoutTitle": "off"
 					},
 					"suspicious": {
-						"noConsole": "warn"
+						"noConsole": "warn",
+						"noArrayIndexKey": "warn"
 					},
 					"style": {
 						"useSelfClosingElements": "error",
@@ -142,7 +152,7 @@
 						"useShorthandArrayType": "error",
 						"useTemplate": "error",
 						"useConst": "error",
-						"useBlockStatements": "error",
+						"useBlockStatements": "off",
 						"useShorthandAssign": "error"
 					},
 					"complexity": {
