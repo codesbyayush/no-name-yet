@@ -29,6 +29,7 @@
 		"better-auth": "^1.2.8",
 		"dotenv": "^17.1.0",
 		"drizzle-orm": "^0.44.2",
+		"drizzle-seed": "^0.3.1",
 		"hono": "^4.7.6",
 		"pg": "^8.14.1",
 		"react": "19.1.0",

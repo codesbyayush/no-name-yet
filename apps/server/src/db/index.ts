@@ -1,5 +1,6 @@
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
+// import { reset, seed } from "drizzle-seed";
 import * as schema from "./schema";
 
 // Accepts the Worker env object and returns a Drizzle db instance
@@ -13,5 +14,13 @@ export function getDb(env: {
 			? env.DATABASE_URL
 			: env.HYPERDRIVE.connectionString;
 	const sql = neon(connectionString);
-	return drizzle(sql, { schema });
+	const db = drizzle(sql, { schema });
+
+	// await reset(db, schema);
+
+	// await seed(db, schema, {
+	// 	count: 100,
+	// });
+
+	return db;
 }
