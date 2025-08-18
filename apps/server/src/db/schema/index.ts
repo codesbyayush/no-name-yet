@@ -12,3 +12,4 @@ export * from "./votes";
 export * from "./organization";
 export * from "./changelog";
 export * from "./feedback-counter";
+export * from "./github";
