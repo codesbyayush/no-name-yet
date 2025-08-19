@@ -8,6 +8,7 @@ import { adminRouter } from "./orpc/admin";
 import { createAdminContext, createContext } from "./orpc/context";
 import { apiRouter } from "./orpc/index";
 import v1Router from "./rest";
+import githubWebhooks from "./webhooks/github";
 
 const app = new Hono();
 
@@ -127,6 +128,7 @@ app.get("/docs", (c) => c.redirect("/api/docs"));
 
 app.route("/api/auth", authRouter);
 app.route("/api/v1", v1Router);
+app.route("/api/webhooks", githubWebhooks);
 
 // oRPC Handler for regular API routes
 const rpcHandler = new RPCHandler(apiRouter);
