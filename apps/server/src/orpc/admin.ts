@@ -1,3 +1,4 @@
+import { githubAdminRouter } from "./github";
 import { organizationRouter } from "./organization";
 import { adminO } from "./procedures";
 import { changelogAdminRouter } from "./tables";
@@ -6,6 +7,7 @@ import { changelogAdminRouter } from "./tables";
 export const adminRouter = adminO.router({
 	organization: organizationRouter,
 	changelog: changelogAdminRouter,
+	github: githubAdminRouter,
 });
 
 export type AdminRouter = typeof adminRouter;
