@@ -13,6 +13,7 @@ import {
 	Calendar,
 	Check,
 	Circle,
+	GitBranch,
 	MessageCircle,
 	ThumbsDown,
 	ThumbsUp,
@@ -446,6 +447,11 @@ function PostListItem({ post }: { post: any }) {
 						<span className="block truncate font-medium text-foreground text-sm">
 							{post.title}
 						</span>
+						{post.issueKey && (
+							<span className="text-muted-foreground text-xs">
+								{post.issueKey}
+							</span>
+						)}
 					</div>
 
 					{/* Tags */}
@@ -501,6 +507,20 @@ function PostListItem({ post }: { post: any }) {
 						iconSize={8}
 						className="size-8 flex-row border-none"
 					/>
+					<button
+						onClick={(e) => {
+							e.stopPropagation();
+							const branch = post.issueKey
+								? `${String(post.issueKey).toLowerCase()}`
+								: "";
+							if (branch) navigator.clipboard.writeText(branch);
+						}}
+						className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-muted/50"
+						title="Copy branch"
+					>
+						<GitBranch className="h-4 w-4" />
+					</button>
+
 					<VoteButton
 						count={28}
 						hasVoted={false}
