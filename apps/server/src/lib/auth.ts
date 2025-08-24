@@ -1,4 +1,4 @@
-import { type Auth, type BetterAuthOptions, betterAuth } from "better-auth";
+import { type BetterAuthOptions, betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, anonymous, organization } from "better-auth/plugins";
 import { eq } from "drizzle-orm";
@@ -8,7 +8,17 @@ import { boards, statuses, tags } from "../db/schema";
 import { sendEmail } from "../email";
 import type { AppEnv } from "./env";
 
-export function getAuth(env: AppEnv) {
+interface AuthInstance {
+	handler: (request: Request) => Promise<Response>;
+	api: {
+		getSession: (context: { headers: Headers }) => Promise<any>;
+		createOrganization: (input: {
+			body: { name: string; slug: string; userId?: string };
+		}) => Promise<any>;
+	};
+}
+
+export function getAuth(env: AppEnv): AuthInstance {
 	const config = {
 		baseURL: env.BETTER_AUTH_URL as string,
 		database: drizzleAdapter(getDb(env), {
@@ -185,5 +195,5 @@ export function getAuth(env: AppEnv) {
 		],
 	} satisfies BetterAuthOptions;
 
-	return betterAuth(config) as ReturnType<typeof betterAuth<typeof config>>;
+	return betterAuth(config) as AuthInstance;
 }

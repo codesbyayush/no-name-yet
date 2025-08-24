@@ -24,9 +24,12 @@ function base64UrlToBytes(input: string): Uint8Array {
 }
 
 async function hmacSHA256(keyBytes: Uint8Array, data: string): Promise<string> {
+	const copy = new Uint8Array(keyBytes.byteLength);
+	copy.set(keyBytes);
+	const keyBuffer: ArrayBuffer = copy.buffer;
 	const key = await crypto.subtle.importKey(
 		"raw",
-		keyBytes,
+		keyBuffer,
 		{ name: "HMAC", hash: "SHA-256" },
 		false,
 		["sign"],
