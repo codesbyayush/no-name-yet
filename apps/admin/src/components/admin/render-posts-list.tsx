@@ -91,39 +91,6 @@ export function RenderPostsList() {
 				<div className="py-4 text-center text-red-500">Error loading posts</div>
 			)}
 
-			{/* Original Card View */}
-			{/* <div>
-				<h3 className="mb-4 font-semibold text-lg">Card View</h3>
-				<div className="grid gap-4">
-					{allPosts.map((post, i) => {
-						const isSecondLastPost = i === allPosts.length - 2;
-
-						return (
-							<div
-								key={post.id}
-								ref={isSecondLastPost ? lastPostCallback : null}
-							>
-								<PostCard post={post} />
-							</div>
-						);
-					})} */}
-
-			{/* Loading indicator for next page */}
-			{/* {isFetchingNextPage && (
-						<div className="py-4 text-center">
-							<div className="text-gray-500 text-sm">Loading more posts...</div>
-						</div>
-					)} */}
-
-			{/* End of posts indicator */}
-			{/* {!hasNextPage && allPosts.length > 0 && (
-						<div className="py-4 text-center">
-							<div className="text-gray-500 text-sm">No more posts to load</div>
-						</div>
-					)}
-				</div>
-			</div> */}
-
 			{/* Linear-style List View */}
 			<div>
 				<div className="space-y-1">
@@ -156,36 +123,6 @@ export function RenderPostsList() {
 				</div>
 			</div>
 		</div>
-	);
-}
-
-function PostCard({ post }: { post: any }) {
-	return (
-		<Sheet>
-			<SheetTrigger asChild>
-				<div className="mx-auto flex w-5xl cursor-pointer items-center gap-4 rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card p-5 text-card-foreground shadow-xs transition-shadow hover:shadow-md">
-					<div className="flex flex-1 items-center gap-4">
-						{post.status && <StatusIcon status={post.status} />}
-						<span className="line-clamp-1 font-medium text-base">
-							{post.title}
-						</span>
-						<span className="rounded-lg bg-accent px-3 py-1 text-sm">
-							{post.board?.name || "General"}
-						</span>
-					</div>
-					<div className="flex items-center gap-3">
-						<span className="text-muted-foreground text-sm">
-							{new Date(post.createdAt).toLocaleDateString()}
-						</span>
-						<CommentButton count={1} disabled />
-						<VoteButton count={28} hasVoted={false} desableFromParent={true} />
-					</div>
-				</div>
-			</SheetTrigger>
-			<SheetContent className="m-4 h-[calc(100vh-2rem)] w-[90%] max-w-[90%] overflow-y-auto rounded-3xl border-1 border-muted-foreground/10 bg-card p-6 shadow-xl sm:max-w-[600px] md:w-[700px] lg:w-[1000px] lg:max-w-[1000px]">
-				<PostDetail post={post} />
-			</SheetContent>
-		</Sheet>
 	);
 }
 
