@@ -92,6 +92,7 @@ export const feedback = pgTable(
 		// For future features
 		isAnonymous: boolean("is_anonymous").default(false).notNull(),
 		priority: text("priority").default("medium"), // low, medium, high
+		issueKey: text("issue_key"),
 	},
 	(table) => ({
 		boardsIdx: index("idx_feedback_boards").on(table.boardId),
@@ -106,6 +107,7 @@ export const feedback = pgTable(
 			table.createdAt.desc(),
 		),
 		typeIdx: index("idx_feedback_type").on(table.type),
+		issueKeyIdx: index("idx_feedback_issue_key").on(table.issueKey),
 	}),
 );
 

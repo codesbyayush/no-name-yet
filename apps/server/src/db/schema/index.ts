@@ -13,3 +13,4 @@ export * from "./organization";
 export * from "./changelog";
 export * from "./feedback-counter";
 export * from "./github";
+export * from "./issue-sequences";
