@@ -1,12 +1,13 @@
 import { randomUUID } from "node:crypto";
 import { getAuth } from "@/lib/auth";
 import { ORPCError } from "@orpc/server";
-import { type SQL, and, asc, count, desc, eq } from "drizzle-orm";
+import { type SQL, and, asc, count, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import {
 	boards,
 	comments,
 	feedback,
+	issueSequences,
 	member,
 	organization,
 	statuses,
@@ -1211,6 +1212,38 @@ export const apiRouter = {
 					throw new ORPCError("NOT_FOUND");
 				}
 
+				// Compute per-organization issue key prefix from organization name
+				const orgRow = await context.db
+					.select({ name: organization.name })
+					.from(organization)
+					.where(eq(organization.id, board[0].organizationId))
+					.limit(1);
+
+				const orgName = (orgRow[0]?.name || "Workspace").trim();
+				const words = orgName
+					.toLowerCase()
+					.replace(/[^a-z0-9\s]+/g, " ")
+					.split(/\s+/)
+					.filter(Boolean);
+				let orgCode = "wk";
+				if (words.length >= 2) {
+					orgCode = `${words[0]?.[0] || "w"}${words[1]?.[0] || "k"}`;
+				} else if (words.length === 1) {
+					orgCode = words[0].slice(0, 2);
+				}
+
+				const seqRows = await context.db
+					.insert(issueSequences)
+					.values({ organizationId: board[0].organizationId, lastNumber: 1 })
+					.onConflictDoUpdate({
+						target: issueSequences.organizationId,
+						set: { lastNumber: sql`${issueSequences.lastNumber} + 1` },
+					})
+					.returning({ lastNumber: issueSequences.lastNumber });
+
+				const nextNumber = seqRows[0]?.lastNumber || 1;
+				const issueKey = `${orgCode}-${nextNumber}`;
+
 				// Create the post
 				const newPost = await context.db
 					.insert(feedback)
@@ -1225,6 +1258,7 @@ export const apiRouter = {
 						priority,
 						isAnonymous,
 						attachments,
+						issueKey,
 						statusId: (
 							await context.db
 								.select({ id: statuses.id })
