@@ -839,6 +839,7 @@ export const apiRouter = {
 						id: feedback.id,
 						title: feedback.title,
 						content: feedback.description,
+						issueKey: feedback.issueKey,
 						boardId: feedback.boardId,
 						createdAt: feedback.createdAt,
 						updatedAt: feedback.updatedAt,
