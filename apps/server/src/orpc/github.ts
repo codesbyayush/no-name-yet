@@ -1,7 +1,12 @@
 import { and, count, eq } from "drizzle-orm";
 import { z } from "zod";
-import { githubInstallations, githubRepositories } from "../db/schema";
+import {
+	feedback,
+	githubInstallations,
+	githubRepositories,
+} from "../db/schema";
 import { signInstallState } from "../lib/state";
+import { buildBranchName } from "../utils/slug";
 import { adminOnlyProcedure } from "./procedures";
 
 export const githubAdminRouter = {
@@ -108,4 +113,23 @@ export const githubAdminRouter = {
 		}
 		return { url: "https://github.com/settings/installations" };
 	}),
+
+	getBranchSuggestion: adminOnlyProcedure
+		.input(z.object({ feedbackId: z.string() }))
+		.handler(async ({ input, context }) => {
+			if (!context.organization) throw new Error("Org required");
+			const rows = await context.db
+				.select({ title: feedback.title, issueKey: feedback.issueKey })
+				.from(feedback)
+				.where(eq(feedback.id, input.feedbackId))
+				.limit(1);
+			const row = rows[0];
+			if (!row?.issueKey) throw new Error("Issue not found");
+			const branch = buildBranchName({
+				issueKey: row.issueKey,
+				title: row.title || undefined,
+				assigneeName: null,
+			});
+			return { branch };
+		}),
 };

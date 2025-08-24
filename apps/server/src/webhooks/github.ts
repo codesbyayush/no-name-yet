@@ -3,10 +3,13 @@ import { and, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { getDb } from "../db";
 import {
+	boards,
+	feedback,
 	githubInstallations,
 	githubRepositories,
 	githubWebhookDeliveries,
 	organization,
+	statuses,
 } from "../db/schema";
 import { getEnvFromContext } from "../lib/env";
 
@@ -117,6 +120,10 @@ async function handleEvent({ db, env, event, payload, deliveryId }: any) {
 					payload.repositories_added,
 					payload.repositories_removed,
 				);
+				break;
+			}
+			case "pull_request": {
+				await handlePullRequest(db, payload);
 				break;
 			}
 			default:
@@ -290,6 +297,79 @@ async function syncRepositories(
 	} catch (error) {
 		console.error("Error in syncRepositories:", error);
 		throw error;
+	}
+}
+
+async function handlePullRequest(db: any, payload: any) {
+	try {
+		const action: string = payload.action;
+		const pr = payload.pull_request;
+		const repo = payload.repository;
+		if (!(pr && repo)) return;
+
+		const branch: string = pr.head?.ref || ""; // e.g., ayush/pe-102/title or pe-102/title
+		const m = branch
+			.toLowerCase()
+			.match(/^(?:[a-z0-9][a-z0-9-]*\/)?([a-z0-9]+-\d+)(?:\/.*)?$/);
+		if (!m) return;
+		const issueKey = m[1];
+
+		// Find organization via installation id
+		const installationId: number | undefined = payload.installation?.id;
+		if (!installationId) return;
+		const instRows = await db
+			.select({ orgId: githubInstallations.organizationId })
+			.from(githubInstallations)
+			.where(eq(githubInstallations.githubInstallationId, installationId))
+			.limit(1);
+		const orgId = instRows[0]?.orgId;
+		if (!orgId) return;
+
+		// Resolve feedback by issueKey within org (join via boards)
+		const fbRows = await db
+			.select({ id: feedback.id })
+			.from(feedback)
+			.leftJoin(boards, eq(boards.id, feedback.boardId))
+			.where(
+				and(eq(feedback.issueKey, issueKey), eq(boards.organizationId, orgId)),
+			)
+			.limit(1);
+		const fbId = fbRows[0]?.id;
+		if (!fbId) return;
+
+		// Status mapping
+		let nextStatusKey: string | null = null;
+		if (
+			action === "opened" ||
+			action === "ready_for_review" ||
+			action === "reopened"
+		) {
+			nextStatusKey = "review";
+		} else if (action === "closed" && pr.merged) {
+			const defaultBranch = repo.default_branch || "main";
+			if (pr.base?.ref?.toLowerCase() === defaultBranch.toLowerCase()) {
+				nextStatusKey = "qa"; // or "done" based on your policy
+			}
+		}
+		if (!nextStatusKey) return;
+
+		const statusRows = await db
+			.select({ id: statuses.id })
+			.from(statuses)
+			.where(
+				and(
+					eq(statuses.organizationId, orgId),
+					eq(statuses.key, nextStatusKey),
+				),
+			)
+			.limit(1);
+		const statusId = statusRows[0]?.id;
+		if (!statusId) return;
+
+		await db.update(feedback).set({ statusId }).where(eq(feedback.id, fbId));
+		console.log(`Updated issue ${issueKey} to status ${nextStatusKey}`);
+	} catch (err) {
+		console.error("handlePullRequest error", err);
 	}
 }
 
