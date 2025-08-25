@@ -1,0 +1,1 @@
+ALTER TABLE "feedback" RENAME COLUMN "priority_value" TO "priority";

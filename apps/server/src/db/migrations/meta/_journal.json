@@ -36,6 +36,20 @@
       "when": 1756065786159,
       "tag": "0004_motionless_nitro",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1756123286599,
+      "tag": "0005_groovy_princess_powerful",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1756123311400,
+      "tag": "0006_goofy_raider",
+      "breakpoints": true
     }
   ]
 }
