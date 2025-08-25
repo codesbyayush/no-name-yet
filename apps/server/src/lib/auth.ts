@@ -103,32 +103,46 @@ export function getAuth(env: AppEnv): AuthInstance {
 								// Statuses
 								const defaultStatuses = [
 									{
-										key: "open",
-										name: "Under Review",
-										color: "#9CA3AF",
+										key: "in-progress",
+										name: "In Progress",
+										color: "#facc15",
 										order: 1,
 										isTerminal: false,
 									},
 									{
-										key: "in_progress",
-										name: "In Progress",
-										color: "#F59E0B",
+										key: "technical-review",
+										name: "Technical Review",
+										color: "#22c55e",
 										order: 2,
 										isTerminal: false,
 									},
 									{
-										key: "resolved",
+										key: "completed",
 										name: "Completed",
-										color: "#10B981",
+										color: "#8b5cf6",
 										order: 3,
 										isTerminal: true,
 									},
 									{
-										key: "closed",
-										name: "Closed",
-										color: "#EF4444",
+										key: "paused",
+										name: "Paused",
+										color: "#0ea5e9",
 										order: 4,
-										isTerminal: true,
+										isTerminal: false,
+									},
+									{
+										key: "to-do",
+										name: "Todo",
+										color: "#f97316",
+										order: 5,
+										isTerminal: false,
+									},
+									{
+										key: "backlog",
+										name: "Backlog",
+										color: "#ec4899",
+										order: 6,
+										isTerminal: false,
 									},
 								];
 								await db.insert(statuses).values(
@@ -143,15 +157,22 @@ export function getAuth(env: AppEnv): AuthInstance {
 									})),
 								);
 
-								// Tags
+								// Labels/Tags (match admin mock defaults)
 								const defaultTags = [
-									{ name: "bug", color: "#EF4444" },
-									{ name: "feature", color: "#22C55E" },
-									{ name: "improvement", color: "#3B82F6" },
+									{ name: "UI Enhancement", color: "purple" },
+									{ name: "Bug", color: "red" },
+									{ name: "Feature", color: "green" },
+									{ name: "Documentation", color: "blue" },
+									{ name: "Refactor", color: "yellow" },
+									{ name: "Performance", color: "orange" },
+									{ name: "Design", color: "pink" },
+									{ name: "Security", color: "gray" },
+									{ name: "Accessibility", color: "indigo" },
+									{ name: "Testing", color: "teal" },
+									{ name: "Internationalization", color: "cyan" },
 								];
 								await db.insert(tags).values(
 									defaultTags.map((t) => ({
-										id: crypto.randomUUID(),
 										organizationId: organization.id,
 										name: t.name,
 										color: t.color,

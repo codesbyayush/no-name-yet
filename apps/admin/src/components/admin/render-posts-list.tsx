@@ -114,13 +114,6 @@ export function RenderPostsList() {
 							<div className="text-gray-500 text-sm">Loading more posts...</div>
 						</div>
 					)}
-
-					{/* End of posts indicator */}
-					{!hasNextPage && allPosts.length > 0 && (
-						<div className="py-4 text-center">
-							<div className="text-gray-500 text-sm">No more posts to load</div>
-						</div>
-					)}
 				</div>
 			</div>
 		</div>

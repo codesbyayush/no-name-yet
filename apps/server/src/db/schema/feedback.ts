@@ -8,6 +8,7 @@ import {
 	text,
 	timestamp,
 } from "drizzle-orm/pg-core";
+import { user } from "./auth";
 import { boards } from "./boards";
 import { organization } from "./organization";
 import { statuses } from "./statuses";
@@ -15,20 +16,12 @@ import { tags } from "./tags";
 
 // Enum for feedback types
 export const feedbackTypeEnum = pgEnum("feedback_type", ["bug", "suggestion"]);
-
-// Enum for feedback severity (for bugs)
-export const severityEnum = pgEnum("severity", [
+export const priorityEnum = pgEnum("priority_enum", [
 	"low",
 	"medium",
 	"high",
-	"critical",
-]);
-
-// Enum for plan types
-export const planTypeEnum = pgEnum("plan_type", [
-	"starter",
-	"pro",
-	"enterprise",
+	"urgent",
+	"no_priority",
 ]);
 
 // Feedback table - stores all feedback submissions
@@ -36,6 +29,7 @@ export const feedback = pgTable(
 	"feedback",
 	{
 		id: text("id").primaryKey().default(sql`gen_random_uuid()::text`),
+		issueKey: text("issue_key"),
 		boardId: text("board_id")
 			.notNull()
 			.references(() => boards.id, { onDelete: "cascade" }),
@@ -45,6 +39,11 @@ export const feedback = pgTable(
 		statusId: text("status_id")
 			.notNull()
 			.references(() => statuses.id, { onDelete: "restrict" }),
+		assigneeId: text("assignee_id").references(() => user.id, {
+			onDelete: "restrict",
+		}),
+		dueDate: timestamp("due_date"),
+		priority: priorityEnum("priority").default("medium"),
 		// Need to rethink there: user can be from tenant that we do not have in our db
 		userId: text("user_id"),
 		userEmail: text("user_email"),
@@ -91,8 +90,6 @@ export const feedback = pgTable(
 
 		// For future features
 		isAnonymous: boolean("is_anonymous").default(false).notNull(),
-		priority: text("priority").default("medium"), // low, medium, high
-		issueKey: text("issue_key"),
 	},
 	(table) => ({
 		boardsIdx: index("idx_feedback_boards").on(table.boardId),

@@ -1,5 +1,6 @@
-import { RenderPostsList } from "@/components/admin/render-posts-list";
-import { Filters } from "@/components/filters";
+import AllIssues from "@/components/issues/all-issues";
+import { CreateIssueModalProvider } from "@/components/issues/create-issue-modal-provider";
+import Header from "@/components/issues/header/header";
 import { SiteHeader } from "@/components/site-header";
 import {
 	SidebarMenu,
@@ -7,6 +8,7 @@ import {
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { SidebarRightPortal } from "@/contexts/sidebar-right";
+import { cn } from "@/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_admin/boards")({
@@ -143,85 +145,15 @@ function RouteComponent() {
 	);
 	return (
 		<div>
-			<div className="sticky top-0 z-10 rounded-tl-xl backdrop-blur-2xl">
-				<div className="border-muted border-b-[1px] pl-2">
-					<SiteHeader title="Boards">
-						{(() => {
-							const categories = [
-								{
-									key: "status",
-									label: "Status",
-									type: "multi" as const,
-									options: statuses.map((s) => ({
-										id: s.key,
-										label: s.label,
-										colorClass:
-											s.key === "open"
-												? "bg-gray-400"
-												: s.key === "in_progress"
-													? "bg-yellow-500"
-													: s.key === "resolved"
-														? "bg-green-500"
-														: "bg-red-500",
-									})),
-								},
-								{
-									key: "tab",
-									label: "Board",
-									type: "multi" as const,
-									options: boards.map((b) => ({
-										id: b.key,
-										label: b.label,
-									})),
-								},
-								{
-									key: "tag",
-									label: "Tag",
-									type: "multi" as const,
-									options: tags.map((t) => ({
-										id: t.key,
-										label: t.label,
-										colorClass: t.dot,
-									})),
-								},
-							];
-
-							const toArray = (value?: string) =>
-								!value || value === "all"
-									? []
-									: value.split(",").filter(Boolean);
-
-							const selected = {
-								status: toArray(search.status),
-								tab: toArray(search.tab),
-								tag: toArray(search.tag),
-							};
-
-							const onChange = (categoryKey: string, values: string[]) => {
-								void navigate({
-									search: (prev) =>
-										stripDefaults({
-											...prev,
-											[categoryKey]: values.length ? values.join(",") : "all",
-										}),
-									replace: false,
-								});
-							};
-
-							return (
-								<Filters
-									categories={categories}
-									selected={selected}
-									onChange={onChange}
-								/>
-							);
-						})()}
-					</SiteHeader>
-				</div>
-			</div>
 			<SidebarRightPortal>{sidebarFilters}</SidebarRightPortal>
-			<div className="px-4 py-3">
-				<RenderPostsList />
+			<div className="h-svh overflow-x-hidden lg:p-2">
+				<CreateIssueModalProvider />
+				<div className="flex flex-col items-center justify-start overflow-hidden bg-container lg:rounded-md lg:border">
+					<Header />
+					<div className="h-[calc(100svh-80px)] w-full overflow-auto lg:h-[calc(100svh-96px)]">
+						<AllIssues />
+					</div>
+				</div>
 			</div>
 		</div>
 	);

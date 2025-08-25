@@ -69,17 +69,17 @@ export const postsRouter = {
 				if (!boardOrg[0]) {
 					throw new ORPCError("BAD_REQUEST");
 				}
-				const openStatus = await context.db
+				const defaultStatus = await context.db
 					.select({ id: statuses.id })
 					.from(statuses)
 					.where(
 						and(
 							eq(statuses.organizationId, boardOrg[0].organizationId),
-							eq(statuses.key, "open"),
+							eq(statuses.key, "to-do"),
 						),
 					)
 					.limit(1);
-				const statusIdToUse = openStatus[0]?.id as string;
+				const statusIdToUse = defaultStatus[0]?.id as string;
 				const [newPost] = await context.db
 					.insert(feedback)
 					.values({
@@ -140,7 +140,9 @@ export const postsRouter = {
 				title: z.string().optional(),
 				description: z.string().min(1).optional(),
 				statusId: z.string().optional(),
-				priority: z.enum(["low", "medium", "high"]).optional(),
+				priority: z
+					.enum(["low", "medium", "high", "urgent", "no_priority"])
+					.optional(),
 				tags: z.array(z.string()).optional(),
 				url: z.string().optional(),
 				userAgent: z.string().optional(),

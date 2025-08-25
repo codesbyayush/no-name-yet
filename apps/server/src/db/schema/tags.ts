@@ -1,13 +1,14 @@
+import { sql } from "drizzle-orm";
 import { index, pgTable, text, timestamp, unique } from "drizzle-orm/pg-core";
 import { organization } from "./organization";
 
 export const tags = pgTable(
 	"tags",
 	{
-		id: text("id").primaryKey(),
+		id: text("id").primaryKey().default(sql`gen_random_uuid()::text`),
 		name: text("name").notNull(),
 		color: text("color").notNull().default("blue"),
-		type: text("type").notNull().default("post"),
+		type: text("type").notNull().default("feedback"),
 		organizationId: text("organization_id")
 			.notNull()
 			.references(() => organization.id, { onDelete: "cascade" }),

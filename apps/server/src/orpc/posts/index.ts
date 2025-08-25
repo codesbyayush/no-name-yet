@@ -310,7 +310,9 @@ export const postsRouter = {
 				title: z.string().optional(),
 				description: z.string().min(1).optional(),
 				statusId: z.string().optional(),
-				priority: z.enum(["low", "medium", "high"]).optional(),
+				priority: z
+					.enum(["low", "medium", "high", "urgent", "no_priority"])
+					.optional(),
 				tags: z.array(z.string()).optional(),
 				url: z.string().optional(),
 				userAgent: z.string().optional(),

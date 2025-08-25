@@ -29,6 +29,8 @@ function AdminLayout() {
 					{
 						"--sidebar-width": "300px",
 						"--header-height": "calc(var(--spacing) * 12)",
+						maxWidth: "100%",
+						overflow: "hidden",
 					} as React.CSSProperties
 				}
 			>

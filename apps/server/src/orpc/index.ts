@@ -1267,7 +1267,7 @@ export const apiRouter = {
 								.where(
 									and(
 										eq(statuses.organizationId, board[0].organizationId),
-										eq(statuses.key, "open"),
+										eq(statuses.key, "to-do"),
 									),
 								)
 								.limit(1)
