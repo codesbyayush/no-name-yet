@@ -68,7 +68,7 @@ export function ChangelogForm({
 				} else {
 					// Default save behavior
 					if (mode === "create") {
-						await adminClient.changelog.add({
+						await adminClient.organization.changelog.add({
 							title: formData.title,
 							content: formData.content,
 							status: formData.status || "draft",
@@ -76,7 +76,7 @@ export function ChangelogForm({
 						});
 						toast.success("Changelog saved successfully");
 					} else if (mode === "edit" && changelogId) {
-						await adminClient.changelog.update({
+						await adminClient.organization.changelog.update({
 							id: changelogId,
 							title: formData.title,
 							content: formData.content,

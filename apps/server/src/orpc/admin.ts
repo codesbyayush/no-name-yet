@@ -1,12 +1,9 @@
-import { githubAdminRouter } from "./github";
-import { organizationRouter } from "./organization";
+import { organizationRouter } from "./admin-only";
+import { githubAdminRouter } from "./admin-only/integrations/github";
 import { adminO } from "./procedures";
-import { changelogAdminRouter } from "./tables";
 
-// Admin router that uses AdminContext
 export const adminRouter = adminO.router({
 	organization: organizationRouter,
-	changelog: changelogAdminRouter,
 	github: githubAdminRouter,
 });
 

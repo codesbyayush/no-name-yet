@@ -1,5 +1,5 @@
 // Main export for all table CRUD operations
-export { changelogAdminRouter, changelogPublicRouter } from "./changelog";
+export { changelogPublicRouter } from "./changelog";
 
 // Export schemas for reuse
 export * from "./changelog/schemas";

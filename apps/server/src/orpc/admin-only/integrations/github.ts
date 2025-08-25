@@ -4,10 +4,10 @@ import {
 	feedback,
 	githubInstallations,
 	githubRepositories,
-} from "../db/schema";
-import { signInstallState } from "../lib/state";
-import { buildBranchName } from "../utils/slug";
-import { adminOnlyProcedure } from "./procedures";
+} from "../../../db/schema";
+import { signInstallState } from "../../../lib/state";
+import { buildBranchName } from "../../../utils/slug";
+import { adminOnlyProcedure } from "../../procedures";
 
 export const githubAdminRouter = {
 	getInstallStatus: adminOnlyProcedure.handler(async ({ context }) => {

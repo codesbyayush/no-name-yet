@@ -2,11 +2,7 @@ import { feedbackCounters as fc } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { sql } from "drizzle-orm";
 import { z } from "zod";
-import {
-	type Comment,
-	type NewComment,
-	comments,
-} from "../../db/schema/comments";
+import { comments } from "../../db/schema/comments";
 import { protectedProcedure } from "../procedures";
 
 export const commentsRouter = {

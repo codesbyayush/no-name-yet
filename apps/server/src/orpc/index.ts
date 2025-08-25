@@ -7,6 +7,7 @@ import {
 	boards,
 	comments,
 	feedback,
+	feedbackTags,
 	issueSequences,
 	member,
 	organization,

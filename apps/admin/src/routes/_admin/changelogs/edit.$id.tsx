@@ -22,7 +22,7 @@ function EditChangelogPage() {
 	} = useQuery({
 		queryKey: ["changelog", id],
 		queryFn: async () => {
-			const response = await adminClient.changelog.get({ id });
+			const response = await adminClient.organization.changelog.get({ id });
 			return response.data;
 		},
 	});

@@ -63,10 +63,21 @@ export const postsRouter = {
 						id: feedback.id,
 						title: feedback.title,
 						content: feedback.description,
+						issueKey: feedback.issueKey,
 						boardId: feedback.boardId,
+						priority: feedback.priority,
+						statusId: feedback.statusId,
+						statusKey: statuses.key,
+						statusName: statuses.name,
+						statusColor: statuses.color,
+						statusOrder: statuses.order,
+						assigneeId: feedback.assigneeId,
+						assigneeName: user.name,
+						assigneeEmail: user.email,
+						assigneeImage: user.image,
+						dueDate: feedback.dueDate,
 						createdAt: feedback.createdAt,
 						updatedAt: feedback.updatedAt,
-						status: statuses.key,
 						author: {
 							id: user.id,
 							name: user.name,
@@ -103,9 +114,29 @@ export const postsRouter = {
 					.orderBy(orderBy)
 					.offset(offset)
 					.limit(take + 1);
+				// Get tags/labels for each post
+				const postsWithTags = await Promise.all(
+					posts.slice(0, take).map(async (post) => {
+						const tagsResult = await context.db
+							.select({
+								id: tagsTable.id,
+								name: tagsTable.name,
+								color: tagsTable.color,
+							})
+							.from(tagsTable)
+							.innerJoin(feedbackTags, eq(tagsTable.id, feedbackTags.tagId))
+							.where(eq(feedbackTags.feedbackId, post.id));
+
+						return {
+							...post,
+							tags: tagsResult,
+						};
+					}),
+				);
+
 				const hasMore = posts.length > take;
 				return {
-					posts: posts.slice(0, take),
+					posts: postsWithTags,
 					organizationId: context.organization.id,
 					organizationName: context.organization.name,
 					pagination: {

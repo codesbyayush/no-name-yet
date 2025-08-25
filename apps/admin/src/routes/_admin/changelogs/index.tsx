@@ -72,7 +72,7 @@ function ChangelogListPage() {
 	const { data, isLoading, error, refetch } = useQuery({
 		queryKey: ["changelogs", statusFilter, tagFilter],
 		queryFn: async () => {
-			const response = await adminClient.changelog.getAll({
+			const response = await adminClient.organization.changelog.getAll({
 				offset: 0,
 				limit: 50,
 				status: statusFilter,
@@ -88,7 +88,7 @@ function ChangelogListPage() {
 		}
 
 		try {
-			await adminClient.changelog.delete({ id });
+			await adminClient.organization.changelog.delete({ id });
 			toast.success("Changelog deleted successfully");
 			refetch();
 		} catch (error) {
@@ -109,7 +109,7 @@ function ChangelogListPage() {
 		}
 
 		try {
-			await adminClient.changelog.update({
+			await adminClient.organization.changelog.update({
 				id,
 				status: isPublished ? "draft" : "published",
 			});

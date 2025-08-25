@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { type Board, type NewBoard, boards } from "../../db/schema/boards";
-import { adminOnlyProcedure } from "../procedures";
+import { type Board, type NewBoard, boards } from "../../../db/schema/boards";
+import { adminOnlyProcedure } from "../../procedures";
 
 export const boardsRouter = {
 	getAll: adminOnlyProcedure
