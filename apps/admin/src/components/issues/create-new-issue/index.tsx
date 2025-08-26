@@ -144,12 +144,12 @@ export function CreateNewIssue() {
 								setAddIssueForm({ ...addIssueForm, assignee: newAssignee })
 							}
 						/>
-						<ProjectSelector
+						{/* <ProjectSelector
 							project={addIssueForm.project}
 							onChange={(newProject) =>
 								setAddIssueForm({ ...addIssueForm, project: newProject })
 							}
-						/>
+						/> */}
 						<LabelSelector
 							selectedLabels={addIssueForm.labels}
 							onChange={(newLabels) =>

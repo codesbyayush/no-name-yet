@@ -7,7 +7,8 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { type User, statusUserColors, users } from "@/mock-data/users";
+import { type User, statusUserColors } from "@/mock-data/users";
+import { useUsersStore } from "@/store/users-store";
 import { CheckIcon, CircleUserRound, Send, UserIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -18,7 +19,7 @@ interface AssigneeUserProps {
 export function AssigneeUser({ user }: AssigneeUserProps) {
 	const [open, setOpen] = useState(false);
 	const [currentAssignee, setCurrentAssignee] = useState<User | null>(user);
-
+	const { users } = useUsersStore();
 	useEffect(() => {
 		setCurrentAssignee(user);
 	}, [user]);
@@ -76,29 +77,27 @@ export function AssigneeUser({ user }: AssigneeUserProps) {
 					{!currentAssignee && <CheckIcon className="ml-auto h-4 w-4" />}
 				</DropdownMenuItem>
 				<DropdownMenuSeparator />
-				{users
-					.filter((user) => user.teamIds.includes("CORE"))
-					.map((user) => (
-						<DropdownMenuItem
-							key={user.id}
-							onClick={(e) => {
-								e.stopPropagation();
-								setCurrentAssignee(user);
-								setOpen(false);
-							}}
-						>
-							<div className="flex items-center gap-2">
-								<Avatar className="h-5 w-5">
-									<AvatarImage src={user.avatarUrl} alt={user.name} />
-									<AvatarFallback>{user.name[0]}</AvatarFallback>
-								</Avatar>
-								<span>{user.name}</span>
-							</div>
-							{currentAssignee?.id === user.id && (
-								<CheckIcon className="ml-auto h-4 w-4" />
-							)}
-						</DropdownMenuItem>
-					))}
+				{users.map((user) => (
+					<DropdownMenuItem
+						key={user.id}
+						onClick={(e) => {
+							e.stopPropagation();
+							setCurrentAssignee(user);
+							setOpen(false);
+						}}
+					>
+						<div className="flex items-center gap-2">
+							<Avatar className="h-5 w-5">
+								<AvatarImage src={user.avatarUrl} alt={user.name} />
+								<AvatarFallback>{user.name[0]}</AvatarFallback>
+							</Avatar>
+							<span>{user.name}</span>
+						</div>
+						{currentAssignee?.id === user.id && (
+							<CheckIcon className="ml-auto h-4 w-4" />
+						)}
+					</DropdownMenuItem>
+				))}
 				<DropdownMenuSeparator />
 				<DropdownMenuLabel>New user</DropdownMenuLabel>
 				<DropdownMenuItem>

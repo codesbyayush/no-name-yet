@@ -8,6 +8,7 @@ import {
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { SidebarRightPortal } from "@/contexts/sidebar-right";
+import { useUsers } from "@/hooks/use-users";
 import { cn } from "@/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -25,6 +26,9 @@ export const Route = createFileRoute("/_admin/boards")({
 function RouteComponent() {
 	const search = Route.useSearch();
 	const navigate = Route.useNavigate();
+
+	// Triggering users fetch on issues load so it's available for the create issue modal
+	const { isLoading: isLoadingUsers, error: usersError } = useUsers();
 
 	const stripDefaults = (s: Partial<typeof search>) => {
 		const next = { ...s } as Record<string, string | undefined>;

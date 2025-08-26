@@ -18,9 +18,9 @@ import { labels } from "@/mock-data/labels";
 import { priorities } from "@/mock-data/priorities";
 import { projects } from "@/mock-data/projects";
 import { status as allStatus } from "@/mock-data/status";
-import { users } from "@/mock-data/users";
 import { useFilterStore } from "@/store/filter-store";
 import { useIssuesStore } from "@/store/issues-store";
+import { useUsersStore } from "@/store/users-store";
 import {
 	BarChart3,
 	CheckIcon,
@@ -51,10 +51,12 @@ export function Filter() {
 		filterByProject,
 	} = useIssuesStore();
 
+	const { users } = useUsersStore();
+
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
 			<PopoverTrigger asChild>
-				<Button size="xs" variant="ghost" className="relative">
+				<Button size="sm" variant="ghost" className="relative">
 					<ListFilter className="mr-1 size-4" />
 					Filter
 					{getActiveFiltersCount() > 0 && (
@@ -334,7 +336,7 @@ export function Filter() {
 											<span
 												className="size-3 rounded-full"
 												style={{ backgroundColor: label.color }}
-											></span>
+											/>
 											{label.name}
 										</div>
 										{filters.labels.includes(label.id) && (

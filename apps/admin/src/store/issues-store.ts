@@ -7,7 +7,7 @@ import type { LabelInterface } from "@/mock-data/labels";
 import type { Priority } from "@/mock-data/priorities";
 import type { Project } from "@/mock-data/projects";
 import type { Status } from "@/mock-data/status";
-import type { User } from "@/mock-data/users";
+import type { User } from "@/store/users-store";
 import { create } from "zustand";
 
 interface FilterOptions {
@@ -91,7 +91,9 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
 			const uniqueNewIssues = newIssues.filter(
 				(issue) => !existingIds.has(issue.id),
 			);
-			const allIssues = [...state.issues, ...uniqueNewIssues];
+			const allIssues = [...state.issues, ...uniqueNewIssues].sort((a, b) =>
+				b.rank.localeCompare(a.rank),
+			);
 
 			return {
 				issues: allIssues,

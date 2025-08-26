@@ -85,7 +85,8 @@
 						"useTemplate": "error",
 						"useConst": "error",
 						"useBlockStatements": "off",
-						"useShorthandAssign": "error"
+						"useShorthandAssign": "error",
+						"noUselessElse": "off"
 					},
 					"complexity": {
 						"useSimplifiedLogicExpression": "error"

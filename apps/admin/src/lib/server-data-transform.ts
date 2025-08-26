@@ -4,7 +4,6 @@ import { labels } from "@/mock-data/labels";
 import { priorities } from "@/mock-data/priorities";
 import { projects } from "@/mock-data/projects";
 import { status } from "@/mock-data/status";
-import { users } from "@/mock-data/users";
 
 // Generate ranks for issues
 const generateRank = (index: number) => {
@@ -62,7 +61,13 @@ export const transformServerPostToIssue = (
 					id: serverPost.assigneeId,
 					name: serverPost.assigneeName || "Unknown User",
 					email: serverPost.assigneeEmail || "unknown@example.com",
-					image: serverPost.assigneeImage || "",
+					avatarUrl:
+						serverPost.assigneeImage ||
+						`https://api.dicebear.com/9.x/glass/svg?seed=${serverPost.assigneeId}`,
+					status: "online" as const,
+					role: "Member" as const,
+					joinedDate: new Date().toISOString().split("T")[0],
+					teamIds: [],
 				}
 			: null,
 		priority: mapServerPriorityToClient(serverPost.priority),

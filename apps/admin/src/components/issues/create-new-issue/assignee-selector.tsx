@@ -15,8 +15,9 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
-import { type User, users } from "@/mock-data/users";
 import { useIssuesStore } from "@/store/issues-store";
+import type { User } from "@/store/users-store";
+import { useUsersStore } from "@/store/users-store";
 import { CheckIcon, UserCircle } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 
@@ -34,6 +35,7 @@ export function AssigneeSelector({
 	const [value, setValue] = useState<string | null>(assignee?.id || null);
 
 	const { filterByAssignee } = useIssuesStore();
+	const { users } = useUsersStore();
 
 	useEffect(() => {
 		setValue(assignee?.id || null);
@@ -60,7 +62,7 @@ export function AssigneeSelector({
 					<Button
 						id={id}
 						className="flex items-center justify-center"
-						size="xs"
+						size="sm"
 						variant="secondary"
 						role="combobox"
 						aria-expanded={open}
@@ -118,30 +120,28 @@ export function AssigneeSelector({
 										{filterByAssignee(null).length}
 									</span>
 								</CommandItem>
-								{users
-									.filter((user) => user.teamIds.includes("CORE"))
-									.map((user) => (
-										<CommandItem
-											key={user.id}
-											value={user.id}
-											onSelect={() => handleAssigneeChange(user.id)}
-											className="flex items-center justify-between"
-										>
-											<div className="flex items-center gap-2">
-												<Avatar className="size-5">
-													<AvatarImage src={user.avatarUrl} alt={user.name} />
-													<AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-												</Avatar>
-												{user.name}
-											</div>
-											{value === user.id && (
-												<CheckIcon size={16} className="ml-auto" />
-											)}
-											<span className="text-muted-foreground text-xs">
-												{filterByAssignee(user.id).length}
-											</span>
-										</CommandItem>
-									))}
+								{users.map((user) => (
+									<CommandItem
+										key={user.id}
+										value={user.id}
+										onSelect={() => handleAssigneeChange(user.id)}
+										className="flex items-center justify-between"
+									>
+										<div className="flex items-center gap-2">
+											<Avatar className="size-5">
+												<AvatarImage src={user.avatarUrl} alt={user.name} />
+												<AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+											</Avatar>
+											{user.name}
+										</div>
+										{value === user.id && (
+											<CheckIcon size={16} className="ml-auto" />
+										)}
+										<span className="text-muted-foreground text-xs">
+											{filterByAssignee(user.id).length}
+										</span>
+									</CommandItem>
+								))}
 							</CommandGroup>
 						</CommandList>
 					</Command>
