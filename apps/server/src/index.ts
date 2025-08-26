@@ -168,10 +168,14 @@ app.use("/admin/*", async (c, next) => {
 
 app.get("/ping", (c) => c.text("pong"));
 
-const isLocalEnvironment = process.env.NODE_ENV === "development";
+const isLocalEnvironment =
+	typeof process !== "undefined" && process.env.NODE_ENV === "development";
+const isWorkersEnvironment =
+	typeof globalThis !== "undefined" &&
+	(globalThis as any).__CLOUDFLARE_WORKER__;
 
 const createExport = async () => {
-	if (isLocalEnvironment) {
+	if (isLocalEnvironment && !isWorkersEnvironment) {
 		// biome-ignore lint/style/useNodejsImportProtocol: <explanation>
 		const { readFileSync } = await import("fs");
 		// biome-ignore lint/style/useNodejsImportProtocol: <explanation>
