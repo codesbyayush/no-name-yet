@@ -16,10 +16,8 @@ import {
 	user,
 	votes,
 } from "../db/schema";
-import { mixedRouter } from "./features";
 import { protectedProcedure, publicProcedure } from "./procedures";
 import { publicRouter } from "./public";
-import { changelogPublicRouter } from "./tables";
 
 // Pagination schema for reuse
 const paginationSchema = z.object({
@@ -45,9 +43,6 @@ const boardIdSchema = z.object({
 export const apiRouter = {
 	// New router structure
 	public: publicRouter,
-	mixed: mixedRouter,
-	changelog: changelogPublicRouter,
-	...mixedRouter,
 	...publicRouter,
 
 	// Get onboarding status for user

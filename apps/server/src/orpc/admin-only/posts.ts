@@ -22,11 +22,11 @@ import {
 	sql,
 } from "drizzle-orm";
 import { z } from "zod";
-import { protectedProcedure } from "../procedures";
+import { adminOnlyProcedure } from "../procedures";
 
 export const postsRouter = {
 	// Composite routes from features/index.ts
-	getDetailedPosts: protectedProcedure
+	getDetailedPosts: adminOnlyProcedure
 		.input(
 			z.object({
 				offset: z.number().min(0).default(0),
@@ -150,7 +150,7 @@ export const postsRouter = {
 			}
 		}),
 
-	getDetailedSinglePost: protectedProcedure
+	getDetailedSinglePost: adminOnlyProcedure
 		.input(
 			z.object({
 				feedbackId: z.string().optional(),
@@ -215,7 +215,7 @@ export const postsRouter = {
 		}),
 
 	// Standard post CRUD from public/posts.ts
-	create: protectedProcedure
+	create: adminOnlyProcedure
 		.input(
 			z.object({
 				boardId: z.string(),
@@ -334,7 +334,7 @@ export const postsRouter = {
 			}
 		}),
 
-	update: protectedProcedure
+	update: adminOnlyProcedure
 		.input(
 			z.object({
 				id: z.string(),
@@ -393,7 +393,7 @@ export const postsRouter = {
 			return updatedPost;
 		}),
 
-	delete: protectedProcedure
+	delete: adminOnlyProcedure
 		.input(
 			z.object({
 				id: z.string(),

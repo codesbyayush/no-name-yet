@@ -1,6 +1,5 @@
 import type { AppEnv } from "@/lib/env";
 import { render } from "@react-email/render";
-// @ts-ignore - React types not properly configured for server environment will fix later
 import { createElement } from "react";
 import { Resend } from "resend";
 import { WelcomeEmail } from "./templates/welcome-email";
@@ -21,7 +20,6 @@ export const sendEmail = async (
 ) => {
 	const resend = new Resend(env.RESEND_DOMAIN_KEY);
 	const { from, subject, ReactEmail } = templates[type];
-	const template = templates[type];
 	return resend.emails.send({
 		from,
 		to,

@@ -1,7 +1,4 @@
 import { HeroHeader } from "@/components/landing/header";
-import HeroSection from "@/components/landing/hero-section";
-import { FloatingNav } from "@/components/ui/floating-navbar";
-import { Spotlight } from "@/components/ui/spotlight-new";
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_landing")({
@@ -49,11 +46,7 @@ export const Route = createFileRoute("/_landing")({
 		const hostParts = host.split(".");
 
 		// If on a subdomain (not localhost, not app), redirect to board
-		if (
-			hostParts.length > 1 &&
-			hostParts[0] !== "localhost" &&
-			hostParts[0] !== "app"
-		) {
+		if (hostParts.length > 1 && hostParts[0] !== process.env.PUBLIC_ROOT_HOST) {
 			throw redirect({
 				to: "/board",
 				search: {
@@ -122,18 +115,6 @@ function Footer() {
 
 function LandingShell() {
 	return (
-		// <div className="relative min-h-screen bg-noise bg-zinc-950 text-white">
-		// 	<div className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_-10%,rgba(255,255,255,0.08),rgba(255,255,255,0)_60%)]" />
-		// 	<div className="relative z-10 py-6">
-		// 		<FloatingNav navItems={navItems} />
-		// 	</div>
-
-		// 	<div className="relative z-10 w-full">
-		// 		<Spotlight />
-		// 		<Outlet />
-		// 		<Footer />
-		// 	</div>
-		// </div>
 		<div className="relative min-h-screen">
 			<HeroHeader />
 			<Outlet />

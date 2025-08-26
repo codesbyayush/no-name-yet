@@ -28,6 +28,7 @@ interface IssuesState {
 
 	// Actions
 	addIssue: (issue: Issue) => void;
+	addIssues: (issues: Issue[]) => void;
 	updateIssue: (id: string, updatedIssue: Partial<Issue>) => void;
 	deleteIssue: (id: string) => void;
 
@@ -65,8 +66,9 @@ interface IssuesState {
 
 export const useIssuesStore = create<IssuesState>((set, get) => ({
 	// Initial state
-	issues: mockIssues.sort((a, b) => b.rank.localeCompare(a.rank)),
-	issuesByStatus: groupIssuesByStatus(mockIssues),
+	// issues: mockIssues.sort((a, b) => b.rank.localeCompare(a.rank)),
+	issues: [],
+	issuesByStatus: {},
 
 	//
 	getAllIssues: () => get().issues,
@@ -78,6 +80,22 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
 			return {
 				issues: newIssues,
 				issuesByStatus: groupIssuesByStatus(newIssues),
+			};
+		});
+	},
+
+	addIssues: (newIssues: Issue[]) => {
+		set((state) => {
+			// Merge new issues with existing ones, avoiding duplicates by ID
+			const existingIds = new Set(state.issues.map((issue) => issue.id));
+			const uniqueNewIssues = newIssues.filter(
+				(issue) => !existingIds.has(issue.id),
+			);
+			const allIssues = [...state.issues, ...uniqueNewIssues];
+
+			return {
+				issues: allIssues,
+				issuesByStatus: groupIssuesByStatus(allIssues),
 			};
 		});
 	},

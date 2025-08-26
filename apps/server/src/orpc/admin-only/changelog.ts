@@ -10,7 +10,7 @@ import {
 	getChangelogSchema,
 	updateAllChangelogsSchema,
 	updateChangelogSchema,
-} from "../tables/changelog/schemas";
+} from "../public/schemas";
 
 // Helper functions
 const generateSlug = (title: string): string => {

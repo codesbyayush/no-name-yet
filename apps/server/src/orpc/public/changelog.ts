@@ -1,7 +1,7 @@
 import { ORPCError } from "@orpc/server";
 import { and, asc, count, desc, eq } from "drizzle-orm";
-import { changelog, tags, user } from "../../../db/schema";
-import { publicProcedure } from "../../procedures";
+import { changelog, tags, user } from "../../db/schema";
+import { publicProcedure } from "../procedures";
 import {
 	publicGetChangelogBySlugSchema,
 	publicGetChangelogsSchema,

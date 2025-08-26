@@ -1,3 +1,4 @@
+import { useIssuesInfinite } from "@/hooks/use-issues-infinite";
 import { cn } from "@/lib/utils";
 import type { Issue } from "@/mock-data/issues";
 import { status } from "@/mock-data/status";
@@ -5,7 +6,7 @@ import { useFilterStore } from "@/store/filter-store";
 import { useIssuesStore } from "@/store/issues-store";
 import { useSearchStore } from "@/store/search-store";
 import { useViewStore } from "@/store/view-store";
-import { type FC, useMemo } from "react";
+import { type FC, useEffect, useMemo } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { GroupIssues } from "./group-issues";
@@ -55,11 +56,11 @@ const FilteredIssuesView: FC<{
 	const filteredIssuesByStatus = useMemo(() => {
 		const result: Record<string, Issue[]> = {};
 
-		status.forEach((statusItem) => {
+		for (const statusItem of status) {
 			result[statusItem.id] = filteredIssues.filter(
 				(issue) => issue.status.id === statusItem.id,
 			);
-		});
+		}
 
 		return result;
 	}, [filteredIssues]);
@@ -89,6 +90,9 @@ const GroupIssuesListView: FC<{
 	isViewTypeGrid: boolean;
 }> = ({ isViewTypeGrid = false }) => {
 	const { issuesByStatus } = useIssuesStore();
+	const { isLoading, error, lastElementRef, hasNextPage, isFetchingNextPage } =
+		useIssuesInfinite();
+
 	return (
 		<DndProvider backend={HTML5Backend}>
 			<CustomDragLayer />
@@ -105,6 +109,38 @@ const GroupIssuesListView: FC<{
 						count={issuesByStatus[statusItem.id]?.length || 0}
 					/>
 				))}
+
+				{/* Intersection observer element for infinite loading */}
+				{hasNextPage && (
+					<div
+						ref={lastElementRef}
+						className="flex h-4 w-full items-center justify-center"
+					>
+						{isFetchingNextPage && (
+							<div className="text-muted-foreground text-sm">
+								Loading more issues...
+							</div>
+						)}
+					</div>
+				)}
+
+				{/* Loading state */}
+				{isLoading && (
+					<div className="flex h-32 w-full items-center justify-center">
+						<div className="text-muted-foreground text-sm">
+							Loading issues...
+						</div>
+					</div>
+				)}
+
+				{/* Error state */}
+				{error && (
+					<div className="flex h-32 w-full items-center justify-center">
+						<div className="text-destructive text-sm">
+							Error loading issues. Please try again.
+						</div>
+					</div>
+				)}
 			</div>
 		</DndProvider>
 	);
