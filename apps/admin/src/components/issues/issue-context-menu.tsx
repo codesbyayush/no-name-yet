@@ -13,8 +13,8 @@ import { labels } from "@/mock-data/labels";
 import { priorities } from "@/mock-data/priorities";
 import { projects } from "@/mock-data/projects";
 import { status } from "@/mock-data/status";
-import { users } from "@/mock-data/users";
 import { useIssuesStore } from "@/store/issues-store";
+import { useUsersStore } from "@/store/users-store";
 import {
 	AlarmClock,
 	ArrowRightLeft,
@@ -60,7 +60,7 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
 		updateIssue,
 		getIssueById,
 	} = useIssuesStore();
-
+	const { users } = useUsersStore();
 	const handleStatusChange = (statusId: string) => {
 		if (!issueId) return;
 		const newStatus = status.find((s) => s.id === statusId);
@@ -95,7 +95,7 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
 		const issue = getIssueById(issueId);
 		const label = labels.find((l) => l.id === labelId);
 
-		if (!issue || !label) return;
+		if (!(issue && label)) return;
 
 		const hasLabel = issue.labels.some((l) => l.id === labelId);
 
@@ -202,20 +202,18 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
 						<ContextMenuItem onClick={() => handleAssigneeChange(null)}>
 							<User className="size-4" /> Unassigned
 						</ContextMenuItem>
-						{users
-							.filter((user) => user.teamIds.includes("CORE"))
-							.map((user) => (
-								<ContextMenuItem
-									key={user.id}
-									onClick={() => handleAssigneeChange(user.id)}
-								>
-									<Avatar className="size-4">
-										<AvatarImage src={user.avatarUrl} alt={user.name} />
-										<AvatarFallback>{user.name[0]}</AvatarFallback>
-									</Avatar>
-									{user.name}
-								</ContextMenuItem>
-							))}
+						{users.map((user) => (
+							<ContextMenuItem
+								key={user.id}
+								onClick={() => handleAssigneeChange(user.id)}
+							>
+								<Avatar className="size-4">
+									<AvatarImage src={user.avatarUrl} alt={user.name} />
+									<AvatarFallback>{user.name[0]}</AvatarFallback>
+								</Avatar>
+								{user.name}
+							</ContextMenuItem>
+						))}
 					</ContextMenuSubContent>
 				</ContextMenuSub>
 
