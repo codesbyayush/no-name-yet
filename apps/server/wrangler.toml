@@ -10,3 +10,6 @@ route = { pattern = "api.openfeedback.tech/*", zone_name = "openfeedback.tech" }
 binding = "HYPERDRIVE"
 id = "93d625eb7bcb407a95ba9fa864cf5413"
 
+[observability]
+enabled = true
+
