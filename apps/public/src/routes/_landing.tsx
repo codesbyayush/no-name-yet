@@ -46,7 +46,10 @@ export const Route = createFileRoute("/_landing")({
 		const hostParts = host.split(".");
 
 		// If on a subdomain (not localhost, not app), redirect to board
-		if (hostParts.length > 1 && hostParts[0] !== process.env.PUBLIC_ROOT_HOST) {
+		if (
+			hostParts.length > 1 &&
+			hostParts[0] !== import.meta.env.PUBLIC_ROOT_HOST
+		) {
 			throw redirect({
 				to: "/board",
 				search: {
