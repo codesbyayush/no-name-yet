@@ -82,6 +82,7 @@ jobs:
           echo "PUBLIC_BACKEND_SERVER_URL=${{ secrets.BACKEND_URL }}" >> .env.production
           echo "PUBLIC_ADMIN_URL=${{ secrets.ADMIN_URL }}" >> .env.production
           echo "PUBLIC_ROOT_HOST=${{ secrets.ROOT_HOST }}" >> .env.production
+          echo "PUBLIC_ADMIN_ROOT_URL=${{ secrets.ADMIN_ROOT_URL }}" >> .env.production
           bun run build
 
       - name: Deploy to Cloudflare Workers
