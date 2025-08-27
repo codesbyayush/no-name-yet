@@ -8,7 +8,6 @@ import { ProjectBadge } from "./project-badge";
 import { StatusSelector } from "./status-selector";
 
 import { ContextMenu, ContextMenuTrigger } from "@/components/ui/context-menu";
-import { GitBranch } from "lucide-react";
 import { IssueContextMenu } from "./issue-context-menu";
 
 export function IssueLine({
@@ -35,19 +34,6 @@ export function IssueLine({
 							{issue.title}
 						</span>
 					</span>
-					<button
-						onClick={(e) => {
-							e.stopPropagation();
-							const branch = issue.identifier
-								? `${String(issue.identifier).toLowerCase()}`
-								: "";
-							if (branch) navigator.clipboard.writeText(branch);
-						}}
-						className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-muted/50"
-						title="Copy branch"
-					>
-						<GitBranch className="h-4 w-4" />
-					</button>
 					<div className="ml-auto flex items-center justify-end gap-2 sm:w-fit">
 						<div className="w-3 shrink-0" />
 						<div className="-space-x-5 hidden items-center justify-end transition-all duration-200 hover:space-x-1 sm:flex lg:space-x-1">
