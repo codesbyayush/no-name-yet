@@ -339,16 +339,14 @@ async function handlePullRequest(db: any, payload: any) {
 
 		// Status mapping
 		let nextStatusKey: string | null = null;
-		if (
-			action === "opened" ||
-			action === "ready_for_review" ||
-			action === "reopened"
-		) {
-			nextStatusKey = "review";
+		if (action === "opened" || action === "reopened") {
+			nextStatusKey = "in-progress";
+		} else if (action === "ready_for_review") {
+			nextStatusKey = "technical-review";
 		} else if (action === "closed" && pr.merged) {
 			const defaultBranch = repo.default_branch || "main";
 			if (pr.base?.ref?.toLowerCase() === defaultBranch.toLowerCase()) {
-				nextStatusKey = "qa"; // or "done" based on your policy
+				nextStatusKey = "resolved";
 			}
 		}
 		if (!nextStatusKey) return;
