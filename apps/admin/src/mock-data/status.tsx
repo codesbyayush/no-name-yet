@@ -2,6 +2,7 @@ import type React from "react";
 
 export interface Status {
 	id: string;
+	key: string;
 	name: string;
 	color: string;
 	icon: React.FC;
@@ -178,21 +179,41 @@ export const CompletedIcon: React.FC = () => {
 
 export const status: Status[] = [
 	{
+		key: "in-progress",
 		id: "in-progress",
 		name: "In Progress",
 		color: "#facc15",
 		icon: InProgressIcon,
 	},
 	{
+		key: "technical-review",
 		id: "technical-review",
 		name: "Technical Review",
 		color: "#22c55e",
 		icon: TechnicalReviewIcon,
 	},
-	{ id: "completed", name: "Completed", color: "#8b5cf6", icon: CompletedIcon },
-	{ id: "paused", name: "Paused", color: "#0ea5e9", icon: PausedIcon },
-	{ id: "to-do", name: "Todo", color: "#f97316", icon: ToDoIcon },
-	{ id: "backlog", name: "Backlog", color: "#ec4899", icon: BacklogIcon },
+	{
+		id: "completed",
+		key: "completed",
+		name: "Completed",
+		color: "#8b5cf6",
+		icon: CompletedIcon,
+	},
+	{
+		id: "paused",
+		key: "paused",
+		name: "Paused",
+		color: "#0ea5e9",
+		icon: PausedIcon,
+	},
+	{ id: "to-do", key: "to-do", name: "Todo", color: "#f97316", icon: ToDoIcon },
+	{
+		id: "backlog",
+		key: "backlog",
+		name: "Backlog",
+		color: "#ec4899",
+		icon: BacklogIcon,
+	},
 ];
 
 export const StatusIcon: React.FC<{ statusId: string }> = ({ statusId }) => {

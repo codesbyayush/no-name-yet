@@ -61,7 +61,7 @@ export function AssigneeSelector({
 				<PopoverTrigger asChild>
 					<Button
 						id={id}
-						className="flex items-center justify-center"
+						className="flex items-center justify-center capitalize"
 						size="sm"
 						variant="secondary"
 						role="combobox"
@@ -127,7 +127,7 @@ export function AssigneeSelector({
 										onSelect={() => handleAssigneeChange(user.id)}
 										className="flex items-center justify-between"
 									>
-										<div className="flex items-center gap-2">
+										<div className="flex items-center gap-2 capitalize">
 											<Avatar className="size-5">
 												<AvatarImage src={user.avatarUrl} alt={user.name} />
 												<AvatarFallback>{user.name.charAt(0)}</AvatarFallback>

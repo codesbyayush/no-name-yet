@@ -16,8 +16,8 @@ export const useTags = ({ enabled = true }: UseTagsOptions = {}) => {
 			const response = await adminClient.organization.tagsRouter.getAll();
 			return response;
 		},
+		staleTime: Number.POSITIVE_INFINITY,
 		enabled,
-		refetchOnWindowFocus: false,
 	});
 
 	// Transform and add server data to Zustand store
@@ -26,7 +26,7 @@ export const useTags = ({ enabled = true }: UseTagsOptions = {}) => {
 			// Transform server data to include default count
 			const transformedTags = data.map((tag) => ({
 				...tag,
-				// count: tag.count ?? 0,
+				// count: tag.count ?? 0, --> we currently don't have a way to get the count of tags efficiently
 				count: 0,
 			}));
 			addTags(transformedTags);

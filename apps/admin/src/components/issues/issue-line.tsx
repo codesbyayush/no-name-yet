@@ -38,7 +38,7 @@ export function IssueLine({
 						<div className="w-3 shrink-0" />
 						<div className="-space-x-5 hidden items-center justify-end transition-all duration-200 hover:space-x-1 sm:flex lg:space-x-1">
 							<LabelBadge label={issue.labels} />
-							{issue.project && <ProjectBadge project={issue.project} />}
+							{/* {issue.project && <ProjectBadge project={issue.project} />} */}
 						</div>
 						<span className="hidden shrink-0 text-muted-foreground text-xs sm:inline-block">
 							{format(new Date(issue.createdAt), "MMM dd")}

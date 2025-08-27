@@ -350,7 +350,7 @@ async function handlePullRequest(db: any, payload: any) {
 		} else if (action === "closed" && pr.merged) {
 			const defaultBranch = repo.default_branch || "main";
 			if (pr.base?.ref?.toLowerCase() === defaultBranch.toLowerCase()) {
-				nextStatusKey = "resolved";
+				nextStatusKey = "completed";
 			}
 		}
 		if (!nextStatusKey) return;

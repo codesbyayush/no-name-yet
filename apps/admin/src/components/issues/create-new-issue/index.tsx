@@ -100,7 +100,7 @@ export function CreateNewIssue() {
 						<div className="flex items-center gap-2 px-4 pt-4">
 							<Button size="sm" variant="outline" className="gap-1.5">
 								<Heart className="size-4 fill-orange-500 text-orange-500" />
-								<span className="font-medium">CORE</span>
+								<span className="font-medium capitalize">new issue</span>
 							</Button>
 						</div>
 					</DialogTitle>
