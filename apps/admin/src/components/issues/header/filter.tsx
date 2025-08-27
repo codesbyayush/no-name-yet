@@ -14,7 +14,7 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
-import { labels } from "@/mock-data/labels";
+import { useTags } from "@/hooks/use-tags";
 import { priorities } from "@/mock-data/priorities";
 import { projects } from "@/mock-data/projects";
 import { status as allStatus } from "@/mock-data/status";
@@ -51,6 +51,7 @@ export function Filter() {
 		filterByProject,
 	} = useIssuesStore();
 
+	const { data: tags } = useTags();
 	const { users } = useUsersStore();
 
 	return (
@@ -325,25 +326,25 @@ export function Filter() {
 						<CommandList>
 							<CommandEmpty>No labels found.</CommandEmpty>
 							<CommandGroup>
-								{labels.map((label) => (
+								{tags.map((tag) => (
 									<CommandItem
-										key={label.id}
-										value={label.id}
-										onSelect={() => toggleFilter("labels", label.id)}
+										key={tag.id}
+										value={tag.id}
+										onSelect={() => toggleFilter("labels", tag.id)}
 										className="flex items-center justify-between"
 									>
 										<div className="flex items-center gap-2">
 											<span
 												className="size-3 rounded-full"
-												style={{ backgroundColor: label.color }}
+												style={{ backgroundColor: tag.color }}
 											/>
-											{label.name}
+											{tag.name}
 										</div>
-										{filters.labels.includes(label.id) && (
+										{filters.labels.includes(tag.id) && (
 											<CheckIcon size={16} className="ml-auto" />
 										)}
 										<span className="text-muted-foreground text-xs">
-											{filterByLabel(label.id).length}
+											{filterByLabel(tag.id).length}
 										</span>
 									</CommandItem>
 								))}

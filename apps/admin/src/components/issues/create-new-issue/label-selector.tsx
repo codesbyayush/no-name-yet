@@ -14,15 +14,16 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
+import { useTags } from "@/hooks/use-tags";
 import { cn } from "@/lib/utils";
-import { type LabelInterface, labels } from "@/mock-data/labels";
 import { useIssuesStore } from "@/store/issues-store";
+import type { Tag } from "@/store/tags-store";
 import { CheckIcon, TagIcon } from "lucide-react";
 import { useId, useState } from "react";
 
 interface LabelSelectorProps {
-	selectedLabels: LabelInterface[];
-	onChange: (labels: LabelInterface[]) => void;
+	selectedLabels: Tag[];
+	onChange: (labels: Tag[]) => void;
 }
 
 export function LabelSelector({
@@ -33,15 +34,16 @@ export function LabelSelector({
 	const [open, setOpen] = useState<boolean>(false);
 
 	const { filterByLabel } = useIssuesStore();
+	const { data: tags } = useTags();
 
-	const handleLabelToggle = (label: LabelInterface) => {
-		const isSelected = selectedLabels.some((l) => l.id === label.id);
-		let newLabels: LabelInterface[];
+	const handleLabelToggle = (tag: Tag) => {
+		const isSelected = selectedLabels.some((l) => l.id === tag.id);
+		let newLabels: Tag[];
 
 		if (isSelected) {
-			newLabels = selectedLabels.filter((l) => l.id !== label.id);
+			newLabels = selectedLabels.filter((l) => l.id !== tag.id);
 		} else {
-			newLabels = [...selectedLabels, label];
+			newLabels = [...selectedLabels, tag];
 		}
 
 		onChange(newLabels);
@@ -57,7 +59,7 @@ export function LabelSelector({
 							"flex items-center justify-center",
 							selectedLabels.length === 0 && "size-7",
 						)}
-						size={selectedLabels.length > 0 ? "xs" : "icon"}
+						size={selectedLabels.length > 0 ? "sm" : "icon"}
 						variant="secondary"
 						role="combobox"
 						aria-expanded={open}
@@ -65,11 +67,11 @@ export function LabelSelector({
 						<TagIcon className="size-4" />
 						{selectedLabels.length > 0 && (
 							<div className="-space-x-0.5 flex">
-								{selectedLabels.map((label) => (
+								{selectedLabels.map((tag) => (
 									<div
-										key={label.id}
-										className={`size-3 rounded-full`}
-										style={{ backgroundColor: label.color }}
+										key={tag.id}
+										className="size-3 rounded-full"
+										style={{ backgroundColor: tag.color }}
 									/>
 								))}
 							</div>
@@ -85,29 +87,29 @@ export function LabelSelector({
 						<CommandList>
 							<CommandEmpty>No labels found.</CommandEmpty>
 							<CommandGroup>
-								{labels.map((label) => {
+								{tags.map((tag) => {
 									const isSelected = selectedLabels.some(
-										(l) => l.id === label.id,
+										(l) => l.id === tag.id,
 									);
 									return (
 										<CommandItem
-											key={label.id}
-											value={label.id}
-											onSelect={() => handleLabelToggle(label)}
+											key={tag.id}
+											value={tag.id}
+											onSelect={() => handleLabelToggle(tag)}
 											className="flex items-center justify-between"
 										>
 											<div className="flex items-center gap-2">
 												<div
-													className={`size-3 rounded-full`}
-													style={{ backgroundColor: label.color }}
+													className="size-3 rounded-full"
+													style={{ backgroundColor: tag.color }}
 												/>
-												<span>{label.name}</span>
+												<span>{tag.name}</span>
 											</div>
 											{isSelected && (
 												<CheckIcon size={16} className="ml-auto" />
 											)}
 											<span className="text-muted-foreground text-xs">
-												{filterByLabel(label.id).length}
+												{filterByLabel(tag.id).length}
 											</span>
 										</CommandItem>
 									);

@@ -9,7 +9,7 @@ import {
 	ContextMenuSubContent,
 	ContextMenuSubTrigger,
 } from "@/components/ui/context-menu";
-import { labels } from "@/mock-data/labels";
+import { useTags } from "@/hooks/use-tags";
 import { priorities } from "@/mock-data/priorities";
 import { projects } from "@/mock-data/projects";
 import { status } from "@/mock-data/status";
@@ -60,6 +60,7 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
 		updateIssue,
 		getIssueById,
 	} = useIssuesStore();
+	const { data: tags } = useTags();
 	const { users } = useUsersStore();
 	const handleStatusChange = (statusId: string) => {
 		if (!issueId) return;
@@ -90,21 +91,21 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
 		);
 	};
 
-	const handleLabelToggle = (labelId: string) => {
+	const handleLabelToggle = (tagId: string) => {
 		if (!issueId) return;
 		const issue = getIssueById(issueId);
-		const label = labels.find((l) => l.id === labelId);
+		const tag = tags.find((t) => t.id === tagId);
 
-		if (!(issue && label)) return;
+		if (!(issue && tag)) return;
 
-		const hasLabel = issue.labels.some((l) => l.id === labelId);
+		const hasTag = issue.labels.some((l) => l.id === tagId);
 
-		if (hasLabel) {
-			removeIssueLabel(issueId, labelId);
-			toast.success(`Removed label: ${label.name}`);
+		if (hasTag) {
+			removeIssueLabel(issueId, tagId);
+			toast.success(`Removed tag: ${tag.name}`);
 		} else {
-			addIssueLabel(issueId, label);
-			toast.success(`Added label: ${label.name}`);
+			addIssueLabel(issueId, tag);
+			toast.success(`Added tag: ${tag.name}`);
 		}
 	};
 
@@ -235,20 +236,20 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
 
 				<ContextMenuSub>
 					<ContextMenuSubTrigger>
-						<Tag className="mr-2 size-4" /> Labels
+						<Tag className="mr-2 size-4" /> Tags
 					</ContextMenuSubTrigger>
 					<ContextMenuSubContent className="w-48">
-						{labels.map((label) => (
+						{tags.map((tag) => (
 							<ContextMenuItem
-								key={label.id}
-								onClick={() => handleLabelToggle(label.id)}
+								key={tag.id}
+								onClick={() => handleLabelToggle(tag.id)}
 							>
 								<span
 									className="inline-block size-3 rounded-full"
-									style={{ backgroundColor: label.color }}
+									style={{ backgroundColor: tag.color }}
 									aria-hidden="true"
 								/>
-								{label.name}
+								{tag.name}
 							</ContextMenuItem>
 						))}
 					</ContextMenuSubContent>
