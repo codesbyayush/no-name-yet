@@ -75,9 +75,12 @@ export function CreateNewIssue() {
 		if (!addIssueForm.title) {
 			toast.error("Title is required");
 			return;
+		} else if (!addIssueForm.description) {
+			toast.error("Description is required");
+			return;
 		}
-		toast.success("Issue created");
 		addIssue(addIssueForm);
+		toast.success("Issue created");
 		if (!createMore) {
 			closeModal();
 		}
