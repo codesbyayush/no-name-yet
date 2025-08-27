@@ -1,3 +1,4 @@
+import { lower } from "@/db/utils";
 import { verify } from "@octokit/webhooks-methods";
 import { and, eq } from "drizzle-orm";
 import { Hono } from "hono";
@@ -331,7 +332,10 @@ async function handlePullRequest(db: any, payload: any) {
 			.from(feedback)
 			.leftJoin(boards, eq(boards.id, feedback.boardId))
 			.where(
-				and(eq(feedback.issueKey, issueKey), eq(boards.organizationId, orgId)),
+				and(
+					eq(lower(feedback.issueKey), issueKey.toLowerCase()),
+					eq(boards.organizationId, orgId),
+				),
 			)
 			.limit(1);
 		const fbId = fbRows[0]?.id;
