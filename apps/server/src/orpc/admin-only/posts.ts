@@ -13,6 +13,7 @@ import {
 import { ORPCError } from "@orpc/client";
 import {
 	type SQL,
+	aliasedTable,
 	and,
 	asc,
 	desc,
@@ -58,6 +59,8 @@ export const postsRouter = {
 				if (boardId) {
 					filters.push(eq(boards.id, boardId));
 				}
+				const creatorUser = aliasedTable(user, "creator");
+				const assigneeUser = aliasedTable(user, "assignee");
 				const posts = await context.db
 					.select({
 						id: feedback.id,
@@ -72,17 +75,17 @@ export const postsRouter = {
 						statusColor: statuses.color,
 						statusOrder: statuses.order,
 						assigneeId: feedback.assigneeId,
-						assigneeName: user.name,
-						assigneeEmail: user.email,
-						assigneeImage: user.image,
+						assigneeName: assigneeUser.name,
+						assigneeEmail: assigneeUser.email,
+						assigneeImage: assigneeUser.image,
 						dueDate: feedback.dueDate,
 						createdAt: feedback.createdAt,
 						updatedAt: feedback.updatedAt,
 						author: {
-							id: user.id,
-							name: user.name,
-							email: user.email,
-							image: user.image,
+							id: creatorUser.id,
+							name: creatorUser.name,
+							email: creatorUser.email,
+							image: creatorUser.image,
 						},
 						board: {
 							id: boards.id,
@@ -106,7 +109,8 @@ export const postsRouter = {
 							: sql`false`,
 					})
 					.from(feedback)
-					.leftJoin(user, eq(feedback.userId, user.id))
+					.leftJoin(creatorUser, eq(feedback.userId, creatorUser.id))
+					.leftJoin(assigneeUser, eq(feedback.assigneeId, assigneeUser.id))
 					.leftJoin(boards, eq(feedback.boardId, boards.id))
 					.leftJoin(statuses, eq(feedback.statusId, statuses.id))
 					.leftJoin(fc, eq(fc.feedbackId, feedback.id))
