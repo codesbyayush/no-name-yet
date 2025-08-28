@@ -17,7 +17,8 @@ import {
 import { useTags } from "@/hooks/use-tags";
 import { priorities } from "@/mock-data/priorities";
 import { projects } from "@/mock-data/projects";
-import { status as allStatus } from "@/mock-data/status";
+import { StatusIconWithKey } from "@/mock-data/status";
+import { useStatuses } from "@/react-db";
 import { useFilterStore } from "@/store/filter-store";
 import { useIssuesStore } from "@/store/issues-store";
 import { useUsersStore } from "@/store/users-store";
@@ -53,6 +54,11 @@ export function Filter() {
 
 	const { data: tags } = useTags();
 	const { users } = useUsersStore();
+	const { data: statuses } = useStatuses();
+	const allStatus = statuses?.map((status) => ({
+		...status,
+		icon: () => <StatusIconWithKey statusKey={status.key} />,
+	}));
 
 	return (
 		<Popover open={open} onOpenChange={setOpen}>

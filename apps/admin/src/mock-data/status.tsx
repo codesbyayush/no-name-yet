@@ -223,3 +223,12 @@ export const StatusIcon: React.FC<{ statusId: string }> = ({ statusId }) => {
 	const IconComponent = currentStatus.icon;
 	return <IconComponent />;
 };
+
+export const StatusIconWithKey: React.FC<{ statusKey: string }> = ({
+	statusKey,
+}) => {
+	const currentStatus = status.find((s) => s.key === statusKey);
+
+	const IconComponent = currentStatus?.icon || ToDoIcon;
+	return <IconComponent />;
+};
