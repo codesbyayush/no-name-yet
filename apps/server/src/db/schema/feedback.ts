@@ -21,7 +21,15 @@ export const priorityEnum = pgEnum("priority_enum", [
 	"medium",
 	"high",
 	"urgent",
-	"no_priority",
+	"no-priority",
+]);
+export const statusEnum = pgEnum("status_enum", [
+	"to-do",
+	"in-progress",
+	"completed",
+	"backlog",
+	"technical-review",
+	"paused",
 ]);
 
 // Feedback table - stores all feedback submissions
@@ -36,14 +44,15 @@ export const feedback = pgTable(
 		type: feedbackTypeEnum("type").notNull(),
 		title: text("title"),
 		description: text("description").notNull(),
-		statusId: text("status_id")
-			.notNull()
-			.references(() => statuses.id, { onDelete: "restrict" }),
+		status: statusEnum("status").notNull().default("to-do"),
+		statusId: text("status_id").references(() => statuses.id, {
+			onDelete: "restrict",
+		}),
 		assigneeId: text("assignee_id").references(() => user.id, {
 			onDelete: "restrict",
 		}),
 		dueDate: timestamp("due_date"),
-		priority: priorityEnum("priority").default("medium"),
+		priority: priorityEnum("priority").default("no-priority"),
 		// Need to rethink there: user can be from tenant that we do not have in our db
 		userId: text("user_id"),
 		userEmail: text("user_email"),

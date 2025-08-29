@@ -10,7 +10,6 @@ import {
 	githubRepositories,
 	githubWebhookDeliveries,
 	organization,
-	statuses,
 } from "../db/schema";
 import { getEnvFromContext } from "../lib/env";
 
@@ -355,20 +354,10 @@ async function handlePullRequest(db: any, payload: any) {
 		}
 		if (!nextStatusKey) return;
 
-		const statusRows = await db
-			.select({ id: statuses.id })
-			.from(statuses)
-			.where(
-				and(
-					eq(statuses.organizationId, orgId),
-					eq(statuses.key, nextStatusKey),
-				),
-			)
-			.limit(1);
-		const statusId = statusRows[0]?.id;
-		if (!statusId) return;
-
-		await db.update(feedback).set({ statusId }).where(eq(feedback.id, fbId));
+		await db
+			.update(feedback)
+			.set({ status: nextStatusKey })
+			.where(eq(feedback.id, fbId));
 		console.log(`Updated issue ${issueKey} to status ${nextStatusKey}`);
 	} catch (err) {
 		console.error("handlePullRequest error", err);

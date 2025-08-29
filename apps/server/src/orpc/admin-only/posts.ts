@@ -227,7 +227,9 @@ export const postsRouter = {
 				title: z.string().optional(),
 				description: z.string().min(1),
 				url: z.string().optional(),
-				priority: z.enum(["low", "medium", "high"]).default("low"),
+				priority: z
+					.enum(["low", "medium", "high", "urgent", "no-priority"])
+					.default("no-priority"),
 				tags: z.array(z.string()).default([]),
 				statusId: z.string().optional(),
 				userAgent: z.string().optional(),
@@ -346,7 +348,7 @@ export const postsRouter = {
 				description: z.string().min(1).optional(),
 				statusId: z.string().optional(),
 				priority: z
-					.enum(["low", "medium", "high", "urgent", "no_priority"])
+					.enum(["low", "medium", "high", "urgent", "no-priority"])
 					.optional(),
 				tags: z.array(z.string()).optional(),
 				url: z.string().optional(),
@@ -371,11 +373,13 @@ export const postsRouter = {
 						}),
 					)
 					.optional(),
+				assigneeId: z.string().optional(),
 			}),
 		)
 		.output(z.any())
 		.handler(async ({ input, context }) => {
 			const userId = context.session!.user.id;
+			console.log(input);
 			const [updatedPost] = await context.db
 				.update(feedback)
 				.set({
@@ -387,6 +391,9 @@ export const postsRouter = {
 					...(input.userAgent && { userAgent: input.userAgent }),
 					...(input.browserInfo && { browserInfo: input.browserInfo }),
 					...(input.attachments && { attachments: input.attachments }),
+					...(input.assigneeId && {
+						assigneeId: input.assigneeId === "-" ? null : input.assigneeId,
+					}),
 					updatedAt: new Date(),
 				})
 				.where(eq(feedback.id, input.id))

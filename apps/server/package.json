@@ -2,6 +2,9 @@
 	"name": "server",
 	"main": "src/index.ts",
 	"type": "module",
+	"exports": {
+		"./types": "./src/types/index.ts"
+	},
 	"scripts": {
 		"build": "tsc && tsc-alias",
 		"check-types": "tsc --noEmit",
@@ -32,12 +35,14 @@
 		"dotenv": "^17.1.0",
 		"drizzle-orm": "^0.44.2",
 		"drizzle-seed": "^0.3.1",
+		"drizzle-valibot": "^0.4.2",
 		"hono": "^4.7.6",
 		"pg": "^8.14.1",
 		"react": "19.1.0",
 		"react-dom": "19.1.0",
 		"react-email": "4.0.7",
 		"resend": "^4.8.0",
+		"valibot": "1.1.0",
 		"zod": "^3.25.16"
 	},
 	"devDependencies": {
