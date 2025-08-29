@@ -14,36 +14,38 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
-import { type Priority, priorities } from "@/mock-data/priorities";
-import { useIssuesStore } from "@/store/issues-store";
+import { priorities } from "@/mock-data/priorities";
+import { useUpdateIssue } from "@/react-db/issues";
 import { CheckIcon } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 
 interface PrioritySelectorProps {
-	priority: Priority;
 	issueId?: string;
+	priorityKey?: string;
 }
 
-export function PrioritySelector({ priority, issueId }: PrioritySelectorProps) {
+export function PrioritySelector({
+	issueId,
+	priorityKey,
+}: PrioritySelectorProps) {
 	const id = useId();
 	const [open, setOpen] = useState<boolean>(false);
-	const [value, setValue] = useState<string>(priority.id);
+	const [value, setValue] = useState<string>(priorityKey || "no-priority");
 
-	const { filterByPriority, updateIssuePriority } = useIssuesStore();
+	const { mutate } = useUpdateIssue();
 
 	useEffect(() => {
-		setValue(priority.id);
-	}, [priority.id]);
+		if (priorityKey) {
+			setValue(priorityKey);
+		}
+	}, [priorityKey]);
 
 	const handlePriorityChange = (priorityId: string) => {
 		setValue(priorityId);
 		setOpen(false);
 
 		if (issueId) {
-			const newPriority = priorities.find((p) => p.id === priorityId);
-			if (newPriority) {
-				updateIssuePriority(issueId, newPriority);
-			}
+			mutate(issueId, { priorityKey: priorityId });
 		}
 	};
 
@@ -92,9 +94,9 @@ export function PrioritySelector({ priority, issueId }: PrioritySelectorProps) {
 										{value === item.id && (
 											<CheckIcon size={16} className="ml-auto" />
 										)}
-										<span className="text-muted-foreground text-xs">
+										{/* <span className="text-muted-foreground text-xs">
 											{filterByPriority(item.id).length}
-										</span>
+										</span> */}
 									</CommandItem>
 								))}
 							</CommandGroup>

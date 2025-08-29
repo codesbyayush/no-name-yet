@@ -21,7 +21,7 @@ export const priorityEnum = pgEnum("priority_enum", [
 	"medium",
 	"high",
 	"urgent",
-	"no-priority",
+	"no_priority",
 ]);
 export const statusEnum = pgEnum("status_enum", [
 	"to-do",
@@ -37,12 +37,12 @@ export const feedback = pgTable(
 	"feedback",
 	{
 		id: text("id").primaryKey().default(sql`gen_random_uuid()::text`),
-		issueKey: text("issue_key"),
+		issueKey: text("issue_key").notNull().unique(),
 		boardId: text("board_id")
 			.notNull()
 			.references(() => boards.id, { onDelete: "cascade" }),
 		type: feedbackTypeEnum("type").notNull(),
-		title: text("title"),
+		title: text("title").notNull(),
 		description: text("description").notNull(),
 		status: statusEnum("status").notNull().default("to-do"),
 		statusId: text("status_id").references(() => statuses.id, {
@@ -52,7 +52,7 @@ export const feedback = pgTable(
 			onDelete: "restrict",
 		}),
 		dueDate: timestamp("due_date"),
-		priority: priorityEnum("priority").default("no-priority"),
+		priority: priorityEnum("priority").default("no_priority"),
 		// Need to rethink there: user can be from tenant that we do not have in our db
 		userId: text("user_id"),
 		userEmail: text("user_email"),

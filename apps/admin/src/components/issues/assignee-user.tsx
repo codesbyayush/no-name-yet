@@ -7,6 +7,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useUpdateIssue } from "@/react-db/issues";
 import {
 	type User,
 	statusUserColors,
@@ -16,16 +17,21 @@ import { CheckIcon, CircleUserRound, Send, UserIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 interface AssigneeUserProps {
-	user: User | null;
+	userId?: string;
+	issueId: string;
 }
 
-export function AssigneeUser({ user }: AssigneeUserProps) {
+export function AssigneeUser({ userId, issueId }: AssigneeUserProps) {
 	const [open, setOpen] = useState(false);
-	const [currentAssignee, setCurrentAssignee] = useState<User | null>(user);
+	const [currentAssignee, setCurrentAssignee] = useState<User | null>(null);
 	const { users } = useUsersStore();
+	const { mutate } = useUpdateIssue();
+	const currUser = users.find((u) => u.id === userId);
 	useEffect(() => {
-		setCurrentAssignee(user);
-	}, [user]);
+		if (currUser) {
+			setCurrentAssignee(currUser);
+		}
+	}, [currUser]);
 
 	const renderAvatar = () => {
 		if (currentAssignee) {
@@ -70,6 +76,7 @@ export function AssigneeUser({ user }: AssigneeUserProps) {
 					onClick={(e) => {
 						e.stopPropagation();
 						setCurrentAssignee(null);
+						mutate(issueId, { assignee: null });
 						setOpen(false);
 					}}
 				>
@@ -86,6 +93,18 @@ export function AssigneeUser({ user }: AssigneeUserProps) {
 						onClick={(e) => {
 							e.stopPropagation();
 							setCurrentAssignee(user);
+							mutate(issueId, {
+								assignee: {
+									id: user.id,
+									name: user.name,
+									email: user.email,
+									avatarUrl: user.avatarUrl,
+									status: user.status,
+									role: user.role,
+									joinedDate: user.joinedDate,
+									teamIds: user.teamIds,
+								},
+							});
 							setOpen(false);
 						}}
 					>

@@ -1,12 +1,10 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Issue } from "@/mock-data/issues";
 import { sortIssuesByPriority } from "@/mock-data/issues";
 import type { Status } from "@/mock-data/status";
+import { useIssuesByStatus, useUpdateIssue } from "@/react-db/issues";
 import { useCreateIssueStore } from "@/store/create-issue-store";
-import { useIssuesStore } from "@/store/issues-store";
 import { useViewStore } from "@/store/view-store";
 import { Plus } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -17,15 +15,16 @@ import { IssueLine } from "./issue-line";
 
 interface GroupIssuesProps {
 	status: Status;
-	issues: Issue[];
-	count: number;
 }
 
-export function GroupIssues({ status, issues, count }: GroupIssuesProps) {
+export function GroupIssues({ status }: GroupIssuesProps) {
 	const { viewType } = useViewStore();
 	const isViewTypeGrid = viewType === "grid";
 	const { openModal } = useCreateIssueStore();
-	const sortedIssues = sortIssuesByPriority(issues);
+	const { data: issuesByCurrentStatus } = useIssuesByStatus(status.key);
+
+	const source = issuesByCurrentStatus;
+	const sortedIssues = sortIssuesByPriority(source);
 
 	return (
 		<div
@@ -56,7 +55,9 @@ export function GroupIssues({ status, issues, count }: GroupIssuesProps) {
 					<div className="flex items-center gap-2">
 						<status.icon />
 						<span className="font-medium text-sm">{status.name}</span>
-						<span className="text-muted-foreground text-sm">{count}</span>
+						<span className="text-muted-foreground text-sm">
+							{source.length}
+						</span>
 					</div>
 
 					<Button
@@ -80,7 +81,7 @@ export function GroupIssues({ status, issues, count }: GroupIssuesProps) {
 					))}
 				</div>
 			) : (
-				<IssueGridList issues={issues} status={status} />
+				<IssueGridList issues={source} status={status} />
 			)}
 		</div>
 	);
@@ -91,14 +92,14 @@ const IssueGridList: FC<{ issues: Issue[]; status: Status }> = ({
 	status,
 }) => {
 	const ref = useRef<HTMLDivElement>(null);
-	const { updateIssueStatus } = useIssuesStore();
+	const { mutate } = useUpdateIssue();
 
 	// Set up drop functionality to accept only issue items.
 	const [{ isOver }, drop] = useDrop(() => ({
 		accept: IssueDragType,
 		drop(item: Issue, monitor) {
 			if (monitor.didDrop() && item.status.id !== status.id) {
-				updateIssueStatus(item.id, status);
+				mutate(item.id, { status });
 			}
 		},
 		collect: (monitor) => ({

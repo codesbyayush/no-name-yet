@@ -1,10 +1,10 @@
 import { Badge } from "@/components/ui/badge";
 import type { LabelInterface } from "@/mock-data/labels";
 
-export function LabelBadge({ label }: { label: LabelInterface[] }) {
+export function LabelBadge({ tags }: { tags: LabelInterface[] }) {
 	return (
 		<>
-			{label.map((l) => (
+			{tags.map((l) => (
 				<Badge
 					key={l.id}
 					variant="outline"

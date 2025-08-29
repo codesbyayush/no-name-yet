@@ -50,6 +50,13 @@
       "when": 1756123311400,
       "tag": "0006_goofy_raider",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1756491927876,
+      "tag": "0007_warm_ghost_rider",
+      "breakpoints": true
     }
   ]
 }

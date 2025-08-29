@@ -7,13 +7,18 @@ import { type User, users } from "./users";
 
 export interface Issue {
 	id: string;
+	issueKey: string;
 	identifier: string;
 	title: string;
 	description: string;
 	status: Status;
+	statusKey?: string;
+	priorityKey?: string;
 	assignee: User | null;
+	assigneeId?: string;
 	priority: Priority;
 	labels: LabelInterface[];
+	tags: LabelInterface[];
 	createdAt: string;
 	cycleId: string;
 	project?: Project;
@@ -62,7 +67,7 @@ export function sortIssuesByPriority(issues: Issue[]): Issue[] {
 		.slice()
 		.sort(
 			(a, b) =>
-				priorityOrder[a.priority.id as keyof typeof priorityOrder] -
-				priorityOrder[b.priority.id as keyof typeof priorityOrder],
+				priorityOrder[a.priorityKey as keyof typeof priorityOrder] -
+				priorityOrder[b.priorityKey as keyof typeof priorityOrder],
 		);
 }

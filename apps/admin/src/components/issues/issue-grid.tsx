@@ -30,18 +30,21 @@ function IssueDragPreview({ issue }: { issue: Issue }) {
 		<div className="w-full overflow-hidden rounded-md border border-border/50 bg-background p-3">
 			<div className="mb-2 flex items-center justify-between">
 				<div className="flex items-center gap-1.5">
-					<PrioritySelector priority={issue.priority} issueId={issue.id} />
+					<PrioritySelector
+						priorityKey={issue.priorityKey}
+						issueId={issue.id}
+					/>
 					<span className="font-medium text-muted-foreground text-xs">
-						{issue.identifier}
+						{issue.issueKey}
 					</span>
 				</div>
-				<StatusSelector status={issue.status} issueId={issue.id} />
+				<StatusSelector statusKey={issue.statusKey} issueId={issue.id} />
 			</div>
 
 			<h3 className="mb-3 line-clamp-2 font-semibold text-sm">{issue.title}</h3>
 
 			<div className="mb-3 flex min-h-[1.5rem] flex-wrap gap-1.5">
-				<LabelBadge label={issue.labels} />
+				<LabelBadge tags={issue.tags} />
 				{issue.project && <ProjectBadge project={issue.project} />}
 			</div>
 
@@ -49,7 +52,7 @@ function IssueDragPreview({ issue }: { issue: Issue }) {
 				<span className="text-muted-foreground text-xs">
 					{format(new Date(issue.createdAt), "MMM dd")}
 				</span>
-				<AssigneeUser user={issue.assignee} />
+				<AssigneeUser userId={issue.assigneeId} />
 			</div>
 		</div>
 	);
@@ -114,7 +117,7 @@ export function IssueGrid({ issue }: IssueGridProps) {
 				<motion.div
 					ref={ref}
 					className="w-full cursor-default rounded-md border border-border/50 bg-background p-3 shadow-xs"
-					layoutId={`issue-grid-${issue.identifier}`}
+					layoutId={`issue-grid-${issue.issueKey}`}
 					style={{
 						opacity: isDragging ? 0.5 : 1,
 						cursor: isDragging ? "grabbing" : "default",
@@ -122,25 +125,28 @@ export function IssueGrid({ issue }: IssueGridProps) {
 				>
 					<div className="mb-2 flex items-center justify-between">
 						<div className="flex items-center gap-1.5">
-							<PrioritySelector priority={issue.priority} issueId={issue.id} />
+							<PrioritySelector
+								priorityKey={issue.priorityKey}
+								issueId={issue.id}
+							/>
 							<span className="font-medium text-muted-foreground text-xs">
-								{issue.identifier}
+								{issue.issueKey}
 							</span>
 						</div>
-						<StatusSelector status={issue.status} issueId={issue.id} />
+						<StatusSelector statusKey={issue.statusKey} issueId={issue.id} />
 					</div>
 					<h3 className="mb-3 line-clamp-2 font-semibold text-sm">
 						{issue.title}
 					</h3>
 					<div className="mb-3 flex min-h-[1.5rem] flex-wrap gap-1.5">
-						<LabelBadge label={issue.labels} />
+						<LabelBadge tags={issue.tags} />
 						{issue.project && <ProjectBadge project={issue.project} />}
 					</div>
 					<div className="mt-auto flex items-center justify-between pt-2">
 						<span className="text-muted-foreground text-xs">
 							{format(new Date(issue.createdAt), "MMM dd")}
 						</span>
-						<AssigneeUser user={issue.assignee} />
+						<AssigneeUser userId={issue.assigneeId} />
 					</div>
 				</motion.div>
 			</ContextMenuTrigger>

@@ -10,11 +10,8 @@ import {
 	lower,
 	useLiveQuery,
 } from "@tanstack/react-db";
-import { toast } from "sonner";
 
 export type IssueDoc = Issue;
-
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const issuesCollection = createCollection<IssueDoc>(
 	queryCollectionOptions<IssueDoc, string>({
@@ -22,42 +19,29 @@ const issuesCollection = createCollection<IssueDoc>(
 		queryClient,
 		staleTime: Number.POSITIVE_INFINITY,
 		queryFn: async () => {
-			const resp = await adminClient.organization.posts.getDetailedPosts({
+			const { posts } = await adminClient.organization.posts.getDetailedPosts({
 				offset: 0,
 				take: 100,
 				sortBy: "newest",
 			});
-			const normalized = transformServerPostsToIssues(resp.posts);
-			return normalized;
+			return transformServerPostsToIssues(posts);
 		},
 		getKey: (item) => item.id,
-		onInsert: async ({ transaction }) => {},
 		onUpdate: async ({ transaction }) => {
 			const mutation = transaction.mutations[0];
-			const changes = mutation.changes as Partial<IssueDoc>;
-
-			const toServerPriority = (
-				priorityId: string,
-			): "low" | "medium" | "high" | "urgent" | "no_priority" =>
-				priorityId === "no-priority"
-					? "no_priority"
-					: (priorityId as "low" | "medium" | "high" | "urgent");
-
-			const payload: {
-				id: string;
-				title?: string;
-				description?: string;
-				statusId?: string;
-				priority?: "low" | "medium" | "high" | "urgent" | "no_priority";
-				assigneeId?: string;
-			} = { id: mutation.key as string };
-
+			const changes = mutation.changes as Partial<Issue>;
+			// map client changes → server payload
+			const toServerPriority = (id: string) =>
+				id === "no-priority" ? "no_priority" : (id as any);
+			const payload: any = { id: mutation.key as string };
 			if (changes.title) payload.title = changes.title;
 			if (changes.description) payload.description = changes.description;
-			if (changes.status) payload.statusId = changes.status.id;
+			if (changes.statusKey) payload.status = changes.statusKey;
 			if (changes.priority)
 				payload.priority = toServerPriority(changes.priority.id);
-			if (changes.assigneeId) payload.assigneeId = changes.assigneeId;
+			if (changes.priorityKey) payload.priority = changes.priorityKey;
+			if ("assignee" in changes)
+				payload.assigneeId = changes.assignee?.id ?? null;
 			await adminClient.organization.posts.update(payload);
 		},
 		onDelete: async ({ transaction }) => {
@@ -76,7 +60,7 @@ export const useIssueById = (id: string | undefined) =>
 	useLiveQuery((q) =>
 		q
 			.from({ issue: issuesCollection })
-			.where(({ issue }) => eq(issue.id, id))
+			.where(({ issue }) => (id ? eq(issue.id, id) : false))
 			.limit(1),
 	);
 
@@ -84,7 +68,9 @@ export const useIssuesByStatus = (statusId: string | undefined) =>
 	useLiveQuery((q) =>
 		q
 			.from({ issue: issuesCollection })
-			.where(({ issue }) => eq(issue.status.id, statusId)),
+			.where(({ issue }) =>
+				issue.statusKey && statusId ? eq(issue.statusKey, statusId) : false,
+			),
 	);
 
 export const useSearchIssues = (query: string | undefined) => {

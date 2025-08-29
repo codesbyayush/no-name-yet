@@ -52,10 +52,12 @@ export const transformServerPostToIssue = (
 	// Map server data to client format
 	const clientIssue: Issue = {
 		id: serverPost.id,
+		issueKey: serverPost.issueKey,
 		identifier: serverPost.issueKey || `ISSUE-${serverPost.id.slice(0, 8)}`,
 		title: serverPost.title || "Untitled Issue",
 		description: serverPost.description || "",
 		status: mapServerStatusToClient(serverPost.statusKey),
+		statusKey: serverPost.status,
 		assignee: serverPost.assigneeId
 			? {
 					id: serverPost.assigneeId,
@@ -70,7 +72,10 @@ export const transformServerPostToIssue = (
 					teamIds: [],
 				}
 			: null,
+		assigneeId: serverPost.assigneeId || undefined,
+		priorityKey: serverPost.priority,
 		priority: mapServerPriorityToClient(serverPost.priority),
+		tags: serverPost.tags || [],
 		labels: serverPost.tags?.map((tag: any) => ({
 			id: tag.id,
 			name: tag.name,

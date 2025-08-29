@@ -26,7 +26,6 @@ import { z } from "zod";
 import { adminOnlyProcedure } from "../procedures";
 
 export const postsRouter = {
-	// Composite routes from features/index.ts
 	getDetailedPosts: adminOnlyProcedure
 		.input(
 			z.object({
@@ -69,6 +68,7 @@ export const postsRouter = {
 						issueKey: feedback.issueKey,
 						boardId: feedback.boardId,
 						priority: feedback.priority,
+						status: feedback.status,
 						statusId: feedback.statusId,
 						statusKey: statuses.key,
 						statusName: statuses.name,
@@ -224,35 +224,23 @@ export const postsRouter = {
 			z.object({
 				boardId: z.string(),
 				type: z.enum(["bug", "suggestion"]).default("bug"),
-				title: z.string().optional(),
+				title: z.string(),
 				description: z.string().min(1),
-				url: z.string().optional(),
 				priority: z
-					.enum(["low", "medium", "high", "urgent", "no-priority"])
-					.default("no-priority"),
+					.enum(["low", "medium", "high", "urgent", "no_priority"])
+					.default("no_priority"),
 				tags: z.array(z.string()).default([]),
-				statusId: z.string().optional(),
-				userAgent: z.string().optional(),
-				browserInfo: z
-					.object({
-						platform: z.string().optional(),
-						language: z.string().optional(),
-						cookieEnabled: z.boolean().optional(),
-						onLine: z.boolean().optional(),
-						screenResolution: z.string().optional(),
-					})
-					.optional(),
-				attachments: z
-					.array(
-						z.object({
-							id: z.string(),
-							name: z.string(),
-							type: z.string(),
-							size: z.number(),
-							url: z.string(),
-						}),
-					)
-					.default([]),
+				status: z
+					.enum([
+						"to-do",
+						"in-progress",
+						"completed",
+						"backlog",
+						"technical-review",
+						"paused",
+					])
+					.default("to-do"),
+				issueKey: z.string().optional(),
 			}),
 		)
 		.output(z.any())
@@ -264,45 +252,19 @@ export const postsRouter = {
 				throw new ORPCError("UNAUTHORIZED");
 			}
 			try {
-				// Resolve default status if not provided
-				let statusIdToUse: string | undefined = input.statusId;
-				if (!statusIdToUse) {
-					const boardOrg = await context.db
-						.select({ organizationId: boards.organizationId })
-						.from(boards)
-						.where(eq(boards.id, input.boardId))
-						.limit(1);
-					if (!boardOrg[0]) {
-						throw new ORPCError("BAD_REQUEST");
-					}
-					const openStatus = await context.db
-						.select({ id: statuses.id })
-						.from(statuses)
-						.where(
-							and(
-								eq(statuses.organizationId, boardOrg[0].organizationId),
-								eq(statuses.key, "open"),
-							),
-						)
-						.limit(1);
-					statusIdToUse = openStatus[0]?.id as string;
-				}
 				const [newPost] = await context.db
 					.insert(feedback)
 					.values({
 						boardId: input.boardId,
+						issueKey: input.issueKey ?? "",
 						type: input.type,
 						title: input.title,
 						description: input.description,
 						userId,
 						userEmail,
 						userName,
-						userAgent: input.userAgent,
-						url: input.url,
 						priority: input.priority,
-						statusId: statusIdToUse,
-						browserInfo: input.browserInfo,
-						attachments: input.attachments,
+						status: input.status,
 						isAnonymous: false,
 					})
 					.returning();
@@ -346,9 +308,19 @@ export const postsRouter = {
 				id: z.string(),
 				title: z.string().optional(),
 				description: z.string().min(1).optional(),
+				status: z
+					.enum([
+						"to-do",
+						"in-progress",
+						"completed",
+						"backlog",
+						"technical-review",
+						"paused",
+					])
+					.optional(),
 				statusId: z.string().optional(),
 				priority: z
-					.enum(["low", "medium", "high", "urgent", "no-priority"])
+					.enum(["low", "medium", "high", "urgent", "no_priority"])
 					.optional(),
 				tags: z.array(z.string()).optional(),
 				url: z.string().optional(),
@@ -373,7 +345,7 @@ export const postsRouter = {
 						}),
 					)
 					.optional(),
-				assigneeId: z.string().optional(),
+				assigneeId: z.string().optional().nullable(),
 			}),
 		)
 		.output(z.any())
@@ -386,13 +358,14 @@ export const postsRouter = {
 					...(input.title && { title: input.title }),
 					...(input.description && { description: input.description }),
 					...(input.statusId && { statusId: input.statusId }),
+					...(input.status && { status: input.status }),
 					...(input.priority && { priority: input.priority }),
 					...(input.url && { url: input.url }),
 					...(input.userAgent && { userAgent: input.userAgent }),
 					...(input.browserInfo && { browserInfo: input.browserInfo }),
 					...(input.attachments && { attachments: input.attachments }),
-					...(input.assigneeId && {
-						assigneeId: input.assigneeId === "-" ? null : input.assigneeId,
+					...(input.assigneeId !== undefined && {
+						assigneeId: input.assigneeId,
 					}),
 					updatedAt: new Date(),
 				})
@@ -422,4 +395,14 @@ export const postsRouter = {
 			}
 			return { success: true, deletedPost };
 		}),
+
+	getAll: adminOnlyProcedure.handler(async ({ context }) => {
+		try {
+			const posts = await context.db.select().from(feedback);
+			return posts;
+		} catch (error) {
+			console.error(error);
+			throw new ORPCError("INTERNAL_SERVER_ERROR");
+		}
+	}),
 };

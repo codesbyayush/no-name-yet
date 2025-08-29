@@ -13,26 +13,27 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/popover";
 import { renderStatusIcon } from "@/lib/status-utils";
-import { type Status, status as allStatus } from "@/mock-data/status";
-import { useIssuesStore } from "@/store/issues-store";
+import { status as allStatus } from "@/mock-data/status";
+import { useUpdateIssue } from "@/react-db/issues";
 import { CheckIcon } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 
 interface StatusSelectorProps {
-	status: Status;
 	issueId: string;
+	statusKey?: string;
 }
 
-export function StatusSelector({ status, issueId }: StatusSelectorProps) {
+export function StatusSelector({ issueId, statusKey }: StatusSelectorProps) {
 	const id = useId();
 	const [open, setOpen] = useState<boolean>(false);
-	const [value, setValue] = useState<string>(status.id);
-
-	const { updateIssueStatus, filterByStatus } = useIssuesStore();
+	const [value, setValue] = useState<string>(statusKey || "to-do");
+	const { mutate } = useUpdateIssue();
 
 	useEffect(() => {
-		setValue(status.id);
-	}, [status.id]);
+		if (statusKey) {
+			setValue(statusKey);
+		}
+	}, [statusKey]);
 
 	const handleStatusChange = (statusId: string) => {
 		setValue(statusId);
@@ -41,7 +42,7 @@ export function StatusSelector({ status, issueId }: StatusSelectorProps) {
 		if (issueId) {
 			const newStatus = allStatus.find((s) => s.id === statusId);
 			if (newStatus) {
-				updateIssueStatus(issueId, newStatus);
+				mutate(issueId, { statusKey: newStatus.key });
 			}
 		}
 	};
@@ -85,7 +86,7 @@ export function StatusSelector({ status, issueId }: StatusSelectorProps) {
 											<CheckIcon size={16} className="ml-auto" />
 										)}
 										<span className="text-muted-foreground text-xs">
-											{filterByStatus(item.id).length}
+											{/* {filterByStatus(item.id).length} */}
 										</span>
 									</CommandItem>
 								))}

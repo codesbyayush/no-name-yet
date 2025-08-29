@@ -2,6 +2,7 @@ import { useIssuesInfinite } from "@/hooks/use-issues-infinite";
 import { cn } from "@/lib/utils";
 import type { Issue } from "@/mock-data/issues";
 import { status } from "@/mock-data/status";
+import { useIssues } from "@/react-db/issues";
 import { useFilterStore } from "@/store/filter-store";
 import { useIssuesStore } from "@/store/issues-store";
 import { useSearchStore } from "@/store/search-store";
@@ -74,12 +75,7 @@ const FilteredIssuesView: FC<{
 				)}
 			>
 				{status.map((statusItem) => (
-					<GroupIssues
-						key={statusItem.id}
-						status={statusItem}
-						issues={filteredIssuesByStatus[statusItem.id] || []}
-						count={filteredIssuesByStatus[statusItem.id]?.length || 0}
-					/>
+					<GroupIssues key={statusItem.id} status={statusItem} />
 				))}
 			</div>
 		</DndProvider>
@@ -89,7 +85,7 @@ const FilteredIssuesView: FC<{
 const GroupIssuesListView: FC<{
 	isViewTypeGrid: boolean;
 }> = ({ isViewTypeGrid = false }) => {
-	const { issuesByStatus } = useIssuesStore();
+	const { data: issuesByStatus } = useIssues();
 	const { isLoading, error, lastElementRef, hasNextPage, isFetchingNextPage } =
 		useIssuesInfinite();
 
@@ -102,12 +98,7 @@ const GroupIssuesListView: FC<{
 				)}
 			>
 				{status.map((statusItem) => (
-					<GroupIssues
-						key={statusItem.id}
-						status={statusItem}
-						issues={issuesByStatus[statusItem.id] || []}
-						count={issuesByStatus[statusItem.id]?.length || 0}
-					/>
+					<GroupIssues key={statusItem.id} status={statusItem} />
 				))}
 
 				{/* Intersection observer element for infinite loading */}
