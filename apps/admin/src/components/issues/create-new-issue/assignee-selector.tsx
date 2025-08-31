@@ -1,153 +1,153 @@
-"use client";
+'use client';
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { CheckIcon, UserCircle } from 'lucide-react';
+import { useEffect, useId, useState } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-} from "@/components/ui/command";
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
 import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
-import { useIssues } from "@/react-db/issues";
-import { useUsers } from "@/react-db/users";
-import type { User } from "@/store/users-store";
-import { CheckIcon, UserCircle } from "lucide-react";
-import { useEffect, useId, useState } from "react";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { useIssues } from '@/react-db/issues';
+import { useUsers } from '@/react-db/users';
+import type { User } from '@/store/users-store';
 
 interface AssigneeSelectorProps {
-	assigneeId: string | undefined;
-	onChange: (assignee?: string) => void;
+  assigneeId: string | undefined;
+  onChange: (assignee?: string) => void;
 }
 
 export function AssigneeSelector({
-	assigneeId,
-	onChange,
+  assigneeId,
+  onChange,
 }: AssigneeSelectorProps) {
-	const id = useId();
-	const [open, setOpen] = useState<boolean>(false);
-	const [value, setValue] = useState<string | null>(assigneeId || null);
+  const id = useId();
+  const [open, setOpen] = useState<boolean>(false);
+  const [value, setValue] = useState<string | null>(assigneeId || null);
 
-	const { data: issues } = useIssues();
-	const { data: users } = useUsers();
+  const { data: issues } = useIssues();
+  const { data: users } = useUsers();
 
-	useEffect(() => {
-		setValue(assigneeId || null);
-	}, [assigneeId]);
+  useEffect(() => {
+    setValue(assigneeId || null);
+  }, [assigneeId]);
 
-	const handleAssigneeChange = (userId: string) => {
-		if (userId === "unassigned") {
-			setValue(null);
-			onChange();
-		} else {
-			setValue(userId);
-			const newAssignee = users?.find((u) => u.id === userId) || null;
-			if (newAssignee) {
-				onChange(newAssignee.id);
-			}
-		}
-		setOpen(false);
-	};
+  const handleAssigneeChange = (userId: string) => {
+    if (userId === 'unassigned') {
+      setValue(null);
+      onChange();
+    } else {
+      setValue(userId);
+      const newAssignee = users?.find((u) => u.id === userId) || null;
+      if (newAssignee) {
+        onChange(newAssignee.id);
+      }
+    }
+    setOpen(false);
+  };
 
-	return (
-		<div className="*:not-first:mt-2">
-			<Popover open={open} onOpenChange={setOpen}>
-				<PopoverTrigger asChild>
-					<Button
-						id={id}
-						className="flex items-center justify-center capitalize"
-						size="sm"
-						variant="secondary"
-						role="combobox"
-						aria-expanded={open}
-					>
-						{value ? (
-							(() => {
-								const selectedUser = users?.find((user) => user.id === value);
-								if (selectedUser) {
-									return (
-										<Avatar className="size-5">
-											<AvatarImage
-												src={selectedUser.image || ""}
-												alt={selectedUser.name}
-											/>
-											<AvatarFallback>
-												{selectedUser.name.charAt(0)}
-											</AvatarFallback>
-										</Avatar>
-									);
-								}
-								return <UserCircle className="size-5" />;
-							})()
-						) : (
-							<UserCircle className="size-5" />
-						)}
-						<span>
-							{value
-								? users?.find((user) => user.id === value)?.name
-								: "Unassigned"}
-						</span>
-					</Button>
-				</PopoverTrigger>
-				<PopoverContent
-					className="w-full min-w-[var(--radix-popper-anchor-width)] border-input p-0"
-					align="start"
-				>
-					<Command>
-						<CommandInput placeholder="Assign to..." />
-						<CommandList>
-							<CommandEmpty>No users found.</CommandEmpty>
-							<CommandGroup>
-								<CommandItem
-									value="unassigned"
-									onSelect={() => handleAssigneeChange("unassigned")}
-									className="flex items-center justify-between"
-								>
-									<div className="flex items-center gap-2">
-										<UserCircle className="size-5" />
-										Unassigned
-									</div>
-									{value === null && (
-										<CheckIcon size={16} className="ml-auto" />
-									)}
-									<span className="text-muted-foreground text-xs">
-										{issues?.filter((is) => is.assignee === null).length ?? 0}
-									</span>
-								</CommandItem>
-								{(users ?? []).map((user) => (
-									<CommandItem
-										key={user.id}
-										value={user.id}
-										onSelect={() => handleAssigneeChange(user.id)}
-										className="flex items-center justify-between"
-									>
-										<div className="flex items-center gap-2 capitalize">
-											<Avatar className="size-5">
-												<AvatarImage src={user.image || ""} alt={user.name} />
-												<AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-											</Avatar>
-											{user.name}
-										</div>
-										{value === user.id && (
-											<CheckIcon size={16} className="ml-auto" />
-										)}
-										<span className="text-muted-foreground text-xs">
-											{issues?.filter((is) => is.assignee?.id === user.id)
-												.length ?? 0}
-										</span>
-									</CommandItem>
-								))}
-							</CommandGroup>
-						</CommandList>
-					</Command>
-				</PopoverContent>
-			</Popover>
-		</div>
-	);
+  return (
+    <div className="*:not-first:mt-2">
+      <Popover onOpenChange={setOpen} open={open}>
+        <PopoverTrigger asChild>
+          <Button
+            aria-expanded={open}
+            className="flex items-center justify-center capitalize"
+            id={id}
+            role="combobox"
+            size="sm"
+            variant="secondary"
+          >
+            {value ? (
+              (() => {
+                const selectedUser = users?.find((user) => user.id === value);
+                if (selectedUser) {
+                  return (
+                    <Avatar className="size-5">
+                      <AvatarImage
+                        alt={selectedUser.name}
+                        src={selectedUser.image || ''}
+                      />
+                      <AvatarFallback>
+                        {selectedUser.name.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                  );
+                }
+                return <UserCircle className="size-5" />;
+              })()
+            ) : (
+              <UserCircle className="size-5" />
+            )}
+            <span>
+              {value
+                ? users?.find((user) => user.id === value)?.name
+                : 'Unassigned'}
+            </span>
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent
+          align="start"
+          className="w-full min-w-[var(--radix-popper-anchor-width)] border-input p-0"
+        >
+          <Command>
+            <CommandInput placeholder="Assign to..." />
+            <CommandList>
+              <CommandEmpty>No users found.</CommandEmpty>
+              <CommandGroup>
+                <CommandItem
+                  className="flex items-center justify-between"
+                  onSelect={() => handleAssigneeChange('unassigned')}
+                  value="unassigned"
+                >
+                  <div className="flex items-center gap-2">
+                    <UserCircle className="size-5" />
+                    Unassigned
+                  </div>
+                  {value === null && (
+                    <CheckIcon className="ml-auto" size={16} />
+                  )}
+                  <span className="text-muted-foreground text-xs">
+                    {issues?.filter((is) => is.assignee === null).length ?? 0}
+                  </span>
+                </CommandItem>
+                {(users ?? []).map((user) => (
+                  <CommandItem
+                    className="flex items-center justify-between"
+                    key={user.id}
+                    onSelect={() => handleAssigneeChange(user.id)}
+                    value={user.id}
+                  >
+                    <div className="flex items-center gap-2 capitalize">
+                      <Avatar className="size-5">
+                        <AvatarImage alt={user.name} src={user.image || ''} />
+                        <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      {user.name}
+                    </div>
+                    {value === user.id && (
+                      <CheckIcon className="ml-auto" size={16} />
+                    )}
+                    <span className="text-muted-foreground text-xs">
+                      {issues?.filter((is) => is.assignee?.id === user.id)
+                        .length ?? 0}
+                    </span>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
 }

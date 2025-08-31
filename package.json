@@ -1,33 +1,37 @@
 {
-	"name": "my-better-t-app",
-	"private": true,
-	"workspaces": ["apps/*", "packages/*"],
-	"scripts": {
-		"check": "biome check --write .",
-		"dev": "bun run --filter '*' dev",
-		"build": "bun run --filter '*' build",
-		"check-types": "bun run --filter '*' check-types",
-		"dev:native": "bun run --filter native dev",
-		"dev:web": "bun run --filter web dev",
-		"dev:server": "bun run --filter server dev",
-		"db:push": "bun run --filter server db:push",
-		"db:studio": "bun run --filter server db:studio",
-		"db:generate": "bun run --filter server db:generate",
-		"db:migrate": "bun run --filter server db:migrate"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "1.9.4",
-		"@types/node": "^24.0.10",
-		"typescript": "^5.8.3"
-	},
-	"overrides": {
-		"@tanstack/db": "0.1.1",
-		"@tanstack/react-db": "0.1.1",
-		"@tanstack/query-db-collection": "0.1.1",
-		"lucide-react": "0.525.0"
-	},
-	"packageManager": "bun@1.2.10",
-	"dependencies": {
-		"valibot": "1.1.0"
-	}
+  "name": "my-better-t-app",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "bun run --filter '*' dev",
+    "build": "bun run --filter '*' build",
+    "check-types": "bun run --filter '*' check-types",
+    "dev:native": "bun run --filter native dev",
+    "dev:web": "bun run --filter web dev",
+    "dev:server": "bun run --filter server dev",
+    "db:push": "bun run --filter server db:push",
+    "db:studio": "bun run --filter server db:studio",
+    "db:generate": "bun run --filter server db:generate",
+    "db:migrate": "bun run --filter server db:migrate"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.2.2",
+    "@types/node": "^24.0.10",
+    "husky": "^9.1.7",
+    "typescript": "^5.8.3",
+    "ultracite": "5.2.16"
+  },
+  "overrides": {
+    "@tanstack/db": "0.1.1",
+    "@tanstack/react-db": "0.1.1",
+    "@tanstack/query-db-collection": "0.1.1",
+    "lucide-react": "0.525.0"
+  },
+  "packageManager": "bun@1.2.10",
+  "dependencies": {
+    "valibot": "1.1.0"
+  }
 }

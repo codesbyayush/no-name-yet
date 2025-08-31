@@ -1,20 +1,20 @@
-import { useEffect, useMemo, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useQuery } from '@tanstack/react-query';
+import { useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
-import { toast } from "sonner";
-import { Switch } from "@/components/ui/switch";
-import { useQuery } from "@tanstack/react-query";
-import { client } from "@/utils/orpc";
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
+import { cn } from '@/lib/utils';
+import { client } from '@/utils/orpc';
 
 type StatusItem = {
   key: string;
@@ -31,19 +31,19 @@ interface StatusFlowEditorProps {
 }
 
 const DEFAULT_STATUSES: StatusItem[] = [
-  { key: "open", label: "Open", color: "#3b82f6", order: 0, isDefault: true },
-  { key: "in_progress", label: "In Progress", color: "#f59e0b", order: 1 },
-  { key: "resolved", label: "Resolved", color: "#10b981", order: 2 },
-  { key: "closed", label: "Closed", color: "#6b7280", order: 3 },
+  { key: 'open', label: 'Open', color: '#3b82f6', order: 0, isDefault: true },
+  { key: 'in_progress', label: 'In Progress', color: '#f59e0b', order: 1 },
+  { key: 'resolved', label: 'Resolved', color: '#10b981', order: 2 },
+  { key: 'closed', label: 'Closed', color: '#6b7280', order: 3 },
 ];
 
 export function StatusFlowEditor({
   onSuccess,
   onError,
-  buttonText = "Save Status Flow & Continue",
+  buttonText = 'Save Status Flow & Continue',
 }: StatusFlowEditorProps) {
   const { data, isLoading } = useQuery({
-    queryKey: ["status-flow"],
+    queryKey: ['status-flow'],
     queryFn: async () => {
       // If you add dedicated getStatusFlow ORPC, use that here.
       // For now, attempt to fetch from a custom endpoint if available; otherwise fall back.
@@ -66,7 +66,7 @@ export function StatusFlowEditor({
 
   const previewStatuses = useMemo(
     () => [...statuses].sort((a, b) => a.order - b.order),
-    [statuses],
+    [statuses]
   );
 
   const handleLabelChange = (index: number, value: string) => {
@@ -85,10 +85,10 @@ export function StatusFlowEditor({
     });
   };
 
-  const handleMove = (index: number, direction: "up" | "down") => {
+  const handleMove = (index: number, direction: 'up' | 'down') => {
     setStatuses((prev) => {
       const next = [...prev];
-      const newIndex = direction === "up" ? index - 1 : index + 1;
+      const newIndex = direction === 'up' ? index - 1 : index + 1;
       if (newIndex < 0 || newIndex >= next.length) return prev;
 
       // swap
@@ -103,13 +103,13 @@ export function StatusFlowEditor({
 
   const setDefault = (index: number) => {
     setStatuses((prev) =>
-      prev.map((s, i) => ({ ...s, isDefault: i === index })),
+      prev.map((s, i) => ({ ...s, isDefault: i === index }))
     );
   };
 
   const resetDefaults = () => {
     setStatuses(DEFAULT_STATUSES);
-    toast.message("Reset to default statuses");
+    toast.message('Reset to default statuses');
   };
 
   const handleSubmit = async () => {
@@ -118,13 +118,13 @@ export function StatusFlowEditor({
       // await client.updateStatusFlow({ statuses });
 
       // Mark onboarding step as complete
-      await client.completeOnboardingStep({ step: "status-flow" });
+      await client.completeOnboardingStep({ step: 'status-flow' });
 
-      toast.success("Status flow saved");
+      toast.success('Status flow saved');
       onSuccess?.();
     } catch (err) {
       const e =
-        err instanceof Error ? err : new Error("Failed to save status flow");
+        err instanceof Error ? err : new Error('Failed to save status flow');
       toast.error(e.message);
       onError?.(e);
     }
@@ -148,8 +148,8 @@ export function StatusFlowEditor({
             <div className="space-y-2">
               {previewStatuses.map((s) => (
                 <div
-                  key={s.key}
                   className="flex items-center justify-between rounded-lg border bg-muted px-3 py-2"
+                  key={s.key}
                 >
                   <div className="flex items-center gap-2">
                     <span
@@ -173,30 +173,30 @@ export function StatusFlowEditor({
             <div className="space-y-4">
               {statuses.map((s, i) => (
                 <div
-                  key={s.key}
                   className={cn(
-                    "rounded-xl border p-3",
-                    "bg-card text-card-foreground",
+                    'rounded-xl border p-3',
+                    'bg-card text-card-foreground'
                   )}
+                  key={s.key}
                 >
                   <div className="flex items-center justify-between">
                     <div className="font-medium text-sm">{s.key}</div>
                     <div className="flex items-center gap-2">
                       <Button
+                        disabled={i === 0}
+                        onClick={() => handleMove(i, 'up')}
+                        size="xs"
                         type="button"
                         variant="outline"
-                        size="xs"
-                        onClick={() => handleMove(i, "up")}
-                        disabled={i === 0}
                       >
                         ↑
                       </Button>
                       <Button
+                        disabled={i === statuses.length - 1}
+                        onClick={() => handleMove(i, 'down')}
+                        size="xs"
                         type="button"
                         variant="outline"
-                        size="xs"
-                        onClick={() => handleMove(i, "down")}
-                        disabled={i === statuses.length - 1}
                       >
                         ↓
                       </Button>
@@ -207,24 +207,24 @@ export function StatusFlowEditor({
                     <div className="md:col-span-3">
                       <Label className="text-xs">Label</Label>
                       <Input
-                        value={s.label}
                         onChange={(e) => handleLabelChange(i, e.target.value)}
                         placeholder="Label"
+                        value={s.label}
                       />
                     </div>
                     <div className="md:col-span-2">
                       <Label className="text-xs">Color</Label>
                       <div className="flex items-center gap-2">
                         <Input
+                          className="h-10 w-16 p-1"
+                          onChange={(e) => handleColorChange(i, e.target.value)}
                           type="color"
                           value={s.color}
-                          onChange={(e) => handleColorChange(i, e.target.value)}
-                          className="h-10 w-16 p-1"
                         />
                         <Input
-                          value={s.color}
                           onChange={(e) => handleColorChange(i, e.target.value)}
                           placeholder="#10b981"
+                          value={s.color}
                         />
                       </div>
                     </div>
@@ -248,10 +248,10 @@ export function StatusFlowEditor({
             </div>
 
             <div className="mt-4 flex items-center justify-between">
-              <Button type="button" variant="ghost" onClick={resetDefaults}>
+              <Button onClick={resetDefaults} type="button" variant="ghost">
                 Reset to defaults
               </Button>
-              <Button type="button" onClick={handleSubmit}>
+              <Button onClick={handleSubmit} type="button">
                 {buttonText}
               </Button>
             </div>

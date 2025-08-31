@@ -1,23 +1,23 @@
-import type { account, session, user, verification } from "../db/schema/auth";
-import type { boards } from "../db/schema/boards";
-import type { changelog } from "../db/schema/changelog";
-import type { comments } from "../db/schema/comments";
-import type { feedback } from "../db/schema/feedback";
-import type { feedbackCounters } from "../db/schema/feedback-counter";
-import type { feedbackTags } from "../db/schema/feedback-tags";
+import type { account, session, user, verification } from '../db/schema/auth';
+import type { boards } from '../db/schema/boards';
+import type { changelog } from '../db/schema/changelog';
+import type { comments } from '../db/schema/comments';
+import type { feedback } from '../db/schema/feedback';
+import type { feedbackCounters } from '../db/schema/feedback-counter';
+import type { feedbackTags } from '../db/schema/feedback-tags';
 import type {
-	githubInstallations,
-	githubRepositories,
-	githubWebhookDeliveries,
-} from "../db/schema/github";
-import type { issueSequences } from "../db/schema/issue-sequences";
+  githubInstallations,
+  githubRepositories,
+  githubWebhookDeliveries,
+} from '../db/schema/github';
+import type { issueSequences } from '../db/schema/issue-sequences';
 import type {
-	invitation,
-	member,
-	organization,
-} from "../db/schema/organization";
-import type { tags } from "../db/schema/tags";
-import type { votes } from "../db/schema/votes";
+  invitation,
+  member,
+  organization,
+} from '../db/schema/organization';
+import type { tags } from '../db/schema/tags';
+import type { votes } from '../db/schema/votes';
 
 // Auth
 export type User = typeof user.$inferSelect;
@@ -68,7 +68,7 @@ export type GithubRepository = typeof githubRepositories.$inferSelect;
 export type NewGithubRepository = typeof githubRepositories.$inferInsert;
 export type GithubWebhookDelivery = typeof githubWebhookDeliveries.$inferSelect;
 export type NewGithubWebhookDelivery =
-	typeof githubWebhookDeliveries.$inferInsert;
+  typeof githubWebhookDeliveries.$inferInsert;
 
 // Issue sequences
 export type IssueSequence = typeof issueSequences.$inferSelect;

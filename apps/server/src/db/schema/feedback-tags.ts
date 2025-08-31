@@ -1,30 +1,30 @@
 import {
-	index,
-	pgTable,
-	primaryKey,
-	text,
-	timestamp,
-} from "drizzle-orm/pg-core";
-import { feedback } from "./feedback";
-import { tags } from "./tags";
+  index,
+  pgTable,
+  primaryKey,
+  text,
+  timestamp,
+} from 'drizzle-orm/pg-core';
+import { feedback } from './feedback';
+import { tags } from './tags';
 
 // Junction table for many-to-many between feedback and tags
 export const feedbackTags = pgTable(
-	"feedback_tags",
-	{
-		feedbackId: text("feedback_id")
-			.notNull()
-			.references(() => feedback.id, { onDelete: "cascade" }),
-		tagId: text("tag_id")
-			.notNull()
-			.references(() => tags.id, { onDelete: "cascade" }),
-		createdAt: timestamp("created_at").defaultNow().notNull(),
-	},
-	(table) => ({
-		pk: primaryKey({ columns: [table.feedbackId, table.tagId] }),
-		idxFeedback: index("idx_feedback_tags_feedback").on(table.feedbackId),
-		idxTag: index("idx_feedback_tags_tag").on(table.tagId),
-	}),
+  'feedback_tags',
+  {
+    feedbackId: text('feedback_id')
+      .notNull()
+      .references(() => feedback.id, { onDelete: 'cascade' }),
+    tagId: text('tag_id')
+      .notNull()
+      .references(() => tags.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.feedbackId, table.tagId] }),
+    idxFeedback: index('idx_feedback_tags_feedback').on(table.feedbackId),
+    idxTag: index('idx_feedback_tags_tag').on(table.tagId),
+  })
 );
 
 export type FeedbackTag = typeof feedbackTags.$inferSelect;

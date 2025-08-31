@@ -1,15 +1,15 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { motion } from "motion/react";
+import { createFileRoute } from '@tanstack/react-router';
+import { motion } from 'motion/react';
 
-export const Route = createFileRoute("/_landing/about")({
+export const Route = createFileRoute('/_landing/about')({
   component: AboutPage,
   head: () => ({
     meta: [
-      { title: "About – Better T-App" },
+      { title: 'About – Better T-App' },
       {
-        name: "description",
+        name: 'description',
         content:
-          "Learn about our mission to help teams collect feedback, prioritize with clarity, and close the loop.",
+          'Learn about our mission to help teams collect feedback, prioritize with clarity, and close the loop.',
       },
     ],
   }),
@@ -31,18 +31,18 @@ function AboutPage() {
       <section className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
         <div className="border-white/10 border-b bg-[linear-gradient(180deg,rgba(160,120,255,0.18),rgba(160,120,255,0)_70%)] p-8 md:p-10">
           <motion.h1
-            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
             className="font-bold text-3xl md:text-5xl"
+            initial={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.3 }}
           >
             About Better T-App
           </motion.h1>
           <motion.p
-            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
             className="mt-3 max-w-2xl text-neutral-200"
+            initial={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
           >
             We’re building the feedback OS for modern product teams—collect,
             prioritize, and close the loop, beautifully.
@@ -121,8 +121,8 @@ function AboutPage() {
                 great people and partners.
               </p>
               <a
-                href="/signup"
                 className="mt-4 inline-flex items-center rounded-lg border border-white/15 bg-white/10 px-4 py-2 text-sm hover:bg-white/20"
+                href="/signup"
               >
                 Get started
               </a>
@@ -133,8 +133,8 @@ function AboutPage() {
                 Prefer a quick chat? We’ll add calendar booking soon.
               </p>
               <a
-                href="/contact"
                 className="mt-4 inline-flex items-center rounded-lg border border-white/15 bg-white/10 px-4 py-2 text-sm hover:bg-white/20"
+                href="/contact"
               >
                 Go to contact
               </a>

@@ -6,4 +6,4 @@ export type RequiredOnly<T, K extends keyof T> = Required<Pick<T, K>>;
 
 // Makes only keys K optional; others stay as-is
 export type OptionalOnly<T, K extends keyof T> = Omit<T, K> &
-	Partial<Pick<T, K>>;
+  Partial<Pick<T, K>>;

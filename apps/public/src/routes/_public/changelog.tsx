@@ -1,12 +1,12 @@
-import { ChangelogSkeleton } from "@/components/loading";
-import { client } from "@/utils/orpc";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef } from "react";
-import "@blocknote/shadcn/style.css";
-import "@blocknote/core/fonts/inter.css";
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { createFileRoute } from '@tanstack/react-router';
+import { useEffect, useRef } from 'react';
+import { ChangelogSkeleton } from '@/components/loading';
+import { client } from '@/utils/orpc';
+import '@blocknote/shadcn/style.css';
+import '@blocknote/core/fonts/inter.css';
 
-export const Route = createFileRoute("/_public/changelog")({
+export const Route = createFileRoute('/_public/changelog')({
   component: ChangelogPage,
 });
 
@@ -22,7 +22,7 @@ function ChangelogPage() {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ["public-changelogs"],
+    queryKey: ['public-changelogs'],
     queryFn: ({ pageParam = 0 }) =>
       client.changelog.listPublishedChangelogs({
         offset: pageParam,
@@ -31,7 +31,7 @@ function ChangelogPage() {
     getNextPageParam: (lastPage, allPages) => {
       const totalLoaded = allPages.reduce(
         (acc, page) => acc + page.changelogs.length,
-        0,
+        0
       );
       return lastPage.pagination.hasMore ? totalLoaded : undefined;
     },
@@ -47,7 +47,7 @@ function ChangelogPage() {
           fetchNextPage();
         }
       },
-      { threshold: 0.1 },
+      { threshold: 0.1 }
     );
 
     const currentRef = loadMoreRef.current;
@@ -78,7 +78,7 @@ function ChangelogPage() {
                 {Array.from({ length: 3 }, (_, i) => ({
                   id: `changelog-skeleton-${i}`,
                 })).map(({ id }) => (
-                  <div key={id} className={""}>
+                  <div className={''} key={id}>
                     <ChangelogSkeleton />
                   </div>
                 ))}
@@ -211,7 +211,7 @@ function ChangelogPage() {
 
             <div className="space-y-0 divide-y divide-muted-foreground/5">
               {changelogEntries.map((entry, i) => (
-                <div key={entry.id} className="space-y-3 p-6">
+                <div className="space-y-3 p-6" key={entry.id}>
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex min-w-0 items-center gap-3">
                       <h2 className="truncate font-semibold text-card-foreground text-xl">
@@ -226,12 +226,12 @@ function ChangelogPage() {
                     <time className="shrink-0 text-muted-foreground text-sm">
                       {entry.publishedAt &&
                         new Date(entry.publishedAt).toLocaleDateString(
-                          "en-US",
+                          'en-US',
                           {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          },
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                          }
                         )}
                     </time>
                   </div>
@@ -265,9 +265,9 @@ function ChangelogPage() {
                     <div className="mt-2 flex items-center gap-2 text-muted-foreground text-sm">
                       {entry.author.image && (
                         <img
-                          src={entry.author.image}
-                          alt={entry.author.name || "Author"}
+                          alt={entry.author.name || 'Author'}
                           className="h-5 w-5 rounded-full"
+                          src={entry.author.image}
                         />
                       )}
                       <span className="truncate">By {entry.author.name}</span>
@@ -278,7 +278,7 @@ function ChangelogPage() {
             </div>
 
             {/* Infinite scroll trigger */}
-            <div ref={loadMoreRef} className="flex justify-center py-4">
+            <div className="flex justify-center py-4" ref={loadMoreRef}>
               {isFetchingNextPage && (
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <div className="h-4 w-4 animate-spin rounded-full border-current border-b-2" />

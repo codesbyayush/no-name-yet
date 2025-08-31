@@ -1,9 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from '@tanstack/react-router';
 
-export const Route = createFileRoute("/_landing/contact")({
+export const Route = createFileRoute('/_landing/contact')({
   component: ContactPage,
   head: () => ({
-    meta: [{ title: "Contact – Better T-App" }],
+    meta: [{ title: 'Contact – Better T-App' }],
   }),
 });
 
@@ -24,14 +24,14 @@ function ContactPage() {
             <h3 className="font-semibold text-lg">Contact options</h3>
             <ul className="mt-3 space-y-2 text-neutral-300 text-sm">
               <li>
-                Forums:{" "}
-                <a href="/forums" className="underline">
+                Forums:{' '}
+                <a className="underline" href="/forums">
                   Join the discussion
                 </a>
               </li>
               <li>
-                Email:{" "}
-                <a href="mailto:hello@example.com" className="underline">
+                Email:{' '}
+                <a className="underline" href="mailto:hello@example.com">
                   hello@example.com
                 </a>
               </li>
@@ -43,8 +43,8 @@ function ContactPage() {
               We’ll link a calendar here soon for instant slot booking.
             </p>
             <a
-              href="#"
               className="mt-4 inline-flex items-center rounded-lg border border-white/15 bg-white/10 px-4 py-2 text-sm hover:bg-white/20"
+              href="#"
             >
               Calendar coming soon
             </a>
