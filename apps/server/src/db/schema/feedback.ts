@@ -21,7 +21,7 @@ export const priorityEnum = pgEnum("priority_enum", [
 	"medium",
 	"high",
 	"urgent",
-	"no_priority",
+	"no-priority",
 ]);
 export const statusEnum = pgEnum("status_enum", [
 	"to-do",
@@ -52,7 +52,7 @@ export const feedback = pgTable(
 			onDelete: "restrict",
 		}),
 		dueDate: timestamp("due_date"),
-		priority: priorityEnum("priority").default("no_priority"),
+		priority: priorityEnum("priority").default("low"),
 		// Need to rethink there: user can be from tenant that we do not have in our db
 		userId: text("user_id"),
 		userEmail: text("user_email"),

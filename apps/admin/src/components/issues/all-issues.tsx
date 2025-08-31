@@ -1,6 +1,6 @@
 import { useIssuesInfinite } from "@/hooks/use-issues-infinite";
 import { cn } from "@/lib/utils";
-import type { Issue } from "@/mock-data/issues";
+// import type { Issue } from "@/mock-data/issues";
 import { status as allStatus } from "@/mock-data/status";
 import { useIssues } from "@/react-db/issues";
 import { useFilterStore } from "@/store/filter-store";
@@ -54,17 +54,17 @@ const FilteredIssuesView: FC<{
 	}, [filterIssues, filters]);
 
 	// Group filtered issues by status
-	const filteredIssuesByStatus = useMemo(() => {
-		const result: Record<string, Issue[]> = {};
+	// const filteredIssuesByStatus = useMemo(() => {
+	// 	const result: Record<string, Issue[]> = {};
 
-		for (const statusItem of allStatus) {
-			result[statusItem.key] = filteredIssues.filter(
-				(issue) => issue.statusKey === statusItem.key,
-			);
-		}
+	// 	for (const statusItem of allStatus) {
+	// 		result[statusItem.key] = filteredIssues.filter(
+	// 			(issue) => issue.statusKey === statusItem.key,
+	// 		);
+	// 	}
 
-		return result;
-	}, [filteredIssues]);
+	// 	return result;
+	// }, [filteredIssues]);
 
 	return (
 		<DndProvider backend={HTML5Backend}>

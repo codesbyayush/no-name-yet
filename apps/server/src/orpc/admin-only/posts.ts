@@ -227,7 +227,14 @@ export const postsRouter = {
 				title: z.string(),
 				description: z.string().min(1),
 				priority: z
-					.enum(["low", "medium", "high", "urgent", "no_priority"])
+					.enum([
+						"low",
+						"medium",
+						"high",
+						"urgent",
+						"no_priority",
+						"no-priority",
+					])
 					.default("no_priority"),
 				tags: z.array(z.string()).default([]),
 				status: z
@@ -252,6 +259,9 @@ export const postsRouter = {
 				throw new ORPCError("UNAUTHORIZED");
 			}
 			try {
+				if (input.priority === "no_priority") {
+					input.priority = "no-priority";
+				}
 				const [newPost] = await context.db
 					.insert(feedback)
 					.values({
@@ -320,7 +330,14 @@ export const postsRouter = {
 					.optional(),
 				statusId: z.string().optional(),
 				priority: z
-					.enum(["low", "medium", "high", "urgent", "no_priority"])
+					.enum([
+						"low",
+						"medium",
+						"high",
+						"urgent",
+						"no_priority",
+						"no-priority",
+					])
 					.optional(),
 				tags: z.array(z.string()).optional(),
 				url: z.string().optional(),
@@ -351,7 +368,9 @@ export const postsRouter = {
 		.output(z.any())
 		.handler(async ({ input, context }) => {
 			const userId = context.session!.user.id;
-			console.log(input);
+			if (input.priority === "no_priority") {
+				input.priority = "no-priority";
+			}
 			const [updatedPost] = await context.db
 				.update(feedback)
 				.set({

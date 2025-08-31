@@ -12,14 +12,27 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
+import { priorities } from "@/mock-data/priorities";
 import { type Project, projects } from "@/mock-data/projects";
-import { useIssuesStore } from "@/store/issues-store";
+import { status as allStatus } from "@/mock-data/status";
+import { users } from "@/mock-data/users";
+import { useBoards } from "@/react-db/boards";
+import { useIssues } from "@/react-db/issues";
 import { Box, CheckIcon, FolderIcon } from "lucide-react";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 
 interface ProjectSelectorProps {
 	project: Project | undefined;
 	onChange: (project: Project | undefined) => void;
+}
+
+// Deterministically pick an icon from mock projects for a given id
+function pickIconForId(id: string) {
+	const icons = projects.map((p) => p.icon);
+	let hash = 0;
+	for (let i = 0; i < id.length; i++)
+		hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+	return icons[hash % icons.length] ?? Box;
 }
 
 export function ProjectSelector({ project, onChange }: ProjectSelectorProps) {
@@ -27,22 +40,40 @@ export function ProjectSelector({ project, onChange }: ProjectSelectorProps) {
 	const [open, setOpen] = useState<boolean>(false);
 	const [value, setValue] = useState<string | undefined>(project?.id);
 
-	const { filterByProject } = useIssuesStore();
+	const { data: boards } = useBoards();
+	const { data: issues } = useIssues();
 
 	useEffect(() => {
 		setValue(project?.id);
 	}, [project]);
 
+	const mappedProjects = useMemo<Project[]>(() => {
+		return (boards ?? []).map((b, idx) => {
+			const Icon = pickIconForId(b.id);
+			return {
+				id: b.id,
+				name: b.name,
+				status: allStatus[idx % allStatus.length],
+				icon: Icon,
+				percentComplete: 0,
+				startDate: new Date().toISOString().slice(0, 10),
+				lead: users[idx % users.length],
+				priority: priorities[idx % priorities.length],
+				health: {
+					id: "on-track",
+					name: "On Track",
+					color: "#00FF00",
+					description: "",
+				},
+			};
+		});
+	}, [boards]);
+
 	const handleProjectChange = (projectId: string) => {
-		if (projectId === "no-project") {
-			setValue(undefined);
-			onChange(undefined);
-		} else {
-			setValue(projectId);
-			const newProject = projects.find((p) => p.id === projectId);
-			if (newProject) {
-				onChange(newProject);
-			}
+		setValue(projectId);
+		const newProject = mappedProjects.find((p) => p.id === projectId);
+		if (newProject) {
+			onChange(newProject);
 		}
 		setOpen(false);
 	};
@@ -61,7 +92,9 @@ export function ProjectSelector({ project, onChange }: ProjectSelectorProps) {
 					>
 						{value ? (
 							(() => {
-								const selectedProject = projects.find((p) => p.id === value);
+								const selectedProject = mappedProjects.find(
+									(p) => p.id === value,
+								);
 								if (selectedProject) {
 									const Icon = selectedProject.icon;
 									return <Icon className="size-4" />;
@@ -73,7 +106,7 @@ export function ProjectSelector({ project, onChange }: ProjectSelectorProps) {
 						)}
 						<span>
 							{value
-								? projects.find((p) => p.id === value)?.name
+								? mappedProjects.find((p) => p.id === value)?.name
 								: "No project"}
 						</span>
 					</Button>
@@ -87,7 +120,7 @@ export function ProjectSelector({ project, onChange }: ProjectSelectorProps) {
 						<CommandList>
 							<CommandEmpty>No projects found.</CommandEmpty>
 							<CommandGroup>
-								<CommandItem
+								{/* <CommandItem
 									value="no-project"
 									onSelect={() => handleProjectChange("no-project")}
 									className="flex items-center justify-between"
@@ -99,8 +132,8 @@ export function ProjectSelector({ project, onChange }: ProjectSelectorProps) {
 									{value === undefined && (
 										<CheckIcon size={16} className="ml-auto" />
 									)}
-								</CommandItem>
-								{projects.map((project) => (
+								</CommandItem> */}
+								{mappedProjects.map((project) => (
 									<CommandItem
 										key={project.id}
 										value={project.id}
@@ -115,7 +148,8 @@ export function ProjectSelector({ project, onChange }: ProjectSelectorProps) {
 											<CheckIcon size={16} className="ml-auto" />
 										)}
 										<span className="text-muted-foreground text-xs">
-											{filterByProject(project.id).length}
+											{issues?.filter((is) => is.project?.id === project.id)
+												.length ?? 0}
 										</span>
 									</CommandItem>
 								))}

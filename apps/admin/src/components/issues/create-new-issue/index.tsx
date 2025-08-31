@@ -13,17 +13,21 @@ import type { Issue } from "@/mock-data/issues";
 import { ranks } from "@/mock-data/issues";
 import { priorities } from "@/mock-data/priorities";
 import { type Status, status } from "@/mock-data/status";
+import { users } from "@/mock-data/users";
+import { useBoards } from "@/react-db/boards";
 import { useAddIssue, useIssues } from "@/react-db/issues";
 import { useCreateIssueStore } from "@/store/create-issue-store";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { RiEditLine } from "@remixicon/react";
 import { Heart } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { Box } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { AssigneeSelector } from "./assignee-selector";
 import { LabelSelector } from "./label-selector";
 import { PrioritySelector } from "./priority-selector";
+import { ProjectSelector } from "./project-selector";
 import { StatusSelector } from "./status-selector";
 
 export function CreateNewIssue() {
@@ -46,6 +50,30 @@ export function CreateNewIssue() {
 		return identifier;
 	};
 
+	const { data: boards } = useBoards();
+
+	const mappedProjects = useMemo(() => {
+		return (boards ?? []).map((b, idx) => {
+			const Icon = Box;
+			return {
+				id: b.id,
+				name: b.name,
+				status: status[idx % status.length],
+				icon: Icon,
+				percentComplete: 0,
+				startDate: new Date().toISOString().slice(0, 10),
+				lead: users[idx % users.length],
+				priority: priorities[idx % priorities.length],
+				health: {
+					id: "on-track" as "no-update" | "off-track" | "on-track" | "at-risk",
+					name: "On Track",
+					color: "#00FF00",
+					description: "",
+				},
+			};
+		});
+	}, [boards]);
+
 	const createDefaultData = useCallback(() => {
 		const identifier = generateUniqueIdentifier();
 		return {
@@ -65,7 +93,7 @@ export function CreateNewIssue() {
 			labels: [],
 			createdAt: new Date().toISOString(),
 			cycleId: "",
-			project: undefined,
+			project: mappedProjects[0],
 			subissues: [],
 			rank: ranks[ranks.length - 1],
 			tags: [],
@@ -76,7 +104,11 @@ export function CreateNewIssue() {
 
 	useEffect(() => {
 		if (isOpen) {
-			setAddIssueForm(createDefaultData());
+			if (createDefaultData().project === undefined) {
+				setAddIssueForm({ ...createDefaultData(), project: mappedProjects[0] });
+			} else {
+				setAddIssueForm(createDefaultData());
+			}
 		}
 	}, [isOpen, createDefaultData]);
 
@@ -86,6 +118,9 @@ export function CreateNewIssue() {
 			return;
 		} else if (!addIssueForm.description) {
 			toast.error("Description is required");
+			return;
+		} else if (!addIssueForm.project) {
+			toast.error("Project is required");
 			return;
 		}
 		addIssue.mutate(addIssueForm);
@@ -156,12 +191,12 @@ export function CreateNewIssue() {
 								setAddIssueForm({ ...addIssueForm, assigneeId: newAssignee })
 							}
 						/>
-						{/* <ProjectSelector
-						project={addIssueForm.project}
-						onChange={(newProject) =>
-							setAddIssueForm({ ...addIssueForm, project: newProject })
-						}
-						/> */}
+						<ProjectSelector
+							project={addIssueForm.project}
+							onChange={(newProject) =>
+								setAddIssueForm({ ...addIssueForm, project: newProject })
+							}
+						/>
 						<LabelSelector
 							selectedLabels={addIssueForm.labels}
 							onChange={(newLabels) =>

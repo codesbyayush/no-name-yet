@@ -52,6 +52,31 @@ const issuesCollection = createCollection<IssueDoc>(
 		},
 		onInsert: async ({ transaction }) => {
 			const mutation = transaction.mutations[0];
+			const changes = mutation.changes as Issue;
+
+			await adminClient.organization.posts.create({
+				...changes,
+				boardId: changes.project?.id ?? "",
+				priority:
+					changes.priorityKey && changes.priorityKey !== "no-priority"
+						? (changes.priorityKey as
+								| "no_priority"
+								| "low"
+								| "medium"
+								| "high"
+								| "urgent"
+								| undefined)
+						: "no_priority",
+				status: changes.statusKey as
+					| "to-do"
+					| "in-progress"
+					| "completed"
+					| "backlog"
+					| "technical-review"
+					| "paused"
+					| undefined,
+				tags: changes.tags.map((tag) => tag.id),
+			});
 		},
 	}),
 );
