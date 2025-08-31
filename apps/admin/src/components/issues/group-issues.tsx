@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Issue } from "@/mock-data/issues";
 import { sortIssuesByPriority } from "@/mock-data/issues";
-import type { Status } from "@/mock-data/status";
+import { type Status, status as allStatus } from "@/mock-data/status";
 import { useIssuesByStatus, useUpdateIssue } from "@/react-db/issues";
 import { useCreateIssueStore } from "@/store/create-issue-store";
 import { useViewStore } from "@/store/view-store";
@@ -14,17 +14,20 @@ import { IssueDragType, IssueGrid } from "./issue-grid";
 import { IssueLine } from "./issue-line";
 
 interface GroupIssuesProps {
-	status: Status;
+	statusKey: string;
 }
 
-export function GroupIssues({ status }: GroupIssuesProps) {
+export function GroupIssues({ statusKey }: GroupIssuesProps) {
 	const { viewType } = useViewStore();
 	const isViewTypeGrid = viewType === "grid";
 	const { openModal } = useCreateIssueStore();
-	const { data: issuesByCurrentStatus } = useIssuesByStatus(status.key);
+	const { data: issuesByCurrentStatus } = useIssuesByStatus(statusKey);
 
 	const source = issuesByCurrentStatus;
 	const sortedIssues = sortIssuesByPriority(source);
+	const status: Status = (allStatus.find(
+		(status) => status.key === statusKey,
+	) || allStatus.find((status) => status.key === "to-do"))!;
 
 	return (
 		<div
@@ -48,8 +51,8 @@ export function GroupIssues({ status }: GroupIssuesProps) {
 					)}
 					style={{
 						backgroundColor: isViewTypeGrid
-							? `${status.color}10`
-							: `${status.color}08`,
+							? `${status?.color}10`
+							: `${status?.color}08`,
 					}}
 				>
 					<div className="flex items-center gap-2">
@@ -66,7 +69,7 @@ export function GroupIssues({ status }: GroupIssuesProps) {
 						variant="ghost"
 						onClick={(e) => {
 							e.stopPropagation();
-							openModal(status);
+							openModal(status.key);
 						}}
 					>
 						<Plus className="size-4" />

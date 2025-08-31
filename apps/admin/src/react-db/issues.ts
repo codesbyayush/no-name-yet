@@ -50,6 +50,9 @@ const issuesCollection = createCollection<IssueDoc>(
 				id: mutation.key as string,
 			});
 		},
+		onInsert: async ({ transaction }) => {
+			const mutation = transaction.mutations[0];
+		},
 	}),
 );
 

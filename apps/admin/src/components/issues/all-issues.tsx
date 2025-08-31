@@ -1,7 +1,7 @@
 import { useIssuesInfinite } from "@/hooks/use-issues-infinite";
 import { cn } from "@/lib/utils";
 import type { Issue } from "@/mock-data/issues";
-import { status } from "@/mock-data/status";
+import { status as allStatus } from "@/mock-data/status";
 import { useIssues } from "@/react-db/issues";
 import { useFilterStore } from "@/store/filter-store";
 import { useIssuesStore } from "@/store/issues-store";
@@ -57,9 +57,9 @@ const FilteredIssuesView: FC<{
 	const filteredIssuesByStatus = useMemo(() => {
 		const result: Record<string, Issue[]> = {};
 
-		for (const statusItem of status) {
-			result[statusItem.id] = filteredIssues.filter(
-				(issue) => issue.status.id === statusItem.id,
+		for (const statusItem of allStatus) {
+			result[statusItem.key] = filteredIssues.filter(
+				(issue) => issue.statusKey === statusItem.key,
 			);
 		}
 
@@ -74,8 +74,8 @@ const FilteredIssuesView: FC<{
 					isViewTypeGrid && "flex h-full min-w-max gap-3 px-2 py-2",
 				)}
 			>
-				{status.map((statusItem) => (
-					<GroupIssues key={statusItem.id} status={statusItem} />
+				{allStatus.map((statusItem) => (
+					<GroupIssues key={statusItem.key} statusKey={statusItem.key} />
 				))}
 			</div>
 		</DndProvider>
@@ -97,8 +97,8 @@ const GroupIssuesListView: FC<{
 					isViewTypeGrid && "flex h-full min-w-max gap-3 px-2 py-2",
 				)}
 			>
-				{status.map((statusItem) => (
-					<GroupIssues key={statusItem.id} status={statusItem} />
+				{allStatus.map((statusItem) => (
+					<GroupIssues key={statusItem.key} statusKey={statusItem.key} />
 				))}
 
 				{/* Intersection observer element for infinite loading */}

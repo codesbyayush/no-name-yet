@@ -15,41 +15,41 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
-import { useIssuesStore } from "@/store/issues-store";
+import { useIssues } from "@/react-db/issues";
+import { useUsers } from "@/react-db/users";
 import type { User } from "@/store/users-store";
-import { useUsersStore } from "@/store/users-store";
 import { CheckIcon, UserCircle } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 
 interface AssigneeSelectorProps {
-	assignee: User | null;
-	onChange: (assignee: User | null) => void;
+	assigneeId: string | undefined;
+	onChange: (assignee?: string) => void;
 }
 
 export function AssigneeSelector({
-	assignee,
+	assigneeId,
 	onChange,
 }: AssigneeSelectorProps) {
 	const id = useId();
 	const [open, setOpen] = useState<boolean>(false);
-	const [value, setValue] = useState<string | null>(assignee?.id || null);
+	const [value, setValue] = useState<string | null>(assigneeId || null);
 
-	const { filterByAssignee } = useIssuesStore();
-	const { users } = useUsersStore();
+	const { data: issues } = useIssues();
+	const { data: users } = useUsers();
 
 	useEffect(() => {
-		setValue(assignee?.id || null);
-	}, [assignee]);
+		setValue(assigneeId || null);
+	}, [assigneeId]);
 
 	const handleAssigneeChange = (userId: string) => {
 		if (userId === "unassigned") {
 			setValue(null);
-			onChange(null);
+			onChange();
 		} else {
 			setValue(userId);
-			const newAssignee = users.find((u) => u.id === userId);
+			const newAssignee = users?.find((u) => u.id === userId) || null;
 			if (newAssignee) {
-				onChange(newAssignee);
+				onChange(newAssignee.id);
 			}
 		}
 		setOpen(false);
@@ -69,12 +69,12 @@ export function AssigneeSelector({
 					>
 						{value ? (
 							(() => {
-								const selectedUser = users.find((user) => user.id === value);
+								const selectedUser = users?.find((user) => user.id === value);
 								if (selectedUser) {
 									return (
 										<Avatar className="size-5">
 											<AvatarImage
-												src={selectedUser.avatarUrl}
+												src={selectedUser.image || ""}
 												alt={selectedUser.name}
 											/>
 											<AvatarFallback>
@@ -90,7 +90,7 @@ export function AssigneeSelector({
 						)}
 						<span>
 							{value
-								? users.find((user) => user.id === value)?.name
+								? users?.find((user) => user.id === value)?.name
 								: "Unassigned"}
 						</span>
 					</Button>
@@ -117,10 +117,10 @@ export function AssigneeSelector({
 										<CheckIcon size={16} className="ml-auto" />
 									)}
 									<span className="text-muted-foreground text-xs">
-										{filterByAssignee(null).length}
+										{issues?.filter((is) => is.assignee === null).length ?? 0}
 									</span>
 								</CommandItem>
-								{users.map((user) => (
+								{(users ?? []).map((user) => (
 									<CommandItem
 										key={user.id}
 										value={user.id}
@@ -129,7 +129,7 @@ export function AssigneeSelector({
 									>
 										<div className="flex items-center gap-2 capitalize">
 											<Avatar className="size-5">
-												<AvatarImage src={user.avatarUrl} alt={user.name} />
+												<AvatarImage src={user.image || ""} alt={user.name} />
 												<AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
 											</Avatar>
 											{user.name}
@@ -138,7 +138,8 @@ export function AssigneeSelector({
 											<CheckIcon size={16} className="ml-auto" />
 										)}
 										<span className="text-muted-foreground text-xs">
-											{filterByAssignee(user.id).length}
+											{issues?.filter((is) => is.assignee?.id === user.id)
+												.length ?? 0}
 										</span>
 									</CommandItem>
 								))}

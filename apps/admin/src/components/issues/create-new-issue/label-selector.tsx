@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/popover";
 import { useTags } from "@/hooks/use-tags";
 import { cn } from "@/lib/utils";
-import { useIssuesStore } from "@/store/issues-store";
+import { useIssues } from "@/react-db/issues";
 import type { Tag } from "@/store/tags-store";
 import { CheckIcon, TagIcon } from "lucide-react";
 import { useId, useState } from "react";
@@ -33,7 +33,7 @@ export function LabelSelector({
 	const id = useId();
 	const [open, setOpen] = useState<boolean>(false);
 
-	const { filterByLabel } = useIssuesStore();
+	const { data: issues } = useIssues();
 	const { data: tags } = useTags();
 
 	const handleLabelToggle = (tag: Tag) => {
@@ -109,7 +109,9 @@ export function LabelSelector({
 												<CheckIcon size={16} className="ml-auto" />
 											)}
 											<span className="text-muted-foreground text-xs">
-												{filterByLabel(tag.id).length}
+												{issues?.filter((is) =>
+													is.labels.some((l) => l.id === tag.id),
+												).length ?? 0}
 											</span>
 										</CommandItem>
 									);

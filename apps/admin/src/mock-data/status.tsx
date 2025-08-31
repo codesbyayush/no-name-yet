@@ -20,7 +20,7 @@ export const BacklogIcon: React.FC = () => {
 				strokeWidth="2"
 				strokeDasharray="1.4 1.74"
 				strokeDashoffset="0.65"
-			></circle>
+			/>
 			<circle
 				className="progress"
 				cx="7"
@@ -32,7 +32,7 @@ export const BacklogIcon: React.FC = () => {
 				strokeDasharray="0 100"
 				strokeDashoffset="0"
 				transform="rotate(-90 7 7)"
-			></circle>
+			/>
 		</svg>
 	);
 };
@@ -49,7 +49,7 @@ export const PausedIcon: React.FC = () => {
 				strokeWidth="2"
 				strokeDasharray="3.14 0"
 				strokeDashoffset="-0.7"
-			></circle>
+			/>
 			<circle
 				className="progress"
 				cx="7"
@@ -61,7 +61,7 @@ export const PausedIcon: React.FC = () => {
 				strokeDasharray="6.2517693806436885 100"
 				strokeDashoffset="0"
 				transform="rotate(-90 7 7)"
-			></circle>
+			/>
 		</svg>
 	);
 };
@@ -78,7 +78,7 @@ export const ToDoIcon: React.FC = () => {
 				strokeWidth="2"
 				strokeDasharray="3.14 0"
 				strokeDashoffset="-0.7"
-			></circle>
+			/>
 			<circle
 				className="progress"
 				cx="7"
@@ -90,7 +90,7 @@ export const ToDoIcon: React.FC = () => {
 				strokeDasharray="0 100"
 				strokeDashoffset="0"
 				transform="rotate(-90 7 7)"
-			></circle>
+			/>
 		</svg>
 	);
 };
@@ -107,7 +107,7 @@ export const InProgressIcon: React.FC = () => {
 				strokeWidth="2"
 				strokeDasharray="3.14 0"
 				strokeDashoffset="-0.7"
-			></circle>
+			/>
 			<circle
 				className="progress"
 				cx="7"
@@ -119,7 +119,7 @@ export const InProgressIcon: React.FC = () => {
 				strokeDasharray="2.0839231268812295 100"
 				strokeDashoffset="0"
 				transform="rotate(-90 7 7)"
-			></circle>
+			/>
 		</svg>
 	);
 };
@@ -136,7 +136,7 @@ export const TechnicalReviewIcon: React.FC = () => {
 				strokeWidth="2"
 				strokeDasharray="3.14 0"
 				strokeDashoffset="-0.7"
-			></circle>
+			/>
 			<circle
 				className="progress"
 				cx="7"
@@ -148,7 +148,7 @@ export const TechnicalReviewIcon: React.FC = () => {
 				strokeDasharray="4.167846253762459 100"
 				strokeDashoffset="0"
 				transform="rotate(-90 7 7)"
-			></circle>
+			/>
 		</svg>
 	);
 };
@@ -165,7 +165,7 @@ export const CompletedIcon: React.FC = () => {
 				strokeWidth="2"
 				strokeDasharray="3.14 0"
 				strokeDashoffset="-0.7"
-			></circle>
+			/>
 			<path
 				d="M4.5 7L6.5 9L9.5 5"
 				stroke="#8b5cf6"

@@ -12,9 +12,9 @@ import { Textarea } from "@/components/ui/textarea";
 import type { Issue } from "@/mock-data/issues";
 import { ranks } from "@/mock-data/issues";
 import { priorities } from "@/mock-data/priorities";
-import { status } from "@/mock-data/status";
+import { type Status, status } from "@/mock-data/status";
+import { useAddIssue, useIssues } from "@/react-db/issues";
 import { useCreateIssueStore } from "@/store/create-issue-store";
-import { useIssuesStore } from "@/store/issues-store";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { RiEditLine } from "@remixicon/react";
 import { Heart } from "lucide-react";
@@ -24,17 +24,17 @@ import { v4 as uuidv4 } from "uuid";
 import { AssigneeSelector } from "./assignee-selector";
 import { LabelSelector } from "./label-selector";
 import { PrioritySelector } from "./priority-selector";
-import { ProjectSelector } from "./project-selector";
 import { StatusSelector } from "./status-selector";
 
 export function CreateNewIssue() {
 	const [createMore, setCreateMore] = useState<boolean>(false);
-	const { isOpen, defaultStatus, openModal, closeModal } =
+	const { isOpen, defaultStatusKey, openModal, closeModal } =
 		useCreateIssueStore();
-	const { addIssue, getAllIssues } = useIssuesStore();
+	const { data: issues } = useIssues();
+	const addIssue = useAddIssue();
 
-	const generateUniqueIdentifier = useCallback(() => {
-		const identifiers = getAllIssues().map((issue) => issue.identifier);
+	const generateUniqueIdentifier = () => {
+		const identifiers = (issues ?? []).map((issue) => issue.identifier);
 		let identifier = Math.floor(Math.random() * 999)
 			.toString()
 			.padStart(3, "0");
@@ -44,32 +44,41 @@ export function CreateNewIssue() {
 				.padStart(3, "0");
 		}
 		return identifier;
-	}, [getAllIssues]);
+	};
 
 	const createDefaultData = useCallback(() => {
 		const identifier = generateUniqueIdentifier();
 		return {
 			id: uuidv4(),
 			identifier: `LNUI-${identifier}`,
+			issueKey: `LNUI-${identifier}`,
 			title: "",
 			description: "",
-			status: defaultStatus || status.find((s) => s.id === "to-do")!,
+			status:
+				status.find((s) => s.key === defaultStatusKey) ||
+				status.find((s) => s.key === "to-do")!,
+			statusKey: defaultStatusKey,
+			assigneeId: undefined,
 			assignee: null,
 			priority: priorities.find((p) => p.id === "no-priority")!,
+			priorityKey: "no-priority",
 			labels: [],
 			createdAt: new Date().toISOString(),
 			cycleId: "",
 			project: undefined,
 			subissues: [],
 			rank: ranks[ranks.length - 1],
+			tags: [],
 		};
-	}, [defaultStatus, generateUniqueIdentifier]);
+	}, [defaultStatusKey]);
 
 	const [addIssueForm, setAddIssueForm] = useState<Issue>(createDefaultData());
 
 	useEffect(() => {
-		setAddIssueForm(createDefaultData());
-	}, [createDefaultData]);
+		if (isOpen) {
+			setAddIssueForm(createDefaultData());
+		}
+	}, [isOpen, createDefaultData]);
 
 	const createIssue = () => {
 		if (!addIssueForm.title) {
@@ -79,7 +88,7 @@ export function CreateNewIssue() {
 			toast.error("Description is required");
 			return;
 		}
-		addIssue(addIssueForm);
+		addIssue.mutate(addIssueForm);
 		toast.success("Issue created");
 		if (!createMore) {
 			closeModal();
@@ -130,28 +139,28 @@ export function CreateNewIssue() {
 
 					<div className="flex w-full flex-wrap items-center justify-start gap-1.5">
 						<StatusSelector
-							status={addIssueForm.status}
+							statusKey={addIssueForm.statusKey || "to-do"}
 							onChange={(newStatus) =>
-								setAddIssueForm({ ...addIssueForm, status: newStatus })
+								setAddIssueForm({ ...addIssueForm, statusKey: newStatus })
 							}
 						/>
 						<PrioritySelector
-							priority={addIssueForm.priority}
+							priorityKey={addIssueForm.priorityKey || "no-priority"}
 							onChange={(newPriority) =>
-								setAddIssueForm({ ...addIssueForm, priority: newPriority })
+								setAddIssueForm({ ...addIssueForm, priorityKey: newPriority })
 							}
 						/>
 						<AssigneeSelector
-							assignee={addIssueForm.assignee}
+							assigneeId={addIssueForm.assigneeId || undefined}
 							onChange={(newAssignee) =>
-								setAddIssueForm({ ...addIssueForm, assignee: newAssignee })
+								setAddIssueForm({ ...addIssueForm, assigneeId: newAssignee })
 							}
 						/>
 						{/* <ProjectSelector
-							project={addIssueForm.project}
-							onChange={(newProject) =>
-								setAddIssueForm({ ...addIssueForm, project: newProject })
-							}
+						project={addIssueForm.project}
+						onChange={(newProject) =>
+							setAddIssueForm({ ...addIssueForm, project: newProject })
+						}
 						/> */}
 						<LabelSelector
 							selectedLabels={addIssueForm.labels}
