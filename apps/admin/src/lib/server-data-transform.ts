@@ -75,8 +75,7 @@ export const transformServerPostToIssue = (
 		assigneeId: serverPost.assigneeId || undefined,
 		priorityKey: serverPost.priority,
 		priority: mapServerPriorityToClient(serverPost.priority),
-		tags: serverPost.tags || [],
-		labels: serverPost.tags?.map((tag: any) => ({
+		tags: serverPost.tags?.map((tag: any) => ({
 			id: tag.id,
 			name: tag.name,
 			color: tag.color,

@@ -1,5 +1,3 @@
-"use client";
-
 import { ContextMenu, ContextMenuTrigger } from "@/components/ui/context-menu";
 import type { Issue } from "@/mock-data/issues";
 import { format } from "date-fns";
@@ -52,7 +50,7 @@ function IssueDragPreview({ issue }: { issue: Issue }) {
 				<span className="text-muted-foreground text-xs">
 					{format(new Date(issue.createdAt), "MMM dd")}
 				</span>
-				<AssigneeUser userId={issue.assigneeId} />
+				<AssigneeUser userId={issue.assigneeId} issueId={issue.id} />
 			</div>
 		</div>
 	);
@@ -146,7 +144,7 @@ export function IssueGrid({ issue }: IssueGridProps) {
 						<span className="text-muted-foreground text-xs">
 							{format(new Date(issue.createdAt), "MMM dd")}
 						</span>
-						<AssigneeUser userId={issue.assigneeId} />
+						<AssigneeUser userId={issue.assigneeId} issueId={issue.id} />
 					</div>
 				</motion.div>
 			</ContextMenuTrigger>

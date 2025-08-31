@@ -17,7 +17,6 @@ export interface Issue {
 	assignee: User | null;
 	assigneeId?: string;
 	priority: Priority;
-	labels: LabelInterface[];
 	tags: LabelInterface[];
 	createdAt: string;
 	cycleId: string;

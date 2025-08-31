@@ -139,7 +139,7 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
 
 	filterByLabel: (labelId: string) => {
 		return get().issues.filter((issue) =>
-			issue.labels.some((label) => label.id === labelId),
+			issue.tags.some((label) => label.id === labelId),
 		);
 	},
 
@@ -152,7 +152,7 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
 		return get().issues.filter(
 			(issue) =>
 				issue.title.toLowerCase().includes(lowerCaseQuery) ||
-				issue.identifier.toLowerCase().includes(lowerCaseQuery),
+				issue.issueKey.toLowerCase().includes(lowerCaseQuery),
 		);
 	},
 
@@ -190,7 +190,7 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
 		// Filter by labels
 		if (filters.labels && filters.labels.length > 0) {
 			filteredIssues = filteredIssues.filter((issue) =>
-				issue.labels.some((label) => filters.labels!.includes(label.id)),
+				issue.tags.some((label) => filters.labels!.includes(label.id)),
 			);
 		}
 
@@ -223,18 +223,16 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
 	addIssueLabel: (issueId: string, label: LabelInterface) => {
 		const issue = get().getIssueById(issueId);
 		if (issue) {
-			const updatedLabels = [...issue.labels, label];
-			get().updateIssue(issueId, { labels: updatedLabels });
+			const updatedLabels = [...issue.tags, label];
+			get().updateIssue(issueId, { tags: updatedLabels });
 		}
 	},
 
 	removeIssueLabel: (issueId: string, labelId: string) => {
 		const issue = get().getIssueById(issueId);
 		if (issue) {
-			const updatedLabels = issue.labels.filter(
-				(label) => label.id !== labelId,
-			);
-			get().updateIssue(issueId, { labels: updatedLabels });
+			const updatedLabels = issue.tags.filter((label) => label.id !== labelId);
+			get().updateIssue(issueId, { tags: updatedLabels });
 		}
 	},
 

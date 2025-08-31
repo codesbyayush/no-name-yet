@@ -107,7 +107,7 @@ export const useSearchIssues = (query: string | undefined) => {
 		q.from({ issue: issuesCollection }).where(({ issue }) => {
 			if (!safe) return true;
 			const title = lower(issue.title);
-			const identifier = lower(issue.identifier);
+			const identifier = lower(issue.issueKey);
 			return ilike(title, `%${safe}%`) || ilike(identifier, `%${safe}%`);
 		}),
 	);
