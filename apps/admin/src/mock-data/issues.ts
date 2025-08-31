@@ -8,7 +8,6 @@ import { type User, users } from "./users";
 export interface Issue {
 	id: string;
 	issueKey: string;
-	identifier: string;
 	title: string;
 	description: string;
 	status: Status;

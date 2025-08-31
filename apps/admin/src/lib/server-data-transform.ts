@@ -53,7 +53,6 @@ export const transformServerPostToIssue = (
 	const clientIssue: Issue = {
 		id: serverPost.id,
 		issueKey: serverPost.issueKey,
-		identifier: serverPost.issueKey || `ISSUE-${serverPost.id.slice(0, 8)}`,
 		title: serverPost.title || "Untitled Issue",
 		description: serverPost.description || "",
 		status: mapServerStatusToClient(serverPost.statusKey),
