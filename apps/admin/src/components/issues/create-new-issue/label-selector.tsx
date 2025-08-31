@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import {
 	Command,
@@ -110,7 +108,7 @@ export function LabelSelector({
 											)}
 											<span className="text-muted-foreground text-xs">
 												{issues?.filter((is) =>
-													is.labels.some((l) => l.id === tag.id),
+													is.tags.some((l) => l.id === tag.id),
 												).length ?? 0}
 											</span>
 										</CommandItem>
