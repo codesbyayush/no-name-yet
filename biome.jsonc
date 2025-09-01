@@ -8,7 +8,10 @@
       },
       "style": {
         "noMagicNumbers": "warn",
-        "noNestedTernary": "warn"
+        "noNestedTernary": "warn",
+
+        // TODO: Remove this rule
+        "noNonNullAssertion": "warn"
       },
       "performance": {
         "noNamespaceImport": "warn",

@@ -37,7 +37,7 @@ export function CreateNewIssue() {
   const addIssue = useAddIssue();
 
   const generateUniqueIdentifier = () => {
-    const identifiers = (issues ?? []).map((issue) => issue.identifier);
+    const identifiers = (issues ?? []).map((issue) => issue.issueKey);
     let identifier = Math.floor(Math.random() * 999)
       .toString()
       .padStart(3, '0');
@@ -94,7 +94,7 @@ export function CreateNewIssue() {
       cycleId: '',
       project: mappedProjects[0],
       subissues: [],
-      rank: ranks.at(-1),
+      rank: ranks.at(-1)!,
       tags: [],
     };
   }, [defaultStatusKey]);
@@ -109,7 +109,7 @@ export function CreateNewIssue() {
         setAddIssueForm(createDefaultData());
       }
     }
-  }, [isOpen, createDefaultData, mappedProjects[0]]);
+  }, [isOpen, createDefaultData]);
 
   const createIssue = () => {
     if (!addIssueForm.title) {
@@ -200,9 +200,9 @@ export function CreateNewIssue() {
             />
             <LabelSelector
               onChange={(newLabels) =>
-                setAddIssueForm({ ...addIssueForm, labels: newLabels })
+                setAddIssueForm({ ...addIssueForm, tags: newLabels })
               }
-              selectedLabels={addIssueForm.labels}
+              selectedLabels={addIssueForm.tags}
             />
           </div>
         </div>
