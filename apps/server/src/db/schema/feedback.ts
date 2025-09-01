@@ -4,7 +4,6 @@ import {
   index,
   pgEnum,
   pgTable,
-  serial,
   text,
   timestamp,
 } from 'drizzle-orm/pg-core';
@@ -32,7 +31,6 @@ export const feedback = pgTable(
   'feedback',
   {
     id: text('id').primaryKey().default(sql`gen_random_uuid()::text`),
-    counter: serial('counter'),
     issueKey: text('issue_key').notNull().unique(),
     boardId: text('board_id')
       .notNull()
@@ -41,6 +39,9 @@ export const feedback = pgTable(
     description: text('description').notNull(),
     status: statusEnum('status').notNull().default('to-do'),
     assigneeId: text('assignee_id').references(() => user.id, {
+      onDelete: 'restrict',
+    }),
+    authorId: text('author_id').references(() => user.id, {
       onDelete: 'restrict',
     }),
     dueDate: timestamp('due_date'),

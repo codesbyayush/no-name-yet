@@ -1,6 +1,6 @@
-import { and, eq, sql } from 'drizzle-orm';
+import { ORPCError } from '@orpc/server';
+import { and, count, eq, type SQL } from 'drizzle-orm';
 import { z } from 'zod';
-import { feedbackCounters } from '@/db/schema';
 import { votes } from '../../db/schema/votes';
 import { protectedProcedure } from '../procedures';
 
@@ -11,8 +11,6 @@ export const votesRouter = {
         .object({
           feedbackId: z.string().optional(),
           commentId: z.string().optional(),
-          type: z.enum(['upvote', 'downvote', 'bookmark']).optional(),
-          weight: z.number().int().min(1).default(1),
         })
         .refine((data) => data.feedbackId || data.commentId, {
           message: 'Either feedbackId or commentId must be provided',
@@ -21,68 +19,24 @@ export const votesRouter = {
     .output(z.any())
     .handler(async ({ input, context }) => {
       const userId = context.session?.user.id;
-
-      const voteId = crypto.randomUUID();
+      if (!(input.feedbackId && input.commentId)) {
+        throw new ORPCError('BAD_REQUEST');
+      }
 
       try {
         const [newVote] = await context.db
           .insert(votes)
           .values({
-            id: voteId,
-            feedbackId: input.feedbackId || null,
-            commentId: input.commentId || null,
+            feedbackId: input.feedbackId,
+            commentId: input.commentId,
             userId,
-            type: input.type || 'upvote',
-            weight: input.weight,
           })
           .returning();
 
-        await context.db
-          .insert(feedbackCounters)
-          .values({
-            feedbackId: input.feedbackId || '',
-            upvoteCount: 1,
-            commentCount: 0,
-          })
-          .onConflictDoUpdate({
-            target: [feedbackCounters.feedbackId],
-            set: {
-              upvoteCount: sql`${feedbackCounters.upvoteCount} + 1`,
-            },
-          });
-
         return newVote;
       } catch (_error) {
-        // TODO: failing silently for now need to handle the multiple clicks on different boards but same post
+        throw new ORPCError('INTERNAL_SERVER_ERROR');
       }
-    }),
-
-  update: protectedProcedure
-    .input(
-      z.object({
-        id: z.string(),
-        type: z.enum(['upvote', 'downvote', 'bookmark']).optional(),
-        weight: z.number().int().min(1).optional(),
-      })
-    )
-    .output(z.any())
-    .handler(async ({ input, context }) => {
-      const _userId = context.session?.user.id;
-
-      const [updatedVote] = await context.db
-        .update(votes)
-        .set({
-          ...(input.type && { type: input.type }),
-          ...(input.weight && { weight: input.weight }),
-        })
-        .where(eq(votes.id, input.id))
-        .returning();
-
-      if (!updatedVote) {
-        throw new Error('Vote not found');
-      }
-
-      return updatedVote;
     }),
 
   delete: protectedProcedure
@@ -109,15 +63,6 @@ export const votesRouter = {
         .where(and(...filters))
         .returning();
 
-      if (deletedVote) {
-        await context.db
-          .update(feedbackCounters)
-          .set({
-            upvoteCount: sql`${feedbackCounters.upvoteCount} - 1`,
-          })
-          .where(eq(feedbackCounters.feedbackId, input.feedbackId || ''));
-      }
-
       if (!deletedVote) {
         throw new Error('Vote not found');
       }
@@ -125,7 +70,7 @@ export const votesRouter = {
       return { success: true, deletedVote };
     }),
 
-  get: protectedProcedure
+  count: protectedProcedure
     .input(
       z.object({
         feedbackId: z.string().optional(),
@@ -134,9 +79,7 @@ export const votesRouter = {
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
-      const userId = context.session?.user.id;
-
-      const filter = [eq(votes.userId, userId)];
+      const filter: SQL[] = [];
       if (input.feedbackId) {
         filter.push(eq(votes.feedbackId, input.feedbackId));
       } else if (input.commentId) {
@@ -145,15 +88,11 @@ export const votesRouter = {
         throw new Error('Resource not found');
       }
 
-      const [vote] = await context.db
-        .select()
+      const totalCount = await context.db
+        .select({ count: count() })
         .from(votes)
         .where(and(...filter));
 
-      if (!vote) {
-        return false;
-      }
-
-      return true;
+      return totalCount[0]?.count || 0;
     }),
 };

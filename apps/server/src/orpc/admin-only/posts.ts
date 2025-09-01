@@ -13,10 +13,8 @@ import {
 import { z } from 'zod';
 import {
   boards,
-  feedbackCounters as fc,
   feedback,
   feedbackTags,
-  statuses,
   tags as tagsTable,
   user,
   votes,

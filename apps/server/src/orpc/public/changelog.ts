@@ -1,5 +1,5 @@
 import { ORPCError } from '@orpc/server';
-import { and, asc, count, desc, eq } from 'drizzle-orm';
+import { and, asc, count, desc, eq, type SQL } from 'drizzle-orm';
 import { changelog, tags, user } from '../../db/schema';
 import { publicProcedure } from '../procedures';
 import {
@@ -8,7 +8,6 @@ import {
 } from './schemas';
 
 export const changelogPublicRouter = publicProcedure.router({
-  // Get published changelogs
   getPublished: publicProcedure
     .input(publicGetChangelogsSchema)
     .handler(async ({ input, context }) => {
@@ -27,7 +26,7 @@ export const changelogPublicRouter = publicProcedure.router({
         }
 
         // Determine sort order
-        let orderBy: any; // TODO: Type this properly with Drizzle order type
+        let orderBy: SQL | undefined; // TODO: Type this properly with Drizzle order type
         switch (input.sortBy) {
           case 'oldest':
             orderBy = asc(changelog.publishedAt);

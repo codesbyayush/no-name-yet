@@ -1,6 +1,5 @@
-import { eq, sql } from 'drizzle-orm';
+import { and, count, eq, isNull } from 'drizzle-orm';
 import { z } from 'zod';
-import { feedbackCounters as fc } from '@/db/schema';
 import { comments } from '../../db/schema/comments';
 import { protectedProcedure } from '../procedures';
 
@@ -9,38 +8,21 @@ export const commentsRouter = {
     .input(
       z.object({
         feedbackId: z.string(),
-        parentCommentId: z.string().optional(),
         content: z.string().min(1),
-        isInternal: z.boolean().default(false),
       })
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
       const userId = context.session?.user.id;
 
-      const commentId = crypto.randomUUID();
-
       const [newComment] = await context.db
         .insert(comments)
         .values({
-          id: commentId,
           feedbackId: input.feedbackId,
-          parentCommentId: input.parentCommentId || null,
           authorId: userId,
           content: input.content,
-          isInternal: input.isInternal,
         })
         .returning();
-      await context.db
-        .insert(fc)
-        .values({
-          feedbackId: input.feedbackId,
-          commentCount: 1,
-        })
-        .onConflictDoUpdate({
-          target: fc.feedbackId,
-          set: { commentCount: sql`${fc.commentCount} + 1` },
-        });
       return newComment;
     }),
 
@@ -49,21 +31,14 @@ export const commentsRouter = {
       z.object({
         id: z.string(),
         content: z.string().min(1).optional(),
-        isInternal: z.boolean().optional(),
       })
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
-      const _userId = context.session?.user.id;
-
       const [updatedComment] = await context.db
         .update(comments)
         .set({
           ...(input.content && { content: input.content }),
-          ...(input.isInternal !== undefined && {
-            isInternal: input.isInternal,
-          }),
-          updatedAt: new Date(),
         })
         .where(eq(comments.id, input.id))
         .returning();
@@ -78,33 +53,48 @@ export const commentsRouter = {
   delete: protectedProcedure
     .input(
       z.object({
-        id: z.string(),
+        commentId: z.string(),
       })
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
-      const _userId = context.session?.user.id;
-
       const [deletedComment] = await context.db
         .delete(comments)
-        .where(eq(comments.id, input.id))
+        .where(eq(comments.id, input.commentId))
         .returning();
 
       if (!deletedComment) {
         throw new Error('Comment not found');
       }
-      if (deletedComment.feedbackId) {
-        await context.db
-          .insert(fc)
-          .values({
-            feedbackId: deletedComment.feedbackId,
-            commentCount: -1,
-          })
-          .onConflictDoUpdate({
-            target: fc.feedbackId,
-            set: { commentCount: sql`${fc.commentCount} - 1` },
-          });
-      }
+
       return { success: true, deletedComment };
+    }),
+
+  // For now this is only for top level comments
+  getAll: protectedProcedure
+    .input(z.object({ feedbackId: z.string() }))
+    .output(z.any())
+    .handler(async ({ input, context }) => {
+      const allComments = await context.db
+        .select()
+        .from(comments)
+        .where(
+          and(
+            eq(comments.feedbackId, input.feedbackId),
+            isNull(comments.parentCommentId)
+          )
+        );
+      return allComments;
+    }),
+
+  count: protectedProcedure
+    .input(z.object({ feedbackId: z.string() }))
+    .output(z.any())
+    .handler(async ({ input, context }) => {
+      const totalCount = await context.db
+        .select({ count: count() })
+        .from(comments)
+        .where(eq(comments.feedbackId, input.feedbackId));
+      return totalCount[0]?.count || 0;
     }),
 };

@@ -1,19 +1,12 @@
-import {
-  boolean,
-  index,
-  pgTable,
-  real,
-  text,
-  timestamp,
-} from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
+import { boolean, index, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 import { user } from './auth';
 import { feedback } from './feedback';
 
-// Comments table with versioned structure
 export const comments = pgTable(
   'comments',
   {
-    id: text('id').primaryKey(),
+    id: text('id').primaryKey().default(sql`gen_random_uuid()::text`),
     feedbackId: text('feedback_id')
       .notNull()
       .references(() => feedback.id, { onDelete: 'cascade' }),
@@ -23,12 +16,8 @@ export const comments = pgTable(
     authorId: text('author_id').references(() => user.id, {
       onDelete: 'cascade',
     }),
-    // Anonymous user fields
     isAnonymous: boolean('is_anonymous').default(false).notNull(),
-    anonymousName: text('anonymous_name'),
-    anonymousEmail: text('anonymous_email'),
     content: text('content').notNull(),
-    sentimentScore: real('sentiment_score'),
     isInternal: boolean('is_internal').default(false),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
