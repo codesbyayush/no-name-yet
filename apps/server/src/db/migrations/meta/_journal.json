@@ -64,6 +64,20 @@
       "when": 1756646400868,
       "tag": "0008_cynical_baron_strucker",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1756709599861,
+      "tag": "0009_tough_hawkeye",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1756710837988,
+      "tag": "0010_strange_nextwave",
+      "breakpoints": true
     }
   ]
 }
