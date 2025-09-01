@@ -19,7 +19,9 @@ function base64UrlToBytes(input: string): Uint8Array {
   const b64 = input.replace(/-/g, '+').replace(/_/g, '/') + pad;
   const binary = atob(b64);
   const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
   return bytes;
 }
 
@@ -66,15 +68,21 @@ export async function verifyInstallState(
 ): Promise<InstallStatePayload | null> {
   try {
     const [body, sig] = token.split('.');
-    if (!(body && sig)) return null;
+    if (!(body && sig)) {
+      return null;
+    }
     const secret = env.BETTER_AUTH_SECRET;
     const keyBytes = new TextEncoder().encode(secret);
     const expected = await hmacSHA256(keyBytes, body);
-    if (expected !== sig) return null;
+    if (expected !== sig) {
+      return null;
+    }
     const json = new TextDecoder().decode(base64UrlToBytes(body));
     const payload = JSON.parse(json) as InstallStatePayload;
     // Basic freshness check (15 minutes)
-    if (Math.abs(Date.now() / 1000 - payload.ts) > 15 * 60) return null;
+    if (Math.abs(Date.now() / 1000 - payload.ts) > 15 * 60) {
+      return null;
+    }
     return payload;
   } catch {
     return null;

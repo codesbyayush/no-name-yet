@@ -57,7 +57,7 @@ export async function createContext({ context, env }: CreateContextOptions) {
         .limit(1);
 
       org = orgResult[0] || null;
-    } catch (error) {}
+    } catch (_error) {}
   }
 
   return {
@@ -124,7 +124,7 @@ export async function createAdminContext({
       db,
       env,
     };
-  } catch (error) {
+  } catch (_error) {
     return {
       session,
       user: null,

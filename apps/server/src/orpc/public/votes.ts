@@ -1,12 +1,7 @@
 import { and, eq, sql } from 'drizzle-orm';
 import { z } from 'zod';
-import { feedback, feedbackCounters } from '@/db/schema';
-import {
-  type NewVote,
-  type Vote,
-  votes,
-  voteTypeEnum,
-} from '../../db/schema/votes';
+import { feedbackCounters } from '@/db/schema';
+import { votes } from '../../db/schema/votes';
 import { protectedProcedure } from '../procedures';
 
 export const votesRouter = {
@@ -25,7 +20,7 @@ export const votesRouter = {
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
-      const userId = context.session!.user.id;
+      const userId = context.session?.user.id;
 
       const voteId = crypto.randomUUID();
 
@@ -57,7 +52,7 @@ export const votesRouter = {
           });
 
         return newVote;
-      } catch (error) {
+      } catch (_error) {
         // TODO: failing silently for now need to handle the multiple clicks on different boards but same post
       }
     }),
@@ -72,7 +67,7 @@ export const votesRouter = {
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
-      const userId = context.session!.user.id;
+      const _userId = context.session?.user.id;
 
       const [updatedVote] = await context.db
         .update(votes)
@@ -99,7 +94,7 @@ export const votesRouter = {
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
-      const userId = context.session!.user.id;
+      const userId = context.session?.user.id;
 
       const filters = [eq(votes.userId, userId)];
 
@@ -139,7 +134,7 @@ export const votesRouter = {
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
-      const userId = context.session!.user.id;
+      const userId = context.session?.user.id;
 
       const filter = [eq(votes.userId, userId)];
       if (input.feedbackId) {

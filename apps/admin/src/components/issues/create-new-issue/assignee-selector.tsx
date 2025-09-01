@@ -19,7 +19,6 @@ import {
 } from '@/components/ui/popover';
 import { useIssues } from '@/react-db/issues';
 import { useUsers } from '@/react-db/users';
-import type { User } from '@/store/users-store';
 
 interface AssigneeSelectorProps {
   assigneeId: string | undefined;

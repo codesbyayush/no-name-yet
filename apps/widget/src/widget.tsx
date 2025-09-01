@@ -33,7 +33,7 @@ interface OmniFeedbackWidgetInstance {
 }
 
 class OmniFeedbackWidgetManager {
-  private instances: Map<
+  private readonly instances: Map<
     string,
     { root: ReturnType<typeof createRoot> | null; container: HTMLElement }
   > = new Map();
@@ -69,7 +69,9 @@ class OmniFeedbackWidgetManager {
     const setFrameClosedSize = (timeout = 500) => {
       iframe.style.backgroundColor = 'transparent';
       iframe.style.backdropFilter = 'none';
-      if (prevTimeout) window.clearTimeout(prevTimeout);
+      if (prevTimeout) {
+        window.clearTimeout(prevTimeout);
+      }
       prevTimeout = window.setTimeout(() => {
         iframe.style.top = '';
         iframe.style.left = '';
@@ -81,7 +83,9 @@ class OmniFeedbackWidgetManager {
       }, timeout);
     };
     const setFrameOpenSize = () => {
-      if (prevTimeout) window.clearTimeout(prevTimeout);
+      if (prevTimeout) {
+        window.clearTimeout(prevTimeout);
+      }
       iframe.style.top = '0';
       iframe.style.left = '0';
       iframe.style.right = '0';
@@ -107,7 +111,9 @@ class OmniFeedbackWidgetManager {
 
     const onFrameLoad = () => {
       const doc = iframe.contentDocument || iframe.contentWindow?.document;
-      if (!doc) return;
+      if (!doc) {
+        return;
+      }
       // Clone host styles to iframe so widget styles apply inside
       const head = doc.head;
       const hostLinks = document.querySelectorAll<HTMLLinkElement>(
@@ -127,16 +133,23 @@ class OmniFeedbackWidgetManager {
       }
 
       const mount = doc.getElementById('root');
-      if (!mount) return;
+      if (!mount) {
+        return;
+      }
       root = createRoot(mount);
 
       const handleOpenChange = (open: boolean) => {
-        if (open) setFrameOpenSize();
-        else setFrameClosedSize();
+        if (open) {
+          setFrameOpenSize();
+        } else {
+          setFrameClosedSize();
+        }
       };
 
       const renderWidget = (visible = true) => {
-        if (!root) return;
+        if (!root) {
+          return;
+        }
         root.render(
           <div style={{ display: visible ? 'block' : 'none' }}>
             <OmniFeedbackWidget
@@ -153,7 +166,9 @@ class OmniFeedbackWidgetManager {
 
       // Save root reference into instance for cleanup
       const instance = this.instances.get(instanceId);
-      if (instance) instance.root = root;
+      if (instance) {
+        instance.root = root;
+      }
     };
 
     iframe.addEventListener('load', onFrameLoad, { once: true });
@@ -275,14 +290,16 @@ if (typeof document !== 'undefined' && typeof window !== 'undefined') {
             customData: (() => {
               const result: Record<string, string> = {};
               for (const [k, v] of Object.entries(customData)) {
-                if (typeof v === 'string') result[k] = v;
+                if (typeof v === 'string') {
+                  result[k] = v;
+                }
               }
               return result;
             })(),
             jwtAuthToken,
             portalUrl,
           });
-        } catch (error) {}
+        } catch (_error) {}
       }
     }
   };

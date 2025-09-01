@@ -94,7 +94,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
           try {
             const editor = ServerBlockNoteEditor.create();
             htmlContent = await editor.blocksToFullHTML(input.content);
-          } catch (error) {
+          } catch (_error) {
             // Log warning for HTML generation failure but continue
           }
         }
@@ -279,7 +279,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
             hasMore: input.offset + input.limit < totalCount,
           },
         };
-      } catch (error) {
+      } catch (_error) {
         throw new ORPCError('INTERNAL_SERVER_ERROR');
       }
     }),
@@ -340,7 +340,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
               updateValues.htmlContent = await editor.blocksToFullHTML(
                 updates.content
               );
-            } catch (error) {}
+            } catch (_error) {}
           }
         }
 

@@ -47,10 +47,10 @@ export default function SignIn({
                     newUserCallbackURL,
                   },
                   {
-                    onRequest: (ctx) => {
+                    onRequest: (_ctx) => {
                       setLoading(true);
                     },
-                    onResponse: (ctx) => {
+                    onResponse: (_ctx) => {
                       setLoading(false);
                     },
                   }
@@ -94,10 +94,10 @@ export default function SignIn({
                     newUserCallbackURL,
                   },
                   {
-                    onRequest: (ctx) => {
+                    onRequest: (_ctx) => {
                       setLoading(true);
                     },
-                    onResponse: (ctx) => {
+                    onResponse: (_ctx) => {
                       setLoading(false);
                     },
                   }
@@ -129,10 +129,10 @@ export default function SignIn({
                     newUserCallbackURL,
                   },
                   {
-                    onRequest: (ctx) => {
+                    onRequest: (_ctx) => {
                       setLoading(true);
                     },
-                    onResponse: (ctx) => {
+                    onResponse: (_ctx) => {
                       setLoading(false);
                     },
                   }

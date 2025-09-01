@@ -23,7 +23,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { adminClient } from '@/utils/admin-orpc';
-import { client, queryClient } from '@/utils/orpc';
+import { queryClient } from '@/utils/orpc';
 
 interface Board {
   id: string;
@@ -107,7 +107,7 @@ export function BoardsSettings() {
     if (!newBoardEmoji) {
       setNewBoardEmoji(firstAvailableEmoji);
     }
-  }, [boards, firstAvailableEmoji, newBoardEmoji]);
+  }, [firstAvailableEmoji, newBoardEmoji]);
 
   const createBoardMutation = useMutation({
     mutationFn: (data: { name: string; emoji: string; isPrivate: boolean }) =>

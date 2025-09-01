@@ -133,7 +133,7 @@ function BoardIndexPage() {
           {isError && <div>Error loading posts</div>}
           {!isLoading &&
             allPosts.map((f, i) => {
-              const isLastPost = i === allPosts.length - 1;
+              const _isLastPost = i === allPosts.length - 1;
               const isSecondLastPost = i === allPosts.length - 2;
 
               return (

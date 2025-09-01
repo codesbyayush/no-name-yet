@@ -18,7 +18,7 @@ import { Textarea } from '@/components/ui/textarea';
 import type { Issue } from '@/mock-data/issues';
 import { ranks } from '@/mock-data/issues';
 import { priorities } from '@/mock-data/priorities';
-import { type Status, status } from '@/mock-data/status';
+import { status } from '@/mock-data/status';
 import { users } from '@/mock-data/users';
 import { useBoards } from '@/react-db/boards';
 import { useAddIssue, useIssues } from '@/react-db/issues';
@@ -94,7 +94,7 @@ export function CreateNewIssue() {
       cycleId: '',
       project: mappedProjects[0],
       subissues: [],
-      rank: ranks[ranks.length - 1],
+      rank: ranks.at(-1),
       tags: [],
     };
   }, [defaultStatusKey]);
@@ -109,7 +109,7 @@ export function CreateNewIssue() {
         setAddIssueForm(createDefaultData());
       }
     }
-  }, [isOpen, createDefaultData]);
+  }, [isOpen, createDefaultData, mappedProjects[0]]);
 
   const createIssue = () => {
     if (!addIssueForm.title) {

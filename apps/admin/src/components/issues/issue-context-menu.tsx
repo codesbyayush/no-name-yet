@@ -22,7 +22,7 @@ import {
   Trash2,
   User,
 } from 'lucide-react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -63,7 +63,9 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
   const { data: tags } = useTags();
   const { users } = useUsersStore();
   const handleStatusChange = (statusId: string) => {
-    if (!issueId) return;
+    if (!issueId) {
+      return;
+    }
     const newStatus = status.find((s) => s.id === statusId);
     if (newStatus) {
       updateIssueStatus(issueId, newStatus);
@@ -72,7 +74,9 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
   };
 
   const handlePriorityChange = (priorityId: string) => {
-    if (!issueId) return;
+    if (!issueId) {
+      return;
+    }
     const newPriority = priorities.find((p) => p.id === priorityId);
     if (newPriority) {
       updateIssuePriority(issueId, newPriority);
@@ -81,7 +85,9 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
   };
 
   const handleAssigneeChange = (userId: string | null) => {
-    if (!issueId) return;
+    if (!issueId) {
+      return;
+    }
     const newAssignee = userId
       ? users.find((u) => u.id === userId) || null
       : null;
@@ -92,11 +98,15 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
   };
 
   const handleLabelToggle = (tagId: string) => {
-    if (!issueId) return;
+    if (!issueId) {
+      return;
+    }
     const issue = getIssueById(issueId);
     const tag = tags.find((t) => t.id === tagId);
 
-    if (!(issue && tag)) return;
+    if (!(issue && tag)) {
+      return;
+    }
 
     const hasTag = issue.labels.some((l) => l.id === tagId);
 
@@ -110,7 +120,9 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
   };
 
   const handleProjectChange = (projectId: string | null) => {
-    if (!issueId) return;
+    if (!issueId) {
+      return;
+    }
     const newProject = projectId
       ? projects.find((p) => p.id === projectId)
       : undefined;
@@ -121,7 +133,9 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
   };
 
   const handleSetDueDate = () => {
-    if (!issueId) return;
+    if (!issueId) {
+      return;
+    }
     const dueDate = new Date();
     dueDate.setDate(dueDate.getDate() + 7);
     updateIssue(issueId, { dueDate: dueDate.toISOString() });
@@ -161,7 +175,9 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
   };
 
   const handleCopy = () => {
-    if (!issueId) return;
+    if (!issueId) {
+      return;
+    }
     const issue = getIssueById(issueId);
     if (issue) {
       navigator.clipboard.writeText(issue.title);

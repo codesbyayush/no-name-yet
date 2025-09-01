@@ -20,7 +20,7 @@ export function StatusIcon({
   className,
   progress = 0.5,
 }: StatusIconProps) {
-  const color = status ? statusClasses[status] : 'text-gray-500';
+  const _color = status ? statusClasses[status] : 'text-gray-500';
 
   if (status === 'resolved') {
     return (

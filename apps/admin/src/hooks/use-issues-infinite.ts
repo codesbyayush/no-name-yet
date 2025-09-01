@@ -3,7 +3,6 @@ import { useCallback, useEffect, useRef } from 'react';
 import { transformServerPostsToIssues } from '@/lib/server-data-transform';
 import { useIssuesStore } from '@/store/issues-store';
 import { adminClient } from '@/utils/admin-orpc';
-import { client } from '@/utils/orpc';
 
 interface UseIssuesInfiniteOptions {
   boardId?: string;
@@ -38,7 +37,9 @@ export const useIssuesInfinite = ({
       return response;
     },
     getNextPageParam: (lastPage: any, allPages) => {
-      if (!lastPage.pagination.hasMore) return;
+      if (!lastPage.pagination.hasMore) {
+        return;
+      }
       return allPages.length;
     },
     initialPageParam: 0,

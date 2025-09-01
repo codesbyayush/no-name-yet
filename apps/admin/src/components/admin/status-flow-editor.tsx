@@ -89,7 +89,9 @@ export function StatusFlowEditor({
     setStatuses((prev) => {
       const next = [...prev];
       const newIndex = direction === 'up' ? index - 1 : index + 1;
-      if (newIndex < 0 || newIndex >= next.length) return prev;
+      if (newIndex < 0 || newIndex >= next.length) {
+        return prev;
+      }
 
       // swap
       const temp = next[index];

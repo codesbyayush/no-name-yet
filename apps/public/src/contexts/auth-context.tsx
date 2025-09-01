@@ -91,7 +91,7 @@ export function AuthProvider({
     try {
       await authClient.signOut();
       navigate({ to: '/auth', replace: true });
-    } catch (error) {}
+    } catch (_error) {}
   };
 
   // Show loading spinner while determining auth status
@@ -157,7 +157,7 @@ export const useAdminAuth = () => {
   return {
     ...auth,
     // Add admin-specific methods here
-    revokeUserSession: async (userId: string) => {},
+    revokeUserSession: async (_userId: string) => {},
     listAllSessions: async () => {
       // Implementation for listing all sessions
       return authClient.listSessions();

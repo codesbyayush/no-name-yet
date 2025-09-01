@@ -107,7 +107,7 @@ export function ChangelogSettings() {
     if (!newBoardEmoji) {
       setNewBoardEmoji(firstAvailableEmoji);
     }
-  }, [boards, firstAvailableEmoji, newBoardEmoji]);
+  }, [firstAvailableEmoji, newBoardEmoji]);
 
   const createBoardMutation = useMutation({
     mutationFn: (data: { name: string; emoji: string; isPrivate: boolean }) =>

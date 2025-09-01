@@ -1,23 +1,9 @@
-import {
-  type Icon,
-  IconDots,
-  IconFolder,
-  IconShare3,
-  IconTrash,
-} from '@tabler/icons-react';
+import type { Icon } from '@tabler/icons-react';
 import { Link } from '@tanstack/react-router';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,

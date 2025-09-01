@@ -37,9 +37,12 @@ router.get('/setup', async (c) => {
 
   // Redirect back to admin with installation info
   const redirectUrl = new URL('/settings/integrations', frontendBase);
-  if (installationId)
+  if (installationId) {
     redirectUrl.searchParams.set('installation_id', installationId);
-  if (setupAction) redirectUrl.searchParams.set('setup_action', setupAction);
+  }
+  if (setupAction) {
+    redirectUrl.searchParams.set('setup_action', setupAction);
+  }
 
   return c.redirect(redirectUrl.toString());
 });

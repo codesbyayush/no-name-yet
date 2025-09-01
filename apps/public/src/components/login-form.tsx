@@ -1,5 +1,5 @@
 import { useForm } from '@tanstack/react-form';
-import { useNavigate, useSearch } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import z from 'zod/v4';
@@ -74,7 +74,7 @@ export function LoginForm({
         callbackURL,
       });
       toast.success('Redirecting to Google...');
-    } catch (error) {
+    } catch (_error) {
       toast.error('Google login failed. Please try again.');
     } finally {
       setIsGoogleLoading(false);

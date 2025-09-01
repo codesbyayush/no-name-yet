@@ -16,7 +16,7 @@ export const commentsRouter = {
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
-      const userId = context.session!.user.id;
+      const userId = context.session?.user.id;
 
       const commentId = crypto.randomUUID();
 
@@ -54,7 +54,7 @@ export const commentsRouter = {
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
-      const userId = context.session!.user.id;
+      const _userId = context.session?.user.id;
 
       const [updatedComment] = await context.db
         .update(comments)
@@ -83,7 +83,7 @@ export const commentsRouter = {
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
-      const userId = context.session!.user.id;
+      const _userId = context.session?.user.id;
 
       const [deletedComment] = await context.db
         .delete(comments)

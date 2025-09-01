@@ -4,13 +4,7 @@ import type React from 'react';
 import { useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { authClient, useSession } from '@/lib/auth-client';
@@ -33,7 +27,7 @@ export function CreateOrganizationForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const _queryClient = useQueryClient();
 
   const { data: session } = useSession();
 
@@ -59,7 +53,7 @@ export function CreateOrganizationForm({
         slug,
       });
       return response.data?.status;
-    } catch (error) {
+    } catch (_error) {
       return false;
     }
   };

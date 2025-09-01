@@ -157,14 +157,18 @@ const AnimationComponent: React.FC<{
 AnimationComponent.displayName = 'AnimationComponent';
 
 const splitText = (text: string, per: PerType) => {
-  if (per === 'line') return text.split('\n');
+  if (per === 'line') {
+    return text.split('\n');
+  }
   return text.split(/(\s+)/);
 };
 
 const hasTransition = (
   variant?: Variant
 ): variant is TargetAndTransition & { transition?: Transition } => {
-  if (!variant) return false;
+  if (!variant) {
+    return false;
+  }
   return typeof variant === 'object' && 'transition' in variant;
 };
 
@@ -172,7 +176,9 @@ const createVariantsWithTransition = (
   baseVariants: Variants,
   transition?: Transition & { exit?: Transition }
 ): Variants => {
-  if (!transition) return baseVariants;
+  if (!transition) {
+    return baseVariants;
+  }
 
   const { exit: _, ...mainTransition } = transition;
 

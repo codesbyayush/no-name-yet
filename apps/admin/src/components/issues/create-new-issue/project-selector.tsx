@@ -1,4 +1,4 @@
-import { Box, CheckIcon, FolderIcon } from 'lucide-react';
+import { Box, CheckIcon } from 'lucide-react';
 import { useEffect, useId, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -30,8 +30,9 @@ interface ProjectSelectorProps {
 function pickIconForId(id: string) {
   const icons = projects.map((p) => p.icon);
   let hash = 0;
-  for (let i = 0; i < id.length; i++)
+  for (let i = 0; i < id.length; i++) {
     hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+  }
   return icons[hash % icons.length] ?? Box;
 }
 

@@ -29,7 +29,6 @@ import {
   IconLayoutColumns,
   IconLoader,
   IconPlus,
-  IconTrendingUp,
 } from '@tabler/icons-react';
 import {
   type ColumnDef,
@@ -47,29 +46,14 @@ import {
   type VisibilityState,
 } from '@tanstack/react-table';
 import * as React from 'react';
-import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  type ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@/components/ui/chart';
+import type { ChartConfig } from '@/components/ui/chart';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from '@/components/ui/drawer';
+import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -87,7 +71,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
 import {
   Table,
   TableBody,
@@ -620,7 +603,7 @@ export function DataTable({
   );
 }
 
-const chartData = [
+const _chartData = [
   { month: 'January', desktop: 186, mobile: 80 },
   { month: 'February', desktop: 305, mobile: 200 },
   { month: 'March', desktop: 237, mobile: 120 },
@@ -629,7 +612,7 @@ const chartData = [
   { month: 'June', desktop: 214, mobile: 140 },
 ];
 
-const chartConfig = {
+const _chartConfig = {
   desktop: {
     label: 'Desktop',
     color: 'var(--primary)',

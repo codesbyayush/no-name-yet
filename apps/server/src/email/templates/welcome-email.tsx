@@ -7,8 +7,6 @@ import {
   Section,
   Text,
 } from '@react-email/components';
-// @ts-expect-error - React types not properly configured for server environment will fix later
-import React from 'react';
 
 export const WelcomeSubject = 'How was your onboarding to OpenFeedback?';
 

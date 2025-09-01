@@ -6,7 +6,6 @@ import {
 } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { CreateEditPost } from '@/components/create-edit-post';
 import { CommentButton, VoteButton } from '@/components/svg';
 import { AutosizeTextarea } from '@/components/ui/autosize-textarea';
 import { Button } from '@/components/ui/button';

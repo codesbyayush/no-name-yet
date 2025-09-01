@@ -60,13 +60,13 @@ export const Route = createFileRoute('/_landing')({
   },
 });
 
-const navItems = [
+const _navItems = [
   { name: 'Home', link: '/', icon: undefined },
   { name: 'About', link: '/about', icon: undefined },
   { name: 'Contact', link: '/contact', icon: undefined },
 ];
 
-function Footer() {
+function _Footer() {
   return (
     <footer className="relative z-10 mt-24 border-white/10 border-t py-10">
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-4 md:flex-row">

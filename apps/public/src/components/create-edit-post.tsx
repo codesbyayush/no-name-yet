@@ -45,7 +45,7 @@ export function CreateEditPost({
 }: CreateEditPostProps) {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const [newTag, setNewTag] = useState('');
+  const [_newTag, setNewTag] = useState('');
 
   const [formData, setFormData] = useState<PostFormData>({
     title: '',
@@ -74,7 +74,11 @@ export function CreateEditPost({
       });
       setNewTag('');
     }
-  }, [open, mode /* eslint-disable-line react-hooks/exhaustive-deps */]);
+  }, [
+    open,
+    mode /* eslint-disable-line react-hooks/exhaustive-deps */,
+    boards?.boards[0]?.id,
+  ]);
 
   // Create post mutation
   const createPostMutation = useMutation({

@@ -1,5 +1,5 @@
-import { Code2, Copy, Eye, Info, Settings } from 'lucide-react';
-import React, { useMemo, useState } from 'react';
+import { Code2, Copy, Info, Settings } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -364,7 +364,7 @@ export {};`,
       await navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {}
+    } catch (_err) {}
   };
 
   return (

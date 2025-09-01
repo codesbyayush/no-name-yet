@@ -192,7 +192,7 @@ const OmniFeedbackWidget = () => {
             position: 'above-button',
           });
         }
-      } catch (error) {}
+      } catch (_error) {}
     };
 
     initWidget();

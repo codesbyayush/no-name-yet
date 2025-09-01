@@ -7,12 +7,10 @@ import {
   boards,
   comments,
   feedback,
-  feedbackTags,
   issueSequences,
   member,
   organization,
   statuses,
-  tags,
   user,
   votes,
 } from '../db/schema';
@@ -141,7 +139,7 @@ export const apiRouter = {
         organizationName: org.name,
         organizationSlug: org.slug,
       };
-    } catch (error) {
+    } catch (_error) {
       throw new ORPCError('INTERNAL_SERVER_ERROR');
     }
   }),
@@ -205,7 +203,7 @@ export const apiRouter = {
           .where(eq(organization.id, userOrganizationId));
 
         return { success: true };
-      } catch (error) {
+      } catch (_error) {
         throw new ORPCError('INTERNAL_SERVER_ERROR');
       }
     }),
@@ -275,7 +273,7 @@ export const apiRouter = {
         .where(eq(organization.id, userOrganizationId));
 
       return { success: true };
-    } catch (error) {
+    } catch (_error) {
       throw new ORPCError('INTERNAL_SERVER_ERROR');
     }
   }),
@@ -323,8 +321,7 @@ export const apiRouter = {
             slug: org.slug,
           },
         };
-      } catch (error) {
-        console.error(error);
+      } catch (_error) {
         throw new ORPCError('INTERNAL_SERVER_ERROR');
       }
     }),
@@ -364,7 +361,7 @@ export const apiRouter = {
         organizationId: context.organization.id,
         organizationName: context.organization.name,
       };
-    } catch (error) {
+    } catch (_error) {
       throw new ORPCError('INTERNAL_SERVER_ERROR');
     }
   }),
@@ -423,7 +420,7 @@ export const apiRouter = {
         boards: userBoards,
         count: userBoards.length,
       };
-    } catch (error) {
+    } catch (_error) {
       throw new ORPCError('INTERNAL_SERVER_ERROR');
     }
   }),
@@ -472,7 +469,7 @@ export const apiRouter = {
 
       if (!userOrganizationId) {
         // Check if any organizations exist for this user in member table
-        const allMemberships = await context.db
+        const _allMemberships = await context.db
           .select()
           .from(member)
           .where(eq(member.userId, userId));
@@ -578,7 +575,7 @@ export const apiRouter = {
             hasMore,
           },
         };
-      } catch (error) {
+      } catch (_error) {
         throw new ORPCError('INTERNAL_SERVER_ERROR');
       }
     }),
@@ -660,7 +657,7 @@ export const apiRouter = {
             hasMore,
           },
         };
-      } catch (error) {
+      } catch (_error) {
         throw new ORPCError('INTERNAL_SERVER_ERROR');
       }
     }),
@@ -767,7 +764,7 @@ export const apiRouter = {
             hasMore,
           },
         };
-      } catch (error) {
+      } catch (_error) {
         throw new ORPCError('INTERNAL_SERVER_ERROR');
       }
     }),
@@ -793,7 +790,7 @@ export const apiRouter = {
         return {
           vote: userVote[0] || null,
         };
-      } catch (error) {
+      } catch (_error) {
         throw new ORPCError('INTERNAL_SERVER_ERROR');
       }
     }),
@@ -913,7 +910,7 @@ export const apiRouter = {
             hasMore,
           },
         };
-      } catch (error) {
+      } catch (_error) {
         throw new ORPCError('INTERNAL_SERVER_ERROR');
       }
     }),
@@ -1681,7 +1678,7 @@ export const apiRouter = {
         return {
           votes: userVotes,
         };
-      } catch (error) {
+      } catch (_error) {
         throw new ORPCError('INTERNAL_SERVER_ERROR');
       }
     }),

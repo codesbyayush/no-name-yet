@@ -76,7 +76,7 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
       // Return a context object with the snapshotted value
       return { previousPosts };
     },
-    onError: (err, variables, context) => {
+    onError: (_err, _variables, context) => {
       // If the mutation fails, use the context returned from onMutate to roll back
       if (context?.previousPosts) {
         queryClient.setQueryData(['all-posts', boardId], context.previousPosts);
@@ -127,7 +127,7 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
       // Return a context object with the snapshotted value
       return { previousPosts };
     },
-    onError: (err, variables, context) => {
+    onError: (_err, _variables, context) => {
       // If the mutation fails, use the context returned from onMutate to roll back
       if (context?.previousPosts) {
         queryClient.setQueryData(['all-posts', boardId], context.previousPosts);

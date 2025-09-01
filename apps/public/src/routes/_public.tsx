@@ -27,7 +27,7 @@ function PublicLayout() {
         await authClient.signIn.anonymous();
       }
     })();
-  }, [session]);
+  }, [session, isPending]);
 
   return (
     <div className="flex h-full min-h-screen flex-col items-center bg-background bg-noise">

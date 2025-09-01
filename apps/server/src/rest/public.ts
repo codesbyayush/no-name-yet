@@ -52,7 +52,7 @@ publicApiRouter.use('*', async (c, next) => {
     // }
 
     c.set('organization', org[0]);
-  } catch (error) {
+  } catch (_error) {
     return c.json({ error: 'Internal Server Error' }, 500);
   }
 
@@ -87,7 +87,7 @@ publicApiRouter.get('/boards', async (c) => {
       );
 
     return c.json(publicBoards);
-  } catch (error) {
+  } catch (_error) {
     return c.json({ error: 'Internal Server Error' }, 500);
   }
 });
@@ -155,7 +155,7 @@ publicApiRouter.get('/roadmap', async (c) => {
     }
 
     return c.json({ statuses: results });
-  } catch (error) {
+  } catch (_error) {
     return c.json({ error: 'Internal Server Error' }, 500);
   }
 });
@@ -191,7 +191,7 @@ publicApiRouter.get('/tags', async (c) => {
     const tags = (tagsResult.rows as { tag: string }[]).map((row) => row.tag);
 
     return c.json(tags);
-  } catch (error) {
+  } catch (_error) {
     return c.json({ error: 'Internal Server Error' }, 500);
   }
 });
@@ -306,7 +306,7 @@ publicApiRouter.post('/feedback', async (c) => {
       .returning({ id: feedback.id });
 
     return c.json({ success: true, feedbackId: newFeedbackItem.id }, 201);
-  } catch (error) {
+  } catch (_error) {
     return c.json({ error: 'Internal Server Error' }, 500);
   }
 });

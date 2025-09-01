@@ -1,6 +1,5 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 import { AppSidebar } from '@/components/app-sidebar';
-import OmniFeedbackWidget from '@/components/feedback-widget';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { AuthProvider } from '@/contexts/auth-context';
 import { SidebarRightProvider } from '@/contexts/sidebar-right';

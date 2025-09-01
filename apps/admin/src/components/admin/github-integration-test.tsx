@@ -1,5 +1,5 @@
 import { useLocation } from '@tanstack/react-router';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -27,7 +27,7 @@ export function GithubIntegrationTest() {
     const searchParams = new URLSearchParams(location.search);
     const installationId = searchParams.get('installation_id');
     if (installationId) {
-      handleInstallationCallback(Number.parseInt(installationId));
+      handleInstallationCallback(Number.parseInt(installationId, 10));
     }
   }, [location.search]);
 
@@ -82,8 +82,9 @@ export function GithubIntegrationTest() {
   };
 
   const handleUnlinkClick = async () => {
-    if (!confirm('Are you sure you want to unlink the GitHub installation?'))
+    if (!confirm('Are you sure you want to unlink the GitHub installation?')) {
       return;
+    }
 
     setLoading(true);
     setError(null);
@@ -119,7 +120,7 @@ export function GithubIntegrationTest() {
     }
   };
 
-  const handleTestWebhook = async () => {
+  const handleTestWebhook = () => {
     setLoading(true);
     setError(null);
     try {

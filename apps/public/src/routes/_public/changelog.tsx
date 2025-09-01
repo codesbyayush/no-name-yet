@@ -210,7 +210,7 @@ function ChangelogPage() {
             </div>
 
             <div className="space-y-0 divide-y divide-muted-foreground/5">
-              {changelogEntries.map((entry, i) => (
+              {changelogEntries.map((entry, _i) => (
                 <div className="space-y-3 p-6" key={entry.id}>
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex min-w-0 items-center gap-3">

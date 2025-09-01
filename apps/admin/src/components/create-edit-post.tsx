@@ -1,11 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Plus, X } from 'lucide-react';
 import type React from 'react';
 import { useEffect, useState } from 'react';
-import { set } from 'react-hook-form';
 import { toast } from 'sonner';
 import { AutosizeTextarea } from '@/components/ui/autosize-textarea';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -50,7 +47,7 @@ export function CreateEditPost({
 }: CreateEditPostProps) {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const [newTag, setNewTag] = useState('');
+  const [_newTag, setNewTag] = useState('');
 
   const [formData, setFormData] = useState<PostFormData>({
     title: '',
@@ -79,7 +76,7 @@ export function CreateEditPost({
       });
       setNewTag('');
     }
-  }, [open, mode]);
+  }, [open, mode, boards?.boards[0].id]);
 
   // Create post mutation
   const createPostMutation = useMutation({

@@ -1,9 +1,9 @@
 import { LexoRank } from '@/lib/utils';
-import { type LabelInterface, labels } from './labels';
-import { type Priority, priorities } from './priorities';
-import { type Project, projects } from './projects';
-import { type Status, status } from './status';
-import { type User, users } from './users';
+import type { LabelInterface } from './labels';
+import type { Priority } from './priorities';
+import type { Project } from './projects';
+import type { Status } from './status';
+import type { User } from './users';
 
 export interface Issue {
   id: string;

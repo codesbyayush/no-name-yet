@@ -176,8 +176,8 @@ const isWorkersEnvironment =
 
 const createExport = async () => {
   if (isLocalEnvironment && !isWorkersEnvironment) {
-    const { readFileSync } = await import('fs');
-    const { resolve } = await import('path');
+    const { readFileSync } = await import('node:fs');
+    const { resolve } = await import('node:path');
 
     // TLS configuration for HTTPS in development
     const tlsConfig = {

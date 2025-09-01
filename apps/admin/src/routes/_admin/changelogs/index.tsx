@@ -91,7 +91,7 @@ function ChangelogListPage() {
       await adminClient.organization.changelog.delete({ id });
       toast.success('Changelog deleted successfully');
       refetch();
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to delete changelog');
     }
   };
@@ -115,7 +115,7 @@ function ChangelogListPage() {
       });
       toast.success(`Changelog ${action}ed successfully`);
       refetch();
-    } catch (error) {
+    } catch (_error) {
       toast.error(`Failed to ${action} changelog`);
     }
   };
@@ -333,7 +333,7 @@ function ChangelogListPage() {
 
               {isLoading ? (
                 <div className="grid gap-4">
-                  {[...Array(3)].map((_, i) => (
+                  {[...new Array(3)].map((_, i) => (
                     <Card key={i}>
                       <CardHeader>
                         <div className="flex items-start justify-between">

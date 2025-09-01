@@ -11,7 +11,6 @@ import {
 import { motion } from 'motion/react';
 import publicPortal from '../../../assets/public-portal.png';
 import { FloatingNav } from '../ui/floating-navbar';
-import { Spotlight } from '../ui/spotlight-new';
 
 const LandingPage = () => {
   const navItems = [
@@ -61,7 +60,7 @@ const LandingPage = () => {
     },
   ];
 
-  const links = [
+  const _links = [
     { label: 'Docs', href: '/docs' },
     { label: 'Pricing', href: '/pricing' },
     { label: 'Blog', href: '/blog' },

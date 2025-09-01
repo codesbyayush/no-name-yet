@@ -1,10 +1,8 @@
 import {
   boolean,
   index,
-  integer,
   jsonb,
   pgTable,
-  serial,
   text,
   timestamp,
   unique,

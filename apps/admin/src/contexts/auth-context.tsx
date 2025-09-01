@@ -56,7 +56,7 @@ export function AuthProvider({
     try {
       await authClient.signOut();
       navigate({ to: '/auth', replace: true });
-    } catch (error) {}
+    } catch (_error) {}
   };
 
   // Don't render children if auth requirements aren't met

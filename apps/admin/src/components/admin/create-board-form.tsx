@@ -75,7 +75,7 @@ export function CreateBoardForm({
       // Mark onboarding as complete
       try {
         await client.completeOnboardingStep({ step: 'complete' });
-      } catch (error) {}
+      } catch (_error) {}
 
       if (onSuccess) {
         onSuccess();

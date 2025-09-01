@@ -135,7 +135,7 @@ export function FeedbackSettings() {
   ];
   const [selectedColor, setSelectedColor] = useState<string>(colorPalette[0]);
 
-  const [feedbackBoards, setFeedbackBoards] = useState<FeedbackBoard[]>([
+  const [feedbackBoards, _setFeedbackBoards] = useState<FeedbackBoard[]>([
     {
       id: 'feature-request',
       name: 'Feature Request',
@@ -204,13 +204,12 @@ export function FeedbackSettings() {
     if (!boardName.trim()) {
       return;
     }
-    const payload = {
+    const _payload = {
       name: boardName.trim(),
       description: boardDescription.trim() || null,
       visibility: boardVisibility,
       icon: boardIcon, // { emoji, name } | null
     };
-    console.log('Create board:', payload);
     setCreateBoardOpen(false);
   };
 
@@ -222,13 +221,11 @@ export function FeedbackSettings() {
     setAddStatusOpen(true);
   };
 
-  const handleEditStatus = (statusId: string) => {
-    console.log('Edit status:', statusId);
+  const handleEditStatus = (_statusId: string) => {
     // TODO: Implement backend integration
   };
 
-  const handleDeleteStatus = (statusId: string) => {
-    console.log('Delete status:', statusId);
+  const handleDeleteStatus = (_statusId: string) => {
     // TODO: Implement backend integration
   };
 
@@ -255,11 +252,6 @@ export function FeedbackSettings() {
           : cat
       )
     );
-    console.log('Create status:', {
-      name: newStatusName.trim(),
-      hex: selectedColor,
-      categoryId: pendingCategoryId,
-    });
     setAddStatusOpen(false);
     setPendingCategoryId(null);
   };
@@ -275,23 +267,19 @@ export function FeedbackSettings() {
   };
 
   // Feedback module handlers
-  const handleAddBoard = () => {
-    console.log('Add new feedback board');
+  const _handleAddBoard = () => {
     // TODO: Implement backend integration
   };
 
-  const handleEditBoard = (boardId: string) => {
-    console.log('Edit board:', boardId);
+  const handleEditBoard = (_boardId: string) => {
     // TODO: Implement backend integration
   };
 
-  const handleDeleteBoard = (boardId: string) => {
-    console.log('Delete board:', boardId);
+  const handleDeleteBoard = (_boardId: string) => {
     // TODO: Implement backend integration
   };
 
-  const handleBoardInfo = (boardId: string) => {
-    console.log('Show board info:', boardId);
+  const handleBoardInfo = (_boardId: string) => {
     // TODO: Implement backend integration
   };
 

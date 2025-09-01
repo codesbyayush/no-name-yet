@@ -9,7 +9,7 @@ import { status } from '@/mock-data/status';
 const generateRank = (index: number) => {
   const firstRank = new LexoRank('a3c');
   for (let i = 0; i < index; i++) {
-    const previousRank = LexoRank.from(firstRank.toString());
+    const _previousRank = LexoRank.from(firstRank.toString());
     firstRank.increment();
   }
   return firstRank.toString();

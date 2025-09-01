@@ -3,26 +3,13 @@ import {
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
-import {
-  Calendar,
-  Check,
-  Circle,
-  GitBranch,
-  MessageCircle,
-  ThumbsDown,
-  ThumbsUp,
-  User,
-} from 'lucide-react';
+import { Check, GitBranch } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { client } from '@/utils/orpc';
-import { CommentButton, CommentIcon, MoreDotsIcon, VoteButton } from '../svg';
+import { CommentButton, MoreDotsIcon, VoteButton } from '../svg';
 import { AutosizeTextarea } from '../ui/autosize-textarea';
-import { StatusIcon } from '../ui/status-icon';
 
 export function RenderPostsList() {
   // Replace dummy data with infinite query
@@ -159,7 +146,7 @@ function PostDetail({ post }: { post: any }) {
       // Invalidate and refetch comments
       queryClient.invalidateQueries({ queryKey: [postId, 'comments'] });
     },
-    onError: (error) => {
+    onError: (_error) => {
       // You could add a toast notification here
     },
   });
@@ -380,8 +367,8 @@ function PostListItem({ post }: { post: any }) {
   const [isChecked, setIsChecked] = useState(false);
 
   // Generate random progress for demo (in real app, this would come from post data)
-  const progress = Math.floor(Math.random() * 10) + 1;
-  const total = Math.floor(Math.random() * 10) + 1;
+  const _progress = Math.floor(Math.random() * 10) + 1;
+  const _total = Math.floor(Math.random() * 10) + 1;
 
   // Generate random status colors for demo
   const statusColors = [
@@ -405,7 +392,7 @@ function PostListItem({ post }: { post: any }) {
   const randomTags = tags.slice(0, Math.floor(Math.random() * 3) + 1);
 
   // Generate random user initials for demo
-  const userInitials = ['NKC', 'SK', 'AB', 'CD', 'EF'];
+  const _userInitials = ['NKC', 'SK', 'AB', 'CD', 'EF'];
   const userInitial = post?.author?.name?.slice(0, 2);
 
   return (
@@ -507,7 +494,9 @@ function PostListItem({ post }: { post: any }) {
               const branch = post.issueKey
                 ? `${String(post.issueKey).toLowerCase()}`
                 : '';
-              if (branch) navigator.clipboard.writeText(branch);
+              if (branch) {
+                navigator.clipboard.writeText(branch);
+              }
             }}
             title="Copy branch"
           >

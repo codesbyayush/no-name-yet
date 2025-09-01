@@ -68,7 +68,9 @@ export const useUsersByRole = (role: string | undefined) =>
 export const useUsersByTeam = (teamId: string | undefined) =>
   useLiveQuery((q) =>
     q.from({ user: usersCollection }).where(({ user }) => {
-      if (!teamId) return true;
+      if (!teamId) {
+        return true;
+      }
       const teams = (user.teamIds ?? []) as unknown as string[];
       return teams.includes(teamId);
     })
@@ -78,7 +80,9 @@ export const useSearchUsers = (query: string | undefined) => {
   const term = (query ?? '').trim().toLowerCase();
   return useLiveQuery((q) =>
     q.from({ user: usersCollection }).where(({ user }) => {
-      if (!term) return true;
+      if (!term) {
+        return true;
+      }
       const name = lower(user.name);
       const email = lower(user.email);
       return ilike(name, `%${term}%`) || ilike(email, `%${term}%`);
@@ -98,7 +102,9 @@ export const useAddUser = () => ({
 
 export const useAddUsers = () => ({
   mutate: (users: UserDoc[]) => {
-    for (const u of users) usersCollection.insert(u);
+    for (const u of users) {
+      usersCollection.insert(u);
+    }
   },
 });
 export const useUpdateUser = () => ({

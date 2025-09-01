@@ -137,7 +137,9 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
 
   // Prevent background page scroll while the widget is open
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      return;
+    }
     const prevBodyOverflow = document.body.style.overflow;
     const prevHtmlOverflow = document.documentElement.style.overflow;
     const scrollbarWidth =
@@ -256,16 +258,28 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
 
   // Compute FAB icon animation classes
   const chatIconAnimClass = (() => {
-    if (isOpening) return 'fab-icon-out';
-    if (isOpen && isClosing) return 'fab-icon-in';
-    if (isOpen) return 'opacity-0';
+    if (isOpening) {
+      return 'fab-icon-out';
+    }
+    if (isOpen && isClosing) {
+      return 'fab-icon-in';
+    }
+    if (isOpen) {
+      return 'opacity-0';
+    }
     return 'opacity-100';
   })();
 
   const chevronIconAnimClass = (() => {
-    if (isOpening) return 'fab-icon-in';
-    if (isOpen && isClosing) return 'fab-icon-out';
-    if (isOpen) return 'opacity-100';
+    if (isOpening) {
+      return 'fab-icon-in';
+    }
+    if (isOpen && isClosing) {
+      return 'fab-icon-out';
+    }
+    if (isOpen) {
+      return 'opacity-100';
+    }
     return 'opacity-0';
   })();
 

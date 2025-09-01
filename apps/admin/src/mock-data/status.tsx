@@ -218,7 +218,9 @@ export const status: Status[] = [
 
 export const StatusIcon: React.FC<{ statusId: string }> = ({ statusId }) => {
   const currentStatus = status.find((s) => s.id === statusId);
-  if (!currentStatus) return null;
+  if (!currentStatus) {
+    return null;
+  }
 
   const IconComponent = currentStatus.icon;
   return <IconComponent />;

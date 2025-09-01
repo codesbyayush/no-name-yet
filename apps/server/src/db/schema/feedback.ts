@@ -10,9 +10,7 @@ import {
 } from 'drizzle-orm/pg-core';
 import { user } from './auth';
 import { boards } from './boards';
-import { organization } from './organization';
 import { statuses } from './statuses';
-import { tags } from './tags';
 
 // Enum for feedback types
 export const feedbackTypeEnum = pgEnum('feedback_type', ['bug', 'suggestion']);

@@ -1,5 +1,4 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { HeroHeader } from '@/components/landing/header';
 import HeroSection from '@/components/landing/hero-section';
 
 export const Route = createFileRoute('/_landing/')({
@@ -7,9 +6,5 @@ export const Route = createFileRoute('/_landing/')({
 });
 
 const LandingPage = () => {
-  return (
-    <>
-      <HeroSection />
-    </>
-  );
+  return <HeroSection />;
 };

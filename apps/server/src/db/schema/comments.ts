@@ -1,10 +1,8 @@
 import {
   boolean,
   index,
-  integer,
   pgTable,
   real,
-  serial,
   text,
   timestamp,
 } from 'drizzle-orm/pg-core';

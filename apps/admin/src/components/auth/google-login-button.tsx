@@ -23,7 +23,7 @@ export function GoogleLoginButton({ redirect }: { redirect: string }) {
         callbackURL,
       });
       toast.success('Redirecting to Google...');
-    } catch (error) {
+    } catch (_error) {
       toast.error('Google login failed. Please try again.');
     } finally {
       setIsGoogleLoading(false);

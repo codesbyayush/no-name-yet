@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface MoreDotsIconProps {
   className?: string;
   size?: number;

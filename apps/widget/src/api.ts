@@ -76,7 +76,9 @@ export const createApiClient = ({ apiUrl, publicKey }: ApiClientOptions) => {
     getPublicBoardsCached: (): Promise<Board[]> => {
       const cacheKey = `${baseUrl}|${publicKey}`;
       const existing = boardsCache.get(cacheKey);
-      if (existing) return existing;
+      if (existing) {
+        return existing;
+      }
       const promise = fetch(`${baseUrl}/boards`, {
         method: 'GET',
         headers,

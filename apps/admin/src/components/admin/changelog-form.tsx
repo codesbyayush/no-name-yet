@@ -90,7 +90,7 @@ export function ChangelogForm({
         if (onSuccess) {
           onSuccess();
         }
-      } catch (error) {
+      } catch (_error) {
         toast.error('Failed to save changelog. Please try again.');
       } finally {
         setIsLoading(false);

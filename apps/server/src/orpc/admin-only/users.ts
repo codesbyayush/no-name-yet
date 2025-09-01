@@ -60,7 +60,7 @@ export const usersRouter = {
           organizationId: context.organization.id,
           total: transformedUsers.length, // Could be enhanced with actual count query
         };
-      } catch (error) {
+      } catch (_error) {
         throw new ORPCError('INTERNAL_SERVER_ERROR');
       }
     }),
@@ -124,7 +124,7 @@ export const usersRouter = {
           user: transformedUser,
           organizationId: context.organization.id,
         };
-      } catch (error) {
+      } catch (_error) {
         throw new ORPCError('INTERNAL_SERVER_ERROR');
       }
     }),

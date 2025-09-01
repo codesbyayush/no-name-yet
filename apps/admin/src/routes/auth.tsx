@@ -1,5 +1,4 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { GoogleLoginButton } from '@/components/auth/google-login-button';
 import SignIn from '@/components/auth/login-form';
 
 export const Route = createFileRoute('/auth')({

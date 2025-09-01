@@ -12,14 +12,12 @@ import {
 import { z } from 'zod';
 import {
   boards,
-  comments,
   feedbackCounters as fc,
   feedback,
   feedbackTags,
   statuses,
   tags as tagsTable,
   user,
-  type Vote,
   votes,
 } from '@/db/schema';
 import { protectedProcedure } from '../procedures';
@@ -145,7 +143,7 @@ export const postsRouter = {
             hasMore,
           },
         };
-      } catch (error) {
+      } catch (_error) {
         throw new ORPCError('INTERNAL_SERVER_ERROR');
       }
     }),
@@ -209,7 +207,7 @@ export const postsRouter = {
           organizationId: context.organization.id,
           organizationName: context.organization.name,
         };
-      } catch (error) {
+      } catch (_error) {
         throw new ORPCError('INTERNAL_SERVER_ERROR');
       }
     }),
@@ -251,9 +249,9 @@ export const postsRouter = {
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
-      const userId = context.session!.user.id;
-      const userEmail = context.session!.user.email;
-      const userName = context.session!.user.name;
+      const userId = context.session?.user.id;
+      const userEmail = context.session?.user.email;
+      const userName = context.session?.user.name;
       if (!userId) {
         throw new ORPCError('UNAUTHORIZED');
       }
@@ -329,7 +327,7 @@ export const postsRouter = {
           }
         }
         return newPost;
-      } catch (error) {
+      } catch (_error) {
         throw new ORPCError('INTERNAL_SERVER_ERROR');
       }
     }),
@@ -371,7 +369,7 @@ export const postsRouter = {
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
-      const userId = context.session!.user.id;
+      const _userId = context.session?.user.id;
       const [updatedPost] = await context.db
         .update(feedback)
         .set({
@@ -401,7 +399,7 @@ export const postsRouter = {
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
-      const userId = context.session!.user.id;
+      const _userId = context.session?.user.id;
       const [deletedPost] = await context.db
         .delete(feedback)
         .where(eq(feedback.id, input.id))

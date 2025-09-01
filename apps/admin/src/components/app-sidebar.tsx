@@ -14,7 +14,6 @@ import {
 import * as React from 'react';
 
 import { NavUser } from '@/components/nav-user';
-import { Label } from '@/components/ui/label';
 import {
   Sidebar,
   SidebarContent,
@@ -22,13 +21,11 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
-  SidebarInput,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { Switch } from '@/components/ui/switch';
 import { useSidebarRight } from '@/contexts/sidebar-right';
 
 // This is sample data
@@ -155,7 +152,7 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [mails, setMails] = React.useState(data.mails);
+  const [_mails, setMails] = React.useState(data.mails);
   const { setOpen } = useSidebar();
   const location = useLocation();
   const { setContainer } = useSidebarRight();

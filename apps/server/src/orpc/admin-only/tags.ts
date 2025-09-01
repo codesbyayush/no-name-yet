@@ -1,7 +1,5 @@
-import { eq, inArray, sql } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { z } from 'zod';
-import { boards } from '../../db/schema/boards';
-import { feedback } from '../../db/schema/feedback';
 import { tags } from '../../db/schema/tags';
 import { adminOnlyProcedure } from '../procedures';
 

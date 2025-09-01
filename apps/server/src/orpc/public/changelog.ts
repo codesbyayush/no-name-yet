@@ -90,7 +90,7 @@ export const changelogPublicRouter = publicProcedure.router({
             hasMore: input.offset + input.limit < totalCount,
           },
         };
-      } catch (error) {
+      } catch (_error) {
         throw new ORPCError('INTERNAL_SERVER_ERROR');
       }
     }),

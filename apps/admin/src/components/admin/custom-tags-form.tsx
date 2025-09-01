@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
 import { client } from '@/utils/orpc';
 
 type NewTagRow = { name: string; color: string };

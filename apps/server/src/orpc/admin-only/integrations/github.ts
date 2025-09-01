@@ -1,4 +1,4 @@
-import { and, count, eq } from 'drizzle-orm';
+import { count, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import {
   feedback,
@@ -20,7 +20,9 @@ export const githubAdminRouter = {
       .where(eq(githubInstallations.organizationId, context.organization.id))
       .limit(1);
     const installation = rows[0];
-    if (!installation) return { linked: false };
+    if (!installation) {
+      return { linked: false };
+    }
     const repoCountRows = await context.db
       .select({ c: count() })
       .from(githubRepositories)
@@ -80,7 +82,9 @@ export const githubAdminRouter = {
     }),
 
   unlinkInstallation: adminOnlyProcedure.handler(async ({ context }) => {
-    if (!context.organization) return { success: false };
+    if (!context.organization) {
+      return { success: false };
+    }
     await context.db
       .update(githubInstallations)
       .set({ organizationId: null })
@@ -117,14 +121,18 @@ export const githubAdminRouter = {
   getBranchSuggestion: adminOnlyProcedure
     .input(z.object({ feedbackId: z.string() }))
     .handler(async ({ input, context }) => {
-      if (!context.organization) throw new Error('Org required');
+      if (!context.organization) {
+        throw new Error('Org required');
+      }
       const rows = await context.db
         .select({ title: feedback.title, issueKey: feedback.issueKey })
         .from(feedback)
         .where(eq(feedback.id, input.feedbackId))
         .limit(1);
       const row = rows[0];
-      if (!row?.issueKey) throw new Error('Issue not found');
+      if (!row?.issueKey) {
+        throw new Error('Issue not found');
+      }
       const branch = buildBranchName({
         issueKey: row.issueKey,
         title: row.title || undefined,

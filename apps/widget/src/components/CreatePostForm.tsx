@@ -41,7 +41,9 @@ export default function CreatePostForm({
     apiClient.current
       .getPublicBoardsCached()
       .then((data) => {
-        if (!mounted) return;
+        if (!mounted) {
+          return;
+        }
         setBoards(data);
         if (!form.board) {
           setForm((prev) => ({
@@ -55,7 +57,7 @@ export default function CreatePostForm({
     return () => {
       mounted = false;
     };
-  }, [defaultBoardId]);
+  }, [defaultBoardId, form.board]);
 
   const selectedBoardName = useMemo(
     () => boards.find((b) => b.id === form.board)?.name,
@@ -72,7 +74,9 @@ export default function CreatePostForm({
       }
     };
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsBoardOpen(false);
+      if (e.key === 'Escape') {
+        setIsBoardOpen(false);
+      }
     };
     document.addEventListener('mousedown', onDocMouseDown);
     document.addEventListener('keydown', onKey);

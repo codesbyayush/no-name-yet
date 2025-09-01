@@ -1,6 +1,5 @@
 import type { account, session, user, verification } from '../db/schema/auth';
 import type { boards } from '../db/schema/boards';
-import type { changelog } from '../db/schema/changelog';
 import type { comments } from '../db/schema/comments';
 import type { feedback } from '../db/schema/feedback';
 import type { feedbackCounters } from '../db/schema/feedback-counter';

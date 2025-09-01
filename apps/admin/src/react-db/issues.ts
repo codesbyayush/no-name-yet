@@ -34,14 +34,24 @@ const issuesCollection = createCollection<IssueDoc>(
       const toServerPriority = (id: string) =>
         id === 'no-priority' ? 'no_priority' : (id as any);
       const payload: any = { id: mutation.key as string };
-      if (changes.title) payload.title = changes.title;
-      if (changes.description) payload.description = changes.description;
-      if (changes.statusKey) payload.status = changes.statusKey;
-      if (changes.priority)
+      if (changes.title) {
+        payload.title = changes.title;
+      }
+      if (changes.description) {
+        payload.description = changes.description;
+      }
+      if (changes.statusKey) {
+        payload.status = changes.statusKey;
+      }
+      if (changes.priority) {
         payload.priority = toServerPriority(changes.priority.id);
-      if (changes.priorityKey) payload.priority = changes.priorityKey;
-      if ('assignee' in changes)
+      }
+      if (changes.priorityKey) {
+        payload.priority = changes.priorityKey;
+      }
+      if ('assignee' in changes) {
         payload.assigneeId = changes.assignee?.id ?? null;
+      }
       await adminClient.organization.posts.update(payload);
     },
     onDelete: async ({ transaction }) => {
@@ -105,7 +115,9 @@ export const useSearchIssues = (query: string | undefined) => {
   const safe = (query ?? '').trim().toLowerCase();
   return useLiveQuery((q) =>
     q.from({ issue: issuesCollection }).where(({ issue }) => {
-      if (!safe) return true;
+      if (!safe) {
+        return true;
+      }
       const title = lower(issue.title);
       const identifier = lower(issue.issueKey);
       return ilike(title, `%${safe}%`) || ilike(identifier, `%${safe}%`);
