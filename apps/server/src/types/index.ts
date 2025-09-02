@@ -2,14 +2,11 @@ import type { account, session, user, verification } from '../db/schema/auth';
 import type { boards } from '../db/schema/boards';
 import type { comments } from '../db/schema/comments';
 import type { feedback } from '../db/schema/feedback';
-import type { feedbackCounters } from '../db/schema/feedback-counter';
 import type { feedbackTags } from '../db/schema/feedback-tags';
 import type {
   githubInstallations,
-  githubRepositories,
   githubWebhookDeliveries,
 } from '../db/schema/github';
-import type { issueSequences } from '../db/schema/issue-sequences';
 import type {
   invitation,
   member,
@@ -47,8 +44,6 @@ export type NewTag = typeof tags.$inferInsert;
 // Feedback
 export type Feedback = typeof feedback.$inferSelect;
 export type NewFeedback = typeof feedback.$inferInsert;
-export type FeedbackCountersRow = typeof feedbackCounters.$inferSelect;
-export type NewFeedbackCountersRow = typeof feedbackCounters.$inferInsert;
 export type FeedbackTag = typeof feedbackTags.$inferSelect;
 export type NewFeedbackTag = typeof feedbackTags.$inferInsert;
 
@@ -63,12 +58,6 @@ export type NewVote = typeof votes.$inferInsert;
 // GitHub integration
 export type GithubInstallation = typeof githubInstallations.$inferSelect;
 export type NewGithubInstallation = typeof githubInstallations.$inferInsert;
-export type GithubRepository = typeof githubRepositories.$inferSelect;
-export type NewGithubRepository = typeof githubRepositories.$inferInsert;
 export type GithubWebhookDelivery = typeof githubWebhookDeliveries.$inferSelect;
 export type NewGithubWebhookDelivery =
   typeof githubWebhookDeliveries.$inferInsert;
-
-// Issue sequences
-export type IssueSequence = typeof issueSequences.$inferSelect;
-export type NewIssueSequence = typeof issueSequences.$inferInsert;

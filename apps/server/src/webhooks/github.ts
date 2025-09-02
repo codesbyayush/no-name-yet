@@ -7,7 +7,6 @@ import {
   boards,
   feedback,
   githubInstallations,
-  githubRepositories,
   githubWebhookDeliveries,
   organization,
 } from '../db/schema';
@@ -85,20 +84,6 @@ async function handleEvent({ db, env, event, payload, deliveryId }: any) {
         }
         break;
       }
-      case 'installation_repositories': {
-        const inst = payload.installation;
-
-        if (!inst) {
-          break;
-        }
-        await syncRepositories(
-          db,
-          inst.id,
-          payload.repositories_added,
-          payload.repositories_removed
-        );
-        break;
-      }
       case 'pull_request': {
         await handlePullRequest(db, payload);
         break;
@@ -147,66 +132,6 @@ async function upsertInstallation(db: any, inst: any, _env: any) {
       .update(githubInstallations)
       .set(row)
       .where(eq(githubInstallations.githubInstallationId, inst.id));
-  }
-}
-
-async function syncRepositories(
-  db: any,
-  installationId: number,
-  added: any[] = [],
-  removed: any[] = []
-) {
-  const installRow = await db
-    .select({ id: githubInstallations.id })
-    .from(githubInstallations)
-    .where(eq(githubInstallations.githubInstallationId, installationId))
-    .limit(1);
-
-  if (!installRow[0]) {
-    return;
-  }
-
-  const installationPk = installRow[0].id;
-
-  // Add repositories
-  for (const repo of added || []) {
-    const row = {
-      id: `${installationPk}:${repo.id}`,
-      installationId: installationPk,
-      repoId: repo.id,
-      fullName: repo.full_name,
-      name: repo.name,
-      private: !!repo.private,
-      defaultBranch: repo.default_branch || null,
-    };
-
-    try {
-      await db.insert(githubRepositories).values(row);
-    } catch (_insertError) {
-      await db
-        .update(githubRepositories)
-        .set(row)
-        .where(
-          and(
-            eq(githubRepositories.installationId, installationPk),
-            eq(githubRepositories.repoId, repo.id)
-          )
-        );
-    }
-  }
-
-  // Remove repositories
-  for (const repo of removed || []) {
-    try {
-      await db
-        .delete(githubRepositories)
-        .where(
-          and(
-            eq(githubRepositories.installationId, installationPk),
-            eq(githubRepositories.repoId, repo.id)
-          )
-        );
-    } catch (_deleteError) {}
   }
 }
 

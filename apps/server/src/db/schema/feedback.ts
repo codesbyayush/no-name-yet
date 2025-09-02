@@ -37,7 +37,6 @@ export const feedback = pgTable(
       .references(() => boards.id, { onDelete: 'cascade' }),
     title: text('title').notNull(),
     description: text('description').notNull(),
-    status: statusEnum('status').notNull().default('to-do'),
     assigneeId: text('assignee_id').references(() => user.id, {
       onDelete: 'restrict',
     }),
@@ -45,6 +44,7 @@ export const feedback = pgTable(
       onDelete: 'restrict',
     }),
     dueDate: timestamp('due_date'),
+    status: statusEnum('status').notNull().default('to-do'),
     priority: priorityEnum('priority').default('low'),
     // Metadata
     createdAt: timestamp('created_at').defaultNow().notNull(),

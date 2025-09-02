@@ -1,7 +1,7 @@
 import { ORPCError } from '@orpc/client';
-import { and, asc, count, desc, eq, exists, type SQL, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, type SQL, sql } from 'drizzle-orm';
 import { z } from 'zod';
-import { boards, feedback, user, votes } from '@/db/schema';
+import { boards, comments, feedback, user, votes } from '@/db/schema';
 import { protectedProcedure } from '../procedures';
 
 export const postsRouter = {
@@ -39,31 +39,24 @@ export const postsRouter = {
             id: feedback.id,
             title: feedback.title,
             content: feedback.description,
-            boardId: feedback.boardId,
-            assigneeName: user.name,
-            assigneeImage: user.image,
             createdAt: feedback.createdAt,
+            status: feedback.status,
             board: {
               id: boards.id,
               name: boards.name,
               slug: boards.slug,
             },
-            hasVoted: userId
-              ? exists(
-                  context.db
-                    .select()
-                    .from(votes)
-                    .where(
-                      and(
-                        eq(votes.feedbackId, feedback.id),
-                        eq(votes.userId, userId)
-                      )
-                    )
-                )
-              : sql`false`,
+            author: {
+              name: user.name,
+              image: user.image,
+            },
+            hasVoted: sql<boolean>`(select exists(select 1 from ${votes} where ${votes.feedbackId} = ${feedback.id} and ${votes.userId} = ${userId}))`,
+            commentCount: sql<number>`(select count(*) from ${comments} where ${comments.feedbackId} = ${feedback.id})`,
+            voteCount: sql<number>`(select count(*) from ${votes} where ${votes.feedbackId} = ${feedback.id})`,
           })
           .from(feedback)
           .leftJoin(boards, eq(feedback.boardId, boards.id))
+          .leftJoin(user, eq(feedback.authorId, user.id))
           .where(and(...filters))
           .orderBy(orderBy)
           .offset(offset)
@@ -103,7 +96,7 @@ export const postsRouter = {
             title: feedback.title,
             content: feedback.description,
             createdAt: feedback.createdAt,
-            updatedAt: feedback.updatedAt,
+            status: feedback.status,
             author: {
               name: user.name,
               image: user.image,
@@ -113,29 +106,15 @@ export const postsRouter = {
               name: boards.name,
               slug: boards.slug,
             },
-            hasVoted: userId
-              ? exists(
-                  context.db
-                    .select()
-                    .from(votes)
-                    .where(
-                      and(
-                        eq(votes.feedbackId, feedback.id),
-                        eq(votes.userId, userId)
-                      )
-                    )
-                )
-              : sql`false`,
+            hasVoted: sql<boolean>`(select exists(select 1 from ${votes} where ${votes.feedbackId} = ${feedback.id} and ${votes.userId} = ${userId}))`,
+            commentCount: sql<number>`(select count(*) from ${comments} where ${comments.feedbackId} = ${feedback.id})`,
+            voteCount: sql<number>`(select count(*) from ${votes} where ${votes.feedbackId} = ${feedback.id})`,
           })
           .from(feedback)
           .leftJoin(user, eq(feedback.authorId, user.id))
           .leftJoin(boards, eq(feedback.boardId, boards.id))
           .where(eq(feedback.id, feedbackId));
-        return {
-          post: post[0],
-          organizationId: context.organization.id,
-          organizationName: context.organization.name,
-        };
+        return post[0];
       } catch (_error) {
         throw new ORPCError('INTERNAL_SERVER_ERROR');
       }

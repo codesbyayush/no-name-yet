@@ -1,10 +1,6 @@
-import { count, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { z } from 'zod';
-import {
-  feedback,
-  githubInstallations,
-  githubRepositories,
-} from '../../../db/schema';
+import { feedback, githubInstallations } from '../../../db/schema';
 import { signInstallState } from '../../../lib/state';
 import { buildBranchName } from '../../../utils/slug';
 import { adminOnlyProcedure } from '../../procedures';
@@ -23,15 +19,10 @@ export const githubAdminRouter = {
     if (!installation) {
       return { linked: false };
     }
-    const repoCountRows = await context.db
-      .select({ c: count() })
-      .from(githubRepositories)
-      .where(eq(githubRepositories.installationId, installation.id));
     return {
       linked: true,
       installationId: installation.githubInstallationId,
       accountLogin: installation.accountLogin,
-      repoCount: repoCountRows[0]?.c || 0,
     };
   }),
 

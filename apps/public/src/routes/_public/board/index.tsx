@@ -1,7 +1,7 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useCallback, useEffect, useRef } from 'react';
-import { CreateEditPost } from '@/components/create-edit-post';
+import { CreateNewIssue } from '@/components/issue/create-new-issue';
 import { BoardSkeleton, FeedbackSkeleton } from '@/components/loading';
 import { CommentButton, VoteButton } from '@/components/svg';
 import { Badge } from '@/components/ui/badge';
@@ -29,7 +29,7 @@ function BoardIndexPage() {
   } = useInfiniteQuery({
     queryKey: ['all-posts', search.board],
     queryFn: ({ pageParam = 0 }) =>
-      client.mixed.getDetailedPosts({
+      client.public.posts.getDetailedPosts({
         offset: pageParam,
         take: 10,
         ...(search.board && { boardId: search.board }),
@@ -54,7 +54,7 @@ function BoardIndexPage() {
 
   const { data: boards } = useQuery({
     queryKey: ['public-boards'],
-    queryFn: () => client.getAllPublicBoards(),
+    queryFn: () => client.public.boards.getAll(),
   });
 
   const handleBoardClick = (boardId: string) => {
@@ -184,8 +184,10 @@ function BoardIndexPage() {
                         {f.author?.image ? (
                           <img
                             alt="author"
-                            className="h-7 rounded-full"
+                            className="h-7 w-7 rounded-full"
+                            height={28}
                             src={f.author?.image || 'https://picsum/64'}
+                            width={28}
                           />
                         ) : (
                           <p className="flex size-7 items-center justify-center rounded-full bg-red-900 text-white">
@@ -198,7 +200,7 @@ function BoardIndexPage() {
                           {f.author?.name || 'Anon'}
                         </h5>
                         <p className="font-medium text-muted-foreground text-xs capitalize">
-                          {f.updatedAt.toLocaleDateString()}
+                          {f.createdAt.toLocaleDateString()}
                         </p>
                       </div>
                     </div>
@@ -209,9 +211,9 @@ function BoardIndexPage() {
                       <Badge
                         className="ml-3 px-3 capitalize"
                         variant={
-                          f.status === 'in_progress'
+                          f.status === 'in-progress'
                             ? 'inprogress'
-                            : f.status === 'resolved'
+                            : f.status === 'completed'
                               ? 'completed'
                               : 'secondary'
                         }
@@ -232,18 +234,11 @@ function BoardIndexPage() {
           )}
         </div>
         <div className="sticky top-6 flex h-fit flex-col gap-4">
-          <div className="z-10 w-3xs rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card p-4 shadow-xs">
-            <h4 className="mb-2 font-medium capitalize"> Got an idea?</h4>
-            <CreateEditPost
-              boardId={boards?.boards[0].id || ''} // TODO: Get actual board ID from context
-              mode="create"
-              onSuccess={() => {
-                // Refresh the posts list
-                window.location.reload(); // Temporary until we have proper invalidation
-              }}
-            />
+          <div className="z-10 flex w-3xs items-center gap-1 rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card p-3.5 shadow-xs">
+            <h4 className="flex-1 font-medium capitalize"> Got an idea?</h4>
+            <CreateNewIssue />
           </div>
-          <div className="z-10 w-3xs rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card p-4 shadow-xs">
+          <div className="z-10 w-3xs rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card p-3.5 shadow-xs">
             <h4 className="mb-2 font-medium capitalize">boards</h4>
             <div className="flex flex-col gap-2">
               {boards
@@ -257,7 +252,7 @@ function BoardIndexPage() {
                         variant={isActive ? 'default' : 'secondary'}
                       >
                         <p className="flex items-center gap-2 whitespace-break-spaces capitalize">
-                          {board.symbol}
+                          {/* {board.symbol} */}
                           <span className="break-words text-left capitalize">
                             {board.name}
                           </span>

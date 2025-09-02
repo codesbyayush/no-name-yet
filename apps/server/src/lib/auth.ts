@@ -4,7 +4,7 @@ import { admin, anonymous, organization } from 'better-auth/plugins';
 import { eq } from 'drizzle-orm';
 import { getDb } from '../db';
 import * as schema from '../db/schema';
-import { boards, statuses, tags } from '../db/schema';
+import { boards, tags } from '../db/schema';
 import { sendEmail } from '../email';
 import type { AppEnv } from './env';
 
@@ -100,63 +100,6 @@ export function getAuth(env: AppEnv): AuthInstance {
                   },
                 ]);
 
-                // Statuses
-                const defaultStatuses = [
-                  {
-                    key: 'in-progress',
-                    name: 'In Progress',
-                    color: '#facc15',
-                    order: 1,
-                    isTerminal: false,
-                  },
-                  {
-                    key: 'technical-review',
-                    name: 'Technical Review',
-                    color: '#22c55e',
-                    order: 2,
-                    isTerminal: false,
-                  },
-                  {
-                    key: 'completed',
-                    name: 'Completed',
-                    color: '#8b5cf6',
-                    order: 3,
-                    isTerminal: true,
-                  },
-                  {
-                    key: 'paused',
-                    name: 'Paused',
-                    color: '#0ea5e9',
-                    order: 4,
-                    isTerminal: false,
-                  },
-                  {
-                    key: 'to-do',
-                    name: 'Todo',
-                    color: '#f97316',
-                    order: 5,
-                    isTerminal: false,
-                  },
-                  {
-                    key: 'backlog',
-                    name: 'Backlog',
-                    color: '#ec4899',
-                    order: 6,
-                    isTerminal: false,
-                  },
-                ];
-                await db.insert(statuses).values(
-                  defaultStatuses.map((s) => ({
-                    id: crypto.randomUUID(),
-                    organizationId: organization.id,
-                    key: s.key,
-                    name: s.name,
-                    color: s.color,
-                    order: s.order,
-                    isTerminal: s.isTerminal,
-                  }))
-                );
-
                 // Labels/Tags (match admin mock defaults)
                 const defaultTags = [
                   { name: 'UI Enhancement', color: 'purple' },
@@ -179,7 +122,9 @@ export function getAuth(env: AppEnv): AuthInstance {
                   }))
                 );
               }
-            } catch {}
+            } catch {
+              //
+            }
           },
         },
       }),
@@ -202,8 +147,8 @@ export function getAuth(env: AppEnv): AuthInstance {
             // Migrate posts (feedback)
             db
               .update(schema.feedback)
-              .set({ userId: newUserId })
-              .where(eq(schema.feedback.userId, anonymousUserId)),
+              .set({ authorId: newUserId })
+              .where(eq(schema.feedback.authorId, anonymousUserId)),
 
             // Migrate comments
             db

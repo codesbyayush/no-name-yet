@@ -3,45 +3,24 @@ import { z } from 'zod';
 import { boards } from '../../db/schema/boards';
 import { adminOnlyProcedure } from '../procedures';
 
-// TODO: Implement user organization resource owner org validation
 export const boardsRouter = {
-  getAll: adminOnlyProcedure
-    .output(
-      z.array(
-        z.object({
-          id: z.string(),
-          symbol: z.string().nullable(),
-          name: z.string(),
-          slug: z.string(),
-          description: z.string().nullable(),
-          isPrivate: z.boolean().nullable(),
-          postCount: z.number().nullable(),
-          viewCount: z.number().nullable(),
-          customFields: z.any().nullable(),
-          createdAt: z.date(),
-          updatedAt: z.date(),
-          deletedAt: z.date().nullable(),
-        })
-      )
-    )
-    .handler(async ({ context }) => {
-      if (!context.organization?.id) {
-        throw new Error('Organization not found');
-      }
+  getAll: adminOnlyProcedure.handler(async ({ context }) => {
+    if (!context.organization?.id) {
+      throw new Error('Organization not found');
+    }
 
-      const allBoards = await context.db
-        .select()
-        .from(boards)
-        .where(eq(boards.organizationId, context.organization.id));
+    const allBoards = await context.db
+      .select()
+      .from(boards)
+      .where(eq(boards.organizationId, context.organization.id));
 
-      return allBoards;
-    }),
+    return allBoards;
+  }),
 
   create: adminOnlyProcedure
     .input(
       z.object({
         name: z.string().min(1),
-        emoji: z.string(),
         slug: z.string().min(1),
         description: z.string().optional(),
         isPrivate: z.boolean().default(false),
@@ -56,13 +35,11 @@ export const boardsRouter = {
         .insert(boards)
         .values({
           id: boardId,
-          symbol: input.emoji,
           organizationId: context.organization.id,
           name: input.name,
           slug: input.slug,
           description: input.description,
           isPrivate: input.isPrivate,
-          customFields: input.customFields,
         })
         .returning();
 
@@ -77,7 +54,6 @@ export const boardsRouter = {
         slug: z.string().min(1).optional(),
         description: z.string().optional(),
         isPrivate: z.boolean().optional(),
-        customFields: z.any().optional(),
       })
     )
     .output(z.any())
@@ -91,7 +67,6 @@ export const boardsRouter = {
             description: input.description,
           }),
           ...(input.isPrivate !== undefined && { isPrivate: input.isPrivate }),
-          ...(input.customFields && { customFields: input.customFields }),
           updatedAt: new Date(),
         })
         .where(eq(boards.id, input.id))

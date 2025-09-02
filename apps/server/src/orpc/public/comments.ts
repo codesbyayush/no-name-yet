@@ -1,5 +1,6 @@
 import { and, count, eq, isNull } from 'drizzle-orm';
 import { z } from 'zod';
+import { user } from '@/db/schema';
 import { comments } from '../../db/schema/comments';
 import { protectedProcedure } from '../procedures';
 
@@ -73,15 +74,25 @@ export const commentsRouter = {
   // For now this is only for top level comments
   getAll: protectedProcedure
     .input(z.object({ feedbackId: z.string() }))
-    .output(z.any())
     .handler(async ({ input, context }) => {
       const allComments = await context.db
-        .select()
+        .select({
+          id: comments.id,
+          content: comments.content,
+          createdAt: comments.createdAt,
+          author: {
+            name: user.name,
+            image: user.image,
+          },
+        })
         .from(comments)
+        .leftJoin(user, eq(comments.authorId, user.id))
         .where(
           and(
             eq(comments.feedbackId, input.feedbackId),
-            isNull(comments.parentCommentId)
+            isNull(comments.parentCommentId),
+            isNull(comments.deletedAt),
+            eq(comments.isInternal, false)
           )
         );
       return allComments;
@@ -94,7 +105,13 @@ export const commentsRouter = {
       const totalCount = await context.db
         .select({ count: count() })
         .from(comments)
-        .where(eq(comments.feedbackId, input.feedbackId));
+        .where(
+          and(
+            eq(comments.feedbackId, input.feedbackId),
+            isNull(comments.deletedAt),
+            eq(comments.isInternal, false)
+          )
+        );
       return totalCount[0]?.count || 0;
     }),
 };

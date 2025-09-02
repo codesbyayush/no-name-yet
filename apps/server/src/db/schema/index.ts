@@ -6,7 +6,6 @@ export * from './comments';
 export * from './feedback';
 export * from './feedback-tags';
 export * from './github';
-export * from './issue-sequences';
 export * from './organization';
 export * from './tags';
 export * from './votes';

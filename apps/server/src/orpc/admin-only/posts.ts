@@ -65,11 +65,6 @@ export const postsRouter = {
             boardId: feedback.boardId,
             priority: feedback.priority,
             status: feedback.status,
-            statusId: feedback.statusId,
-            statusKey: statuses.key,
-            statusName: statuses.name,
-            statusColor: statuses.color,
-            statusOrder: statuses.order,
             assigneeId: feedback.assigneeId,
             assigneeName: assigneeUser.name,
             assigneeEmail: assigneeUser.email,
@@ -88,8 +83,6 @@ export const postsRouter = {
               name: boards.name,
               slug: boards.slug,
             },
-            commentCount: fc.commentCount,
-            voteCount: fc.upvoteCount,
             hasVoted: userId
               ? exists(
                   context.db
@@ -105,11 +98,9 @@ export const postsRouter = {
               : sql`false`,
           })
           .from(feedback)
-          .leftJoin(creatorUser, eq(feedback.userId, creatorUser.id))
+          .leftJoin(creatorUser, eq(feedback.authorId, creatorUser.id))
           .leftJoin(assigneeUser, eq(feedback.assigneeId, assigneeUser.id))
           .leftJoin(boards, eq(feedback.boardId, boards.id))
-          .leftJoin(statuses, eq(feedback.statusId, statuses.id))
-          .leftJoin(fc, eq(fc.feedbackId, feedback.id))
           .where(and(...filters))
           .orderBy(orderBy)
           .offset(offset)
@@ -182,8 +173,6 @@ export const postsRouter = {
               name: boards.name,
               slug: boards.slug,
             },
-            commentCount: fc.commentCount,
-            voteCount: fc.upvoteCount,
             hasVoted: userId
               ? exists(
                   context.db
@@ -199,10 +188,8 @@ export const postsRouter = {
               : sql`false`,
           })
           .from(feedback)
-          .leftJoin(user, eq(feedback.userId, user.id))
+          .leftJoin(user, eq(feedback.authorId, user.id))
           .leftJoin(boards, eq(feedback.boardId, boards.id))
-          .leftJoin(fc, eq(fc.feedbackId, feedback.id))
-          .leftJoin(statuses, eq(feedback.statusId, statuses.id))
           .where(eq(feedback.id, feedbackId));
         return {
           post: post[0],
@@ -249,8 +236,6 @@ export const postsRouter = {
     .output(z.any())
     .handler(async ({ input, context }) => {
       const userId = context.session?.user.id;
-      const userEmail = context.session?.user.email;
-      const userName = context.session?.user.name;
       if (!userId) {
         throw new ORPCError('UNAUTHORIZED');
       }
@@ -263,15 +248,11 @@ export const postsRouter = {
           .values({
             boardId: input.boardId,
             issueKey: input.issueKey ?? '',
-            type: input.type,
+            authorId: userId,
             title: input.title,
             description: input.description,
-            userId,
-            userEmail,
-            userName,
             priority: input.priority,
             status: input.status,
-            isAnonymous: false,
           })
           .returning();
         // Attach tags via junction table if any were provided
@@ -324,7 +305,6 @@ export const postsRouter = {
             'paused',
           ])
           .optional(),
-        statusId: z.string().optional(),
         priority: z
           .enum([
             'low',
@@ -372,7 +352,6 @@ export const postsRouter = {
         .set({
           ...(input.title && { title: input.title }),
           ...(input.description && { description: input.description }),
-          ...(input.statusId && { statusId: input.statusId }),
           ...(input.status && { status: input.status }),
           ...(input.priority && { priority: input.priority }),
           ...(input.url && { url: input.url }),

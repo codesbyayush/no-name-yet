@@ -99,7 +99,7 @@ export function CreateEditPost({
 
   const { data: boards } = useQuery({
     queryKey: ['public-boards'],
-    queryFn: () => client.getAllPublicBoards(),
+    queryFn: () => client.public.boards.getAll(),
   });
 
   const handleSubmit = (e: React.FormEvent) => {

@@ -1,5 +1,4 @@
 import {
-  boolean,
   index,
   integer,
   pgTable,
@@ -27,29 +26,6 @@ export const githubInstallations = pgTable(
     installationUnique: unique().on(table.githubInstallationId),
     accountIdx: index('idx_github_installations_account').on(
       table.accountLogin
-    ),
-  })
-);
-
-export const githubRepositories = pgTable(
-  'github_repositories',
-  {
-    id: text('id').primaryKey(),
-    installationId: text('installation_id')
-      .references(() => githubInstallations.id, { onDelete: 'cascade' })
-      .notNull(),
-    repoId: integer('repo_id').notNull(),
-    fullName: text('full_name').notNull(),
-    name: text('name').notNull(),
-    private: boolean('private').default(false).notNull(),
-    defaultBranch: text('default_branch'),
-    createdAt: timestamp('created_at').defaultNow().notNull(),
-    updatedAt: timestamp('updated_at').defaultNow().notNull(),
-  },
-  (table) => ({
-    uniqueRepoPerInstallation: unique().on(table.installationId, table.repoId),
-    installationIdx: index('idx_github_repositories_installation').on(
-      table.installationId
     ),
   })
 );

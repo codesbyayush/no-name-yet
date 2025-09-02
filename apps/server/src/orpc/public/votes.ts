@@ -19,7 +19,7 @@ export const votesRouter = {
     .output(z.any())
     .handler(async ({ input, context }) => {
       const userId = context.session?.user.id;
-      if (!(input.feedbackId && input.commentId)) {
+      if (!(input.feedbackId || input.commentId)) {
         throw new ORPCError('BAD_REQUEST');
       }
 
@@ -77,7 +77,6 @@ export const votesRouter = {
         commentId: z.string().optional(),
       })
     )
-    .output(z.any())
     .handler(async ({ input, context }) => {
       const filter: SQL[] = [];
       if (input.feedbackId) {

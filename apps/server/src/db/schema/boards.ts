@@ -1,8 +1,6 @@
 import {
   boolean,
   index,
-  integer,
-  jsonb,
   pgTable,
   text,
   timestamp,
@@ -15,7 +13,6 @@ export const boards = pgTable(
   'boards',
   {
     id: text('id').primaryKey(),
-    symbol: text('symbol'),
     organizationId: text('organization_id')
       .notNull()
       .references(() => organization.id, { onDelete: 'cascade' }),
@@ -23,9 +20,6 @@ export const boards = pgTable(
     slug: text('slug').notNull(),
     description: text('description'),
     isPrivate: boolean('is_private').default(false),
-    postCount: integer('post_count').default(0),
-    viewCount: integer('view_count').default(0),
-    customFields: jsonb('custom_fields'),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
     deletedAt: timestamp('deleted_at'),

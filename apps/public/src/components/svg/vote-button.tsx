@@ -31,16 +31,16 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
     }
 
     if (hasVoted) {
-      deleteVoteMutation.mutate({ feedbackId });
+      deleteVoteMutation.mutate({ fbId: feedbackId });
     } else {
-      createVoteMutation.mutate({ feedbackId });
+      createVoteMutation.mutate({ fbId: feedbackId });
     }
   };
 
   const createVoteMutation = useMutation({
-    mutationFn: ({ feedbackId }: { feedbackId: string }) =>
-      client.public.votes.create({ feedbackId }),
-    onMutate: async ({ feedbackId }) => {
+    mutationFn: ({ fbId }: { fbId: string }) =>
+      client.public.votes.create({ feedbackId: fbId }),
+    onMutate: async ({ fbId }) => {
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({
         queryKey: ['all-posts', boardId],
@@ -60,7 +60,7 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
           pages: old.pages.map((page: any) => ({
             ...page,
             posts: page.posts.map((post: any) => {
-              if (post.id === feedbackId) {
+              if (post.id === fbId) {
                 return {
                   ...post,
                   hasVoted: true,
@@ -89,9 +89,9 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
   });
 
   const deleteVoteMutation = useMutation({
-    mutationFn: ({ feedbackId }: { feedbackId: string }) =>
-      client.public.votes.delete({ feedbackId }),
-    onMutate: async ({ feedbackId }) => {
+    mutationFn: ({ fbId }: { fbId: string }) =>
+      client.public.votes.delete({ feedbackId: fbId }),
+    onMutate: async ({ fbId }) => {
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({
         queryKey: ['all-posts', boardId],
@@ -111,7 +111,7 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
           pages: old.pages.map((page: any) => ({
             ...page,
             posts: page.posts.map((post: any) => {
-              if (post.id === feedbackId) {
+              if (post.id === fbId) {
                 return {
                   ...post,
                   hasVoted: false,

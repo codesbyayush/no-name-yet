@@ -1,11 +1,6 @@
-import {
-  useInfiniteQuery,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { CommentButton, VoteButton } from '@/components/svg';
 import { AutosizeTextarea } from '@/components/ui/autosize-textarea';
 import { Button } from '@/components/ui/button';
@@ -23,71 +18,20 @@ function RouteComponent() {
 
   // Replace useQuery with useInfiniteQuery for comments
   const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
+    data: allComments,
     isLoading: isLoadingComments,
     isError: isErrorComments,
-  } = useInfiniteQuery({
+  } = useQuery({
     queryKey: [postId, 'comments'],
-    queryFn: ({ pageParam = 0 }) =>
-      client.getPostComments({ postId, offset: pageParam, take: 10 }),
-    getNextPageParam: (lastPage) =>
-      lastPage.pagination.hasMore
-        ? lastPage.pagination.offset + lastPage.pagination.take
-        : undefined,
-    initialPageParam: 0,
+    queryFn: () => client.public.comments.getAll({ feedbackId: postId }),
   });
-
-  // Flatten all comments from all pages
-  const allComments = data?.pages.flatMap((page) => page.comments) ?? [];
 
   const { data: post, isPending } = useQuery({
     queryKey: [postId, 'post'],
     queryFn: () =>
-      client.mixed
-        .getDetailedSinglePost({ feedbackId: postId })
-        .then((data) => data.post),
+      client.public.posts.getDetailedSinglePost({ feedbackId: postId }),
   });
 
-  // Intersection Observer for infinite scroll
-  const observerRef = useRef<IntersectionObserver | null>(null);
-
-  const lastCommentCallback = useCallback(
-    (node: HTMLDivElement | null) => {
-      if (isLoadingComments) {
-        return;
-      }
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
-
-      observerRef.current = new IntersectionObserver(
-        (entries) => {
-          if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-            fetchNextPage();
-          }
-        },
-        {
-          rootMargin: '100px', // Trigger 100px before reaching the element
-        }
-      );
-
-      if (node) {
-        observerRef.current.observe(node);
-      }
-    },
-    [isLoadingComments, hasNextPage, fetchNextPage, isFetchingNextPage]
-  );
-
-  useEffect(() => {
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
-    };
-  }, []);
   const commentMutation = useMutation({
     mutationFn: (content: string) =>
       client.public.comments.create({ feedbackId: postId, content }),
@@ -136,7 +80,7 @@ function RouteComponent() {
         </div>
 
         {/* Comments loading state */}
-        {isLoadingComments && allComments.length === 0 && (
+        {isLoadingComments && (
           <div className="py-4 text-center">
             <div className="text-gray-500 text-sm">Loading comments...</div>
           </div>
@@ -150,25 +94,24 @@ function RouteComponent() {
         )}
 
         {/* Comments list */}
-        {allComments.map((comment, i) => {
-          const isSecondLastComment = i === allComments.length - 2;
-
+        {allComments?.map((comment, i) => {
           return (
             <div
-              className={`flex w-full gap-1 space-y-2 py-4 ${i === allComments.length - 1 ? 'border-b-0' : 'border-muted-foreground/5 border-b-2'}`}
+              className={`flex w-full gap-1 space-y-2 py-4 ${i === allComments?.length - 1 ? 'border-b-0' : 'border-muted-foreground/5 border-b-2'}`}
               key={comment.id}
-              ref={isSecondLastComment ? lastCommentCallback : null}
             >
               <div>
                 <img
                   alt="Avatar"
                   className="h-8 w-8 rounded-full"
+                  height={32}
                   src={comment.author?.image || 'https://picsum.photos/64'}
+                  width={32}
                 />
               </div>
               <div className="w-full">
                 <div className="flex w-full gap-2">
-                  <h4>{comment.author?.name}</h4>
+                  <h4>{comment.author?.name || 'Anonymous'}</h4>
                   <span>{comment.createdAt.toLocaleDateString()}</span>
                   <span className="ml-auto">
                     <svg
@@ -194,17 +137,8 @@ function RouteComponent() {
           );
         })}
 
-        {/* Loading indicator for next page of comments */}
-        {isFetchingNextPage && (
-          <div className="border-muted-foreground/5 border-t-2 py-4 text-center">
-            <div className="text-gray-500 text-sm">
-              Loading more comments...
-            </div>
-          </div>
-        )}
-
         {/* No comments state */}
-        {!isLoadingComments && allComments.length === 0 && (
+        {!isLoadingComments && allComments?.length === 0 && (
           <div className="border-muted-foreground/5 border-t-2 py-4 text-center">
             <div className="text-gray-500 text-sm">
               No comments yet. Be the first to comment!
@@ -219,11 +153,15 @@ function RouteComponent() {
               {post?.author?.image ? (
                 <img
                   alt="Author"
-                  className="h-8 rounded-full"
+                  className="h-8 w-8 rounded-full"
+                  height={32}
                   src={post?.author?.image}
+                  width={32}
                 />
               ) : (
-                <span className="rounded-full bg-gray-800">A</span>
+                <span className="inline-flex size-8 items-center justify-center rounded-full bg-stone-300/50 dark:bg-stone-700/50">
+                  A
+                </span>
               )}
             </div>
             <div>

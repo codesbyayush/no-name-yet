@@ -6,7 +6,7 @@ export const adminO = os.$context<AdminContext>();
 
 export const publicProcedure = o;
 
-const requireAuth = o.middleware(async ({ context, next }) => {
+const requireAuth = o.middleware(({ context, next }) => {
   if (!context.session?.user) {
     throw new ORPCError('UNAUTHORIZED');
   }
@@ -15,7 +15,7 @@ const requireAuth = o.middleware(async ({ context, next }) => {
   });
 });
 
-const requireOrganization = o.middleware(async ({ context, next }) => {
+const requireOrganization = o.middleware(({ context, next }) => {
   if (!context.organization) {
     throw new ORPCError('UNAUTHORIZED');
   }
@@ -24,7 +24,7 @@ const requireOrganization = o.middleware(async ({ context, next }) => {
   });
 });
 
-const requireAdminAuth = adminO.middleware(async ({ context, next }) => {
+const requireAdminAuth = adminO.middleware(({ context, next }) => {
   if (!context.session?.user) {
     throw new ORPCError('UNAUTHORIZED');
   }

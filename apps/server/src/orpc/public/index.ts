@@ -1,3 +1,4 @@
+import { boardsRouter } from './boards';
 import { changelogPublicRouter } from './changelog';
 import { commentsRouter } from './comments';
 import { postsRouter } from './posts';
@@ -8,6 +9,7 @@ export const publicRouter = {
   votes: votesRouter,
   posts: postsRouter,
   changelog: changelogPublicRouter,
+  boards: boardsRouter,
 };
 
 export * from './schemas';
