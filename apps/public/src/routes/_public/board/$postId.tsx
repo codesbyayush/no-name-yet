@@ -16,7 +16,7 @@ function RouteComponent() {
   const [commentInput, setCommentInput] = useState('');
   const queryClient = useQueryClient();
 
-  // Replace useQuery with useInfiniteQuery for comments
+  // TODO: Replace useQuery with useInfiniteQuery for comments
   const {
     data: allComments,
     isLoading: isLoadingComments,
