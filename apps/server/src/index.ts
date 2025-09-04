@@ -104,23 +104,26 @@ app.use(
   cors({
     origin: (origin, c) => {
       const env = getEnvFromContext(c);
-      return origin.endsWith(env.CORS_ORIGIN)
-        ? origin
-        : `https://${env.FRONTEND_URL}`;
+      const allowList = [env.FRONTEND_URL, env.CORS_ORIGIN].filter(Boolean);
+      if (!origin) {
+        return `https://${env.FRONTEND_URL}`;
+      }
+      const allowed = allowList.some((d) => origin.endsWith(d as string));
+      return allowed ? origin : `https://${env.FRONTEND_URL}`;
     },
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     allowHeaders: [
       'Content-Type',
       'Authorization',
       'X-Tenant-ID',
-      'X-Public-Key',
       'Cookie',
       'Set-Cookie',
       'X-Requested-With',
+      'X-Public-Key',
     ],
     exposeHeaders: ['Set-Cookie'],
     credentials: true,
-    maxAge: 86_400, // 24 hours
+    maxAge: 86_400,
   })
 );
 
