@@ -27,7 +27,7 @@ export const githubAdminRouter = {
   }),
 
   getInstallUrl: adminOnlyProcedure.handler(async ({ context }) => {
-    const base = `https://github.com/apps/${context.env.GITHUB_APP_NAME}/installations/new`;
+    const base = `https://github.com/apps/${context.env.GH_APP_NAME}/installations/new`;
     const nonce = crypto.randomUUID();
     const state = await signInstallState(context.env, {
       orgId: context.organization?.id,

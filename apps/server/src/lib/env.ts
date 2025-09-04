@@ -18,10 +18,10 @@ export interface AppEnv {
   GEMINI_API_KEY: string;
   GOOGLE_GENERATIVE_AI_API_KEY: string;
   RESEND_DOMAIN_KEY: string;
-  GITHUB_APP_ID: string;
-  GITHUB_PRIVATE_KEY: string;
-  GITHUB_WEBHOOK_SECRET: string;
-  GITHUB_APP_NAME: string;
+  GH_APP_ID: string;
+  GH_PRIVATE_KEY: string;
+  GH_WEBHOOK_SECRET: string;
+  GH_APP_NAME: string;
 }
 
 // Use Hono's official env adapter to get environment variables

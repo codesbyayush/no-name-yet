@@ -125,3 +125,60 @@ jobs:
           command: deploy
           packageManager: bun
           workingDirectory: apps/admin
+
+  deploy-server:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source repo
+        uses: actions/checkout@v3
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: |
+          cd apps/server
+          bun install
+
+      - name: Build server
+        run: |
+          cd apps/server
+          bun run build
+
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+          packageManager: bun
+          workingDirectory: apps/server
+          secrets: |
+            DATABASE_URL
+            BETTER_AUTH_URL
+            BETTER_AUTH_SECRET
+            GOOGLE_CLIENT_ID
+            GOOGLE_CLIENT_SECRET
+            CORS_ORIGIN
+            FRONTEND_URL
+            RESEND_DOMAIN_KEY
+            GH_APP_ID
+            GH_PRIVATE_KEY
+            GH_WEBHOOK_SECRET
+            GH_APP_NAME
+        env: 
+          BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
+          FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
+          RESEND_DOMAIN_KEY: ${{ secrets.RESEND_DOMAIN_KEY }}
+          GH_APP_ID: ${{ secrets.GH_APP_ID }}
+          GH_PRIVATE_KEY: ${{ secrets.GH_PRIVATE_KEY }}
+          GH_WEBHOOK_SECRET: ${{ secrets.GH_WEBHOOK_SECRET }}
+          GH_APP_NAME: ${{ secrets.GH_APP_NAME }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}

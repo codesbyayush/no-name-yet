@@ -6,8 +6,8 @@ let appInstance: App | null = null;
 function getApp(env: AppEnv) {
   if (!appInstance) {
     appInstance = new App({
-      appId: env.GITHUB_APP_ID,
-      privateKey: env.GITHUB_PRIVATE_KEY,
+      appId: env.GH_APP_ID,
+      privateKey: env.GH_PRIVATE_KEY,
     });
   }
   return appInstance;
@@ -18,5 +18,5 @@ export async function getInstallationOctokit(
   installationId: number
 ) {
   const app = getApp(env);
-  return app.getInstallationOctokit(installationId);
+  return await app.getInstallationOctokit(installationId);
 }

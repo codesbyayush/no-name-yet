@@ -27,14 +27,14 @@ router.post('/github', async (c) => {
     }
 
     // Check if required env vars exist
-    if (!env.GITHUB_WEBHOOK_SECRET) {
+    if (!env.GH_WEBHOOK_SECRET) {
       return c.text('Configuration error', 500);
     }
 
     const body = await c.req.text();
 
     const isValid = await verify(
-      env.GITHUB_WEBHOOK_SECRET,
+      env.GH_WEBHOOK_SECRET,
       body,
       signature256
     ).catch((_error) => {
