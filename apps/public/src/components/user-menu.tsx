@@ -82,7 +82,11 @@ export default function UserMenu() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() =>
+              navigate({ href: import.meta.env.PUBLIC_ADMIN_ROOT_URL })
+            }
+          >
             <Plus className="h-4 w-4" />
             Create your own
           </DropdownMenuItem>
