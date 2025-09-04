@@ -11,7 +11,6 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { toast } from 'sonner';
-import { Filters } from '@/components/filters';
 import { SiteHeader } from '@/components/site-header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -243,62 +242,6 @@ function ChangelogListPage() {
     <>
       <SiteHeader title="Changelogs">
         <div className="flex items-center gap-2">
-          {(() => {
-            const categories = [
-              {
-                key: 'status',
-                label: 'Status',
-                type: 'multi' as const,
-                options: statuses.map((s) => ({
-                  id: s.key,
-                  label: s.label,
-                  colorClass:
-                    s.key === 'draft'
-                      ? 'bg-gray-400'
-                      : s.key === 'published'
-                        ? 'bg-green-500'
-                        : 'bg-red-400',
-                })),
-              },
-              {
-                key: 'tag',
-                label: 'Category',
-                type: 'multi' as const,
-                options: tags.map((t) => ({
-                  id: t.key,
-                  label: t.label,
-                  colorClass: t.dot,
-                })),
-              },
-            ];
-
-            const toArray = (value?: string) =>
-              !value || value === 'all' ? [] : value.split(',').filter(Boolean);
-
-            const selected = {
-              status: toArray(search.status),
-              tag: toArray(search.tag),
-            };
-
-            const onChange = (categoryKey: string, values: string[]) => {
-              navigate({
-                search: (prev) =>
-                  stripDefaults({
-                    ...prev,
-                    [categoryKey]: values.length ? values.join(',') : 'all',
-                  }),
-                replace: false,
-              });
-            };
-
-            return (
-              <Filters
-                categories={categories}
-                onChange={onChange}
-                selected={selected}
-              />
-            );
-          })()}
           <Button asChild>
             <Link to="/changelogs/new">
               <IconPlus className="mr-2 h-4 w-4" />
