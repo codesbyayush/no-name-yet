@@ -50,6 +50,41 @@
       "when": 1756123311400,
       "tag": "0006_goofy_raider",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1756491927876,
+      "tag": "0007_warm_ghost_rider",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1756646400868,
+      "tag": "0008_cynical_baron_strucker",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1756709599861,
+      "tag": "0009_tough_hawkeye",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1756710837988,
+      "tag": "0010_strange_nextwave",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1756717309724,
+      "tag": "0011_silky_edwin_jarvis",
+      "breakpoints": true
     }
   ]
 }

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.2.2/schema.json",
+  "extends": ["ultracite"],
+  "linter": {
+    "rules": {
+      "nursery": {
+        "useConsistentTypeDefinitions": "off"
+      },
+      "style": {
+        "noMagicNumbers": "warn",
+        "noNestedTernary": "warn",
+
+        // TODO: Remove this rule
+        "noNonNullAssertion": "warn"
+      },
+      "performance": {
+        "noNamespaceImport": "warn",
+        "noImgElement": "warn"
+      },
+      "correctness": {
+        "useExhaustiveDependencies": "warn"
+      },
+      "a11y": {
+        "useButtonType": "warn",
+        "noStaticElementInteractions": "warn",
+        "noNoninteractiveElementInteractions": "warn"
+      }
+    }
+  }
+}

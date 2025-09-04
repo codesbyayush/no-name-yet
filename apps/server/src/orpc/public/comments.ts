@@ -1,111 +1,117 @@
-import { feedbackCounters as fc } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import { sql } from "drizzle-orm";
-import { z } from "zod";
-import { comments } from "../../db/schema/comments";
-import { protectedProcedure } from "../procedures";
+import { and, count, eq, isNull } from 'drizzle-orm';
+import { z } from 'zod';
+import { user } from '@/db/schema';
+import { comments } from '../../db/schema/comments';
+import { protectedProcedure } from '../procedures';
 
 export const commentsRouter = {
-	create: protectedProcedure
-		.input(
-			z.object({
-				feedbackId: z.string(),
-				parentCommentId: z.string().optional(),
-				content: z.string().min(1),
-				isInternal: z.boolean().default(false),
-			}),
-		)
-		.output(z.any())
-		.handler(async ({ input, context }) => {
-			const userId = context.session!.user.id;
+  create: protectedProcedure
+    .input(
+      z.object({
+        feedbackId: z.string(),
+        content: z.string().min(1),
+      })
+    )
+    .output(z.any())
+    .handler(async ({ input, context }) => {
+      const userId = context.session?.user.id;
 
-			const commentId = crypto.randomUUID();
+      const [newComment] = await context.db
+        .insert(comments)
+        .values({
+          feedbackId: input.feedbackId,
+          authorId: userId,
+          content: input.content,
+        })
+        .returning();
+      return newComment;
+    }),
 
-			const [newComment] = await context.db
-				.insert(comments)
-				.values({
-					id: commentId,
-					feedbackId: input.feedbackId,
-					parentCommentId: input.parentCommentId || null,
-					authorId: userId,
-					content: input.content,
-					isInternal: input.isInternal,
-				})
-				.returning();
-			await context.db
-				.insert(fc)
-				.values({
-					feedbackId: input.feedbackId,
-					commentCount: 1,
-				})
-				.onConflictDoUpdate({
-					target: fc.feedbackId,
-					set: { commentCount: sql`${fc.commentCount} + 1` },
-				});
-			return newComment;
-		}),
+  update: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        content: z.string().min(1).optional(),
+      })
+    )
+    .output(z.any())
+    .handler(async ({ input, context }) => {
+      const [updatedComment] = await context.db
+        .update(comments)
+        .set({
+          ...(input.content && { content: input.content }),
+        })
+        .where(eq(comments.id, input.id))
+        .returning();
 
-	update: protectedProcedure
-		.input(
-			z.object({
-				id: z.string(),
-				content: z.string().min(1).optional(),
-				isInternal: z.boolean().optional(),
-			}),
-		)
-		.output(z.any())
-		.handler(async ({ input, context }) => {
-			const userId = context.session!.user.id;
+      if (!updatedComment) {
+        throw new Error('Comment not found');
+      }
 
-			const [updatedComment] = await context.db
-				.update(comments)
-				.set({
-					...(input.content && { content: input.content }),
-					...(input.isInternal !== undefined && {
-						isInternal: input.isInternal,
-					}),
-					updatedAt: new Date(),
-				})
-				.where(eq(comments.id, input.id))
-				.returning();
+      return updatedComment;
+    }),
 
-			if (!updatedComment) {
-				throw new Error("Comment not found");
-			}
+  delete: protectedProcedure
+    .input(
+      z.object({
+        commentId: z.string(),
+      })
+    )
+    .output(z.any())
+    .handler(async ({ input, context }) => {
+      const [deletedComment] = await context.db
+        .delete(comments)
+        .where(eq(comments.id, input.commentId))
+        .returning();
 
-			return updatedComment;
-		}),
+      if (!deletedComment) {
+        throw new Error('Comment not found');
+      }
 
-	delete: protectedProcedure
-		.input(
-			z.object({
-				id: z.string(),
-			}),
-		)
-		.output(z.any())
-		.handler(async ({ input, context }) => {
-			const userId = context.session!.user.id;
+      return { success: true, deletedComment };
+    }),
 
-			const [deletedComment] = await context.db
-				.delete(comments)
-				.where(eq(comments.id, input.id))
-				.returning();
+  // For now this is only for top level comments
+  getAll: protectedProcedure
+    .input(z.object({ feedbackId: z.string() }))
+    .handler(async ({ input, context }) => {
+      const allComments = await context.db
+        .select({
+          id: comments.id,
+          content: comments.content,
+          createdAt: comments.createdAt,
+          author: {
+            name: user.name,
+            image: user.image,
+          },
+        })
+        .from(comments)
+        .leftJoin(user, eq(comments.authorId, user.id))
+        .where(
+          and(
+            eq(comments.feedbackId, input.feedbackId),
+            isNull(comments.parentCommentId),
+            isNull(comments.deletedAt),
+            eq(comments.isInternal, false)
+          )
+        );
+      return allComments;
+    }),
 
-			if (!deletedComment) {
-				throw new Error("Comment not found");
-			}
-			if (deletedComment.feedbackId) {
-				await context.db
-					.insert(fc)
-					.values({
-						feedbackId: deletedComment.feedbackId,
-						commentCount: -1,
-					})
-					.onConflictDoUpdate({
-						target: fc.feedbackId,
-						set: { commentCount: sql`${fc.commentCount} - 1` },
-					});
-			}
-			return { success: true, deletedComment };
-		}),
+  count: protectedProcedure
+    .input(z.object({ feedbackId: z.string() }))
+    .output(z.any())
+    .handler(async ({ input, context }) => {
+      const totalCount = await context.db
+        .select({ count: count() })
+        .from(comments)
+        .where(
+          and(
+            eq(comments.feedbackId, input.feedbackId),
+            isNull(comments.deletedAt),
+            eq(comments.isInternal, false)
+          )
+        );
+      return totalCount[0]?.count || 0;
+    }),
 };

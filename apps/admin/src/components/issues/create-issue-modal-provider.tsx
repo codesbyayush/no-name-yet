@@ -1,9 +1,9 @@
-import { CreateNewIssue } from "./create-new-issue";
+import { CreateNewIssue } from './create-new-issue';
 
 export function CreateIssueModalProvider() {
-	return (
-		<div className="hidden">
-			<CreateNewIssue />
-		</div>
-	);
+  return (
+    <div className="hidden">
+      <CreateNewIssue />
+    </div>
+  );
 }

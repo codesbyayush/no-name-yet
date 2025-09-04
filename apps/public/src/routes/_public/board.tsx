@@ -1,12 +1,9 @@
-import { client, orpc } from "@/utils/orpc";
-import { useQuery } from "@tanstack/react-query";
-import { Link, Outlet, createFileRoute } from "@tanstack/react-router";
-import * as React from "react";
+import { createFileRoute, Outlet } from '@tanstack/react-router';
 
-export const Route = createFileRoute("/_public/board")({
-	component: BoardLayout,
+export const Route = createFileRoute('/_public/board')({
+  component: BoardLayout,
 });
 
 function BoardLayout() {
-	return <Outlet />;
+  return <Outlet />;
 }

@@ -1,101 +1,100 @@
-"use client";
-
-import { Button } from "@/components/ui/button";
+import { CheckIcon } from 'lucide-react';
+import { useEffect, useId, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-} from "@/components/ui/command";
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
 import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
-import { renderStatusIcon } from "@/lib/status-utils";
-import { type Status, status as allStatus } from "@/mock-data/status";
-import { useIssuesStore } from "@/store/issues-store";
-import { CheckIcon } from "lucide-react";
-import { useEffect, useId, useState } from "react";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { renderStatusIcon } from '@/lib/status-utils';
+import { status as allStatus } from '@/mock-data/status';
+import { useUpdateIssue } from '@/react-db/issues';
 
 interface StatusSelectorProps {
-	status: Status;
-	issueId: string;
+  issueId: string;
+  statusKey?: string;
 }
 
-export function StatusSelector({ status, issueId }: StatusSelectorProps) {
-	const id = useId();
-	const [open, setOpen] = useState<boolean>(false);
-	const [value, setValue] = useState<string>(status.id);
+export function StatusSelector({ issueId, statusKey }: StatusSelectorProps) {
+  const id = useId();
+  const [open, setOpen] = useState<boolean>(false);
+  const [value, setValue] = useState<string>(statusKey || 'to-do');
+  const { mutate } = useUpdateIssue();
 
-	const { updateIssueStatus, filterByStatus } = useIssuesStore();
+  useEffect(() => {
+    if (statusKey) {
+      setValue(statusKey);
+    }
+  }, [statusKey]);
 
-	useEffect(() => {
-		setValue(status.id);
-	}, [status.id]);
+  const handleStatusChange = (statusId: string) => {
+    setValue(statusId);
+    setOpen(false);
 
-	const handleStatusChange = (statusId: string) => {
-		setValue(statusId);
-		setOpen(false);
+    if (issueId) {
+      const newStatus = allStatus.find((s) => s.id === statusId);
+      if (newStatus) {
+        mutate(issueId, { statusKey: newStatus.key });
+      }
+    }
+  };
 
-		if (issueId) {
-			const newStatus = allStatus.find((s) => s.id === statusId);
-			if (newStatus) {
-				updateIssueStatus(issueId, newStatus);
-			}
-		}
-	};
-
-	return (
-		<div className="*:not-first:mt-2">
-			<Popover open={open} onOpenChange={setOpen}>
-				<PopoverTrigger asChild>
-					<Button
-						id={id}
-						className="flex size-7 items-center justify-center"
-						size="icon"
-						variant="ghost"
-						role="combobox"
-						aria-expanded={open}
-					>
-						{renderStatusIcon(value)}
-					</Button>
-				</PopoverTrigger>
-				<PopoverContent
-					className="w-full min-w-[var(--radix-popper-anchor-width)] border-input p-0"
-					align="start"
-				>
-					<Command>
-						<CommandInput placeholder="Set status..." />
-						<CommandList>
-							<CommandEmpty>No status found.</CommandEmpty>
-							<CommandGroup>
-								{allStatus.map((item) => (
-									<CommandItem
-										key={item.id}
-										value={item.id}
-										onSelect={handleStatusChange}
-										className="flex items-center justify-between"
-									>
-										<div className="flex items-center gap-2">
-											<item.icon />
-											{item.name}
-										</div>
-										{value === item.id && (
-											<CheckIcon size={16} className="ml-auto" />
-										)}
-										<span className="text-muted-foreground text-xs">
-											{filterByStatus(item.id).length}
-										</span>
-									</CommandItem>
-								))}
-							</CommandGroup>
-						</CommandList>
-					</Command>
-				</PopoverContent>
-			</Popover>
-		</div>
-	);
+  return (
+    <div className="*:not-first:mt-2">
+      <Popover onOpenChange={setOpen} open={open}>
+        <PopoverTrigger asChild>
+          <Button
+            aria-expanded={open}
+            className="flex size-7 items-center justify-center"
+            id={id}
+            role="combobox"
+            size="icon"
+            variant="ghost"
+          >
+            {renderStatusIcon(value)}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent
+          align="start"
+          className="w-full min-w-[var(--radix-popper-anchor-width)] border-input p-0"
+        >
+          <Command>
+            <CommandInput placeholder="Set status..." />
+            <CommandList>
+              <CommandEmpty>No status found.</CommandEmpty>
+              <CommandGroup>
+                {allStatus.map((item) => (
+                  <CommandItem
+                    className="flex items-center justify-between"
+                    key={item.id}
+                    onSelect={handleStatusChange}
+                    value={item.id}
+                  >
+                    <div className="flex items-center gap-2">
+                      <item.icon />
+                      {item.name}
+                    </div>
+                    {value === item.id && (
+                      <CheckIcon className="ml-auto" size={16} />
+                    )}
+                    <span className="text-muted-foreground text-xs">
+                      {/* {filterByStatus(item.id).length} */}
+                    </span>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
 }

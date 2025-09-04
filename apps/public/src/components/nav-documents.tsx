@@ -1,55 +1,40 @@
+import type { Icon } from '@tabler/icons-react';
+import { Link } from '@tanstack/react-router';
 import {
-	type Icon,
-	IconDots,
-	IconFolder,
-	IconShare3,
-	IconTrash,
-} from "@tabler/icons-react";
-
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-	SidebarGroup,
-	SidebarGroupLabel,
-	SidebarMenu,
-	SidebarMenuAction,
-	SidebarMenuButton,
-	SidebarMenuItem,
-	useSidebar,
-} from "@/components/ui/sidebar";
-import { Link } from "@tanstack/react-router";
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from '@/components/ui/sidebar';
 
 export function NavDocuments({
-	items,
-	heading,
+  items,
+  heading,
 }: {
-	items: {
-		name: string;
-		url: string;
-		icon: Icon;
-	}[];
-	heading: string;
+  items: {
+    name: string;
+    url: string;
+    icon: Icon;
+  }[];
+  heading: string;
 }) {
-	const { isMobile } = useSidebar();
+  const { isMobile } = useSidebar();
 
-	return (
-		<SidebarGroup className="group-data-[collapsible=icon]:hidden">
-			<SidebarGroupLabel>{heading}</SidebarGroupLabel>
-			<SidebarMenu>
-				{items.map((item) => (
-					<SidebarMenuItem key={item.name}>
-						<SidebarMenuButton asChild>
-							<Link to={item.url}>
-								<item.icon />
-								<span>{item.name}</span>
-							</Link>
-						</SidebarMenuButton>
-						{/* <DropdownMenu>
+  return (
+    <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+      <SidebarGroupLabel>{heading}</SidebarGroupLabel>
+      <SidebarMenu>
+        {items.map((item) => (
+          <SidebarMenuItem key={item.name}>
+            <SidebarMenuButton asChild>
+              <Link to={item.url}>
+                <item.icon />
+                <span>{item.name}</span>
+              </Link>
+            </SidebarMenuButton>
+            {/* <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuAction
                   showOnHover
@@ -79,15 +64,15 @@ export function NavDocuments({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu> */}
-					</SidebarMenuItem>
-				))}
-				{/* <SidebarMenuItem>
+          </SidebarMenuItem>
+        ))}
+        {/* <SidebarMenuItem>
           <SidebarMenuButton className="text-sidebar-foreground/70">
             <IconDots className="text-sidebar-foreground/70" />
             <span>More</span>
           </SidebarMenuButton>
         </SidebarMenuItem> */}
-			</SidebarMenu>
-		</SidebarGroup>
-	);
+      </SidebarMenu>
+    </SidebarGroup>
+  );
 }

@@ -1,15 +1,10 @@
 // import Editor from "@/components/wiki/editor";
-import {
-	createFileRoute,
-	useNavigate,
-	useSearch,
-} from "@tanstack/react-router";
-import { useCallback } from "react";
+import { createFileRoute } from '@tanstack/react-router';
 
-export const Route = createFileRoute("/_admin/wiki")({
-	component: RouteComponent,
+export const Route = createFileRoute('/_admin/wiki')({
+  component: RouteComponent,
 });
 
 function RouteComponent() {
-	return <div>{/* <Editor /> */}</div>;
+  return <div>{/* <Editor /> */}</div>;
 }

@@ -1,34 +1,31 @@
-import type React from "react";
+import type React from 'react';
 
 interface BrandLogoIconProps {
-	className?: string;
-	size?: number;
+  className?: string;
+  size?: number;
 }
 
 export const BrandLogoIcon: React.FC<BrandLogoIconProps> = ({
-	className = "",
-	size = 16,
+  className = '',
+  size = 16,
 }) => {
-	return (
-		<svg
-			version="1.1"
-			id="Layer_1"
-			xmlns="http://www.w3.org/2000/svg"
-			xmlnsXlink="http://www.w3.org/1999/xlink"
-			x="0px"
-			y="0px"
-			width="100%"
-			viewBox="0 0 448 496"
-			enableBackground="new 0 0 448 496"
-			xmlSpace="preserve"
-			className={className}
-			height={size}
-		>
-			<path
-				fill="#000000"
-				opacity="1.000000"
-				stroke="none"
-				d="
+  return (
+    <svg
+      className={className}
+      enableBackground="new 0 0 448 496"
+      height={size}
+      id="Layer_1"
+      version="1.1"
+      viewBox="0 0 448 496"
+      width="100%"
+      x="0px"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlnsXlink="http://www.w3.org/1999/xlink"
+      xmlSpace="preserve"
+      y="0px"
+    >
+      <path
+        d="
 M449.000000,243.531342 
 	C447.932220,242.165771 448.139313,240.132401 448.122131,238.146835 
 	C447.459076,161.509964 447.772308,84.872398 447.983185,8.234952 
@@ -43,22 +40,22 @@ M449.000000,243.531342
 	C150.217331,1.091558 299.434753,1.091558 449.000000,1.091558 
 	C449.000000,81.687225 449.000000,162.374954 449.000000,243.531342 
 z"
-			/>
-			<path
-				fill="#000000"
-				opacity="1.000000"
-				stroke="none"
-				d="
+        fill="#000000"
+        opacity="1.000000"
+        stroke="none"
+      />
+      <path
+        d="
 M448.500000,497.000000 
 	C447.460815,481.899109 447.538086,466.806641 448.808899,451.363922 
 	C449.000000,466.333344 449.000000,481.666656 448.500000,497.000000 
 z"
-			/>
-			<path
-				fill="#000000"
-				opacity="1.000000"
-				stroke="none"
-				d="
+        fill="#000000"
+        opacity="1.000000"
+        stroke="none"
+      />
+      <path
+        d="
 M183.155426,165.856308 
 	C187.365143,169.333344 190.797531,168.763596 195.099045,166.007477 
 	C217.542572,151.627228 240.213089,137.600967 262.825562,123.485115 
@@ -161,7 +158,10 @@ M183.155426,165.856308
 	C167.960312,154.903931 169.006012,157.505020 172.666351,159.345154 
 	C176.219543,161.131409 179.462021,163.535736 183.155426,165.856308 
 z"
-			/>
-		</svg>
-	);
+        fill="#000000"
+        opacity="1.000000"
+        stroke="none"
+      />
+    </svg>
+  );
 };

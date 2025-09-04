@@ -1,164 +1,97 @@
-import { feedback, feedbackCounters } from "@/db/schema";
-import { and, eq, sql } from "drizzle-orm";
-import { z } from "zod";
-import {
-	type NewVote,
-	type Vote,
-	voteTypeEnum,
-	votes,
-} from "../../db/schema/votes";
-import { protectedProcedure } from "../procedures";
+import { ORPCError } from '@orpc/server';
+import { and, count, eq, type SQL } from 'drizzle-orm';
+import { z } from 'zod';
+import { votes } from '../../db/schema/votes';
+import { protectedProcedure } from '../procedures';
 
 export const votesRouter = {
-	create: protectedProcedure
-		.input(
-			z
-				.object({
-					feedbackId: z.string().optional(),
-					commentId: z.string().optional(),
-					type: z.enum(["upvote", "downvote", "bookmark"]).optional(),
-					weight: z.number().int().min(1).default(1),
-				})
-				.refine((data) => data.feedbackId || data.commentId, {
-					message: "Either feedbackId or commentId must be provided",
-				}),
-		)
-		.output(z.any())
-		.handler(async ({ input, context }) => {
-			const userId = context.session!.user.id;
+  create: protectedProcedure
+    .input(
+      z
+        .object({
+          feedbackId: z.string().optional(),
+          commentId: z.string().optional(),
+        })
+        .refine((data) => data.feedbackId || data.commentId, {
+          message: 'Either feedbackId or commentId must be provided',
+        })
+    )
+    .output(z.any())
+    .handler(async ({ input, context }) => {
+      const userId = context.session?.user.id;
+      if (!(input.feedbackId || input.commentId)) {
+        throw new ORPCError('BAD_REQUEST');
+      }
 
-			const voteId = crypto.randomUUID();
+      try {
+        const [newVote] = await context.db
+          .insert(votes)
+          .values({
+            feedbackId: input.feedbackId,
+            commentId: input.commentId,
+            userId,
+          })
+          .returning();
 
-			try {
-				const [newVote] = await context.db
-					.insert(votes)
-					.values({
-						id: voteId,
-						feedbackId: input.feedbackId || null,
-						commentId: input.commentId || null,
-						userId,
-						type: input.type || "upvote",
-						weight: input.weight,
-					})
-					.returning();
+        return newVote;
+      } catch (_error) {
+        throw new ORPCError('INTERNAL_SERVER_ERROR');
+      }
+    }),
 
-				await context.db
-					.insert(feedbackCounters)
-					.values({
-						feedbackId: input.feedbackId || "",
-						upvoteCount: 1,
-						commentCount: 0,
-					})
-					.onConflictDoUpdate({
-						target: [feedbackCounters.feedbackId],
-						set: {
-							upvoteCount: sql`${feedbackCounters.upvoteCount} + 1`,
-						},
-					});
+  delete: protectedProcedure
+    .input(
+      z.object({
+        feedbackId: z.string().optional(),
+        commentId: z.string().optional(),
+      })
+    )
+    .output(z.any())
+    .handler(async ({ input, context }) => {
+      const userId = context.session?.user.id;
 
-				return newVote;
-			} catch (error) {
-				// TODO: failing silently for now need to handle the multiple clicks on different boards but same post
-			}
-		}),
+      const filters = [eq(votes.userId, userId)];
 
-	update: protectedProcedure
-		.input(
-			z.object({
-				id: z.string(),
-				type: z.enum(["upvote", "downvote", "bookmark"]).optional(),
-				weight: z.number().int().min(1).optional(),
-			}),
-		)
-		.output(z.any())
-		.handler(async ({ input, context }) => {
-			const userId = context.session!.user.id;
+      if (input.feedbackId) {
+        filters.push(eq(votes.feedbackId, input.feedbackId));
+      } else if (input.commentId) {
+        filters.push(eq(votes.commentId, input.commentId));
+      }
 
-			const [updatedVote] = await context.db
-				.update(votes)
-				.set({
-					...(input.type && { type: input.type }),
-					...(input.weight && { weight: input.weight }),
-				})
-				.where(eq(votes.id, input.id))
-				.returning();
+      const [deletedVote] = await context.db
+        .delete(votes)
+        .where(and(...filters))
+        .returning();
 
-			if (!updatedVote) {
-				throw new Error("Vote not found");
-			}
+      if (!deletedVote) {
+        throw new Error('Vote not found');
+      }
 
-			return updatedVote;
-		}),
+      return { success: true, deletedVote };
+    }),
 
-	delete: protectedProcedure
-		.input(
-			z.object({
-				feedbackId: z.string().optional(),
-				commentId: z.string().optional(),
-			}),
-		)
-		.output(z.any())
-		.handler(async ({ input, context }) => {
-			const userId = context.session!.user.id;
+  count: protectedProcedure
+    .input(
+      z.object({
+        feedbackId: z.string().optional(),
+        commentId: z.string().optional(),
+      })
+    )
+    .handler(async ({ input, context }) => {
+      const filter: SQL[] = [];
+      if (input.feedbackId) {
+        filter.push(eq(votes.feedbackId, input.feedbackId));
+      } else if (input.commentId) {
+        filter.push(eq(votes.commentId, input.commentId));
+      } else {
+        throw new Error('Resource not found');
+      }
 
-			const filters = [eq(votes.userId, userId)];
+      const totalCount = await context.db
+        .select({ count: count() })
+        .from(votes)
+        .where(and(...filter));
 
-			if (input.feedbackId) {
-				filters.push(eq(votes.feedbackId, input.feedbackId));
-			} else if (input.commentId) {
-				filters.push(eq(votes.commentId, input.commentId));
-			}
-
-			const [deletedVote] = await context.db
-				.delete(votes)
-				.where(and(...filters))
-				.returning();
-
-			if (deletedVote) {
-				await context.db
-					.update(feedbackCounters)
-					.set({
-						upvoteCount: sql`${feedbackCounters.upvoteCount} - 1`,
-					})
-					.where(eq(feedbackCounters.feedbackId, input.feedbackId || ""));
-			}
-
-			if (!deletedVote) {
-				throw new Error("Vote not found");
-			}
-
-			return { success: true, deletedVote };
-		}),
-
-	get: protectedProcedure
-		.input(
-			z.object({
-				feedbackId: z.string().optional(),
-				commentId: z.string().optional(),
-			}),
-		)
-		.output(z.any())
-		.handler(async ({ input, context }) => {
-			const userId = context.session!.user.id;
-
-			const filter = [eq(votes.userId, userId)];
-			if (input.feedbackId) {
-				filter.push(eq(votes.feedbackId, input.feedbackId));
-			} else if (input.commentId) {
-				filter.push(eq(votes.commentId, input.commentId));
-			} else {
-				throw new Error("Resource not found");
-			}
-
-			const [vote] = await context.db
-				.select()
-				.from(votes)
-				.where(and(...filter));
-
-			if (!vote) {
-				return false;
-			}
-
-			return true;
-		}),
+      return totalCount[0]?.count || 0;
+    }),
 };
