@@ -1,5 +1,6 @@
 import { DialogTitle } from '@radix-ui/react-dialog';
 import { RiEditLine } from '@remixicon/react';
+import { type InfiniteData, useMutation } from '@tanstack/react-query';
 import { Heart } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -14,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { client } from '@/utils/orpc';
+import { client, queryClient } from '@/utils/orpc';
 import { BoardSelector } from './board-selector';
 
 const defaultNewIssueForm = {
@@ -24,13 +25,132 @@ const defaultNewIssueForm = {
   tags: [],
 };
 
+type PostListItem = {
+  id: string;
+  title: string;
+  content: string;
+  createdAt: Date;
+  status?: string;
+  board?: { id: string; name?: string; slug?: string };
+  author?: { name?: string; image?: string | null };
+  hasVoted?: boolean;
+  commentCount?: number;
+  voteCount?: number;
+};
+
+type PostsPage = {
+  posts: PostListItem[];
+  pagination?: unknown;
+  [key: string]: unknown;
+};
+
+type PostsInfiniteData = InfiniteData<PostsPage>;
+
 export function CreateNewIssue() {
   const [createMore, setCreateMore] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const [newIssueForm, setNewIssueForm] = useState(defaultNewIssueForm);
 
-  const createIssue = async () => {
+  const createIssueMutation = useMutation({
+    mutationFn: ({
+      boardId,
+      title,
+      description,
+    }: {
+      boardId: string;
+      title: string;
+      description: string;
+    }) => client.public.posts.create({ boardId, title, description }),
+    onMutate: async (variables) => {
+      const { boardId, title, description } = variables;
+
+      const allPostsKeyForBoard: [string, string | undefined] = [
+        'all-posts',
+        boardId,
+      ];
+      const allPostsKeyAll: [string, undefined] = ['all-posts', undefined];
+
+      await Promise.all([
+        queryClient.cancelQueries({ queryKey: allPostsKeyForBoard }),
+        queryClient.cancelQueries({ queryKey: allPostsKeyAll }),
+      ]);
+
+      const previousForBoard =
+        queryClient.getQueryData<PostsInfiniteData>(allPostsKeyForBoard);
+      const previousForAll =
+        queryClient.getQueryData<PostsInfiniteData>(allPostsKeyAll);
+
+      const optimisticId = `optimistic-${Date.now()}`;
+      const optimisticItem: PostListItem = {
+        id: optimisticId,
+        title,
+        content: description,
+        createdAt: new Date(),
+        status: 'new',
+        board: { id: boardId },
+        author: { name: 'You', image: null },
+        hasVoted: false,
+        commentCount: 0,
+        voteCount: 0,
+      };
+
+      const prependOptimistic = (old?: PostsInfiniteData) => {
+        if (!old?.pages) {
+          return old;
+        }
+        return {
+          ...old,
+          pages: old.pages.map((page, idx) =>
+            idx === 0
+              ? { ...page, posts: [optimisticItem, ...(page.posts ?? [])] }
+              : page
+          ),
+        } as PostsInfiniteData;
+      };
+
+      queryClient.setQueryData<PostsInfiniteData>(
+        allPostsKeyForBoard,
+        prependOptimistic(previousForBoard)
+      );
+      queryClient.setQueryData<PostsInfiniteData>(
+        allPostsKeyAll,
+        prependOptimistic(previousForAll)
+      );
+
+      return { previousForBoard, previousForAll, optimisticId, boardId };
+    },
+    onError: (_err, _variables, context) => {
+      if (context?.previousForBoard) {
+        queryClient.setQueryData(
+          ['all-posts', context.boardId],
+          context.previousForBoard
+        );
+      }
+      if (context?.previousForAll) {
+        queryClient.setQueryData(
+          ['all-posts', undefined],
+          context.previousForAll
+        );
+      }
+      toast.error('Failed to create issue');
+    },
+    onSuccess: () => {
+      toast.success('Issue created');
+      if (!createMore) {
+        setIsOpen(false);
+      }
+      setNewIssueForm(defaultNewIssueForm);
+    },
+    onSettled: (_data, _error, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ['all-posts', variables?.boardId],
+      });
+      queryClient.invalidateQueries({ queryKey: ['all-posts', undefined] });
+    },
+  });
+
+  const createIssue = () => {
     if (!newIssueForm.title) {
       toast.error('Title is required');
       return;
@@ -43,16 +163,11 @@ export function CreateNewIssue() {
       toast.error('Board is required');
       return;
     }
-    await client.public.posts.create({
+    createIssueMutation.mutate({
       boardId: newIssueForm.boardId,
       title: newIssueForm.title,
       description: newIssueForm.description,
     });
-    toast.success('Issue created');
-    if (!createMore) {
-      setIsOpen(false);
-    }
-    setNewIssueForm(defaultNewIssueForm);
   };
 
   return (
@@ -114,12 +229,13 @@ export function CreateNewIssue() {
             </div>
           </div>
           <Button
+            disabled={createIssueMutation.isPending}
             onClick={() => {
               createIssue();
             }}
             size="sm"
           >
-            Create issue
+            {createIssueMutation.isPending ? 'Creating…' : 'Create issue'}
           </Button>
         </div>
       </DialogContent>
