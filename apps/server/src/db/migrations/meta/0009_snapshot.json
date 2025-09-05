@@ -93,12 +93,8 @@
           "name": "account_user_id_user_id_fk",
           "tableFrom": "account",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -180,12 +176,8 @@
           "name": "session_user_id_user_id_fk",
           "tableFrom": "session",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -195,9 +187,7 @@
         "session_token_unique": {
           "name": "session_token_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "token"
-          ]
+          "columns": ["token"]
         }
       },
       "policies": {},
@@ -358,12 +348,8 @@
           "name": "user_organization_id_organization_id_fk",
           "tableFrom": "user",
           "tableTo": "organization",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -373,25 +359,17 @@
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         },
         "user_organization_id_email_unique": {
           "name": "user_organization_id_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "organization_id",
-            "email"
-          ]
+          "columns": ["organization_id", "email"]
         },
         "user_organization_id_external_id_unique": {
           "name": "user_organization_id_external_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "organization_id",
-            "external_id"
-          ]
+          "columns": ["organization_id", "external_id"]
         }
       },
       "policies": {},
@@ -572,12 +550,8 @@
           "name": "boards_organization_id_organization_id_fk",
           "tableFrom": "boards",
           "tableTo": "organization",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -587,10 +561,7 @@
         "boards_organization_id_slug_unique": {
           "name": "boards_organization_id_slug_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "organization_id",
-            "slug"
-          ]
+          "columns": ["organization_id", "slug"]
         }
       },
       "policies": {},
@@ -785,12 +756,8 @@
           "name": "changelog_organization_id_organization_id_fk",
           "tableFrom": "changelog",
           "tableTo": "organization",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -798,12 +765,8 @@
           "name": "changelog_author_id_user_id_fk",
           "tableFrom": "changelog",
           "tableTo": "user",
-          "columnsFrom": [
-            "author_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["author_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -811,12 +774,8 @@
           "name": "changelog_tag_id_tags_id_fk",
           "tableFrom": "changelog",
           "tableTo": "tags",
-          "columnsFrom": [
-            "tag_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["tag_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -972,12 +931,8 @@
           "name": "comments_feedback_id_feedback_id_fk",
           "tableFrom": "comments",
           "tableTo": "feedback",
-          "columnsFrom": [
-            "feedback_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["feedback_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -985,12 +940,8 @@
           "name": "comments_parent_comment_id_comments_id_fk",
           "tableFrom": "comments",
           "tableTo": "comments",
-          "columnsFrom": [
-            "parent_comment_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_comment_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -998,12 +949,8 @@
           "name": "comments_author_id_user_id_fk",
           "tableFrom": "comments",
           "tableTo": "user",
-          "columnsFrom": [
-            "author_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["author_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1075,12 +1022,8 @@
           "name": "feedback_tags_feedback_id_feedback_id_fk",
           "tableFrom": "feedback_tags",
           "tableTo": "feedback",
-          "columnsFrom": [
-            "feedback_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["feedback_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1088,12 +1031,8 @@
           "name": "feedback_tags_tag_id_tags_id_fk",
           "tableFrom": "feedback_tags",
           "tableTo": "tags",
-          "columnsFrom": [
-            "tag_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["tag_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1101,10 +1040,7 @@
       "compositePrimaryKeys": {
         "feedback_tags_feedback_id_tag_id_pk": {
           "name": "feedback_tags_feedback_id_tag_id_pk",
-          "columns": [
-            "feedback_id",
-            "tag_id"
-          ]
+          "columns": ["feedback_id", "tag_id"]
         }
       },
       "uniqueConstraints": {},
@@ -1292,12 +1228,8 @@
           "name": "feedback_board_id_boards_id_fk",
           "tableFrom": "feedback",
           "tableTo": "boards",
-          "columnsFrom": [
-            "board_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["board_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1305,12 +1237,8 @@
           "name": "feedback_assignee_id_user_id_fk",
           "tableFrom": "feedback",
           "tableTo": "user",
-          "columnsFrom": [
-            "assignee_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["assignee_id"],
+          "columnsTo": ["id"],
           "onDelete": "restrict",
           "onUpdate": "no action"
         }
@@ -1320,9 +1248,7 @@
         "feedback_issue_key_unique": {
           "name": "feedback_issue_key_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "issue_key"
-          ]
+          "columns": ["issue_key"]
         }
       },
       "policies": {},
@@ -1406,12 +1332,8 @@
           "name": "github_installations_organization_id_organization_id_fk",
           "tableFrom": "github_installations",
           "tableTo": "organization",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -1421,9 +1343,7 @@
         "github_installations_github_installation_id_unique": {
           "name": "github_installations_github_installation_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "github_installation_id"
-          ]
+          "columns": ["github_installation_id"]
         }
       },
       "policies": {},
@@ -1514,12 +1434,8 @@
           "name": "github_repositories_installation_id_github_installations_id_fk",
           "tableFrom": "github_repositories",
           "tableTo": "github_installations",
-          "columnsFrom": [
-            "installation_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["installation_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1529,10 +1445,7 @@
         "github_repositories_installation_id_repo_id_unique": {
           "name": "github_repositories_installation_id_repo_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "installation_id",
-            "repo_id"
-          ]
+          "columns": ["installation_id", "repo_id"]
         }
       },
       "policies": {},
@@ -1604,9 +1517,7 @@
         "github_webhook_deliveries_delivery_id_unique": {
           "name": "github_webhook_deliveries_delivery_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "delivery_id"
-          ]
+          "columns": ["delivery_id"]
         }
       },
       "policies": {},
@@ -1637,12 +1548,8 @@
           "name": "issue_sequences_organization_id_organization_id_fk",
           "tableFrom": "issue_sequences",
           "tableTo": "organization",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1650,9 +1557,7 @@
       "compositePrimaryKeys": {
         "issue_sequences_pk": {
           "name": "issue_sequences_pk",
-          "columns": [
-            "organization_id"
-          ]
+          "columns": ["organization_id"]
         }
       },
       "uniqueConstraints": {},
@@ -1771,12 +1676,8 @@
           "name": "invitation_inviter_id_user_id_fk",
           "tableFrom": "invitation",
           "tableTo": "user",
-          "columnsFrom": [
-            "inviter_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["inviter_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1784,12 +1685,8 @@
           "name": "invitation_organization_id_organization_id_fk",
           "tableFrom": "invitation",
           "tableTo": "organization",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1878,12 +1775,8 @@
           "name": "member_user_id_user_id_fk",
           "tableFrom": "member",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1891,12 +1784,8 @@
           "name": "member_organization_id_organization_id_fk",
           "tableFrom": "member",
           "tableTo": "organization",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1982,9 +1871,7 @@
         "organization_slug_unique": {
           "name": "organization_slug_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "slug"
-          ]
+          "columns": ["slug"]
         }
       },
       "policies": {},
@@ -2086,12 +1973,8 @@
           "name": "tags_organization_id_organization_id_fk",
           "tableFrom": "tags",
           "tableTo": "organization",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2101,10 +1984,7 @@
         "tags_organization_id_name_unique": {
           "name": "tags_organization_id_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "organization_id",
-            "name"
-          ]
+          "columns": ["organization_id", "name"]
         }
       },
       "policies": {},
@@ -2198,12 +2078,8 @@
           "name": "votes_feedback_id_feedback_id_fk",
           "tableFrom": "votes",
           "tableTo": "feedback",
-          "columnsFrom": [
-            "feedback_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["feedback_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2211,12 +2087,8 @@
           "name": "votes_comment_id_comments_id_fk",
           "tableFrom": "votes",
           "tableTo": "comments",
-          "columnsFrom": [
-            "comment_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["comment_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2224,12 +2096,8 @@
           "name": "votes_user_id_user_id_fk",
           "tableFrom": "votes",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2239,11 +2107,7 @@
         "votes_user_id_feedback_id_comment_id_unique": {
           "name": "votes_user_id_feedback_id_comment_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "user_id",
-            "feedback_id",
-            "comment_id"
-          ]
+          "columns": ["user_id", "feedback_id", "comment_id"]
         }
       },
       "policies": {},
@@ -2255,30 +2119,17 @@
     "public.changelog_status": {
       "name": "changelog_status",
       "schema": "public",
-      "values": [
-        "draft",
-        "published",
-        "archived"
-      ]
+      "values": ["draft", "published", "archived"]
     },
     "public.feedback_type": {
       "name": "feedback_type",
       "schema": "public",
-      "values": [
-        "bug",
-        "suggestion"
-      ]
+      "values": ["bug", "suggestion"]
     },
     "public.priority_enum": {
       "name": "priority_enum",
       "schema": "public",
-      "values": [
-        "low",
-        "medium",
-        "high",
-        "urgent",
-        "no-priority"
-      ]
+      "values": ["low", "medium", "high", "urgent", "no-priority"]
     },
     "public.status_enum": {
       "name": "status_enum",
@@ -2295,11 +2146,7 @@
     "public.vote_type": {
       "name": "vote_type",
       "schema": "public",
-      "values": [
-        "upvote",
-        "downvote",
-        "bookmark"
-      ]
+      "values": ["upvote", "downvote", "bookmark"]
     }
   },
   "schemas": {},

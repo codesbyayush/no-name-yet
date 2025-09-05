@@ -1,1 +1,4 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/"
+
 bun x ultracite@latest fix
