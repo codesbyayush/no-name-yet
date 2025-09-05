@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { CommentButton, VoteButton } from '@/components/svg';
 import { AutosizeTextarea } from '@/components/ui/autosize-textarea';
 import { Button } from '@/components/ui/button';
+import { formatSmartDate } from '@/lib/utils';
 import { client } from '@/utils/orpc';
 
 export const Route = createFileRoute('/_public/board/$postId')({
@@ -97,7 +98,7 @@ function RouteComponent() {
         {allComments?.map((comment, i) => {
           return (
             <div
-              className={`flex w-full gap-1 space-y-2 py-4 ${i === allComments?.length - 1 ? 'border-b-0' : 'border-muted-foreground/5 border-b-2'}`}
+              className={`flex w-full gap-2 space-y-2 py-4 ${i === allComments?.length - 1 ? 'border-b-0' : 'border-muted-foreground/5 border-b-2'}`}
               key={comment.id}
             >
               <div>
@@ -110,9 +111,13 @@ function RouteComponent() {
                 />
               </div>
               <div className="w-full">
-                <div className="flex w-full gap-2">
-                  <h4>{comment.author?.name || 'Anonymous'}</h4>
-                  <span>{comment.createdAt.toLocaleDateString()}</span>
+                <div className="flex w-full items-center gap-2">
+                  <h4 className="capitalize">
+                    {comment.author?.name || 'Anon'}
+                  </h4>
+                  <span className="ml-1 text-muted-foreground text-xs">
+                    ({comment.createdAt && formatSmartDate(comment.createdAt)})
+                  </span>
                   <span className="ml-auto">
                     <svg
                       aria-hidden="true"
@@ -160,16 +165,16 @@ function RouteComponent() {
                 />
               ) : (
                 <span className="inline-flex size-8 items-center justify-center rounded-full bg-stone-300/50 dark:bg-stone-700/50">
-                  A
+                  ?
                 </span>
               )}
             </div>
             <div>
               <h4 className="py-1 font-medium text-foreground text-sm capitalize">
-                {post?.author?.name}
+                {post?.author?.name || 'Anon'}
               </h4>
               <p className="pl-px text-muted-foreground text-xs">
-                {post?.createdAt.toLocaleDateString()}
+                {post?.createdAt && formatSmartDate(post?.createdAt)}
               </p>
             </div>
           </div>

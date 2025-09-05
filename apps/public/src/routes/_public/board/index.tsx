@@ -6,6 +6,7 @@ import { BoardSkeleton, FeedbackSkeleton } from '@/components/loading';
 import { CommentButton, VoteButton } from '@/components/svg';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { formatSmartDate } from '@/lib/utils';
 import { client } from '@/utils/orpc';
 
 export const Route = createFileRoute('/_public/board/')({
@@ -190,8 +191,8 @@ function BoardIndexPage() {
                             width={28}
                           />
                         ) : (
-                          <p className="flex size-7 items-center justify-center rounded-full bg-red-900 text-white">
-                            A
+                          <p className="flex size-7 items-center justify-center rounded-full bg-red-900/30 text-white">
+                            ?
                           </p>
                         )}
                       </div>
@@ -199,8 +200,8 @@ function BoardIndexPage() {
                         <h5 className="pb-0.5 font-medium text-sm capitalize">
                           {f.author?.name || 'Anon'}
                         </h5>
-                        <p className="font-medium text-muted-foreground text-xs capitalize">
-                          {f.createdAt.toLocaleDateString()}
+                        <p className="font-medium text-muted-foreground text-xs">
+                          {formatSmartDate(f.createdAt)}
                         </p>
                       </div>
                     </div>
