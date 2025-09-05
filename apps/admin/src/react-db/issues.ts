@@ -1,5 +1,6 @@
 import { queryCollectionOptions } from '@tanstack/query-db-collection';
 import {
+  count,
   createCollection,
   eq,
   ilike,
@@ -109,6 +110,46 @@ export const useIssuesByStatus = (statusId: string | undefined) =>
       .where(({ issue }) =>
         issue.statusKey && statusId ? eq(issue.statusKey, statusId) : false
       )
+  );
+
+export const useIssueCountByStatus = () =>
+  useLiveQuery((q) =>
+    q
+      .from({ issue: issuesCollection })
+      .groupBy(({ issue }) => issue.status.id)
+      .select(({ issue }) => ({
+        count: count(issue.id),
+        statusId: issue.status.id,
+      }))
+  );
+
+export const useIssueCountByAssignee = () =>
+  useLiveQuery((q) =>
+    q
+      .from({ issue: issuesCollection })
+      .groupBy(({ issue }) => issue.assignee)
+      .select(({ issue }) => ({
+        count: count(issue.id),
+        assignee: issue.assignee,
+      }))
+  );
+
+export const useIssueCountByPriority = () =>
+  useLiveQuery((q) =>
+    q
+      .from({ issue: issuesCollection })
+      .groupBy(({ issue }) => issue.priority)
+      .select(({ issue }) => ({
+        count: count(issue.id),
+        priority: issue.priority,
+      }))
+  );
+
+export const useIssueCountByLabel = (labelId: string) =>
+  useLiveQuery((q) =>
+    q.from({ issue: issuesCollection }).where(({ issue }) => {
+      return issue.tags.some((tag) => eq(tag.id, labelId));
+    })
   );
 
 export const useSearchIssues = (query: string | undefined) => {

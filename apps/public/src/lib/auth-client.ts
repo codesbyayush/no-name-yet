@@ -10,16 +10,6 @@ export const authClient = createAuthClient({
   plugins: [adminClient(), organizationClient(), anonymousClient()],
   fetchOptions: {
     credentials: 'include',
-    // headers: {
-    //   "Content-Type": "application/json",
-    // },
-    onError: async (context) => {
-      const { response } = context;
-      if (response.status === 401) {
-      } else if (response.status === 403) {
-      } else if (response.status >= 400) {
-      }
-    },
   },
 });
 

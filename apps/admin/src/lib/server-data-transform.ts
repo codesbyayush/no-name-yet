@@ -15,35 +15,6 @@ const generateRank = (index: number) => {
   return firstRank.toString();
 };
 
-// Map server priority to client priority
-const mapServerPriorityToClient = (serverPriority: string) => {
-  const priorityMap: Record<string, string> = {
-    low: 'low',
-    medium: 'medium',
-    high: 'high',
-    urgent: 'urgent',
-    no_priority: 'no-priority',
-  };
-
-  const priorityId = priorityMap[serverPriority] || 'no-priority';
-  return priorities.find((p) => p.id === priorityId) || priorities[4]; // Default to no-priority
-};
-
-// Map server status to client status
-const mapServerStatusToClient = (serverStatusKey: string) => {
-  const statusMap: Record<string, string> = {
-    'to-do': 'to-do',
-    'in-progress': 'in-progress',
-    'technical-review': 'technical-review',
-    completed: 'completed',
-    paused: 'paused',
-    backlog: 'backlog',
-  };
-
-  const statusId = statusMap[serverStatusKey] || 'to-do';
-  return status.find((s) => s.id === statusId) || status[5]; // Default to to-do
-};
-
 // Transform server post data to client Issue format
 export const transformServerPostToIssue = (
   serverPost: any,
@@ -51,11 +22,8 @@ export const transformServerPostToIssue = (
 ): Issue => {
   // Map server data to client format
   const clientIssue: Issue = {
-    id: serverPost.id,
-    issueKey: serverPost.issueKey,
-    title: serverPost.title || 'Untitled Issue',
-    description: serverPost.description || '',
-    status: mapServerStatusToClient(serverPost.statusKey),
+    ...serverPost,
+    status: status.find((s) => s.id === serverPost.status) || status[5],
     statusKey: serverPost.status,
     assignee: serverPost.assigneeId
       ? {
@@ -73,7 +41,8 @@ export const transformServerPostToIssue = (
       : null,
     assigneeId: serverPost.assigneeId || undefined,
     priorityKey: serverPost.priority,
-    priority: mapServerPriorityToClient(serverPost.priority),
+    priority:
+      priorities.find((p) => p.id === serverPost.priority) || priorities[4],
     tags: serverPost.tags?.map((tag: any) => ({
       id: tag.id,
       name: tag.name,
@@ -82,8 +51,7 @@ export const transformServerPostToIssue = (
     createdAt: serverPost.createdAt
       ? new Date(serverPost.createdAt).toISOString().split('T')[0]
       : '2025-01-01',
-    cycleId: '42', // Mock cycle ID
-    project: projects[index % projects.length], // Rotate through projects
+    project: projects[index % projects.length],
     rank: generateRank(index),
     dueDate: serverPost.dueDate
       ? new Date(serverPost.dueDate).toISOString().split('T')[0]

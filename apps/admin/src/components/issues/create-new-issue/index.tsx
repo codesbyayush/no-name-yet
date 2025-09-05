@@ -91,7 +91,6 @@ export function CreateNewIssue() {
       priorityKey: 'no-priority',
       labels: [],
       createdAt: new Date().toISOString(),
-      cycleId: '',
       project: mappedProjects[0],
       subissues: [],
       rank: ranks.at(-1)!,

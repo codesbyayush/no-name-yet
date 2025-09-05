@@ -18,7 +18,6 @@ export interface Issue {
   priority: Priority;
   tags: LabelInterface[];
   createdAt: string;
-  cycleId: string;
   project?: Project;
   subissues?: string[];
   rank: string;
