@@ -1,15 +1,10 @@
-'use client';
-
 import { Link, useLocation } from '@tanstack/react-router';
 import {
   Bell,
-  ClipboardList,
   Command,
   MessageSquare,
-  Route,
   ScrollText,
   Settings,
-  Users,
 } from 'lucide-react';
 import * as React from 'react';
 
@@ -42,30 +37,30 @@ const data = {
       icon: MessageSquare,
       isActive: true,
     },
-    {
-      title: 'Roadmap',
-      url: '/roadmaps',
-      icon: Route,
-      isActive: false,
-    },
+    // {
+    //   title: 'Roadmap',
+    //   url: '/roadmaps',
+    //   icon: Route,
+    //   isActive: false,
+    // },
     {
       title: 'Changelog',
       url: '/changelogs',
       icon: ScrollText,
       isActive: false,
     },
-    {
-      title: 'Surveys',
-      url: '/surveys',
-      icon: ClipboardList,
-      isActive: false,
-    },
-    {
-      title: 'Users',
-      url: '/users',
-      icon: Users,
-      isActive: false,
-    },
+    // {
+    //   title: 'Surveys',
+    //   url: '/surveys',
+    //   icon: ClipboardList,
+    //   isActive: false,
+    // },
+    // {
+    //   title: 'Users',
+    //   url: '/users',
+    //   icon: Users,
+    //   isActive: false,
+    // },
   ],
   mails: [
     {

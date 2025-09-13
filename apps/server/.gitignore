@@ -53,3 +53,5 @@ next-env.d.ts
 
 llm-*
 gh-integration-instr.md
+
+certs/*
