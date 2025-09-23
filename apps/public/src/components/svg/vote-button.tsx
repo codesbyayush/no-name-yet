@@ -105,7 +105,7 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
         return {
           ...old,
           hasVoted: true,
-          voteCount: (old.voteCount ?? 0) + 1,
+          voteCount: Number(old.voteCount ?? 0) + 1,
         };
       });
 
