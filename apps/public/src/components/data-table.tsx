@@ -738,7 +738,7 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
             </div>
           </div>
           <div className="sticky flex h-fit flex-col gap-4">
-            <div className="z-10 w-3xs rounded-2xl border-1 border-muted-foreground/10 bg-background/90 bg-noise p-4 shadow-2xs">
+            <div className="z-10 w-3xs rounded-2xl border-1 border-muted-foreground/10 bg-background/90 p-4 shadow-2xs">
               <div className="flex items-center gap-3">
                 <div>
                   <img

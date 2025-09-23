@@ -68,7 +68,7 @@ const LandingPage = () => {
   ];
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-noise bg-zinc-950 text-white">
+    <div className="relative min-h-screen overflow-x-hidden bg-zinc-950 text-white">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_-10%,rgba(255,255,255,0.08),rgba(255,255,255,0)_60%)]" />
       <div className="relative z-10 py-10">
         <FloatingNav navItems={navItems} />

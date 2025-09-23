@@ -141,11 +141,6 @@
 body {
   letter-spacing: var(--tracking-normal);
   background-color: var(--background);
-  background-image: url("https://res.cloudinary.com/victoreke/image/upload/v1691779257/victoreke/noise.png");
-}
-
-.bg-noise {
-  background-image: url("https://res.cloudinary.com/victoreke/image/upload/v1691779257/victoreke/noise.png");
 }
 
 *::-webkit-scrollbar {

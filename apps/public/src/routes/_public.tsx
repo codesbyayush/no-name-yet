@@ -30,7 +30,7 @@ function PublicLayout() {
   }, [session, isPending]);
 
   return (
-    <div className="flex h-full min-h-screen flex-col items-center bg-background bg-noise">
+    <div className="flex h-full min-h-screen flex-col items-center bg-background">
       {/* Navigation Header */}
       <nav className="flex w-[60rem] items-center justify-between gap-4 p-4">
         {/* Logo and Navigation Links */}

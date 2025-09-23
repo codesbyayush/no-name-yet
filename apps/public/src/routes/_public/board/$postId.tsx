@@ -152,7 +152,7 @@ function RouteComponent() {
         )}
       </div>
       <div className="sticky top-6 flex h-fit flex-col gap-4">
-        <div className="z-10 w-3xs rounded-2xl border-1 border-muted-foreground/10 bg-background/90 bg-noise p-4 shadow-2xs">
+        <div className="z-10 w-3xs rounded-2xl border-1 border-muted-foreground/10 bg-background/90 p-4 shadow-2xs">
           <div className="flex items-center gap-3">
             <div>
               {post?.author?.image ? (
@@ -191,7 +191,7 @@ function RouteComponent() {
             )}
           </div>
         </div>
-        <div className="z-10 rounded-2xl border-1 border-muted-foreground/10 bg-background/90 bg-noise p-4 shadow-2xs">
+        <div className="z-10 rounded-2xl border-1 border-muted-foreground/10 bg-background/90 p-4 shadow-2xs">
           <h4 className="mb-2 font-medium capitalize">Get Updates</h4>
           <Button
             className="w-full rounded-lg font-medium"

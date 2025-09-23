@@ -197,6 +197,7 @@ export function CreateNewIssue() {
             }
             placeholder="Issue title"
             value={newIssueForm.title}
+            autoFocus
           />
 
           <Textarea
