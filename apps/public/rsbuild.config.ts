@@ -5,6 +5,11 @@ import { tanstackRouter } from '@tanstack/router-plugin/rspack';
 
 export default defineConfig({
   plugins: [pluginBasicSsl(), pluginReact()],
+  dev: {
+    client: {
+      overlay: false
+    }
+  },
   server: {
     port: 3002,
   },
