@@ -8,8 +8,8 @@ function bytesToBase64Url(input: ArrayBuffer | Uint8Array | string): string {
         ? input
         : new Uint8Array(input);
   let binary = '';
-  for (let i = 0; i < bytes.length; i++) {
-    binary += String.fromCharCode(bytes[i]);
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
   }
   return btoa(binary).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
 }

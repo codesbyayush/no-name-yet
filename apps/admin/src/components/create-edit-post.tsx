@@ -55,6 +55,11 @@ export function CreateEditPost({
     board: '',
   });
 
+  const { data: boards } = useQuery({
+    queryKey: ['public-boards'],
+    queryFn: () => client.public.boards.getAll(),
+  });
+
   // Pre-fill form data when editing
   useEffect(() => {
     if (post && mode === 'edit') {
@@ -95,11 +100,6 @@ export function CreateEditPost({
     onError: (error: any) => {
       toast.error(error.message || 'Failed to create post');
     },
-  });
-
-  const { data: boards } = useQuery({
-    queryKey: ['public-boards'],
-    queryFn: () => client.public.boards.getAll(),
   });
 
   const handleSubmit = (e: React.FormEvent) => {

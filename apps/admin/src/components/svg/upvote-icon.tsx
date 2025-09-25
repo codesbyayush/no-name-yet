@@ -9,7 +9,6 @@ interface UpvoteIconProps {
 export const UpvoteIcon: React.FC<UpvoteIconProps> = ({
   className = '',
   size = 16,
-  filled = false,
 }) => {
   return (
     <svg

@@ -117,5 +117,5 @@ function LandingComponent() {
     });
   }, [navigate]);
 
-  return <></>;
+  return null;
 }

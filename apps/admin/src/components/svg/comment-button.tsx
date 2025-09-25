@@ -15,7 +15,6 @@ export const CommentButton: React.FC<CommentButtonProps> = ({
   onClick,
   disabled = false,
   className = '',
-  iconSize = 16,
 }) => {
   return (
     <button
