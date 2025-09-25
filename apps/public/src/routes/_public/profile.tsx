@@ -1,9 +1,99 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useSession, authClient } from '@/lib/auth-client';
+import { toast } from 'sonner';
 
 export const Route = createFileRoute('/_public/profile')({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  return <div>Hello "/_public/profile"!</div>;
+  const { data: session, isPending } = useSession();
+  const user = session?.user;
+
+  const [name, setName] = useState<string>(user?.name ?? '');
+
+  useEffect(() => {
+    if (user) {
+      setName(user.name ?? '');
+    }
+  }, [user]);
+
+  const fallbackInitial = useMemo(
+    () => (name?.trim()?.charAt(0) || 'U').toLowerCase(),
+    [name]
+  );
+
+  const onSave = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    await authClient.updateUser({
+      name,
+    });
+    toast.success('Profile saved');
+  };
+
+  return (
+    <div className="text-card-foreground">
+      <div className="relative flex justify-center">
+        <div className="w-2xl flex-1 rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card shadow-xs">
+          <form className="space-y-6 p-6" onSubmit={onSave}>
+            <div className="space-y-1">
+              <h2 className="font-semibold text-xl">Personal Information</h2>
+              <p className="text-muted-foreground text-sm">
+                Your personal information is not shared with anyone.
+              </p>
+            </div>
+
+            <div className="flex  items-end gap-2">
+              <div className='space-y-2 flex-1'>
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  disabled={isPending}
+                  id="name"
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Your name"
+                  value={name}
+                />
+              </div>
+              <Avatar className="h-12 w-12 rounded-lg">
+                <AvatarImage alt="Avatar" src={ user?.image || ''} />
+                <AvatarFallback className="rounded-lg">
+                  {fallbackInitial}
+                </AvatarFallback>
+              </Avatar>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="email">Email</Label>
+                <span className="text-muted-foreground text-xs">Invisible to public</span>
+              </div>
+              <Input disabled id="email" placeholder="Email" readOnly value={user?.email ?? ''} />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="account-id">Account ID</Label>
+              <Input
+                disabled
+                id="account-id"
+                placeholder="Account ID"
+                readOnly
+                value={user?.id ?? ''}
+              />
+            </div>
+
+            <div>
+              <Button disabled={isPending} type="submit">
+                Save
+              </Button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
 }
