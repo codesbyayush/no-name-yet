@@ -20,9 +20,10 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.2",
-    "@types/node": "^24.0.10",
+    "@types/node": "^24.5.2",
     "husky": "^9.1.7",
-    "typescript": "^5.8.3",
+    "knip": "^5.64.0",
+    "typescript": "^5.9.2",
     "ultracite": "5.2.16"
   },
   "overrides": {

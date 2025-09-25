@@ -1,11 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { toast } from 'sonner';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useSession, authClient } from '@/lib/auth-client';
-import { toast } from 'sonner';
+import { authClient, useSession } from '@/lib/auth-client';
 
 export const Route = createFileRoute('/_public/profile')({
   component: RouteComponent,
@@ -48,8 +48,8 @@ function RouteComponent() {
               </p>
             </div>
 
-            <div className="flex  items-end gap-2">
-              <div className='space-y-2 flex-1'>
+            <div className="flex items-end gap-2">
+              <div className="flex-1 space-y-2">
                 <Label htmlFor="name">Name</Label>
                 <Input
                   disabled={isPending}
@@ -60,7 +60,7 @@ function RouteComponent() {
                 />
               </div>
               <Avatar className="h-12 w-12 rounded-lg">
-                <AvatarImage alt="Avatar" src={ user?.image || ''} />
+                <AvatarImage alt="Avatar" src={user?.image || ''} />
                 <AvatarFallback className="rounded-lg">
                   {fallbackInitial}
                 </AvatarFallback>
@@ -70,9 +70,17 @@ function RouteComponent() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="email">Email</Label>
-                <span className="text-muted-foreground text-xs">Invisible to public</span>
+                <span className="text-muted-foreground text-xs">
+                  Invisible to public
+                </span>
               </div>
-              <Input disabled id="email" placeholder="Email" readOnly value={user?.email ?? ''} />
+              <Input
+                disabled
+                id="email"
+                placeholder="Email"
+                readOnly
+                value={user?.email ?? ''}
+              />
             </div>
 
             <div className="space-y-2">

@@ -191,13 +191,13 @@ export function CreateNewIssue() {
 
         <div className="w-full space-y-3 px-4 pb-0">
           <Input
+            autoFocus
             className="h-auto w-full overflow-hidden text-ellipsis whitespace-normal break-words border-none font-medium text-2xl shadow-none outline-none focus-visible:ring-0 dark:bg-transparent"
             onChange={(e) =>
               setNewIssueForm({ ...newIssueForm, title: e.target.value })
             }
             placeholder="Issue title"
             value={newIssueForm.title}
-            autoFocus
           />
 
           <Textarea

@@ -36,9 +36,7 @@ export function IssueLine({
             <StatusSelector issueId={issue.id} statusKey={issue.statusKey} />
           </div>
           <span className="mr-1 ml-0.5 flex min-w-0 items-center justify-start">
-            <span className="truncate text-xs sm:text-sm">
-              {issue.title}
-            </span>
+            <span className="truncate text-xs sm:text-sm">{issue.title}</span>
           </span>
           <div className="ml-auto flex items-center justify-end gap-2 sm:w-fit">
             <div className="w-3 shrink-0" />

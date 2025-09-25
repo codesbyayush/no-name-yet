@@ -3,6 +3,12 @@
   "extends": ["ultracite"],
   "linter": {
     "rules": {
+      "suspicious": {
+
+        "noEmptyBlockStatements": "warn",
+        "noExplicitAny": "warn",
+        "useAwait": "warn"
+      },
       "nursery": {
         "useConsistentTypeDefinitions": "off"
       },
@@ -11,14 +17,20 @@
         "noNestedTernary": "warn",
 
         // TODO: Remove this rule
-        "noNonNullAssertion": "warn"
+        "noNonNullAssertion": "warn",
+        "noMagicNumbers": "warn"
       },
       "performance": {
         "noNamespaceImport": "warn",
-        "noImgElement": "warn"
+        "noImgElement": "warn",
+
+        "noBarrelFile": "warn"
       },
       "correctness": {
-        "useExhaustiveDependencies": "warn"
+        "useExhaustiveDependencies": "warn",
+
+        "noUnusedVariables": "warn",
+        "noChildrenProp": "warn"
       },
       "a11y": {
         "useButtonType": "warn",

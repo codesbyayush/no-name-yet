@@ -9,8 +9,8 @@ export default defineConfig({
   plugins: [pluginBasicSsl(), pluginReact()],
   dev: {
     client: {
-      overlay: false
-    }
+      overlay: false,
+    },
   },
   server: {
     port: 3002,
