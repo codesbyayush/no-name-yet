@@ -3,10 +3,8 @@ import {
   HeadContent,
   Outlet,
   useLocation,
-  useRouterState,
 } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
-import Loader from '@/components/loader';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 import '../index.css';
@@ -35,9 +33,6 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 });
 
 function RootComponent() {
-  const isFetching = useRouterState({
-    select: (s) => s.isLoading,
-  });
   const location = useLocation();
   const isLandingPage = location.pathname === '/landing';
 
@@ -47,11 +42,11 @@ function RootComponent() {
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         {isLandingPage ? (
           <div className="min-h-screen">
-            {isFetching ? <Loader /> : <Outlet />}
+            <Outlet />
           </div>
         ) : (
           <div className="grid h-svh grid-rows-[auto_1fr]">
-            {isFetching ? <Loader /> : <Outlet />}
+            <Outlet />
           </div>
         )}
         <Toaster richColors />
