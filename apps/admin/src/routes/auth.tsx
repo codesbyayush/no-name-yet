@@ -1,7 +1,24 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 import SignIn from '@/components/auth/login-form';
+import { authClient } from '@/lib/auth-client';
 
 export const Route = createFileRoute('/auth')({
+  beforeLoad: async () => {
+    const { data: session } = await authClient.getSession();
+    if (session && !session.user.isAnonymous) {
+      throw redirect({
+        to: '/boards',
+        search: {
+          tab: undefined,
+          search: undefined,
+          tag: undefined,
+          status: undefined,
+          order: undefined,
+        },
+        replace: true,
+      });
+    }
+  },
   component: RouteComponent,
 });
 

@@ -8,7 +8,7 @@ import { authClient } from '@/lib/auth-client';
 export const Route = createFileRoute('/_admin')({
   beforeLoad: async ({ location }) => {
     const { data: session } = await authClient.getSession();
-    if (!session) {
+    if (!session || session.user.isAnonymous) {
       throw redirect({
         to: '/auth',
         search: { redirect: location.pathname },
