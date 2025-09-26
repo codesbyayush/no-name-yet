@@ -1,7 +1,18 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 import SignIn from '@/components/auth/login-form';
+import { authClient } from '@/lib/auth-client';
 
 export const Route = createFileRoute('/auth')({
+  beforeLoad: async () => {
+    const { data: session } = await authClient.getSession();
+    if (session) {
+      throw redirect({
+        to: '/',
+        search: { board: undefined },
+        replace: true,
+      });
+    }
+  },
   component: RouteComponent,
 });
 
@@ -11,7 +22,6 @@ function RouteComponent() {
       ? new URLSearchParams(window.location.search)
       : null;
   const redirect = search?.get('redirect') || '/board';
-  const newUserCallbackURL = `${window.location.origin}/board`;
   const callbackURL = redirect
     ? redirect.startsWith('http')
       ? redirect
@@ -25,7 +35,7 @@ function RouteComponent() {
           A
         </p>
         <SignIn
-          newUserCallbackURL={newUserCallbackURL}
+          newUserCallbackURL={callbackURL}
           redirect={callbackURL}
         />
       </div>
