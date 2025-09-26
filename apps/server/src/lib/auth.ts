@@ -145,10 +145,10 @@ export function getAuth(env: AppEnv): AuthInstance {
               .where(eq(schema.votes.userId, anonymousUserId)),
 
             // Migrate posts (feedback)
-            db
-              .update(schema.feedback)
-              .set({ authorId: newUserId })
-              .where(eq(schema.feedback.authorId, anonymousUserId)),
+            // db
+            //   .update(schema.feedback)
+            //   .set({ authorId: newUserId })
+            //   .where(eq(schema.feedback.authorId, anonymousUserId)),
 
             // Migrate comments
             db
