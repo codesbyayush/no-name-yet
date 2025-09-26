@@ -10,8 +10,7 @@ export const Route = createFileRoute('/_landing')({
       },
       {
         name: 'description',
-        content:
-          'Open Feedback is a customer feedback platform',
+        content: 'Open Feedback is a customer feedback platform',
       },
       {
         name: 'keywords',
@@ -24,8 +23,7 @@ export const Route = createFileRoute('/_landing')({
       },
       {
         property: 'og:description',
-        content:
-          'Open Feedback is a customer feedback platform',
+        content: 'Open Feedback is a customer feedback platform',
       },
       { property: 'og:type', content: 'website' },
       { name: 'twitter:card', content: 'summary_large_image' },
@@ -35,8 +33,7 @@ export const Route = createFileRoute('/_landing')({
       },
       {
         name: 'twitter:description',
-        content:
-          'Open Feedback is a customer feedback platform',
+        content: 'Open Feedback is a customer feedback platform',
       },
     ],
   }),
