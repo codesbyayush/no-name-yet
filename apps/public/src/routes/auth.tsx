@@ -34,10 +34,7 @@ function RouteComponent() {
         <p className="relative top-2 rounded-full bg-primary-foreground/50 px-3.5 py-2 font-bold text-4xl">
           A
         </p>
-        <SignIn
-          newUserCallbackURL={callbackURL}
-          redirect={callbackURL}
-        />
+        <SignIn newUserCallbackURL={callbackURL} redirect={callbackURL} />
       </div>
     </div>
   );
