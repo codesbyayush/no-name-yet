@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { CommentButton, VoteButton } from '@/components/svg';
 import { AutosizeTextarea } from '@/components/ui/autosize-textarea';
 import { Button } from '@/components/ui/button';
@@ -41,6 +42,10 @@ function RouteComponent() {
       queryClient.invalidateQueries({ queryKey: [postId, 'comments'] });
     },
   });
+
+  const handleSubscribe = () => {
+    toast.info('Sorry, not available yet, planned for next iteration');
+  };
 
   return (
     <div className="relative flex gap-4 text-card-foreground">
@@ -102,13 +107,19 @@ function RouteComponent() {
               key={comment.id}
             >
               <div>
-                <img
-                  alt="Avatar"
-                  className="h-8 w-8 rounded-full"
-                  height={32}
-                  src={comment.author?.image || 'https://picsum.photos/64'}
-                  width={32}
-                />
+                {post?.author?.image ? (
+                  <img
+                    alt="Author"
+                    className="h-8 w-8 rounded-full"
+                    height={32}
+                    src={post?.author?.image}
+                    width={32}
+                  />
+                ) : (
+                  <span className="inline-flex size-8 items-center justify-center rounded-full bg-stone-300/50 dark:bg-stone-700/50">
+                    ?
+                  </span>
+                )}
               </div>
               <div className="w-full">
                 <div className="flex w-full items-center gap-2">
@@ -152,7 +163,7 @@ function RouteComponent() {
         )}
       </div>
       <div className="sticky top-6 flex h-fit flex-col gap-4">
-        <div className="z-10 w-3xs rounded-2xl border-1 border-muted-foreground/10 bg-background/90 p-4 shadow-2xs">
+        <div className="z-10 w-3xs rounded-2xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card p-4 shadow-xs">
           <div className="flex items-center gap-3">
             <div>
               {post?.author?.image ? (
@@ -191,10 +202,11 @@ function RouteComponent() {
             )}
           </div>
         </div>
-        <div className="z-10 rounded-2xl border-1 border-muted-foreground/10 bg-background/90 p-4 shadow-2xs">
+        <div className="z-10 rounded-2xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card p-4 shadow-xs">
           <h4 className="mb-2 font-medium capitalize">Get Updates</h4>
           <Button
             className="w-full rounded-lg font-medium"
+            onClick={handleSubscribe}
             variant={'secondary'}
           >
             Subscribe
