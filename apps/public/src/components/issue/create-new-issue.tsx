@@ -1,6 +1,7 @@
 import { DialogTitle } from '@radix-ui/react-dialog';
 import { RiEditLine } from '@remixicon/react';
 import { type InfiniteData, useMutation } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
 import { Heart } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -15,6 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
+import { useSession } from '@/lib/auth-client';
 import { client, queryClient } from '@/utils/orpc';
 import { BoardSelector } from './board-selector';
 
@@ -51,6 +53,8 @@ export function CreateNewIssue() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const [newIssueForm, setNewIssueForm] = useState(defaultNewIssueForm);
+
+  const { data: session } = useSession();
 
   const createIssueMutation = useMutation({
     mutationFn: ({
@@ -150,7 +154,12 @@ export function CreateNewIssue() {
     },
   });
 
+  const navigate = useNavigate();
+
   const createIssue = () => {
+    if (session?.user.isAnonymous) {
+      return navigate({ to: '/auth', search: { redirect: '/board' } });
+    }
     if (!newIssueForm.title) {
       toast.error('Title is required');
       return;
@@ -236,7 +245,11 @@ export function CreateNewIssue() {
             }}
             size="sm"
           >
-            {createIssueMutation.isPending ? 'Creating…' : 'Create issue'}
+            {session?.user.isAnonymous
+              ? 'Sign in to create issue'
+              : createIssueMutation.isPending
+                ? 'Creating…'
+                : 'Create issue'}
           </Button>
         </div>
       </DialogContent>
