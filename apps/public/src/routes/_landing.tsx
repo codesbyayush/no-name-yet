@@ -6,37 +6,37 @@ export const Route = createFileRoute('/_landing')({
   head: () => ({
     meta: [
       {
-        title: 'Better T-App - Modern Productivity Platform',
+        title: 'Open Feedback',
       },
       {
         name: 'description',
         content:
-          'Experience the next generation of productivity tools with our modern, intuitive platform designed for the future.',
+          'Open Feedback is a customer feedback platform',
       },
       {
         name: 'keywords',
         content:
-          'productivity, modern, platform, collaboration, enterprise, secure, fast',
+          'customer feedback, feedback management, canny alternative, productboard alternative, feature requests, bug tracking, product management, user feedback, roadmap, changelog, feedback widget, customer insights',
       },
       {
         property: 'og:title',
-        content: 'Better T-App - Modern Productivity Platform',
+        content: 'Open Feedback - Customer Feedback Platform',
       },
       {
         property: 'og:description',
         content:
-          'Experience the next generation of productivity tools with our modern, intuitive platform designed for the future.',
+          'Open Feedback is a customer feedback platform',
       },
       { property: 'og:type', content: 'website' },
       { name: 'twitter:card', content: 'summary_large_image' },
       {
         name: 'twitter:title',
-        content: 'Better T-App - Modern Productivity Platform',
+        content: 'Open Feedback - Customer Feedback Platform',
       },
       {
         name: 'twitter:description',
         content:
-          'Experience the next generation of productivity tools with our modern, intuitive platform designed for the future.',
+          'Open Feedback is a customer feedback platform',
       },
     ],
   }),
