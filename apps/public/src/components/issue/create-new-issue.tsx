@@ -210,7 +210,7 @@ export function CreateNewIssue() {
           />
 
           <Textarea
-            className="overflow-wrap min-h-16 w-full resize-none whitespace-normal break-words border-none shadow-none outline-none focus-visible:ring-0"
+            className="overflow-wrap min-h-16 w-full resize-none whitespace-normal break-words border-none shadow-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
             onChange={(e) =>
               setNewIssueForm({ ...newIssueForm, description: e.target.value })
             }
