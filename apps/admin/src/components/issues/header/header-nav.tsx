@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useSearchStore } from '@/store/search-store';
-import Notifications from './notifications';
+// import Notifications from './notifications';
 
 export default function HeaderNav() {
   const {
@@ -96,7 +96,8 @@ export default function HeaderNav() {
             >
               <SearchIcon className="h-4 w-4" />
             </Button>
-            <Notifications />
+            {/* TODO: Add notifications
+            <Notifications /> */}
           </>
         )}
       </div>
