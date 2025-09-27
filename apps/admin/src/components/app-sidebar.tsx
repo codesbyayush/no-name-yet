@@ -10,6 +10,13 @@ import * as React from 'react';
 
 import { NavUser } from '@/components/nav-user';
 import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
+import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
@@ -22,6 +29,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { useSidebarRight } from '@/contexts/sidebar-right';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const data = {
   navMain: [
@@ -37,32 +45,14 @@ const data = {
       icon: ScrollText,
       isActive: false,
     },
-    // {
-    //   title: 'Roadmap',
-    //   url: '/roadmaps',
-    //   icon: Route,
-    //   isActive: false,
-    // },
-
-    // {
-    //   title: 'Surveys',
-    //   url: '/surveys',
-    //   icon: ClipboardList,
-    //   isActive: false,
-    // },
-    // {
-    //   title: 'Users',
-    //   url: '/users',
-    //   icon: Users,
-    //   isActive: false,
-    // },
   ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { setOpen } = useSidebar();
+  const { setOpen, openMobile, setOpenMobile } = useSidebar();
   const location = useLocation();
   const { setContainer } = useSidebarRight();
+  const isMobile = useIsMobile();
 
   const currentNavItem = React.useMemo(() => {
     return (
@@ -100,7 +90,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>
-            <SidebarGroupContent className="px-1.5 md:px-0">
+            <SidebarGroupContent>
               <SidebarMenu>
                 {data.navMain.map((item) => (
                   <SidebarMenuItem key={item.title}>
@@ -123,16 +113,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarContent>
         <SidebarFooter>
           <SidebarMenu>
-            {/* TODO: Add notifications here too
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                className="px-2.5 md:px-2"
-                tooltip={{ children: 'Notifications', hidden: false }}
-              >
-                <Bell />
-                <span>Notifications</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem> */}
             <SidebarMenuItem>
               <SidebarMenuButton
                 asChild
@@ -172,6 +152,45 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroup>
         </SidebarContent>
       </Sidebar>
+
+      {/* Mobile Right Sidebar */}
+      {isMobile && (
+        <Sheet onOpenChange={setOpenMobile} open={openMobile}>
+          <SheetContent
+            className="w-80 bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
+            data-mobile="true"
+            data-sidebar="sidebar"
+            data-slot="sidebar"
+            side="right"
+          >
+            <SheetHeader className="sr-only">
+              <SheetTitle>Sidebar</SheetTitle>
+              <SheetDescription>
+                Displays the mobile right sidebar.
+              </SheetDescription>
+            </SheetHeader>
+            <div className="flex h-full w-full flex-col">
+              <div className="gap-3.5 border-muted border-b p-3">
+                <div className="flex w-full items-center justify-between">
+                  <div className="font-medium text-base text-foreground">
+                    {currentNavItem?.title}
+                  </div>
+                </div>
+              </div>
+              <div className="flex-1 overflow-hidden">
+                <div className="px-0">
+                  <div
+                    className="overflow-x-hidden"
+                    ref={(el) => {
+                      setContainer(el as unknown as HTMLElement);
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </SheetContent>
+        </Sheet>
+      )}
     </Sidebar>
   );
 }

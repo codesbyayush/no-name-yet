@@ -101,7 +101,10 @@ function SidebarProvider({
 
   // Helper to toggle the sidebar.
   const toggleSidebar = React.useCallback(() => {
-    return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open);
+    if (isMobile) {
+      return setOpenMobile((open) => !open);
+    }
+    return setOpen((open) => !open);
   }, [isMobile, setOpen]);
 
   // Adds a keyboard shortcut to toggle the sidebar.
@@ -192,6 +195,45 @@ function Sidebar({
   }
 
   if (isMobile) {
+    if (collapsible === 'icon') {
+      return (
+        <div
+          className="group peer text-sidebar-foreground"
+          data-collapsible="icon"
+          data-side={side}
+          data-slot="sidebar"
+          data-state="collapsed"
+          data-variant={variant}
+        >
+          <div
+            className={cn(
+              'relative w-(--sidebar-width-icon) bg-transparent transition-[width] duration-200 ease-linear',
+              'group-data-[side=right]:rotate-180'
+            )}
+            data-slot="sidebar-gap"
+          />
+          <div
+            className={cn(
+              'fixed inset-y-0 z-10 flex h-svh w-(--sidebar-width-icon) transition-[left,right,width] duration-200 ease-linear',
+              side === 'left' ? 'left-0' : 'right-0',
+              'group-data-[side=left]:border-r group-data-[side=right]:border-l',
+              className
+            )}
+            data-slot="sidebar-container"
+            {...props}
+          >
+            <div
+              className="flex h-full w-full flex-col bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow-sm"
+              data-sidebar="sidebar"
+              data-slot="sidebar-inner"
+            >
+              {children}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <Sheet onOpenChange={setOpenMobile} open={openMobile} {...props}>
         <SheetContent
@@ -218,7 +260,7 @@ function Sidebar({
 
   return (
     <div
-      className="group peer hidden text-sidebar-foreground md:block"
+      className="group peer text-sidebar-foreground"
       data-collapsible={state === 'collapsed' ? collapsible : ''}
       data-side={side}
       data-slot="sidebar"
@@ -239,7 +281,7 @@ function Sidebar({
       />
       <div
         className={cn(
-          'fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear md:flex',
+          'fixed inset-y-0 z-10 flex h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear',
           side === 'left'
             ? 'left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]'
             : 'right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]',
@@ -269,7 +311,7 @@ function SidebarTrigger({
   onClick,
   ...props
 }: React.ComponentProps<typeof Button>) {
-  const { toggleSidebar } = useSidebar();
+  const { toggleSidebar, isMobile } = useSidebar();
 
   return (
     <Button
