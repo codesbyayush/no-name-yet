@@ -148,7 +148,7 @@ function RouteComponent() {
   return (
     <div>
       <SidebarRightPortal>{sidebarFilters}</SidebarRightPortal>
-      <div className="h-svh overflow-x-hidden lg:p-1">
+      <div className="h-svh overflow-hidden lg:p-2">
         <CreateIssueModalProvider />
         <div className="flex flex-col items-center justify-start overflow-hidden bg-container lg:rounded-md lg:border">
           <Header />

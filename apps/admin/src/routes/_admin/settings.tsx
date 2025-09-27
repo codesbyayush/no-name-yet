@@ -113,7 +113,7 @@ export const Route = createFileRoute('/_admin/settings')({
       location.pathname === '/settings' ||
       location.pathname === '/settings/'
     ) {
-      throw redirect({ to: '/settings/boards', replace: true });
+      throw redirect({ to: '/settings/pricing', replace: true });
     }
   },
   component: SettingsLayout,
