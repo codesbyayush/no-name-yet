@@ -154,15 +154,17 @@ export const useIssueCountByLabel = (labelId: string) =>
 
 export const useSearchIssues = (query: string | undefined) => {
   const safe = (query ?? '').trim().toLowerCase();
-  return useLiveQuery((q) =>
-    q.from({ issue: issuesCollection }).where(({ issue }) => {
-      if (!safe) {
-        return true;
-      }
-      const title = lower(issue.title);
-      const identifier = lower(issue.issueKey);
-      return ilike(title, `%${safe}%`) || ilike(identifier, `%${safe}%`);
-    })
+  return useLiveQuery(
+    (q) =>
+      q.from({ issue: issuesCollection }).where(({ issue }) => {
+        if (!safe) {
+          return true;
+        }
+        const title = lower(issue.title);
+        const identifier = lower(issue.issueKey);
+        return ilike(title, `%${safe}%`) || ilike(identifier, `%${safe}%`);
+      }),
+    [safe]
   );
 };
 

@@ -78,15 +78,17 @@ export const useUsersByTeam = (teamId: string | undefined) =>
 
 export const useSearchUsers = (query: string | undefined) => {
   const term = (query ?? '').trim().toLowerCase();
-  return useLiveQuery((q) =>
-    q.from({ user: usersCollection }).where(({ user }) => {
-      if (!term) {
-        return true;
-      }
-      const name = lower(user.name);
-      const email = lower(user.email);
-      return ilike(name, `%${term}%`) || ilike(email, `%${term}%`);
-    })
+  return useLiveQuery(
+    (q) =>
+      q.from({ user: usersCollection }).where(({ user }) => {
+        if (!term) {
+          return true;
+        }
+        const name = lower(user.name);
+        const email = lower(user.email);
+        return ilike(name, `%${term}%`) || ilike(email, `%${term}%`);
+      }),
+    [term]
   );
 };
 

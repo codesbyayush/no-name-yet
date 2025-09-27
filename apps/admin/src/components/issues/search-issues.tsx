@@ -1,26 +1,10 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { useIssuesStore } from '@/store/issues-store';
+import { useSearchIssues } from '@/react-db/issues';
 import { useSearchStore } from '@/store/search-store';
 import { IssueLine } from './issue-line';
 
 export function SearchIssues() {
-  const [searchResults, setSearchResults] = useState<
-    ReturnType<typeof useIssuesStore.getState>['issues']
-  >([]);
-  const { searchIssues } = useIssuesStore();
   const { searchQuery, isSearchOpen } = useSearchStore();
-
-  useEffect(() => {
-    if (searchQuery.trim() === '') {
-      setSearchResults([]);
-      return;
-    }
-
-    const results = searchIssues(searchQuery);
-    setSearchResults(results);
-  }, [searchQuery, searchIssues]);
+  const { data: searchResults = [] } = useSearchIssues(searchQuery);
 
   if (!isSearchOpen) {
     return null;

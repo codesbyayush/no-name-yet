@@ -67,15 +67,17 @@ export const useBoardById = (id: string | undefined) =>
 
 export const useSearchBoards = (query: string | undefined) => {
   const term = (query ?? '').trim().toLowerCase();
-  return useLiveQuery((q) =>
-    q.from({ board: boardsCollection }).where(({ board }) => {
-      if (!term) {
-        return true;
-      }
-      const name = lower(board.name);
-      const slug = lower(board.slug);
-      return ilike(name, `%${term}%`) || ilike(slug, `%${term}%`);
-    })
+  return useLiveQuery(
+    (q) =>
+      q.from({ board: boardsCollection }).where(({ board }) => {
+        if (!term) {
+          return true;
+        }
+        const name = lower(board.name);
+        const slug = lower(board.slug);
+        return ilike(name, `%${term}%`) || ilike(slug, `%${term}%`);
+      }),
+    [term]
   );
 };
 
