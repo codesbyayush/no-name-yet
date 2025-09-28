@@ -1,3 +1,4 @@
+import { useNavigate } from '@tanstack/react-router';
 import { format } from 'date-fns';
 import { motion } from 'motion/react';
 import { ContextMenu, ContextMenuTrigger } from '@/components/ui/context-menu';
@@ -15,6 +16,7 @@ export function IssueLine({
   issue: Issue;
   layoutId?: boolean;
 }) {
+  const navigate = useNavigate();
   return (
     <ContextMenu>
       <ContextMenuTrigger asChild>
@@ -22,8 +24,20 @@ export function IssueLine({
           {...(layoutId && {
             layoutId: `issue-line-${issue.issueKey}`,
           })}
-          //href={`/lndev-ui/issue/${issue.identifier}`}
           className="flex h-11 w-full items-center justify-start px-6 hover:bg-sidebar/50"
+          onClick={() => {
+            navigate({
+              to: '/boards/$postId',
+              params: { postId: issue.id },
+              search: {
+                search: undefined,
+                tag: undefined,
+                status: undefined,
+                order: undefined,
+                tab: undefined,
+              },
+            });
+          }}
         >
           <div className="flex items-center gap-0.5">
             <PrioritySelector

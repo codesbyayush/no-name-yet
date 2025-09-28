@@ -100,6 +100,7 @@ export const useIssueById = (id: string | undefined) =>
     q
       .from({ issue: issuesCollection })
       .where(({ issue }) => (id ? eq(issue.id, id) : false))
+      .orderBy(({ issue }) => issue.createdAt, 'desc')
       .limit(1)
   );
 

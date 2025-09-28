@@ -19,10 +19,12 @@ import { Route as AdminSettingsRouteImport } from './routes/_admin/settings'
 import { Route as AdminEditorRouteImport } from './routes/_admin/editor'
 import { Route as AdminBoardsRouteImport } from './routes/_admin/boards'
 import { Route as AdminChangelogsIndexRouteImport } from './routes/_admin/changelogs/index'
+import { Route as AdminBoardsIndexRouteImport } from './routes/_admin/boards/index'
 import { Route as AdminSettingsPricingRouteImport } from './routes/_admin/settings/pricing'
 import { Route as AdminSettingsIntegrationsRouteImport } from './routes/_admin/settings/integrations'
 import { Route as AdminSettingsGeneralRouteImport } from './routes/_admin/settings/general'
 import { Route as AdminChangelogsNewRouteImport } from './routes/_admin/changelogs/new'
+import { Route as AdminBoardsPostIdRouteImport } from './routes/_admin/boards/$postId'
 import { Route as AdminChangelogsEditIdRouteImport } from './routes/_admin/changelogs/edit.$id'
 
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -74,6 +76,11 @@ const AdminChangelogsIndexRoute = AdminChangelogsIndexRouteImport.update({
   path: '/changelogs/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminBoardsIndexRoute = AdminBoardsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminBoardsRoute,
+} as any)
 const AdminSettingsPricingRoute = AdminSettingsPricingRouteImport.update({
   id: '/pricing',
   path: '/pricing',
@@ -95,6 +102,11 @@ const AdminChangelogsNewRoute = AdminChangelogsNewRouteImport.update({
   path: '/changelogs/new',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminBoardsPostIdRoute = AdminBoardsPostIdRouteImport.update({
+  id: '/$postId',
+  path: '/$postId',
+  getParentRoute: () => AdminBoardsRoute,
+} as any)
 const AdminChangelogsEditIdRoute = AdminChangelogsEditIdRouteImport.update({
   id: '/changelogs/edit/$id',
   path: '/changelogs/edit/$id',
@@ -105,15 +117,17 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/onboarding': typeof OnboardingRoute
-  '/boards': typeof AdminBoardsRoute
+  '/boards': typeof AdminBoardsRouteWithChildren
   '/editor': typeof AdminEditorRoute
   '/settings': typeof AdminSettingsRouteWithChildren
   '/widget': typeof AdminWidgetRoute
   '/wiki': typeof AdminWikiRoute
+  '/boards/$postId': typeof AdminBoardsPostIdRoute
   '/changelogs/new': typeof AdminChangelogsNewRoute
   '/settings/general': typeof AdminSettingsGeneralRoute
   '/settings/integrations': typeof AdminSettingsIntegrationsRoute
   '/settings/pricing': typeof AdminSettingsPricingRoute
+  '/boards/': typeof AdminBoardsIndexRoute
   '/changelogs': typeof AdminChangelogsIndexRoute
   '/changelogs/edit/$id': typeof AdminChangelogsEditIdRoute
 }
@@ -121,15 +135,16 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/onboarding': typeof OnboardingRoute
-  '/boards': typeof AdminBoardsRoute
   '/editor': typeof AdminEditorRoute
   '/settings': typeof AdminSettingsRouteWithChildren
   '/widget': typeof AdminWidgetRoute
   '/wiki': typeof AdminWikiRoute
+  '/boards/$postId': typeof AdminBoardsPostIdRoute
   '/changelogs/new': typeof AdminChangelogsNewRoute
   '/settings/general': typeof AdminSettingsGeneralRoute
   '/settings/integrations': typeof AdminSettingsIntegrationsRoute
   '/settings/pricing': typeof AdminSettingsPricingRoute
+  '/boards': typeof AdminBoardsIndexRoute
   '/changelogs': typeof AdminChangelogsIndexRoute
   '/changelogs/edit/$id': typeof AdminChangelogsEditIdRoute
 }
@@ -139,15 +154,17 @@ export interface FileRoutesById {
   '/_admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/onboarding': typeof OnboardingRoute
-  '/_admin/boards': typeof AdminBoardsRoute
+  '/_admin/boards': typeof AdminBoardsRouteWithChildren
   '/_admin/editor': typeof AdminEditorRoute
   '/_admin/settings': typeof AdminSettingsRouteWithChildren
   '/_admin/widget': typeof AdminWidgetRoute
   '/_admin/wiki': typeof AdminWikiRoute
+  '/_admin/boards/$postId': typeof AdminBoardsPostIdRoute
   '/_admin/changelogs/new': typeof AdminChangelogsNewRoute
   '/_admin/settings/general': typeof AdminSettingsGeneralRoute
   '/_admin/settings/integrations': typeof AdminSettingsIntegrationsRoute
   '/_admin/settings/pricing': typeof AdminSettingsPricingRoute
+  '/_admin/boards/': typeof AdminBoardsIndexRoute
   '/_admin/changelogs/': typeof AdminChangelogsIndexRoute
   '/_admin/changelogs/edit/$id': typeof AdminChangelogsEditIdRoute
 }
@@ -162,10 +179,12 @@ export interface FileRouteTypes {
     | '/settings'
     | '/widget'
     | '/wiki'
+    | '/boards/$postId'
     | '/changelogs/new'
     | '/settings/general'
     | '/settings/integrations'
     | '/settings/pricing'
+    | '/boards/'
     | '/changelogs'
     | '/changelogs/edit/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -173,15 +192,16 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/onboarding'
-    | '/boards'
     | '/editor'
     | '/settings'
     | '/widget'
     | '/wiki'
+    | '/boards/$postId'
     | '/changelogs/new'
     | '/settings/general'
     | '/settings/integrations'
     | '/settings/pricing'
+    | '/boards'
     | '/changelogs'
     | '/changelogs/edit/$id'
   id:
@@ -195,10 +215,12 @@ export interface FileRouteTypes {
     | '/_admin/settings'
     | '/_admin/widget'
     | '/_admin/wiki'
+    | '/_admin/boards/$postId'
     | '/_admin/changelogs/new'
     | '/_admin/settings/general'
     | '/_admin/settings/integrations'
     | '/_admin/settings/pricing'
+    | '/_admin/boards/'
     | '/_admin/changelogs/'
     | '/_admin/changelogs/edit/$id'
   fileRoutesById: FileRoutesById
@@ -282,6 +304,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminChangelogsIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/_admin/boards/': {
+      id: '/_admin/boards/'
+      path: '/'
+      fullPath: '/boards/'
+      preLoaderRoute: typeof AdminBoardsIndexRouteImport
+      parentRoute: typeof AdminBoardsRoute
+    }
     '/_admin/settings/pricing': {
       id: '/_admin/settings/pricing'
       path: '/pricing'
@@ -310,6 +339,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminChangelogsNewRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/_admin/boards/$postId': {
+      id: '/_admin/boards/$postId'
+      path: '/$postId'
+      fullPath: '/boards/$postId'
+      preLoaderRoute: typeof AdminBoardsPostIdRouteImport
+      parentRoute: typeof AdminBoardsRoute
+    }
     '/_admin/changelogs/edit/$id': {
       id: '/_admin/changelogs/edit/$id'
       path: '/changelogs/edit/$id'
@@ -319,6 +355,20 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AdminBoardsRouteChildren {
+  AdminBoardsPostIdRoute: typeof AdminBoardsPostIdRoute
+  AdminBoardsIndexRoute: typeof AdminBoardsIndexRoute
+}
+
+const AdminBoardsRouteChildren: AdminBoardsRouteChildren = {
+  AdminBoardsPostIdRoute: AdminBoardsPostIdRoute,
+  AdminBoardsIndexRoute: AdminBoardsIndexRoute,
+}
+
+const AdminBoardsRouteWithChildren = AdminBoardsRoute._addFileChildren(
+  AdminBoardsRouteChildren,
+)
 
 interface AdminSettingsRouteChildren {
   AdminSettingsGeneralRoute: typeof AdminSettingsGeneralRoute
@@ -337,7 +387,7 @@ const AdminSettingsRouteWithChildren = AdminSettingsRoute._addFileChildren(
 )
 
 interface AdminRouteChildren {
-  AdminBoardsRoute: typeof AdminBoardsRoute
+  AdminBoardsRoute: typeof AdminBoardsRouteWithChildren
   AdminEditorRoute: typeof AdminEditorRoute
   AdminSettingsRoute: typeof AdminSettingsRouteWithChildren
   AdminWidgetRoute: typeof AdminWidgetRoute
@@ -348,7 +398,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
-  AdminBoardsRoute: AdminBoardsRoute,
+  AdminBoardsRoute: AdminBoardsRouteWithChildren,
   AdminEditorRoute: AdminEditorRoute,
   AdminSettingsRoute: AdminSettingsRouteWithChildren,
   AdminWidgetRoute: AdminWidgetRoute,

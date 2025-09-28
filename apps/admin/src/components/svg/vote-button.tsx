@@ -9,7 +9,7 @@ interface VoteButtonProps {
   count: number;
   feedbackId?: string;
   hasVoted?: boolean;
-  desableFromParent?: boolean;
+  disableFromParent?: boolean;
   iconSize?: number;
   className?: string;
 }
@@ -18,7 +18,7 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
   count,
   feedbackId,
   hasVoted = false,
-  desableFromParent = false,
+  disableFromParent = false,
   iconSize = 16,
   className = '',
 }) => {
@@ -65,7 +65,7 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
   const disabled =
     createVoteMutation.isPending ||
     deleteVoteMutation.isPending ||
-    desableFromParent;
+    disableFromParent;
 
   return (
     <button
