@@ -8,13 +8,12 @@
     "skipLibCheck": true,
     "baseUrl": "./",
     "paths": {
-      "@/*": ["./src/*"],
-      "react": ["./node_modules/react"]
+      "@/*": ["./src/*"]
     },
     "outDir": "./dist",
-    "types": ["bun-types", "@cloudflare/workers-types", "bun"],
+    "types": ["@types/bun", "@cloudflare/workers-types"],
     "composite": true,
-    "jsx": "react"
+    "jsx": "react-jsx"
   },
   "tsc-alias": {
     "resolveFullPaths": true

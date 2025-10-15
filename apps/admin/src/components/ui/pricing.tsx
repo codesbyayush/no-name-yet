@@ -1,4 +1,4 @@
-import { motion, type Transition } from 'framer-motion';
+import { type Transition, motion } from 'motion/react';
 import { CheckCircleIcon, StarIcon } from 'lucide-react';
 import React from 'react';
 import { Button } from '@/components/ui/button';
@@ -251,7 +251,7 @@ export function BorderTrail({
   const BASE_TRANSITION = {
     repeat: Number.POSITIVE_INFINITY,
     duration: 5,
-    ease: 'linear',
+    ease: (t: number) => t,
   };
 
   return (
