@@ -20,6 +20,24 @@ export default function SignIn({
 }) {
   const [loading, setLoading] = useState(false);
 
+  async function handleSignIn(provider: string) {
+    await signIn.social(
+      {
+        provider,
+        callbackURL: redirect,
+        newUserCallbackURL,
+      },
+      {
+        onRequest: (_ctx) => {
+          setLoading(true);
+        },
+        onResponse: (_ctx) => {
+          setLoading(false);
+        },
+      }
+    );
+  }
+
   return (
     <Card className="w-full max-w-md gap-4 border-none bg-transparent text-center">
       <CardHeader>
@@ -39,23 +57,7 @@ export default function SignIn({
             <Button
               className={cn('w-full gap-2')}
               disabled={loading}
-              onClick={async () => {
-                await signIn.social(
-                  {
-                    provider: 'google',
-                    callbackURL: redirect,
-                    newUserCallbackURL,
-                  },
-                  {
-                    onRequest: (_ctx) => {
-                      setLoading(true);
-                    },
-                    onResponse: (_ctx) => {
-                      setLoading(false);
-                    },
-                  }
-                );
-              }}
+              onClick={() => handleSignIn('google')}
               variant="outline"
             >
               <svg
@@ -86,23 +88,7 @@ export default function SignIn({
             <Button
               className={cn('w-full gap-2')}
               disabled={loading}
-              onClick={async () => {
-                await signIn.social(
-                  {
-                    provider: 'github',
-                    callbackURL: redirect,
-                    newUserCallbackURL,
-                  },
-                  {
-                    onRequest: (_ctx) => {
-                      setLoading(true);
-                    },
-                    onResponse: (_ctx) => {
-                      setLoading(false);
-                    },
-                  }
-                );
-              }}
+              onClick={() => handleSignIn('github')}
               variant="outline"
             >
               <svg
@@ -121,24 +107,7 @@ export default function SignIn({
             <Button
               className={cn('w-full gap-2')}
               disabled={loading}
-              onClick={async () => {
-                await signIn.social(
-                  {
-                    provider: 'gitlab',
-                    callbackURL: redirect,
-                    newUserCallbackURL,
-                  },
-                  {
-                    onRequest: (_ctx) => {
-                      setLoading(true);
-                    },
-                    onResponse: (_ctx) => {
-                      setLoading(false);
-                    },
-                  }
-                );
-              }}
-              variant="outline"
+              onClick={() => handleSignIn('gitlab')}
             >
               <svg
                 height="1em"
@@ -162,8 +131,8 @@ export default function SignIn({
             By signing in, you agree to our
             <a
               className="px-2 font-bold"
-              href="https://omnifeedback.com/terms"
-              rel="noreferrer"
+              href="https://openfeedback.tech/terms"
+              rel="noopener noreferrer"
               target="_blank"
             >
               Terms of Service
@@ -171,8 +140,8 @@ export default function SignIn({
             and
             <a
               className="px-2 font-bold"
-              href="https://omnifeedback.com/privacy"
-              rel="noreferrer"
+              href="https://openfeedback.tech/privacy"
+              rel="noopener noreferrer"
               target="_blank"
             >
               Privacy Policy

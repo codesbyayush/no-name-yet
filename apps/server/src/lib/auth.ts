@@ -58,6 +58,9 @@ export function getAuth(env: AppEnv): AuthInstance {
     plugins: [
       admin(),
       organization({
+        teams: {
+          enabled: true,
+        },
         organizationCreation: {
           afterCreate: async ({ user, organization }) => {
             if (env.NODE_ENV === 'production') {

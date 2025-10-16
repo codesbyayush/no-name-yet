@@ -4,7 +4,7 @@ import {
   pgTable,
   text,
   timestamp,
-  unique,
+  uniqueIndex,
 } from 'drizzle-orm/pg-core';
 import { organization } from './organization';
 
@@ -22,12 +22,10 @@ export const githubInstallations = pgTable(
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
   },
-  (table) => ({
-    installationUnique: unique().on(table.githubInstallationId),
-    accountIdx: index('idx_github_installations_account').on(
-      table.accountLogin
-    ),
-  })
+  (table) => ([
+    uniqueIndex('idx_github_installations_github_installation_id').on(table.githubInstallationId),
+    index('idx_github_installations_account').on(table.accountLogin),
+  ])
 );
 
 export const githubWebhookDeliveries = pgTable(
@@ -40,8 +38,7 @@ export const githubWebhookDeliveries = pgTable(
     receivedAt: timestamp('received_at').defaultNow().notNull(),
     handledAt: timestamp('handled_at'),
   },
-  (table) => ({
-    deliveryUnique: unique().on(table.deliveryId),
-    deliveryIdx: index('idx_github_webhook_delivery').on(table.deliveryId),
-  })
+  (table) => ([
+    uniqueIndex('idx_github_webhook_deliveries_delivery_id').on(table.deliveryId),
+  ])
 );

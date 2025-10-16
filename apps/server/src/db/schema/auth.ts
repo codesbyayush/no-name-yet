@@ -5,7 +5,7 @@ import {
   pgTable,
   text,
   timestamp,
-  unique,
+  uniqueIndex,
 } from 'drizzle-orm/pg-core';
 import { organization } from './organization';
 
@@ -34,15 +34,12 @@ export const user = pgTable(
     lastActiveAt: timestamp('last_active_at'),
     deletedAt: timestamp('deleted_at'),
   },
-  (table) => ({
-    uniqueOrganizationEmail: unique().on(table.organizationId, table.email),
-    uniqueOrganizationExternalId: unique().on(
-      table.organizationId,
-      table.externalId
-    ),
-    organizationIdx: index('idx_users_organization').on(table.organizationId),
-    emailIdx: index('idx_users_email').on(table.email),
-  })
+  (table) => ([
+    uniqueIndex('idx_user_organization_id_email').on(table.organizationId, table.email),
+    uniqueIndex('idx_user_organization_id_external_id').on(table.organizationId, table.externalId),
+    index('idx_user_organization_id').on(table.organizationId),
+    index('idx_user_email').on(table.email),
+  ])
 );
 
 export const session = pgTable('session', {
@@ -57,6 +54,7 @@ export const session = pgTable('session', {
     .notNull()
     .references(() => user.id, { onDelete: 'cascade' }),
   activeOrganizationId: text('active_organization_id'),
+  activeTeamId: text('active_team_id'),
   impersonatedBy: text('impersonated_by'),
 });
 

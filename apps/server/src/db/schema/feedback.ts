@@ -53,17 +53,12 @@ export const feedback = pgTable(
     // For future features
     isAnonymous: boolean('is_anonymous').default(false).notNull(),
   },
-  (table) => ({
-    boardsIdx: index('idx_feedback_boards').on(table.boardId),
-    boardStatusCreatedIdx: index('idx_feedback_board_status_created').on(
-      table.boardId,
-      table.createdAt.desc()
-    ),
-    statusCreatedIdx: index('idx_feedback_status_created').on(
-      table.createdAt.desc()
-    ),
-    issueKeyIdx: index('idx_feedback_issue_key').on(table.issueKey),
-  })
+  (table) => ([
+    index('idx_feedback_board_id').on(table.boardId),
+    index('idx_feedback_board_status_created').on(table.boardId, table.createdAt.desc()),
+    index('idx_feedback_status_created').on(table.createdAt.desc()),
+    index('idx_feedback_issue_key').on(table.issueKey),
+  ])
 );
 
 export type Feedback = typeof feedback.$inferSelect;

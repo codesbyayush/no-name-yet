@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { boolean, index, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import { boolean, index, pgTable, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core';
 import { user } from './auth';
 import { feedback } from './feedback';
 
@@ -23,14 +23,11 @@ export const comments = pgTable(
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
     deletedAt: timestamp('deleted_at'),
   },
-  (table) => ({
-    feedbackIdx: index('idx_comments_feedback').on(table.feedbackId),
-    feedbackCreatedIdx: index('idx_comments_feedback_created').on(
-      table.feedbackId,
-      table.createdAt
-    ),
-    parentIdx: index('idx_comments_parent').on(table.parentCommentId),
-  })
+  (table) => ([
+    uniqueIndex('idx_comments_feedback_id').on(table.feedbackId),
+    index('idx_comments_feedback_created').on(table.feedbackId, table.createdAt),
+    index('idx_comments_parent_comment_id').on(table.parentCommentId),
+  ])
 );
 
 // Export types for TypeScript

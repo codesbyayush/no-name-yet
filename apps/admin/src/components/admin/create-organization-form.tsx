@@ -16,6 +16,13 @@ interface CreateOrganizationFormProps {
   buttonText?: string;
 }
 
+const slugify = (text: string) => {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+};
+
 export function CreateOrganizationForm({
   className,
   onSuccess,
@@ -33,10 +40,7 @@ export function CreateOrganizationForm({
 
   const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     //TODO: can't add dash in input but can be added if copy pasted
-    const newSlug = e.target.value
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
+    const newSlug = slugify(e.target.value);
     setSlug(newSlug);
   };
 
@@ -111,7 +115,7 @@ export function CreateOrganizationForm({
               disabled={isSubmitting}
               id="name"
               onChange={handleNameChange}
-              placeholder="Acme Inc."
+              placeholder="OpenFeedback"
               required
               type="text"
               value={name}
@@ -126,13 +130,14 @@ export function CreateOrganizationForm({
                 disabled={isSubmitting}
                 id="slug"
                 onChange={handleSlugChange}
-                placeholder="acme"
+                onPaste={(e) => handleSlugChange(e as unknown as React.ChangeEvent<HTMLInputElement>)}
+                placeholder="openfeedback"
                 required
                 type="text"
                 value={slug}
               />
               <span className="text-muted-foreground text-sm">
-                .omnifeedback.tech/
+                .openfeedback.tech/
               </span>
             </div>
           </div>

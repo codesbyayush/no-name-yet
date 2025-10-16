@@ -4,7 +4,7 @@ import {
   pgTable,
   text,
   timestamp,
-  unique,
+  uniqueIndex,
 } from 'drizzle-orm/pg-core';
 import { organization } from './organization';
 
@@ -24,11 +24,11 @@ export const boards = pgTable(
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
     deletedAt: timestamp('deleted_at'),
   },
-  (table) => ({
-    uniqueOrganizationSlug: unique().on(table.organizationId, table.slug),
-    organizationIdx: index('idx_boards_organization').on(table.organizationId),
-    slugIdx: index('idx_boards_slug').on(table.slug),
-  })
+  (table) => ([
+    uniqueIndex('idx_boards_organization_id_slug').on(table.organizationId, table.slug),
+    index('idx_boards_organization_id').on(table.organizationId),
+    index('idx_boards_slug').on(table.slug),
+  ])
 );
 
 // Export types for TypeScript

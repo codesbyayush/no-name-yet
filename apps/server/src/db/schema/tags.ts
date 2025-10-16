@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { index, pgTable, text, timestamp, unique } from 'drizzle-orm/pg-core';
+import { index, pgTable, text, timestamp, unique, uniqueIndex } from 'drizzle-orm/pg-core';
 import { organization } from './organization';
 
 export const tags = pgTable(
@@ -15,14 +15,11 @@ export const tags = pgTable(
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
   },
-  (table) => ({
-    uniqueOrganizationName: unique().on(table.organizationId, table.name),
-    organizationIdx: index('idx_tags_organization').on(table.organizationId),
-    nameLowerIdx: index('idx_tags_org_name_lower').on(
-      table.organizationId,
-      table.name
-    ),
-  })
+  (table) => ([
+    uniqueIndex('idx_tags_organization_id_name').on(table.organizationId, table.name),
+    index('idx_tags_organization_id').on(table.organizationId),
+    index('idx_tags_organization_id_name_lower').on(table.organizationId, table.name),
+  ])
 );
 
 // Export types for TypeScript

@@ -52,13 +52,13 @@ export const changelog = pgTable(
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
   },
-  (table) => ({
-    orgIdx: index('idx_changelog_org').on(table.organizationId),
-    statusIdx: index('idx_changelog_status').on(table.status),
-    publishedIdx: index('idx_changelog_published').on(table.publishedAt),
-    slugIdx: index('idx_changelog_slug').on(table.organizationId, table.slug),
-    authorIdx: index('idx_changelog_author').on(table.authorId),
-  })
+  (table) => ([
+    index('idx_changelog_organization_id').on(table.organizationId),
+    index('idx_changelog_status').on(table.status),
+    index('idx_changelog_published').on(table.publishedAt),
+    index('idx_changelog_organization_id_slug').on(table.organizationId, table.slug),
+    index('idx_changelog_author').on(table.authorId),
+  ])
 );
 
 export type Changelog = typeof changelog.$inferSelect;
