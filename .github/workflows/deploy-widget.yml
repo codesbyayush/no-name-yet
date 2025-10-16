@@ -148,6 +148,13 @@ jobs:
           cd apps/server
           bun run build
 
+      - name: Run DB migrations
+        run: |
+          cd apps/server
+          bun run db:migrate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:

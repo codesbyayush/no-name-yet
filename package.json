@@ -15,6 +15,9 @@
     "db:studio": "bun run --filter server db:studio",
     "db:generate": "bun run --filter server db:generate",
     "db:migrate": "bun run --filter server db:migrate",
+    "db:up": "docker compose up -d postgres neon-proxy",
+    "db:down": "docker compose down",
+    "db:logs": "docker compose logs -f postgres",
     "prepare": "husky"
   },
   "devDependencies": {
