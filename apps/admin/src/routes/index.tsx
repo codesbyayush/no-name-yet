@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, Navigate, useNavigate } from '@tanstack/react-router';
 import { useEffect } from 'react';
 
 export const Route = createFileRoute('/')({
@@ -6,12 +6,12 @@ export const Route = createFileRoute('/')({
   head: () => ({
     meta: [
       {
-        title: 'OmniFeedback - Complete Customer Feedback Platform',
+        title: 'Open Feedback - Complete Customer Feedback Platform',
       },
       {
         name: 'description',
         content:
-          'Collect, organize, and act on customer feedback with OmniFeedback. A powerful alternative to Canny, UserJot, and Productboard with customizable workflows, multi-tenant support, and AI-powered insights.',
+          'Collect, organize, and act on customer feedback with Open Feedback. A powerful alternative to Canny, UserJot, and Productboard with customizable workflows, multi-tenant support, and AI-powered insights.',
       },
       {
         name: 'keywords',
@@ -20,7 +20,7 @@ export const Route = createFileRoute('/')({
       },
       {
         name: 'author',
-        content: 'OmniFeedback',
+        content: 'Open Feedback',
       },
       {
         name: 'robots',
@@ -28,12 +28,12 @@ export const Route = createFileRoute('/')({
       },
       {
         property: 'og:title',
-        content: 'OmniFeedback - Complete Customer Feedback Platform',
+        content: 'Open Feedback - Complete Customer Feedback Platform',
       },
       {
         property: 'og:description',
         content:
-          'Transform how you collect and manage customer feedback. OmniFeedback offers advanced features, customizable workflows, and seamless integrations for modern product teams.',
+          'Transform how you collect and manage customer feedback. Open Feedback offers advanced features, customizable workflows, and seamless integrations for modern product teams.',
       },
       {
         property: 'og:type',
@@ -41,11 +41,11 @@ export const Route = createFileRoute('/')({
       },
       {
         property: 'og:site_name',
-        content: 'OmniFeedback',
+        content: 'Open Feedback',
       },
       {
         property: 'og:image',
-        content: 'https://omnifeedback.app/og-image.png',
+        content: 'https://openfeedback.tech/og-image.png',
       },
       {
         property: 'og:image:width',
@@ -61,15 +61,15 @@ export const Route = createFileRoute('/')({
       },
       {
         name: 'twitter:site',
-        content: '@omnifeedback',
+        content: '@openfeedback',
       },
       {
         name: 'twitter:creator',
-        content: '@omnifeedback',
+        content: '@openfeedback',
       },
       {
         name: 'twitter:title',
-        content: 'OmniFeedback - Complete Customer Feedback Platform',
+        content: 'Open Feedback - Complete Customer Feedback Platform',
       },
       {
         name: 'twitter:description',
@@ -78,7 +78,7 @@ export const Route = createFileRoute('/')({
       },
       {
         name: 'twitter:image',
-        content: 'https://omnifeedback.app/twitter-image.png',
+        content: 'https://openfeedback.tech/twitter-image.png',
       },
       {
         name: 'theme-color',
@@ -90,11 +90,11 @@ export const Route = createFileRoute('/')({
       },
       {
         name: 'application-name',
-        content: 'OmniFeedback',
+        content: 'Open Feedback',
       },
       {
         name: 'apple-mobile-web-app-title',
-        content: 'OmniFeedback',
+        content: 'Open Feedback',
       },
       {
         name: 'apple-mobile-web-app-capable',
@@ -109,13 +109,5 @@ export const Route = createFileRoute('/')({
 });
 
 function LandingComponent() {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    navigate({
-      href: import.meta.env.PUBLIC_ADMIN_URL,
-    });
-  }, [navigate]);
-
-  return null;
+  return <Navigate to="/boards" replace search={{} as any}/>;
 }
