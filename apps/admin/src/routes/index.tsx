@@ -109,5 +109,5 @@ export const Route = createFileRoute('/')({
 });
 
 function LandingComponent() {
-  return <Navigate to="/boards" replace search={{} as any}/>;
+  return <Navigate replace search={{} as any} to="/boards" />;
 }

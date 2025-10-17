@@ -1,5 +1,5 @@
-import { type Transition, motion } from 'motion/react';
 import { CheckCircleIcon, StarIcon } from 'lucide-react';
+import { motion, type Transition } from 'motion/react';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import {

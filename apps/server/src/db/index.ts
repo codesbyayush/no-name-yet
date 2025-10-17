@@ -9,7 +9,7 @@ export function getDb(env: {
   DATABASE_URL: string;
   NODE_ENV: string;
 }) {
-  let connectionString;
+  let connectionString: string;
   if (env.NODE_ENV !== 'production') {
     connectionString = 'postgres://postgres:postgres@db.localtest.me:5432/main';
     neonConfig.fetchEndpoint = (host) => {

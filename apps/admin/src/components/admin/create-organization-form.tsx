@@ -130,7 +130,11 @@ export function CreateOrganizationForm({
                 disabled={isSubmitting}
                 id="slug"
                 onChange={handleSlugChange}
-                onPaste={(e) => handleSlugChange(e as unknown as React.ChangeEvent<HTMLInputElement>)}
+                onPaste={(e) =>
+                  handleSlugChange(
+                    e as unknown as React.ChangeEvent<HTMLInputElement>
+                  )
+                }
                 placeholder="openfeedback"
                 required
                 type="text"
