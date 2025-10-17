@@ -20,11 +20,11 @@ export const feedbackTags = pgTable(
       .references(() => tags.id, { onDelete: 'cascade' }),
     createdAt: timestamp('created_at').defaultNow().notNull(),
   },
-  (table) => ([
+  (table) => [
     primaryKey({ columns: [table.feedbackId, table.tagId] }),
     index('idx_feedback_tags_feedback_id').on(table.feedbackId),
     index('idx_feedback_tags_tag_id').on(table.tagId),
-  ])
+  ]
 );
 
 export type FeedbackTag = typeof feedbackTags.$inferSelect;

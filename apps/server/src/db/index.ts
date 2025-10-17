@@ -13,7 +13,8 @@ export function getDb(env: {
   if (env.NODE_ENV !== 'production') {
     connectionString = 'postgres://postgres:postgres@db.localtest.me:5432/main';
     neonConfig.fetchEndpoint = (host) => {
-      const [protocol, port] = host === 'db.localtest.me' ? ['http', 4444] : ['https', 443];
+      const [protocol, port] =
+        host === 'db.localtest.me' ? ['http', 4444] : ['https', 443];
       return `${protocol}://${host}:${port}/sql`;
     };
     const connectionStringUrl = new URL(connectionString);

@@ -34,12 +34,18 @@ export const user = pgTable(
     lastActiveAt: timestamp('last_active_at'),
     deletedAt: timestamp('deleted_at'),
   },
-  (table) => ([
-    uniqueIndex('idx_user_organization_id_email').on(table.organizationId, table.email),
-    uniqueIndex('idx_user_organization_id_external_id').on(table.organizationId, table.externalId),
+  (table) => [
+    uniqueIndex('idx_user_organization_id_email').on(
+      table.organizationId,
+      table.email
+    ),
+    uniqueIndex('idx_user_organization_id_external_id').on(
+      table.organizationId,
+      table.externalId
+    ),
     index('idx_user_organization_id').on(table.organizationId),
     index('idx_user_email').on(table.email),
-  ])
+  ]
 );
 
 export const session = pgTable('session', {

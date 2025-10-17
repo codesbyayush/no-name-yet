@@ -24,11 +24,14 @@ export const boards = pgTable(
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
     deletedAt: timestamp('deleted_at'),
   },
-  (table) => ([
-    uniqueIndex('idx_boards_organization_id_slug').on(table.organizationId, table.slug),
+  (table) => [
+    uniqueIndex('idx_boards_organization_id_slug').on(
+      table.organizationId,
+      table.slug
+    ),
     index('idx_boards_organization_id').on(table.organizationId),
     index('idx_boards_slug').on(table.slug),
-  ])
+  ]
 );
 
 // Export types for TypeScript

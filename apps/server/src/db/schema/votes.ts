@@ -1,5 +1,11 @@
 import { sql } from 'drizzle-orm';
-import { index, pgTable, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core';
+import {
+  index,
+  pgTable,
+  text,
+  timestamp,
+  uniqueIndex,
+} from 'drizzle-orm/pg-core';
 import { user } from './auth';
 import { comments } from './comments';
 import { feedback } from './feedback';
@@ -19,11 +25,15 @@ export const votes = pgTable(
       .references(() => user.id, { onDelete: 'cascade' }),
     createdAt: timestamp('created_at').defaultNow().notNull(),
   },
-  (table) => ([
-    uniqueIndex('idx_votes_user_id_feedback_id_comment_id').on(table.userId, table.feedbackId, table.commentId),
+  (table) => [
+    uniqueIndex('idx_votes_user_id_feedback_id_comment_id').on(
+      table.userId,
+      table.feedbackId,
+      table.commentId
+    ),
     index('idx_votes_feedback_id').on(table.feedbackId),
     index('idx_votes_comment_id').on(table.commentId),
-  ])
+  ]
 );
 
 export type Vote = typeof votes.$inferSelect;

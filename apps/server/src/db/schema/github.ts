@@ -22,10 +22,12 @@ export const githubInstallations = pgTable(
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
   },
-  (table) => ([
-    uniqueIndex('idx_github_installations_github_installation_id').on(table.githubInstallationId),
+  (table) => [
+    uniqueIndex('idx_github_installations_github_installation_id').on(
+      table.githubInstallationId
+    ),
     index('idx_github_installations_account').on(table.accountLogin),
-  ])
+  ]
 );
 
 export const githubWebhookDeliveries = pgTable(
@@ -38,7 +40,9 @@ export const githubWebhookDeliveries = pgTable(
     receivedAt: timestamp('received_at').defaultNow().notNull(),
     handledAt: timestamp('handled_at'),
   },
-  (table) => ([
-    uniqueIndex('idx_github_webhook_deliveries_delivery_id').on(table.deliveryId),
-  ])
+  (table) => [
+    uniqueIndex('idx_github_webhook_deliveries_delivery_id').on(
+      table.deliveryId
+    ),
+  ]
 );
