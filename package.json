@@ -21,12 +21,13 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.2.2",
+    "@biomejs/biome": "2.2.6",
     "@types/node": "^24.5.2",
     "husky": "^9.1.7",
     "knip": "^5.64.0",
+    "lint-staged": "^16.2.4",
     "typescript": "^5.9.2",
-    "ultracite": "5.2.16"
+    "ultracite": "5.6.4"
   },
   "overrides": {
     "@tanstack/db": "0.1.1",
@@ -37,5 +38,10 @@
   "packageManager": "bun@1.2.10",
   "dependencies": {
     "valibot": "1.1.0"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}": [
+      "bun x ultracite fix"
+    ]
   }
 }

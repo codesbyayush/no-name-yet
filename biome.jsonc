@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.2.2/schema.json",
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "extends": ["ultracite"],
   "linter": {
     "rules": {
@@ -26,8 +26,6 @@
       },
       "style": {
         "noNestedTernary": "warn",
-
-        // TODO: Remove this rule
         "noNonNullAssertion": "warn",
         "noMagicNumbers": "warn",
         "useCollapsedElseIf": "warn",
@@ -39,13 +37,11 @@
       "performance": {
         "noNamespaceImport": "warn",
         "noImgElement": "warn",
-
         "noBarrelFile": "warn",
         "useTopLevelRegex": "warn"
       },
       "correctness": {
         "useExhaustiveDependencies": "warn",
-
         "noUnusedVariables": "warn",
         "noChildrenProp": "warn",
         "noUnusedImports": "warn",
