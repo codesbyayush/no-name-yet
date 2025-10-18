@@ -55,6 +55,9 @@ export function StatusSelector({ issueId, statusKey }: StatusSelectorProps) {
             aria-expanded={open}
             className="flex size-7 items-center justify-center"
             id={id}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
             role="combobox"
             size="icon"
             variant="ghost"

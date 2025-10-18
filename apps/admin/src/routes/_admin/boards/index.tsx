@@ -66,7 +66,7 @@ function RouteComponent() {
   ];
 
   const setParam = (patch: Partial<typeof search>) => {
-    void navigate({
+    navigate({
       search: (prev) => stripDefaults({ ...prev, ...patch }),
       replace: false,
     });
