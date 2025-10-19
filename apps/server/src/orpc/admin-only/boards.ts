@@ -1,20 +1,20 @@
-import { eq } from 'drizzle-orm';
-import { z } from 'zod';
-import { boards } from '../../db/schema/boards';
-import { adminOnlyProcedure } from '../procedures';
+import { z } from "zod";
+import {
+  createBoard,
+  deleteBoard,
+  getAllBoards,
+  updateBoard,
+} from "@/dal/boards";
+import { adminOnlyProcedure } from "../procedures";
 
 export const boardsRouter = {
   getAll: adminOnlyProcedure.handler(async ({ context }) => {
     if (!context.organization?.id) {
-      throw new Error('Organization not found');
+      throw new Error("Organization not found");
     }
 
-    const allBoards = await context.db
-      .select()
-      .from(boards)
-      .where(eq(boards.organizationId, context.organization.id));
-
-    return allBoards;
+    const list = await getAllBoards(context.db, context.organization.id);
+    return list;
   }),
 
   create: adminOnlyProcedure
@@ -28,23 +28,10 @@ export const boardsRouter = {
       })
     )
     .output(z.any())
-    .handler(async ({ input, context }) => {
-      const boardId = crypto.randomUUID();
-
-      const [newBoard] = await context.db
-        .insert(boards)
-        .values({
-          id: boardId,
-          organizationId: context.organization.id,
-          name: input.name,
-          slug: input.slug,
-          description: input.description,
-          isPrivate: input.isPrivate,
-        })
-        .returning();
-
-      return newBoard;
-    }),
+    .handler(
+      async ({ input, context }) =>
+        await createBoard(context.db, context.organization.id, input)
+    ),
 
   update: adminOnlyProcedure
     .input(
@@ -58,24 +45,10 @@ export const boardsRouter = {
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
-      const [updatedBoard] = await context.db
-        .update(boards)
-        .set({
-          ...(input.name && { name: input.name }),
-          ...(input.slug && { slug: input.slug }),
-          ...(input.description !== undefined && {
-            description: input.description,
-          }),
-          ...(input.isPrivate !== undefined && { isPrivate: input.isPrivate }),
-          updatedAt: new Date(),
-        })
-        .where(eq(boards.id, input.id))
-        .returning();
-
+      const updatedBoard = await updateBoard(context.db, input);
       if (!updatedBoard) {
-        throw new Error('Board not found');
+        throw new Error("Board not found");
       }
-
       return updatedBoard;
     }),
 
@@ -87,15 +60,10 @@ export const boardsRouter = {
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
-      const [deletedBoard] = await context.db
-        .delete(boards)
-        .where(eq(boards.id, input.id))
-        .returning();
-
+      const deletedBoard = await deleteBoard(context.db, input.id);
       if (!deletedBoard) {
-        throw new Error('Board not found');
+        throw new Error("Board not found");
       }
-
       return { success: true, deletedBoard };
     }),
 };

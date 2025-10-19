@@ -1,8 +1,7 @@
-import { ORPCError } from '@orpc/server';
-import { and, count, eq, type SQL } from 'drizzle-orm';
-import { z } from 'zod';
-import { votes } from '../../db/schema/votes';
-import { protectedProcedure } from '../procedures';
+import { ORPCError } from "@orpc/server";
+import { z } from "zod";
+import { countVotes, createVote, deleteVote } from "@/dal/votes";
+import { protectedProcedure } from "../procedures";
 
 export const votesRouter = {
   create: protectedProcedure
@@ -13,29 +12,23 @@ export const votesRouter = {
           commentId: z.string().optional(),
         })
         .refine((data) => data.feedbackId || data.commentId, {
-          message: 'Either feedbackId or commentId must be provided',
+          message: "Either feedbackId or commentId must be provided",
         })
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
       const userId = context.session?.user.id;
-      if (!(input.feedbackId || input.commentId)) {
-        throw new ORPCError('BAD_REQUEST');
+      if (!userId) {
+        throw new ORPCError("UNAUTHORIZED");
       }
-
+      if (!(input.feedbackId || input.commentId)) {
+        throw new ORPCError("BAD_REQUEST");
+      }
       try {
-        const [newVote] = await context.db
-          .insert(votes)
-          .values({
-            feedbackId: input.feedbackId,
-            commentId: input.commentId,
-            userId,
-          })
-          .returning();
-
+        const newVote = await createVote(context.db, input, userId);
         return newVote;
       } catch (_error) {
-        throw new ORPCError('INTERNAL_SERVER_ERROR');
+        throw new ORPCError("INTERNAL_SERVER_ERROR");
       }
     }),
 
@@ -49,24 +42,13 @@ export const votesRouter = {
     .output(z.any())
     .handler(async ({ input, context }) => {
       const userId = context.session?.user.id;
-
-      const filters = [eq(votes.userId, userId)];
-
-      if (input.feedbackId) {
-        filters.push(eq(votes.feedbackId, input.feedbackId));
-      } else if (input.commentId) {
-        filters.push(eq(votes.commentId, input.commentId));
+      if (!userId) {
+        throw new ORPCError("UNAUTHORIZED");
       }
-
-      const [deletedVote] = await context.db
-        .delete(votes)
-        .where(and(...filters))
-        .returning();
-
+      const deletedVote = await deleteVote(context.db, input, userId);
       if (!deletedVote) {
-        throw new Error('Vote not found');
+        throw new Error("Vote not found");
       }
-
       return { success: true, deletedVote };
     }),
 
@@ -78,20 +60,9 @@ export const votesRouter = {
       })
     )
     .handler(async ({ input, context }) => {
-      const filter: SQL[] = [];
-      if (input.feedbackId) {
-        filter.push(eq(votes.feedbackId, input.feedbackId));
-      } else if (input.commentId) {
-        filter.push(eq(votes.commentId, input.commentId));
-      } else {
-        throw new Error('Resource not found');
+      if (!(input.feedbackId || input.commentId)) {
+        throw new Error("Resource not found");
       }
-
-      const totalCount = await context.db
-        .select({ count: count() })
-        .from(votes)
-        .where(and(...filter));
-
-      return totalCount[0]?.count || 0;
+      return await countVotes(context.db, input);
     }),
 };

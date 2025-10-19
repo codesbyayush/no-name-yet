@@ -1,8 +1,17 @@
-import { ServerBlockNoteEditor } from '@blocknote/server-util';
-import { ORPCError } from '@orpc/server';
-import { and, asc, count, desc, eq, inArray } from 'drizzle-orm';
-import { changelog, tags, user } from '../../db/schema';
-import { adminOnlyProcedure } from '../procedures';
+import { ServerBlockNoteEditor } from "@blocknote/server-util";
+import { ORPCError } from "@orpc/server";
+import { and, eq, inArray } from "drizzle-orm";
+import {
+  deleteById,
+  ensureUniqueSlug,
+  getAll,
+  getByIdForOrg,
+  insert,
+  updateById,
+  updateManyByIds,
+} from "@/dal/changelog";
+import { changelog } from "../../db/schema/changelog";
+import { adminOnlyProcedure } from "../procedures";
 import {
   createChangelogSchema,
   deleteChangelogSchema,
@@ -10,52 +19,16 @@ import {
   getChangelogSchema,
   updateAllChangelogsSchema,
   updateChangelogSchema,
-} from '../public/schemas';
+} from "../public/schemas";
 
 // Helper functions
 const generateSlug = (title: string): string => {
   return title
     .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
-    .replace(/\s+/g, '-') // Replace spaces with hyphens
-    .replace(/-+/g, '-') // Replace multiple hyphens with single
+    .replace(/[^a-z0-9\s-]/g, "") // Remove special characters
+    .replace(/\s+/g, "-") // Replace spaces with hyphens
+    .replace(/-+/g, "-") // Replace multiple hyphens with single
     .trim();
-};
-
-const ensureUniqueSlug = async (
-  db: any, // TODO: Type this properly with Drizzle DB type
-  organizationId: string,
-  baseSlug: string,
-  excludeId?: string
-): Promise<string> => {
-  let slug = baseSlug;
-  let counter = 0;
-
-  while (true) {
-    const whereConditions = [
-      eq(changelog.organizationId, organizationId),
-      eq(changelog.slug, slug),
-    ];
-
-    if (excludeId) {
-      whereConditions.push(eq(changelog.id, excludeId));
-    }
-
-    const existing = await db
-      .select({ id: changelog.id })
-      .from(changelog)
-      .where(and(...whereConditions))
-      .limit(1);
-
-    if (existing.length === 0) {
-      break;
-    }
-
-    counter++;
-    slug = `${baseSlug}-${counter}`;
-  }
-
-  return slug;
 };
 
 export const changelogAdminRouter = adminOnlyProcedure.router({
@@ -67,7 +40,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
       const organizationId = context.organization?.id;
 
       if (!(userId && organizationId)) {
-        throw new ORPCError('UNAUTHORIZED');
+        throw new ORPCError("UNAUTHORIZED");
       }
 
       try {
@@ -78,7 +51,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
         }
 
         if (!slug) {
-          throw new ORPCError('BAD_REQUEST');
+          throw new ORPCError("BAD_REQUEST");
         }
 
         // Ensure slug is unique
@@ -91,45 +64,41 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
         // Generate HTML content from blocks if content is provided
         let htmlContent = input.htmlContent;
         if (input.content && !htmlContent) {
-          try {
-            const editor = ServerBlockNoteEditor.create();
-            htmlContent = await editor.blocksToFullHTML(input.content);
-          } catch (_error) {
-            // Log warning for HTML generation failure but continue
-          }
+          const editor = ServerBlockNoteEditor.create();
+          htmlContent = await editor
+            .blocksToFullHTML(input.content)
+            .then((s) => s)
+            .catch(() => htmlContent);
         }
 
         // Set publishedAt if status is published and not provided
         let publishedAt = input.publishedAt;
-        if (input.status === 'published' && !publishedAt) {
+        if (input.status === "published" && !publishedAt) {
           publishedAt = new Date();
         }
 
-        const newChangelog = await context.db
-          .insert(changelog)
-          .values({
-            organizationId,
-            title: input.title,
-            slug: finalSlug,
-            content: input.content,
-            htmlContent,
-            status: input.status,
-            publishedAt,
-            authorId: userId,
-            tagId: input.tagId,
-          })
-          .returning();
+        const newRow = await insert(context.db, {
+          organizationId,
+          title: input.title,
+          slug: finalSlug,
+          content: input.content,
+          htmlContent,
+          status: input.status,
+          publishedAt,
+          authorId: userId,
+          tagId: input.tagId,
+        });
 
         return {
           success: true,
-          data: newChangelog[0],
-          message: 'Changelog created successfully',
+          data: newRow,
+          message: "Changelog created successfully",
         };
       } catch (error) {
         if (error instanceof ORPCError) {
           throw error;
         }
-        throw new ORPCError('INTERNAL_SERVER_ERROR');
+        throw new ORPCError("INTERNAL_SERVER_ERROR");
       }
     }),
 
@@ -140,60 +109,29 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
       const organizationId = context.organization?.id;
 
       if (!organizationId) {
-        throw new ORPCError('UNAUTHORIZED');
+        throw new ORPCError("UNAUTHORIZED");
       }
 
       try {
-        const result = await context.db
-          .select({
-            id: changelog.id,
-            organizationId: changelog.organizationId,
-            title: changelog.title,
-            slug: changelog.slug,
-            content: changelog.content,
-            htmlContent: changelog.htmlContent,
-            excerpt: changelog.excerpt,
-            status: changelog.status,
-            publishedAt: changelog.publishedAt,
-            authorId: changelog.authorId,
-            tagId: changelog.tagId,
-            createdAt: changelog.createdAt,
-            updatedAt: changelog.updatedAt,
-            author: {
-              id: user.id,
-              name: user.name,
-              email: user.email,
-              image: user.image,
-            },
-            tag: {
-              id: tags.id,
-              name: tags.name,
-            },
-          })
-          .from(changelog)
-          .leftJoin(user, eq(changelog.authorId, user.id))
-          .leftJoin(tags, eq(changelog.tagId, tags.id))
-          .where(
-            and(
-              eq(changelog.id, input.id),
-              eq(changelog.organizationId, organizationId)
-            )
-          )
-          .limit(1);
+        const result = await getByIdForOrg(
+          context.db,
+          organizationId,
+          input.id
+        );
 
-        if (!result.length) {
-          throw new ORPCError('NOT_FOUND');
+        if (!result) {
+          throw new ORPCError("NOT_FOUND");
         }
 
         return {
           success: true,
-          data: result[0],
+          data: result,
         };
       } catch (error) {
         if (error instanceof ORPCError) {
           throw error;
         }
-        throw new ORPCError('INTERNAL_SERVER_ERROR');
+        throw new ORPCError("INTERNAL_SERVER_ERROR");
       }
     }),
 
@@ -204,70 +142,15 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
       const organizationId = context.organization?.id;
 
       if (!organizationId) {
-        throw new ORPCError('UNAUTHORIZED');
+        throw new ORPCError("UNAUTHORIZED");
       }
 
       try {
-        const whereConditions = [eq(changelog.organizationId, organizationId)];
-
-        if (input.status) {
-          whereConditions.push(eq(changelog.status, input.status));
-        }
-
-        if (input.tagId) {
-          whereConditions.push(eq(changelog.tagId, input.tagId));
-        }
-
-        // Determine sort order
-        let orderBy: any; // TODO: Type this properly with Drizzle order type
-        switch (input.sortBy) {
-          case 'oldest':
-            orderBy = asc(changelog.createdAt);
-            break;
-          case 'title':
-            orderBy = asc(changelog.title);
-            break;
-          default:
-            orderBy = desc(changelog.createdAt);
-            break;
-        }
-
-        const results = await context.db
-          .select({
-            id: changelog.id,
-            title: changelog.title,
-            slug: changelog.slug,
-            excerpt: changelog.excerpt,
-            status: changelog.status,
-            publishedAt: changelog.publishedAt,
-            createdAt: changelog.createdAt,
-            updatedAt: changelog.updatedAt,
-            author: {
-              id: user.id,
-              name: user.name,
-              email: user.email,
-              image: user.image,
-            },
-            tag: {
-              id: tags.id,
-              name: tags.name,
-            },
-          })
-          .from(changelog)
-          .leftJoin(user, eq(changelog.authorId, user.id))
-          .leftJoin(tags, eq(changelog.tagId, tags.id))
-          .where(and(...whereConditions))
-          .orderBy(orderBy)
-          .offset(input.offset)
-          .limit(input.limit);
-
-        // Get total count
-        const totalCountResult = await context.db
-          .select({ count: count() })
-          .from(changelog)
-          .where(and(...whereConditions));
-
-        const totalCount = totalCountResult[0]?.count || 0;
+        const { rows: results, totalCount } = await getAll(
+          context.db,
+          organizationId,
+          input
+        );
 
         return {
           success: true,
@@ -280,7 +163,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
           },
         };
       } catch (_error) {
-        throw new ORPCError('INTERNAL_SERVER_ERROR');
+        throw new ORPCError("INTERNAL_SERVER_ERROR");
       }
     }),
 
@@ -292,36 +175,22 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
       const organizationId = context.organization?.id;
 
       if (!organizationId) {
-        throw new ORPCError('UNAUTHORIZED');
+        throw new ORPCError("UNAUTHORIZED");
       }
 
       try {
         // Verify changelog exists and belongs to organization
-        const existing = await context.db
-          .select({
-            id: changelog.id,
-            slug: changelog.slug,
-            status: changelog.status,
-          })
-          .from(changelog)
-          .where(
-            and(
-              eq(changelog.id, id),
-              eq(changelog.organizationId, organizationId)
-            )
-          )
-          .limit(1);
-
-        if (!existing.length) {
-          throw new ORPCError('NOT_FOUND');
+        const existing = await getByIdForOrg(context.db, organizationId, id);
+        if (!existing) {
+          throw new ORPCError("NOT_FOUND");
         }
 
-        const updateValues: any = {
+        const updateValues: Record<string, unknown> = {
           updatedAt: new Date(),
         };
 
         // Handle slug update with uniqueness check
-        if (updates.slug && updates.slug !== existing[0].slug) {
+        if (updates.slug && updates.slug !== existing.slug) {
           updateValues.slug = await ensureUniqueSlug(
             context.db,
             organizationId,
@@ -335,12 +204,11 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
           updateValues.content = updates.content;
 
           if (!updates.htmlContent) {
-            try {
-              const editor = ServerBlockNoteEditor.create();
-              updateValues.htmlContent = await editor.blocksToFullHTML(
-                updates.content
-              );
-            } catch (_error) {}
+            const editor = ServerBlockNoteEditor.create();
+            updateValues.htmlContent = await editor
+              .blocksToFullHTML(updates.content)
+              .then((s) => s)
+              .catch(() => updateValues.htmlContent);
           }
         }
 
@@ -351,13 +219,12 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
         // Handle status change and publishedAt
         if (updates.status !== undefined) {
           updateValues.status = updates.status;
-
           if (
-            updates.status === 'published' &&
-            existing[0].status !== 'published'
+            updates.status === "published" &&
+            existing.status !== "published"
           ) {
             updateValues.publishedAt = updates.publishedAt || new Date();
-          } else if (updates.status !== 'published') {
+          } else if (updates.status !== "published") {
             updateValues.publishedAt = null;
           }
         }
@@ -369,11 +236,11 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
 
         // Add other direct updates
         const directUpdateFields = [
-          'title',
-          'excerpt',
-          'tagId',
-          'metaTitle',
-          'metaDescription',
+          "title",
+          "excerpt",
+          "tagId",
+          "metaTitle",
+          "metaDescription",
         ];
         for (const field of directUpdateFields) {
           if (updates[field as keyof typeof updates] !== undefined) {
@@ -381,22 +248,18 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
           }
         }
 
-        const updatedChangelog = await context.db
-          .update(changelog)
-          .set(updateValues)
-          .where(eq(changelog.id, id))
-          .returning();
+        const updated = await updateById(context.db, id, updateValues);
 
         return {
           success: true,
-          data: updatedChangelog[0],
-          message: 'Changelog updated successfully',
+          data: updated,
+          message: "Changelog updated successfully",
         };
       } catch (error) {
         if (error instanceof ORPCError) {
           throw error;
         }
-        throw new ORPCError('INTERNAL_SERVER_ERROR');
+        throw new ORPCError("INTERNAL_SERVER_ERROR");
       }
     }),
 
@@ -407,13 +270,13 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
       const organizationId = context.organization?.id;
 
       if (!organizationId) {
-        throw new ORPCError('UNAUTHORIZED');
+        throw new ORPCError("UNAUTHORIZED");
       }
 
       try {
         // Verify all changelogs exist and belong to organization
         const existing = await context.db
-          .select({ id: changelog.id, status: changelog.status })
+          .select({ id: changelog.id })
           .from(changelog)
           .where(
             and(
@@ -421,12 +284,11 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
               eq(changelog.organizationId, organizationId)
             )
           );
-
         if (existing.length !== input.ids.length) {
-          throw new ORPCError('NOT_FOUND');
+          throw new ORPCError("NOT_FOUND");
         }
 
-        const updateValues: Record<string, any> = {
+        const updateValues: Record<string, unknown> = {
           updatedAt: new Date(),
         };
 
@@ -434,11 +296,11 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
         if (input.updates.status !== undefined) {
           updateValues.status = input.updates.status;
 
-          if (input.updates.status === 'published') {
+          if (input.updates.status === "published") {
             updateValues.publishedAt = input.updates.publishedAt || new Date();
           } else if (
-            input.updates.status === 'draft' ||
-            input.updates.status === 'archived'
+            input.updates.status === "draft" ||
+            input.updates.status === "archived"
           ) {
             updateValues.publishedAt = null;
           }
@@ -454,16 +316,11 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
           updateValues.tagId = input.updates.tagId;
         }
 
-        const updatedChangelogs = await context.db
-          .update(changelog)
-          .set(updateValues)
-          .where(
-            and(
-              inArray(changelog.id, input.ids),
-              eq(changelog.organizationId, organizationId)
-            )
-          )
-          .returning();
+        const updatedChangelogs = await updateManyByIds(
+          context.db,
+          input.ids,
+          updateValues
+        );
 
         return {
           success: true,
@@ -474,7 +331,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
         if (error instanceof ORPCError) {
           throw error;
         }
-        throw new ORPCError('INTERNAL_SERVER_ERROR');
+        throw new ORPCError("INTERNAL_SERVER_ERROR");
       }
     }),
 
@@ -485,7 +342,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
       const organizationId = context.organization?.id;
 
       if (!organizationId) {
-        throw new ORPCError('UNAUTHORIZED');
+        throw new ORPCError("UNAUTHORIZED");
       }
 
       try {
@@ -502,20 +359,20 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
           .limit(1);
 
         if (!existing.length) {
-          throw new ORPCError('NOT_FOUND');
+          throw new ORPCError("NOT_FOUND");
         }
 
-        await context.db.delete(changelog).where(eq(changelog.id, input.id));
+        await deleteById(context.db, input.id);
 
         return {
           success: true,
-          message: 'Changelog deleted successfully',
+          message: "Changelog deleted successfully",
         };
       } catch (error) {
         if (error instanceof ORPCError) {
           throw error;
         }
-        throw new ORPCError('INTERNAL_SERVER_ERROR');
+        throw new ORPCError("INTERNAL_SERVER_ERROR");
       }
     }),
 });

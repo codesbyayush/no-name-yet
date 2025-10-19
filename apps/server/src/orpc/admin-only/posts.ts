@@ -1,133 +1,48 @@
-import { ORPCError } from '@orpc/client';
+import { ORPCError } from "@orpc/client";
+import { z } from "zod";
 import {
-  aliasedTable,
-  and,
-  asc,
-  desc,
-  eq,
-  exists,
-  inArray,
-  type SQL,
-  sql,
-} from 'drizzle-orm';
-import { z } from 'zod';
-import {
-  boards,
-  feedback,
-  feedbackTags,
-  tags as tagsTable,
-  user,
-  votes,
-} from '@/db/schema';
-import { adminOnlyProcedure } from '../procedures';
+  createAdminPost,
+  deleteAdminPost,
+  getAdminAllPosts,
+  getAdminDetailedPosts,
+  getAdminDetailedSinglePost,
+  updateAdminPost,
+} from "@/dal/posts";
+import { adminOnlyProcedure } from "../procedures";
+
+const DEFAULT_TAKE = 20;
+const MAX_TAKE = 100;
 
 export const postsRouter = {
   getDetailedPosts: adminOnlyProcedure
     .input(
       z.object({
         offset: z.number().min(0).default(0),
-        take: z.number().min(1).max(100).default(20),
-        sortBy: z.enum(['newest', 'oldest', 'most_voted']).default('newest'),
+        take: z.number().min(1).max(MAX_TAKE).default(DEFAULT_TAKE),
+        sortBy: z.enum(["newest", "oldest", "most_voted"]).default("newest"),
         boardId: z.string().optional(),
       })
     )
     .handler(async ({ input, context }) => {
       const { offset, take, sortBy, boardId } = input;
       if (!context.organization) {
-        throw new ORPCError('NOT_FOUND');
+        throw new ORPCError("NOT_FOUND");
       }
       const userId = context.session?.user?.id;
       try {
-        let orderBy: SQL<unknown>;
-        switch (sortBy) {
-          case 'oldest':
-            orderBy = asc(feedback.createdAt);
-            break;
-          case 'most_voted':
-            orderBy = desc(feedback.createdAt); // TODO: Sort by vote count
-            break;
-          default:
-            orderBy = desc(feedback.createdAt);
-            break;
-        }
-        const filters = [eq(boards.organizationId, context.organization.id)];
-        if (boardId) {
-          filters.push(eq(boards.id, boardId));
-        }
-        const creatorUser = aliasedTable(user, 'creator');
-        const assigneeUser = aliasedTable(user, 'assignee');
-        const posts = await context.db
-          .select({
-            id: feedback.id,
-            title: feedback.title,
-            content: feedback.description,
-            issueKey: feedback.issueKey,
-            boardId: feedback.boardId,
-            priority: feedback.priority,
-            status: feedback.status,
-            assigneeId: feedback.assigneeId,
-            assigneeName: assigneeUser.name,
-            assigneeEmail: assigneeUser.email,
-            assigneeImage: assigneeUser.image,
-            dueDate: feedback.dueDate,
-            createdAt: feedback.createdAt,
-            updatedAt: feedback.updatedAt,
-            author: {
-              id: creatorUser.id,
-              name: creatorUser.name,
-              email: creatorUser.email,
-              image: creatorUser.image,
-            },
-            board: {
-              id: boards.id,
-              name: boards.name,
-              slug: boards.slug,
-            },
-            hasVoted: userId
-              ? exists(
-                  context.db
-                    .select()
-                    .from(votes)
-                    .where(
-                      and(
-                        eq(votes.feedbackId, feedback.id),
-                        eq(votes.userId, userId)
-                      )
-                    )
-                )
-              : sql`false`,
-          })
-          .from(feedback)
-          .leftJoin(creatorUser, eq(feedback.authorId, creatorUser.id))
-          .leftJoin(assigneeUser, eq(feedback.assigneeId, assigneeUser.id))
-          .leftJoin(boards, eq(feedback.boardId, boards.id))
-          .where(and(...filters))
-          .orderBy(orderBy)
-          .offset(offset)
-          .limit(take + 1);
-        // Get tags/labels for each post
-        const postsWithTags = await Promise.all(
-          posts.slice(0, take).map(async (post) => {
-            const tagsResult = await context.db
-              .select({
-                id: tagsTable.id,
-                name: tagsTable.name,
-                color: tagsTable.color,
-              })
-              .from(tagsTable)
-              .innerJoin(feedbackTags, eq(tagsTable.id, feedbackTags.tagId))
-              .where(eq(feedbackTags.feedbackId, post.id));
-
-            return {
-              ...post,
-              tags: tagsResult,
-            };
-          })
+        const { posts, hasMore } = await getAdminDetailedPosts(
+          context.db,
+          {
+            organizationId: context.organization.id,
+            boardId,
+            offset,
+            take,
+            sortBy,
+          },
+          userId
         );
-
-        const hasMore = posts.length > take;
         return {
-          posts: postsWithTags,
+          posts,
           organizationId: context.organization.id,
           organizationName: context.organization.name,
           pagination: {
@@ -137,7 +52,7 @@ export const postsRouter = {
           },
         };
       } catch (_error) {
-        throw new ORPCError('INTERNAL_SERVER_ERROR');
+        throw new ORPCError("INTERNAL_SERVER_ERROR");
       }
     }),
 
@@ -150,54 +65,22 @@ export const postsRouter = {
     .handler(async ({ input, context }) => {
       const { feedbackId } = input;
       if (!(context.organization && feedbackId)) {
-        throw new ORPCError('NOT_FOUND');
+        throw new ORPCError("NOT_FOUND");
       }
       const userId = context.session?.user?.id;
       try {
-        const post = await context.db
-          .select({
-            id: feedback.id,
-            title: feedback.title,
-            content: feedback.description,
-            boardId: feedback.boardId,
-            createdAt: feedback.createdAt,
-            updatedAt: feedback.updatedAt,
-            author: {
-              id: user.id,
-              name: user.name,
-              email: user.email,
-              image: user.image,
-            },
-            board: {
-              id: boards.id,
-              name: boards.name,
-              slug: boards.slug,
-            },
-            hasVoted: userId
-              ? exists(
-                  context.db
-                    .select()
-                    .from(votes)
-                    .where(
-                      and(
-                        eq(votes.feedbackId, feedback.id),
-                        eq(votes.userId, userId)
-                      )
-                    )
-                )
-              : sql`false`,
-          })
-          .from(feedback)
-          .leftJoin(user, eq(feedback.authorId, user.id))
-          .leftJoin(boards, eq(feedback.boardId, boards.id))
-          .where(eq(feedback.id, feedbackId));
+        const post = await getAdminDetailedSinglePost(
+          context.db,
+          feedbackId,
+          userId
+        );
         return {
-          post: post[0],
+          post,
           organizationId: context.organization.id,
           organizationName: context.organization.name,
         };
       } catch (_error) {
-        throw new ORPCError('INTERNAL_SERVER_ERROR');
+        throw new ORPCError("INTERNAL_SERVER_ERROR");
       }
     }),
 
@@ -206,30 +89,30 @@ export const postsRouter = {
     .input(
       z.object({
         boardId: z.string(),
-        type: z.enum(['bug', 'suggestion']).default('bug'),
+        type: z.enum(["bug", "suggestion"]).default("bug"),
         title: z.string(),
         description: z.string().min(1),
         priority: z
           .enum([
-            'low',
-            'medium',
-            'high',
-            'urgent',
-            'no_priority',
-            'no-priority',
+            "low",
+            "medium",
+            "high",
+            "urgent",
+            "no_priority",
+            "no-priority",
           ])
-          .default('no_priority'),
+          .default("no_priority"),
         tags: z.array(z.string()).default([]),
         status: z
           .enum([
-            'to-do',
-            'in-progress',
-            'completed',
-            'backlog',
-            'technical-review',
-            'paused',
+            "to-do",
+            "in-progress",
+            "completed",
+            "backlog",
+            "technical-review",
+            "paused",
           ])
-          .default('to-do'),
+          .default("to-do"),
         issueKey: z.string().optional(),
       })
     )
@@ -237,55 +120,13 @@ export const postsRouter = {
     .handler(async ({ input, context }) => {
       const userId = context.session?.user.id;
       if (!userId) {
-        throw new ORPCError('UNAUTHORIZED');
+        throw new ORPCError("UNAUTHORIZED");
       }
       try {
-        if (input.priority === 'no_priority') {
-          input.priority = 'no-priority';
-        }
-        const [newPost] = await context.db
-          .insert(feedback)
-          .values({
-            boardId: input.boardId,
-            issueKey: input.issueKey ?? '',
-            authorId: userId,
-            title: input.title,
-            description: input.description,
-            priority: input.priority,
-            status: input.status,
-          })
-          .returning();
-        // Attach tags via junction table if any were provided
-        if (input.tags.length > 0) {
-          const orgId = (
-            await context.db
-              .select({ organizationId: boards.organizationId })
-              .from(boards)
-              .where(eq(boards.id, newPost.boardId))
-              .limit(1)
-          )[0]?.organizationId as string;
-          // Resolve tag ids by name scoped to org
-          const tagRows = await context.db
-            .select({ id: tagsTable.id })
-            .from(tagsTable)
-            .where(
-              and(
-                eq(tagsTable.organizationId, orgId),
-                inArray(tagsTable.name, input.tags)
-              )
-            );
-          if (tagRows.length > 0) {
-            await context.db.insert(feedbackTags).values(
-              tagRows.map((t: { id: string }) => ({
-                feedbackId: newPost.id,
-                tagId: t.id,
-              }))
-            );
-          }
-        }
+        const newPost = await createAdminPost(context.db, input, userId);
         return newPost;
       } catch (_error) {
-        throw new ORPCError('INTERNAL_SERVER_ERROR');
+        throw new ORPCError("INTERNAL_SERVER_ERROR");
       }
     }),
 
@@ -297,22 +138,22 @@ export const postsRouter = {
         description: z.string().min(1).optional(),
         status: z
           .enum([
-            'to-do',
-            'in-progress',
-            'completed',
-            'backlog',
-            'technical-review',
-            'paused',
+            "to-do",
+            "in-progress",
+            "completed",
+            "backlog",
+            "technical-review",
+            "paused",
           ])
           .optional(),
         priority: z
           .enum([
-            'low',
-            'medium',
-            'high',
-            'urgent',
-            'no_priority',
-            'no-priority',
+            "low",
+            "medium",
+            "high",
+            "urgent",
+            "no_priority",
+            "no-priority",
           ])
           .optional(),
         tags: z.array(z.string()).optional(),
@@ -344,29 +185,9 @@ export const postsRouter = {
     .output(z.any())
     .handler(async ({ input, context }) => {
       const _userId = context.session?.user.id;
-      if (input.priority === 'no_priority') {
-        input.priority = 'no-priority';
-      }
-      const [updatedPost] = await context.db
-        .update(feedback)
-        .set({
-          ...(input.title && { title: input.title }),
-          ...(input.description && { description: input.description }),
-          ...(input.status && { status: input.status }),
-          ...(input.priority && { priority: input.priority }),
-          ...(input.url && { url: input.url }),
-          ...(input.userAgent && { userAgent: input.userAgent }),
-          ...(input.browserInfo && { browserInfo: input.browserInfo }),
-          ...(input.attachments && { attachments: input.attachments }),
-          ...(input.assigneeId !== undefined && {
-            assigneeId: input.assigneeId,
-          }),
-          updatedAt: new Date(),
-        })
-        .where(eq(feedback.id, input.id))
-        .returning();
+      const updatedPost = await updateAdminPost(context.db, input);
       if (!updatedPost) {
-        throw new Error('Post not found');
+        throw new Error("Post not found");
       }
       return updatedPost;
     }),
@@ -380,22 +201,19 @@ export const postsRouter = {
     .output(z.any())
     .handler(async ({ input, context }) => {
       const _userId = context.session?.user.id;
-      const [deletedPost] = await context.db
-        .delete(feedback)
-        .where(eq(feedback.id, input.id))
-        .returning();
+      const deletedPost = await deleteAdminPost(context.db, input.id);
       if (!deletedPost) {
-        throw new Error('Post not found');
+        throw new Error("Post not found");
       }
       return { success: true, deletedPost };
     }),
 
   getAll: adminOnlyProcedure.handler(async ({ context }) => {
     try {
-      const posts = await context.db.select().from(feedback);
+      const posts = await getAdminAllPosts(context.db);
       return posts;
     } catch (_error) {
-      throw new ORPCError('INTERNAL_SERVER_ERROR');
+      throw new ORPCError("INTERNAL_SERVER_ERROR");
     }
   }),
 };

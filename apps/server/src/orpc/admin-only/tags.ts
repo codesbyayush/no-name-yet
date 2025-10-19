@@ -1,7 +1,6 @@
-import { eq } from 'drizzle-orm';
-import { z } from 'zod';
-import { tags } from '../../db/schema/tags';
-import { adminOnlyProcedure } from '../procedures';
+import { z } from "zod";
+import { createTag, deleteTag, getAllTags } from "@/dal/tags";
+import { adminOnlyProcedure } from "../procedures";
 
 export const tagsRouter = {
   getAll: adminOnlyProcedure
@@ -16,23 +15,18 @@ export const tagsRouter = {
     )
     .handler(async ({ context }) => {
       if (!context.organization?.id) {
-        throw new Error('Organization not found');
+        throw new Error("Organization not found");
       }
 
       // Get all tags for this organization
-      const organizationTags = await context.db
-        .select()
-        .from(tags)
-        .where(eq(tags.organizationId, context.organization.id));
-
-      return organizationTags;
+      return await getAllTags(context.db, context.organization.id);
     }),
 
   create: adminOnlyProcedure
     .input(
       z.object({
         name: z.string().min(1),
-        color: z.string().default('blue'),
+        color: z.string().default("blue"),
       })
     )
     .output(
@@ -47,21 +41,14 @@ export const tagsRouter = {
     )
     .handler(async ({ input, context }) => {
       if (!context.organization?.id) {
-        throw new Error('Organization not found');
+        throw new Error("Organization not found");
       }
 
-      const tagId = crypto.randomUUID();
-
-      const [newTag] = await context.db
-        .insert(tags)
-        .values({
-          id: tagId,
-          name: input.name.trim(),
-          color: input.color,
-          organizationId: context.organization.id,
-        })
-        .returning();
-
+      const newTag = await createTag(
+        context.db,
+        context.organization.id,
+        input
+      );
       return newTag;
     }),
 
@@ -83,18 +70,13 @@ export const tagsRouter = {
     )
     .handler(async ({ input, context }) => {
       if (!context.organization?.id) {
-        throw new Error('Organization not found');
+        throw new Error("Organization not found");
       }
 
-      const [deletedTag] = await context.db
-        .delete(tags)
-        .where(eq(tags.id, input.id))
-        .returning();
-
+      const deletedTag = await deleteTag(context.db, input.id);
       if (!deletedTag) {
-        throw new Error('Tag not found');
+        throw new Error("Tag not found");
       }
-
       return { success: true, deletedTag };
     }),
 };

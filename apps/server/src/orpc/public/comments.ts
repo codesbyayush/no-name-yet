@@ -1,8 +1,12 @@
-import { and, count, eq, isNull } from 'drizzle-orm';
-import { z } from 'zod';
-import { user } from '@/db/schema';
-import { comments } from '../../db/schema/comments';
-import { protectedProcedure } from '../procedures';
+import { z } from "zod";
+import {
+  countPublicComments as dalCountPublic,
+  createComment as dalCreateComment,
+  deleteComment as dalDeleteComment,
+  listTopLevelComments as dalListTopLevel,
+  updateComment as dalUpdateComment,
+} from "@/dal/comments";
+import { protectedProcedure } from "../procedures";
 
 export const commentsRouter = {
   create: protectedProcedure
@@ -15,16 +19,7 @@ export const commentsRouter = {
     .output(z.any())
     .handler(async ({ input, context }) => {
       const userId = context.session?.user.id;
-
-      const [newComment] = await context.db
-        .insert(comments)
-        .values({
-          feedbackId: input.feedbackId,
-          authorId: userId,
-          content: input.content,
-        })
-        .returning();
-      return newComment;
+      return await dalCreateComment(context.db, input, userId);
     }),
 
   update: protectedProcedure
@@ -36,18 +31,10 @@ export const commentsRouter = {
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
-      const [updatedComment] = await context.db
-        .update(comments)
-        .set({
-          ...(input.content && { content: input.content }),
-        })
-        .where(eq(comments.id, input.id))
-        .returning();
-
+      const updatedComment = await dalUpdateComment(context.db, input);
       if (!updatedComment) {
-        throw new Error('Comment not found');
+        throw new Error("Comment not found");
       }
-
       return updatedComment;
     }),
 
@@ -59,59 +46,27 @@ export const commentsRouter = {
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
-      const [deletedComment] = await context.db
-        .delete(comments)
-        .where(eq(comments.id, input.commentId))
-        .returning();
-
+      const deletedComment = await dalDeleteComment(
+        context.db,
+        input.commentId
+      );
       if (!deletedComment) {
-        throw new Error('Comment not found');
+        throw new Error("Comment not found");
       }
-
       return { success: true, deletedComment };
     }),
 
   // For now this is only for top level comments
   getAll: protectedProcedure
     .input(z.object({ feedbackId: z.string() }))
-    .handler(async ({ input, context }) => {
-      const allComments = await context.db
-        .select({
-          id: comments.id,
-          content: comments.content,
-          createdAt: comments.createdAt,
-          author: {
-            name: user.name,
-            image: user.image,
-          },
-        })
-        .from(comments)
-        .leftJoin(user, eq(comments.authorId, user.id))
-        .where(
-          and(
-            eq(comments.feedbackId, input.feedbackId),
-            isNull(comments.parentCommentId),
-            isNull(comments.deletedAt),
-            eq(comments.isInternal, false)
-          )
-        );
-      return allComments;
-    }),
+    .handler(async ({ input, context }) =>
+      dalListTopLevel(context.db, input.feedbackId)
+    ),
 
   count: protectedProcedure
     .input(z.object({ feedbackId: z.string() }))
     .output(z.any())
-    .handler(async ({ input, context }) => {
-      const totalCount = await context.db
-        .select({ count: count() })
-        .from(comments)
-        .where(
-          and(
-            eq(comments.feedbackId, input.feedbackId),
-            isNull(comments.deletedAt),
-            eq(comments.isInternal, false)
-          )
-        );
-      return totalCount[0]?.count || 0;
-    }),
+    .handler(async ({ input, context }) =>
+      dalCountPublic(context.db, input.feedbackId)
+    ),
 };

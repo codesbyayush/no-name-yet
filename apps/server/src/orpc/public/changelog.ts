@@ -1,83 +1,28 @@
-import { ORPCError } from '@orpc/server';
-import { and, asc, count, desc, eq, type SQL } from 'drizzle-orm';
-import { changelog, tags, user } from '../../db/schema';
-import { publicProcedure } from '../procedures';
+import { ORPCError } from "@orpc/server";
+import { getPublished, getPublishedBySlug } from "@/dal/changelog";
+import { publicProcedure } from "../procedures";
 import {
   publicGetChangelogBySlugSchema,
   publicGetChangelogsSchema,
-} from './schemas';
+} from "./schemas";
 
 export const changelogPublicRouter = publicProcedure.router({
   getPublished: publicProcedure
     .input(publicGetChangelogsSchema)
     .handler(async ({ input, context }) => {
       if (!context.organization) {
-        throw new ORPCError('NOT_FOUND');
+        throw new ORPCError("NOT_FOUND");
       }
 
       try {
-        const whereConditions = [
-          eq(changelog.organizationId, context.organization.id),
-          eq(changelog.status, 'published'),
-        ];
-
-        if (input.tagId) {
-          whereConditions.push(eq(changelog.tagId, input.tagId));
-        }
-
-        // Determine sort order
-        let orderBy: SQL | undefined; // TODO: Type this properly with Drizzle order type
-        switch (input.sortBy) {
-          case 'oldest':
-            orderBy = asc(changelog.publishedAt);
-            break;
-          case 'title':
-            orderBy = asc(changelog.title);
-            break;
-          default:
-            orderBy = desc(changelog.publishedAt);
-            break;
-        }
-
-        const results = await context.db
-          .select({
-            id: changelog.id,
-            title: changelog.title,
-            slug: changelog.slug,
-            htmlContent: changelog.htmlContent,
-            excerpt: changelog.excerpt,
-            publishedAt: changelog.publishedAt,
-            metaTitle: changelog.metaTitle,
-            metaDescription: changelog.metaDescription,
-            author: {
-              id: user.id,
-              name: user.name,
-              image: user.image,
-            },
-            tag: {
-              id: tags.id,
-              name: tags.name,
-            },
-          })
-          .from(changelog)
-          .leftJoin(user, eq(changelog.authorId, user.id))
-          .leftJoin(tags, eq(changelog.tagId, tags.id))
-          .where(and(...whereConditions))
-          .orderBy(orderBy)
-          .offset(input.offset)
-          .limit(input.limit);
-
-        // Get total count
-        const totalCountResult = await context.db
-          .select({ count: count() })
-          .from(changelog)
-          .where(and(...whereConditions));
-
-        const totalCount = totalCountResult[0]?.count || 0;
-
+        const { rows, totalCount } = await getPublished(
+          context.db,
+          context.organization.id,
+          input
+        );
         return {
           success: true,
-          data: results,
+          data: rows,
           organization: {
             id: context.organization.id,
             name: context.organization.name,
@@ -90,7 +35,7 @@ export const changelogPublicRouter = publicProcedure.router({
           },
         };
       } catch (_error) {
-        throw new ORPCError('INTERNAL_SERVER_ERROR');
+        throw new ORPCError("INTERNAL_SERVER_ERROR");
       }
     }),
 
@@ -99,49 +44,21 @@ export const changelogPublicRouter = publicProcedure.router({
     .input(publicGetChangelogBySlugSchema)
     .handler(async ({ input, context }) => {
       if (!context.organization) {
-        throw new ORPCError('NOT_FOUND');
+        throw new ORPCError("NOT_FOUND");
       }
 
       try {
-        const result = await context.db
-          .select({
-            id: changelog.id,
-            title: changelog.title,
-            slug: changelog.slug,
-            htmlContent: changelog.htmlContent,
-            excerpt: changelog.excerpt,
-            publishedAt: changelog.publishedAt,
-            metaTitle: changelog.metaTitle,
-            metaDescription: changelog.metaDescription,
-            author: {
-              id: user.id,
-              name: user.name,
-              image: user.image,
-            },
-            tag: {
-              id: tags.id,
-              name: tags.name,
-            },
-          })
-          .from(changelog)
-          .leftJoin(user, eq(changelog.authorId, user.id))
-          .leftJoin(tags, eq(changelog.tagId, tags.id))
-          .where(
-            and(
-              eq(changelog.organizationId, context.organization.id),
-              eq(changelog.slug, input.slug),
-              eq(changelog.status, 'published')
-            )
-          )
-          .limit(1);
-
-        if (!result.length) {
-          throw new ORPCError('NOT_FOUND');
+        const row = await getPublishedBySlug(
+          context.db,
+          context.organization.id,
+          input.slug
+        );
+        if (!row) {
+          throw new ORPCError("NOT_FOUND");
         }
-
         return {
           success: true,
-          data: result[0],
+          data: row,
           organization: {
             id: context.organization.id,
             name: context.organization.name,
@@ -151,7 +68,7 @@ export const changelogPublicRouter = publicProcedure.router({
         if (error instanceof ORPCError) {
           throw error;
         }
-        throw new ORPCError('INTERNAL_SERVER_ERROR');
+        throw new ORPCError("INTERNAL_SERVER_ERROR");
       }
     }),
 });

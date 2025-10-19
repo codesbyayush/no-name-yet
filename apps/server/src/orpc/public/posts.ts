@@ -1,68 +1,44 @@
-import { ORPCError } from '@orpc/client';
-import { and, asc, count, desc, eq, type SQL, sql } from 'drizzle-orm';
-import { z } from 'zod';
-import { boards, comments, feedback, user, votes } from '@/db/schema';
-import { protectedProcedure } from '../procedures';
+import { ORPCError } from "@orpc/client";
+import { z } from "zod";
+import {
+  createPublicPost,
+  deletePublicPost,
+  getPostById,
+  getPostsWithAggregates,
+} from "@/dal/posts";
+import { protectedProcedure } from "../procedures";
+
+const DEFAULT_TAKE = 20;
+const MAX_TAKE = 100;
 
 export const postsRouter = {
   getDetailedPosts: protectedProcedure
     .input(
       z.object({
         offset: z.number().min(0).default(0),
-        take: z.number().min(1).max(100).default(20),
-        sortBy: z.enum(['newest', 'oldest']).default('newest'),
+        take: z.number().min(1).max(MAX_TAKE).default(DEFAULT_TAKE),
+        sortBy: z.enum(["newest", "oldest"]).default("newest"),
         boardId: z.string().optional(),
       })
     )
     .handler(async ({ input, context }) => {
       const { offset, take, sortBy, boardId } = input;
       if (!context.organization) {
-        throw new ORPCError('NOT_FOUND');
+        throw new ORPCError("NOT_FOUND");
       }
       const userId = context.session?.user?.id;
       try {
-        let orderBy: SQL<unknown>;
-        switch (sortBy) {
-          case 'oldest':
-            orderBy = asc(feedback.createdAt);
-            break;
-          default:
-            orderBy = desc(feedback.createdAt);
-            break;
-        }
-        const filters = [eq(boards.organizationId, context.organization.id)];
-        if (boardId) {
-          filters.push(eq(boards.id, boardId));
-        }
-        const posts = await context.db
-          .select({
-            id: feedback.id,
-            title: feedback.title,
-            content: feedback.description,
-            createdAt: feedback.createdAt,
-            status: feedback.status,
-            board: {
-              id: boards.id,
-              name: boards.name,
-              slug: boards.slug,
-            },
-            author: {
-              name: user.name,
-              image: user.image,
-            },
-            hasVoted: sql<boolean>`(select exists(select 1 from ${votes} where ${votes.feedbackId} = ${feedback.id} and ${votes.userId} = ${userId}))`,
-            commentCount: sql<number>`(select count(*) from ${comments} where ${comments.feedbackId} = ${feedback.id})`,
-            voteCount: sql<number>`(select count(*) from ${votes} where ${votes.feedbackId} = ${feedback.id})`,
-          })
-          .from(feedback)
-          .leftJoin(boards, eq(feedback.boardId, boards.id))
-          .leftJoin(user, eq(feedback.authorId, user.id))
-          .where(and(...filters))
-          .orderBy(orderBy)
-          .offset(offset)
-          .limit(take + 1);
-
-        const hasMore = posts.length > take;
+        const { posts, hasMore } = await getPostsWithAggregates(
+          context.db,
+          {
+            organizationId: context.organization.id,
+            boardId,
+            offset,
+            take,
+            sortBy,
+          },
+          userId
+        );
         return {
           posts,
           organizationName: context.organization.name,
@@ -73,7 +49,7 @@ export const postsRouter = {
           },
         };
       } catch (_error) {
-        throw new ORPCError('INTERNAL_SERVER_ERROR');
+        throw new ORPCError("INTERNAL_SERVER_ERROR");
       }
     }),
 
@@ -86,37 +62,14 @@ export const postsRouter = {
     .handler(async ({ input, context }) => {
       const { feedbackId } = input;
       if (!(context.organization && feedbackId)) {
-        throw new ORPCError('NOT_FOUND');
+        throw new ORPCError("NOT_FOUND");
       }
       const userId = context.session?.user?.id;
       try {
-        const post = await context.db
-          .select({
-            id: feedback.id,
-            title: feedback.title,
-            content: feedback.description,
-            createdAt: feedback.createdAt,
-            status: feedback.status,
-            author: {
-              name: user.name,
-              image: user.image,
-            },
-            board: {
-              id: boards.id,
-              name: boards.name,
-              slug: boards.slug,
-            },
-            hasVoted: sql<boolean>`(select exists(select 1 from ${votes} where ${votes.feedbackId} = ${feedback.id} and ${votes.userId} = ${userId}))`,
-            commentCount: sql<number>`(select count(*) from ${comments} where ${comments.feedbackId} = ${feedback.id})`,
-            voteCount: sql<number>`(select count(*) from ${votes} where ${votes.feedbackId} = ${feedback.id})`,
-          })
-          .from(feedback)
-          .leftJoin(user, eq(feedback.authorId, user.id))
-          .leftJoin(boards, eq(feedback.boardId, boards.id))
-          .where(eq(feedback.id, feedbackId));
-        return post[0];
+        const post = await getPostById(context.db, feedbackId, userId);
+        return post;
       } catch (_error) {
-        throw new ORPCError('INTERNAL_SERVER_ERROR');
+        throw new ORPCError("INTERNAL_SERVER_ERROR");
       }
     }),
 
@@ -132,31 +85,12 @@ export const postsRouter = {
     .handler(async ({ input, context }) => {
       const userId = context.session?.user.id;
       if (!userId) {
-        throw new ORPCError('UNAUTHORIZED');
+        throw new ORPCError("UNAUTHORIZED");
       }
       try {
-        const postsCount = await context.db
-          .select({ count: count() })
-          .from(feedback)
-          .where(eq(feedback.boardId, input.boardId));
-
-        // TODO: Implement a proper issue key generator for concurrent users
-        const issueKey = `OF-${postsCount[0]?.count || 0 + 1}`;
-        const [newPost] = await context.db
-          .insert(feedback)
-          .values({
-            boardId: input.boardId,
-            authorId: userId,
-            title: input.title,
-            description: input.description,
-            issueKey,
-            priority: 'no-priority',
-          })
-          .returning();
-
-        return newPost;
+        return await createPublicPost(context.db, input, userId);
       } catch (_error) {
-        throw new ORPCError('INTERNAL_SERVER_ERROR');
+        throw new ORPCError("INTERNAL_SERVER_ERROR");
       }
     }),
 
@@ -169,9 +103,7 @@ export const postsRouter = {
       })
     )
     .output(z.any())
-    .handler(() => {
-      return 'will implement';
-    }),
+    .handler(() => "will implement"),
 
   delete: protectedProcedure
     .input(
@@ -181,12 +113,9 @@ export const postsRouter = {
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
-      const [deletedPost] = await context.db
-        .delete(feedback)
-        .where(eq(feedback.id, input.feedbackId))
-        .returning();
+      const deletedPost = await deletePublicPost(context.db, input.feedbackId);
       if (!deletedPost) {
-        throw new Error('Post not found');
+        throw new Error("Post not found");
       }
       return { success: true, deletedPost };
     }),
