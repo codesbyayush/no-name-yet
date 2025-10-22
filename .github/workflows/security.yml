@@ -1,0 +1,78 @@
+name: Security Scanning
+
+on:
+  schedule:
+    # Run weekly on Mondays at 9 AM UTC
+    - cron: '0 9 * * 1'
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch: # Allow manual runs
+
+jobs:
+  dependency-audit:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run dependency audit (root)
+        run: |
+          echo "🔍 Auditing root dependencies..."
+          bun pm audit || echo "⚠️ Vulnerabilities found in root dependencies"
+        continue-on-error: true
+
+      - name: Run dependency audit (server)
+        working-directory: apps/server
+        run: |
+          echo "🔍 Auditing server dependencies..."
+          bun pm audit || echo "⚠️ Vulnerabilities found in server dependencies"
+        continue-on-error: true
+
+      - name: Run dependency audit (admin)
+        working-directory: apps/admin
+        run: |
+          echo "🔍 Auditing admin dependencies..."
+          bun pm audit || echo "⚠️ Vulnerabilities found in admin dependencies"
+        continue-on-error: true
+
+      - name: Run dependency audit (public)
+        working-directory: apps/public
+        run: |
+          echo "🔍 Auditing public dependencies..."
+          bun pm audit || echo "⚠️ Vulnerabilities found in public dependencies"
+        continue-on-error: true
+
+      - name: Run dependency audit (widget)
+        working-directory: apps/widget
+        run: |
+          echo "🔍 Auditing widget dependencies..."
+          bun pm audit || echo "⚠️ Vulnerabilities found in widget dependencies"
+        continue-on-error: true
+
+  secret-scanning:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Full history for better secret detection
+
+      - name: TruffleHog Secret Scan
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --only-verified

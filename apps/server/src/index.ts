@@ -2,6 +2,7 @@ import { RPCHandler } from '@orpc/server/fetch';
 import { type Context, Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
+import { secureHeaders } from 'hono/secure-headers';
 import { getAuth } from './lib/auth';
 import { getEnvFromContext } from './lib/env';
 import { adminRouter } from './orpc/admin';
@@ -13,6 +14,8 @@ import githubWebhooks from './webhooks/github';
 const app = new Hono();
 
 const authRouter = new Hono();
+
+app.use(secureHeaders());
 
 const HTTP_STATUS = {
   INTERNAL_SERVER_ERROR: 500,

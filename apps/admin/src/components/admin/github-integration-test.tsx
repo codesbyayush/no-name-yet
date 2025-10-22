@@ -1,5 +1,5 @@
 import { useLocation } from '@tanstack/react-router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,44 @@ export function GithubIntegrationTest() {
   const [error, setError] = useState<string | null>(null);
   const location = useLocation();
 
+  const loadStatus = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await adminClient.github.getInstallStatus();
+      setStatus(result);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch status');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const handleInstallationCallback = useCallback(
+    async (installationId: number) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const result = await adminClient.github.linkInstallation({
+          githubInstallationId: installationId,
+        });
+        if (result.success) {
+          await loadStatus();
+          setError(null);
+        } else {
+          setError('Failed to link installation');
+        }
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'Failed to link installation'
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [loadStatus]
+  );
+
   useEffect(() => {
     loadStatus();
 
@@ -29,42 +67,7 @@ export function GithubIntegrationTest() {
     if (installationId) {
       handleInstallationCallback(Number.parseInt(installationId, 10));
     }
-  }, [location.search]);
-
-  const loadStatus = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const result = await adminClient.github.getInstallStatus();
-      setStatus(result);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load status');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleInstallationCallback = async (installationId: number) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const result = await adminClient.github.linkInstallation({
-        githubInstallationId: installationId,
-      });
-      if (result.success) {
-        await loadStatus(); // Refresh status
-        setError(null);
-      } else {
-        setError('Failed to link installation');
-      }
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Failed to link installation'
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [location.search, loadStatus, handleInstallationCallback]);
 
   const handleInstallClick = async () => {
     setLoading(true);
@@ -149,9 +152,9 @@ export function GithubIntegrationTest() {
 
           <div className='space-y-2'>
             <h3 className='font-medium text-lg'>Connection Status</h3>
-            {loading ? (
-              <div>Loading...</div>
-            ) : status ? (
+            {loading && <div>Loading...</div>}
+            {!(loading || status) && <div>No status available</div>}
+            {!loading && status && (
               <div className='space-y-2'>
                 <div className='flex items-center gap-2'>
                   <Badge variant={status.linked ? 'default' : 'secondary'}>
@@ -166,8 +169,6 @@ export function GithubIntegrationTest() {
                   </div>
                 )}
               </div>
-            ) : (
-              <div>No status available</div>
             )}
           </div>
 

@@ -154,7 +154,9 @@ class OmniFeedbackWidgetManager {
           <div style={{ display: visible ? 'block' : 'none' }}>
             <OmniFeedbackWidget
               {...widgetProps}
-              onClose={() => {}}
+              onClose={() => {
+                // Handled by onOpenChange
+              }}
               onOpenChange={handleOpenChange}
               position={position}
             />
@@ -174,7 +176,10 @@ class OmniFeedbackWidgetManager {
     iframe.addEventListener('load', onFrameLoad, { once: true });
 
     // Generate unique ID and store instance
-    const instanceId = `omnifeedback-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const ID_RADIX = 36;
+    const ID_START_INDEX = 2;
+    const ID_LENGTH = 9;
+    const instanceId = `omnifeedback-${Date.now()}-${Math.random().toString(ID_RADIX).substr(ID_START_INDEX, ID_LENGTH)}`;
     this.instances.set(instanceId, { root, container: iframe });
 
     // Return instance control object
@@ -184,7 +189,9 @@ class OmniFeedbackWidgetManager {
         if (instance) {
           try {
             instance.root?.unmount?.();
-          } catch {}
+          } catch {
+            // Ignore unmount errors - widget is being destroyed anyway
+          }
           instance.container.remove();
           this.instances.delete(instanceId);
         }
@@ -299,7 +306,9 @@ if (typeof document !== 'undefined' && typeof window !== 'undefined') {
             jwtAuthToken,
             portalUrl,
           });
-        } catch (_error) {}
+        } catch (_error) {
+          // Silently fail widget initialization from data attributes
+        }
       }
     }
   };

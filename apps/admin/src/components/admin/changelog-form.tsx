@@ -10,9 +10,14 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { adminClient } from '@/utils/admin-orpc';
 import BlockNoteEditor, { type BlockNoteEditorRef } from '../blocknote-editor';
 
+const TITLE_MAX_LENGTH = 200;
+
 // Form validation schema
 const changelogFormSchema = z.object({
-  title: z.string().min(1, 'Title is required').max(200, 'Title too long'),
+  title: z
+    .string()
+    .min(1, 'Title is required')
+    .max(TITLE_MAX_LENGTH, 'Title too long'),
   status: z.enum(['draft', 'published', 'archived']).default('draft'),
   tag: z.string().optional(),
 });
@@ -42,6 +47,32 @@ export function ChangelogForm({
   const [isLoading, setIsLoading] = useState(false);
   const editorRef = useRef<BlockNoteEditorRef>(null);
 
+  const saveChangelog = async (formData: ChangelogFormData) => {
+    if (onSave) {
+      await onSave(formData);
+      return;
+    }
+
+    if (mode === 'create') {
+      await adminClient.organization.changelog.add({
+        title: formData.title,
+        content: formData.content,
+        status: formData.status || 'draft',
+        tagId: formData.tag || undefined,
+      });
+      toast.success('Changelog saved successfully');
+    } else if (mode === 'edit' && changelogId) {
+      await adminClient.organization.changelog.update({
+        id: changelogId,
+        title: formData.title,
+        content: formData.content,
+        status: formData.status,
+        tagId: formData.tag || undefined,
+      });
+      toast.success('Changelog updated successfully');
+    }
+  };
+
   const form = useForm({
     defaultValues: {
       title: initialData?.title || '',
@@ -55,37 +86,13 @@ export function ChangelogForm({
       setIsLoading(true);
 
       try {
-        // Get content from the editor using ref
         const editorContent = editorRef.current?.getContent() || [];
-
         const formData: ChangelogFormData = {
           ...value,
           content: editorContent,
         };
 
-        if (onSave) {
-          await onSave(formData);
-        } else {
-          // Default save behavior
-          if (mode === 'create') {
-            await adminClient.organization.changelog.add({
-              title: formData.title,
-              content: formData.content,
-              status: formData.status || 'draft',
-              tagId: formData.tag || undefined,
-            });
-            toast.success('Changelog saved successfully');
-          } else if (mode === 'edit' && changelogId) {
-            await adminClient.organization.changelog.update({
-              id: changelogId,
-              title: formData.title,
-              content: formData.content,
-              status: formData.status,
-              tagId: formData.tag || undefined,
-            });
-            toast.success('Changelog updated successfully');
-          }
-        }
+        await saveChangelog(formData);
 
         if (onSuccess) {
           onSuccess();
@@ -118,8 +125,8 @@ export function ChangelogForm({
         }}
       >
         {/* Title Field */}
-        <form.Field
-          children={(field) => (
+        <form.Field name='title'>
+          {(field) => (
             <div className='space-y-2'>
               <Label htmlFor={field.name}>
                 Title <span className='text-red-500'>*</span>
@@ -142,8 +149,7 @@ export function ChangelogForm({
               )}
             </div>
           )}
-          name='title'
-        />
+        </form.Field>
 
         {/* Content Editor */}
         <div className='space-y-2'>
@@ -161,13 +167,17 @@ export function ChangelogForm({
         </div>
 
         {/* Status Field */}
-        <form.Field
-          children={(field) => (
+        <form.Field name='status'>
+          {(field) => (
             <div className='space-y-3'>
               <Label>Status</Label>
               <RadioGroup
                 className='grid w-full grid-cols-3 gap-4'
-                onValueChange={field.handleChange}
+                onValueChange={(value) =>
+                  field.handleChange(
+                    value as 'draft' | 'published' | 'archived'
+                  )
+                }
                 value={field.state.value}
               >
                 <div className='flex items-center space-x-2 rounded-lg border border-input bg-background pl-2 text-sm ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground has-[:checked]:border-primary has-[:checked]:bg-primary/5'>
@@ -205,8 +215,7 @@ export function ChangelogForm({
               )}
             </div>
           )}
-          name='status'
-        />
+        </form.Field>
 
         {/* Form Actions */}
         <div className='flex gap-4 pt-4'>

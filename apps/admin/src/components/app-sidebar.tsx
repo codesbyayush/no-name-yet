@@ -6,7 +6,7 @@ import {
   ScrollText,
   Settings,
 } from 'lucide-react';
-import * as React from 'react';
+import { type ComponentProps, useMemo } from 'react';
 
 import { NavUser } from '@/components/nav-user';
 import {
@@ -48,13 +48,13 @@ const data = {
   ],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { setOpen, openMobile, setOpenMobile } = useSidebar();
+export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
+  const { openMobile, setOpenMobile } = useSidebar();
   const location = useLocation();
   const { setContainer } = useSidebarRight();
   const isMobile = useIsMobile();
 
-  const currentNavItem = React.useMemo(
+  const currentNavItem = useMemo(
     () =>
       data.navMain.find((item) => location.pathname.startsWith(item.url)) ||
       data.navMain[0],
