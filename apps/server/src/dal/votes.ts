@@ -1,7 +1,7 @@
-import { and, count, eq, type SQL } from "drizzle-orm";
-import { votes } from "@/db/schema";
+import { and, count, eq, type SQL } from 'drizzle-orm';
+import { votes } from '@/db/schema';
 
-export type Database = ReturnType<typeof import("@/db").getDb>;
+export type Database = ReturnType<typeof import('@/db').getDb>;
 
 export type CreateVoteInput = {
   feedbackId?: string;

@@ -9,7 +9,7 @@ import {
   inArray,
   type SQL,
   sql,
-} from "drizzle-orm";
+} from 'drizzle-orm';
 import {
   boards,
   comments,
@@ -18,16 +18,16 @@ import {
   tags as tagsTable,
   user,
   votes,
-} from "@/db/schema";
+} from '@/db/schema';
 
-export type Database = ReturnType<typeof import("@/db").getDb>;
+export type Database = ReturnType<typeof import('@/db').getDb>;
 
 export type GetPostsFilters = {
   organizationId: string;
   boardId?: string;
   offset: number;
   take: number;
-  sortBy?: "newest" | "oldest";
+  sortBy?: 'newest' | 'oldest';
 };
 
 export async function getPostsWithAggregates(
@@ -37,7 +37,7 @@ export async function getPostsWithAggregates(
 ) {
   const orderBy: SQL<unknown> = ((): SQL<unknown> => {
     switch (filters.sortBy) {
-      case "oldest":
+      case 'oldest':
         return asc(feedback.createdAt);
       default:
         return desc(feedback.createdAt);
@@ -124,7 +124,7 @@ export type GetAdminPostsFilters = {
   boardId?: string;
   offset: number;
   take: number;
-  sortBy?: "newest" | "oldest" | "most_voted";
+  sortBy?: 'newest' | 'oldest' | 'most_voted';
 };
 
 export async function getAdminDetailedPosts(
@@ -134,9 +134,9 @@ export async function getAdminDetailedPosts(
 ) {
   const orderBy: SQL<unknown> = ((): SQL<unknown> => {
     switch (filters.sortBy) {
-      case "oldest":
+      case 'oldest':
         return asc(feedback.createdAt);
-      case "most_voted":
+      case 'most_voted':
         // TODO: Implement sort by vote count; keep createdAt for parity with current API
         return desc(feedback.createdAt);
       default:
@@ -151,8 +151,8 @@ export async function getAdminDetailedPosts(
     whereFilters.push(eq(boards.id, filters.boardId));
   }
 
-  const creatorUser = aliasedTable(user, "creator");
-  const assigneeUser = aliasedTable(user, "assignee");
+  const creatorUser = aliasedTable(user, 'creator');
+  const assigneeUser = aliasedTable(user, 'assignee');
 
   const rows = await db
     .select({
@@ -264,19 +264,19 @@ export type AdminCreatePostInput = {
   title: string;
   description: string;
   priority:
-    | "low"
-    | "medium"
-    | "high"
-    | "urgent"
-    | "no_priority"
-    | "no-priority";
+    | 'low'
+    | 'medium'
+    | 'high'
+    | 'urgent'
+    | 'no_priority'
+    | 'no-priority';
   status:
-    | "to-do"
-    | "in-progress"
-    | "completed"
-    | "backlog"
-    | "technical-review"
-    | "paused";
+    | 'to-do'
+    | 'in-progress'
+    | 'completed'
+    | 'backlog'
+    | 'technical-review'
+    | 'paused';
   tags?: string[];
   issueKey?: string;
 };
@@ -287,9 +287,9 @@ export async function createAdminPost(
   authorId: string
 ) {
   const normalizedPriority =
-    input.priority === "no_priority" ? "no-priority" : input.priority;
+    input.priority === 'no_priority' ? 'no-priority' : input.priority;
   // Normalize issueKey to lowercase at write-time to avoid LOWER() in joins
-  const normalizedIssueKey = input.issueKey ? input.issueKey.toLowerCase() : "";
+  const normalizedIssueKey = input.issueKey ? input.issueKey.toLowerCase() : '';
 
   const [newPost] = await db
     .insert(feedback)
@@ -343,19 +343,19 @@ export type AdminUpdatePostInput = {
   title?: string;
   description?: string;
   status?:
-    | "to-do"
-    | "in-progress"
-    | "completed"
-    | "backlog"
-    | "technical-review"
-    | "paused";
+    | 'to-do'
+    | 'in-progress'
+    | 'completed'
+    | 'backlog'
+    | 'technical-review'
+    | 'paused';
   priority?:
-    | "low"
-    | "medium"
-    | "high"
-    | "urgent"
-    | "no_priority"
-    | "no-priority";
+    | 'low'
+    | 'medium'
+    | 'high'
+    | 'urgent'
+    | 'no_priority'
+    | 'no-priority';
   url?: string;
   userAgent?: string;
   browserInfo?: {
@@ -380,7 +380,7 @@ export async function updateAdminPost(
   input: AdminUpdatePostInput
 ) {
   const normalizedPriority =
-    input.priority === "no_priority" ? "no-priority" : input.priority;
+    input.priority === 'no_priority' ? 'no-priority' : input.priority;
 
   const [updatedPost] = await db
     .update(feedback)
@@ -440,7 +440,7 @@ export async function createPublicPost(
       title: input.title,
       description: input.description,
       issueKey,
-      priority: "no-priority",
+      priority: 'no-priority',
     })
     .returning();
 

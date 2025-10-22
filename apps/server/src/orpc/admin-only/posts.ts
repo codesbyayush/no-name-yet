@@ -1,5 +1,5 @@
-import { ORPCError } from "@orpc/server";
-import { z } from "zod";
+import { ORPCError } from '@orpc/server';
+import { z } from 'zod';
 import {
   createAdminPost,
   deleteAdminPost,
@@ -7,8 +7,8 @@ import {
   getAdminDetailedPosts,
   getAdminDetailedSinglePost,
   updateAdminPost,
-} from "@/dal/posts";
-import { adminOnlyProcedure } from "../procedures";
+} from '@/dal/posts';
+import { adminOnlyProcedure } from '../procedures';
 
 const DEFAULT_TAKE = 20;
 const MAX_TAKE = 100;
@@ -19,14 +19,14 @@ export const postsRouter = {
       z.object({
         offset: z.number().min(0).default(0),
         take: z.number().min(1).max(MAX_TAKE).default(DEFAULT_TAKE),
-        sortBy: z.enum(["newest", "oldest", "most_voted"]).default("newest"),
+        sortBy: z.enum(['newest', 'oldest', 'most_voted']).default('newest'),
         boardId: z.string().optional(),
       })
     )
     .handler(async ({ input, context }) => {
       const { offset, take, sortBy, boardId } = input;
       if (!context.organization) {
-        throw new ORPCError("NOT_FOUND");
+        throw new ORPCError('NOT_FOUND');
       }
       const userId = context.session?.user?.id;
       const { posts, hasMore } = await getAdminDetailedPosts(
@@ -61,7 +61,7 @@ export const postsRouter = {
     .handler(async ({ input, context }) => {
       const { feedbackId } = input;
       if (!(context.organization && feedbackId)) {
-        throw new ORPCError("NOT_FOUND");
+        throw new ORPCError('NOT_FOUND');
       }
       const userId = context.session?.user?.id;
       const post = await getAdminDetailedSinglePost(
@@ -81,30 +81,30 @@ export const postsRouter = {
     .input(
       z.object({
         boardId: z.string(),
-        type: z.enum(["bug", "suggestion"]).default("bug"),
+        type: z.enum(['bug', 'suggestion']).default('bug'),
         title: z.string(),
         description: z.string().min(1),
         priority: z
           .enum([
-            "low",
-            "medium",
-            "high",
-            "urgent",
-            "no_priority",
-            "no-priority",
+            'low',
+            'medium',
+            'high',
+            'urgent',
+            'no_priority',
+            'no-priority',
           ])
-          .default("no_priority"),
+          .default('no_priority'),
         tags: z.array(z.string()).default([]),
         status: z
           .enum([
-            "to-do",
-            "in-progress",
-            "completed",
-            "backlog",
-            "technical-review",
-            "paused",
+            'to-do',
+            'in-progress',
+            'completed',
+            'backlog',
+            'technical-review',
+            'paused',
           ])
-          .default("to-do"),
+          .default('to-do'),
         issueKey: z.string().optional(),
       })
     )
@@ -112,7 +112,7 @@ export const postsRouter = {
     .handler(async ({ input, context }) => {
       const userId = context.session?.user.id;
       if (!userId) {
-        throw new ORPCError("UNAUTHORIZED");
+        throw new ORPCError('UNAUTHORIZED');
       }
       const newPost = await createAdminPost(context.db, input, userId);
       return newPost;
@@ -126,22 +126,22 @@ export const postsRouter = {
         description: z.string().min(1).optional(),
         status: z
           .enum([
-            "to-do",
-            "in-progress",
-            "completed",
-            "backlog",
-            "technical-review",
-            "paused",
+            'to-do',
+            'in-progress',
+            'completed',
+            'backlog',
+            'technical-review',
+            'paused',
           ])
           .optional(),
         priority: z
           .enum([
-            "low",
-            "medium",
-            "high",
-            "urgent",
-            "no_priority",
-            "no-priority",
+            'low',
+            'medium',
+            'high',
+            'urgent',
+            'no_priority',
+            'no-priority',
           ])
           .optional(),
         tags: z.array(z.string()).optional(),
@@ -175,7 +175,7 @@ export const postsRouter = {
       const _userId = context.session?.user.id;
       const updatedPost = await updateAdminPost(context.db, input);
       if (!updatedPost) {
-        throw new ORPCError("NOT_FOUND", { message: "Post not found" });
+        throw new ORPCError('NOT_FOUND', { message: 'Post not found' });
       }
       return updatedPost;
     }),
@@ -191,7 +191,7 @@ export const postsRouter = {
       const _userId = context.session?.user.id;
       const deletedPost = await deleteAdminPost(context.db, input.id);
       if (!deletedPost) {
-        throw new ORPCError("NOT_FOUND", { message: "Post not found" });
+        throw new ORPCError('NOT_FOUND', { message: 'Post not found' });
       }
       return { success: true, deletedPost };
     }),

@@ -39,19 +39,19 @@ function RootComponent() {
   return (
     <>
       <HeadContent />
-      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <ThemeProvider defaultTheme='dark' storageKey='vite-ui-theme'>
         {isLandingPage ? (
-          <div className="min-h-screen">
+          <div className='min-h-screen'>
             <Outlet />
           </div>
         ) : (
-          <div className="grid h-svh grid-rows-[auto_1fr]">
+          <div className='grid h-svh grid-rows-[auto_1fr]'>
             <Outlet />
           </div>
         )}
         <Toaster richColors />
       </ThemeProvider>
-      <TanStackRouterDevtools position="bottom-left" />
+      <TanStackRouterDevtools position='bottom-left' />
     </>
   );
 }

@@ -2,7 +2,7 @@ import { CreateNewIssue } from './create-new-issue';
 
 export function CreateIssueModalProvider() {
   return (
-    <div className="hidden">
+    <div className='hidden'>
       <CreateNewIssue />
     </div>
   );

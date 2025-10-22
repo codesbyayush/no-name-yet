@@ -1,7 +1,7 @@
-import { and, asc, eq } from "drizzle-orm";
-import { boards } from "@/db/schema/boards";
+import { and, asc, eq } from 'drizzle-orm';
+import { boards } from '@/db/schema/boards';
 
-type Database = ReturnType<typeof import("@/db").getDb>;
+type Database = ReturnType<typeof import('@/db').getDb>;
 
 export async function getPublicBoards(db: Database, organizationId: string) {
   return await db

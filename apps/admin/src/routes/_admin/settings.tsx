@@ -124,16 +124,16 @@ function SettingsLayout() {
 
   return (
     <div>
-      <div className="sticky top-0 z-20 bg-background">
-        <div className="border-muted border-b-[1px] pl-2">
-          <SiteHeader title="Settings" />
+      <div className='sticky top-0 z-20 bg-background'>
+        <div className='border-muted border-b-[1px] pl-2'>
+          <SiteHeader title='Settings' />
         </div>
       </div>
       <SidebarRightPortal>
-        <div className="space-y-4 px-2 py-2">
+        <div className='space-y-4 px-2 py-2'>
           {navGroups.map((group) => (
             <div key={group.title}>
-              <div className="px-1 pt-1 pb-2 text-muted-foreground text-sm">
+              <div className='px-1 pt-1 pb-2 text-muted-foreground text-sm'>
                 {group.title}
               </div>
               <SidebarMenu>
@@ -145,8 +145,8 @@ function SettingsLayout() {
                     <SidebarMenuItem key={item.key}>
                       <SidebarMenuButton asChild isActive={isActive}>
                         <Link to={href}>
-                          <Icon className="size-4" />
-                          <span className="text-sm">{item.label}</span>
+                          <Icon className='size-4' />
+                          <span className='text-sm'>{item.label}</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -157,9 +157,9 @@ function SettingsLayout() {
           ))}
         </div>
       </SidebarRightPortal>
-      <div className="px-4 py-3">
-        <div className="mx-auto w-full max-w-6xl">
-          <div className="space-y-6">
+      <div className='px-4 py-3'>
+        <div className='mx-auto w-full max-w-6xl'>
+          <div className='space-y-6'>
             <Outlet />
           </div>
         </div>

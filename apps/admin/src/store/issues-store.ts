@@ -122,13 +122,11 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
   },
 
   // Filters
-  filterByStatus: (statusId: string) => {
-    return get().issues.filter((issue) => issue.status.id === statusId);
-  },
+  filterByStatus: (statusId: string) =>
+    get().issues.filter((issue) => issue.status.id === statusId),
 
-  filterByPriority: (priorityId: string) => {
-    return get().issues.filter((issue) => issue.priority.id === priorityId);
-  },
+  filterByPriority: (priorityId: string) =>
+    get().issues.filter((issue) => issue.priority.id === priorityId),
 
   filterByAssignee: (userId: string | null) => {
     if (userId === null) {
@@ -137,15 +135,13 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
     return get().issues.filter((issue) => issue.assignee?.id === userId);
   },
 
-  filterByLabel: (labelId: string) => {
-    return get().issues.filter((issue) =>
+  filterByLabel: (labelId: string) =>
+    get().issues.filter((issue) =>
       issue.tags.some((label) => label.id === labelId)
-    );
-  },
+    ),
 
-  filterByProject: (projectId: string) => {
-    return get().issues.filter((issue) => issue.project?.id === projectId);
-  },
+  filterByProject: (projectId: string) =>
+    get().issues.filter((issue) => issue.project?.id === projectId),
 
   searchIssues: (query: string) => {
     const lowerCaseQuery = query.toLowerCase();
@@ -242,7 +238,5 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
   },
 
   // Utility functions
-  getIssueById: (id: string) => {
-    return get().issues.find((issue) => issue.id === id);
-  },
+  getIssueById: (id: string) => get().issues.find((issue) => issue.id === id),
 }));

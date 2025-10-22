@@ -148,9 +148,9 @@ export const useIssueCountByPriority = () =>
 
 export const useIssueCountByLabel = (labelId: string) =>
   useLiveQuery((q) =>
-    q.from({ issue: issuesCollection }).where(({ issue }) => {
-      return issue.tags.some((tag) => eq(tag.id, labelId));
-    })
+    q
+      .from({ issue: issuesCollection })
+      .where(({ issue }) => issue.tags.some((tag) => eq(tag.id, labelId)))
   );
 
 export const useSearchIssues = (query: string | undefined) => {

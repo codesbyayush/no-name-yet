@@ -34,13 +34,13 @@ export default function UserMenu() {
   };
 
   if (isPending) {
-    return <Skeleton className="h-10 w-10 rounded-full" />;
+    return <Skeleton className='h-10 w-10 rounded-full' />;
   }
 
   if (!session) {
     return (
-      <Button asChild variant="outline">
-        <Link to="/auth">Sign In</Link>
+      <Button asChild variant='outline'>
+        <Link to='/auth'>Sign In</Link>
       </Button>
     );
   }
@@ -50,32 +50,32 @@ export default function UserMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button className="relative h-10 w-10 rounded-full" variant="ghost">
-          <Avatar className="size-8">
+        <Button className='relative h-10 w-10 rounded-full' variant='ghost'>
+          <Avatar className='size-8'>
             <AvatarImage alt={user?.name || 'User'} src={user?.image || ''} />
-            <AvatarFallback className="bg-primary/10">
+            <AvatarFallback className='bg-primary/10'>
               {user?.name?.charAt(0) || 'U'}
             </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        align="end"
-        className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+        align='end'
+        className='w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg'
         sideOffset={4}
       >
-        <DropdownMenuLabel className="p-0 font-normal">
-          <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-            <Avatar className="h-8 w-8 rounded-lg">
+        <DropdownMenuLabel className='p-0 font-normal'>
+          <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
+            <Avatar className='h-8 w-8 rounded-lg'>
               <AvatarImage alt={user?.name || 'User'} src={user?.image || ''} />
-              <AvatarFallback className="rounded-lg">
+              <AvatarFallback className='rounded-lg'>
                 {user?.name?.charAt(0) || 'U'}
               </AvatarFallback>
             </Avatar>
-            <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-medium">{user?.name}</span>
+            <div className='grid flex-1 text-left text-sm leading-tight'>
+              <span className='truncate font-medium'>{user?.name}</span>
               {!session.user.isAnonymous && (
-                <span className="truncate text-xs">{user?.email}</span>
+                <span className='truncate text-xs'>{user?.email}</span>
               )}
             </div>
           </div>
@@ -87,33 +87,33 @@ export default function UserMenu() {
               navigate({ href: import.meta.env.PUBLIC_ADMIN_ROOT_URL })
             }
           >
-            <Plus className="h-4 w-4" />
+            <Plus className='h-4 w-4' />
             Create your own
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link to="/profile">
-              <User className="h-4 w-4" />
+            <Link to='/profile'>
+              <User className='h-4 w-4' />
               Profile
             </Link>
           </DropdownMenuItem>
 
           {/* Theme Selector */}
-          <div className="p-2">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 pr-2 font-medium text-sm">
+          <div className='p-2'>
+            <div className='flex items-center justify-between gap-2'>
+              <div className='flex items-center gap-2 pr-2 font-medium text-sm'>
                 {theme === 'light' ? (
-                  <Sun className="size-4" />
+                  <Sun className='size-4' />
                 ) : theme === 'dark' ? (
-                  <Moon className="size-4" />
+                  <Moon className='size-4' />
                 ) : (
-                  <Monitor className="size-4" />
+                  <Monitor className='size-4' />
                 )}
                 <span>Theme</span>
               </div>
-              <div className="flex items-center gap-1 px-2">
+              <div className='flex items-center gap-1 px-2'>
                 <button
                   className={`flex items-center justify-center rounded-md p-2 transition-all ${
                     theme === 'light'
@@ -121,10 +121,10 @@ export default function UserMenu() {
                       : 'text-muted-foreground hover:bg-accent hover:text-foreground'
                   }`}
                   onClick={() => setTheme('light')}
-                  title="Light theme"
-                  type="button"
+                  title='Light theme'
+                  type='button'
                 >
-                  <Sun className="size-4" />
+                  <Sun className='size-4' />
                 </button>
                 <button
                   className={`flex items-center justify-center rounded-md p-2 transition-all ${
@@ -133,10 +133,10 @@ export default function UserMenu() {
                       : 'text-muted-foreground hover:bg-accent hover:text-foreground'
                   }`}
                   onClick={() => setTheme('dark')}
-                  title="Dark theme"
-                  type="button"
+                  title='Dark theme'
+                  type='button'
                 >
-                  <Moon className="size-4" />
+                  <Moon className='size-4' />
                 </button>
                 <button
                   className={`flex items-center justify-center rounded-md p-2 transition-all ${
@@ -145,10 +145,10 @@ export default function UserMenu() {
                       : 'text-muted-foreground hover:bg-accent hover:text-foreground'
                   }`}
                   onClick={() => setTheme('system')}
-                  title="System theme"
-                  type="button"
+                  title='System theme'
+                  type='button'
                 >
-                  <Monitor className="size-4" />
+                  <Monitor className='size-4' />
                 </button>
               </div>
             </div>

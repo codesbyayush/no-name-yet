@@ -1,20 +1,20 @@
-import { and, asc, count, desc, eq, inArray, type SQL } from "drizzle-orm";
-import { changelog, tags, user } from "@/db/schema";
+import { and, asc, count, desc, eq, inArray, type SQL } from 'drizzle-orm';
+import { changelog, tags, user } from '@/db/schema';
 
-type Database = ReturnType<typeof import("@/db").getDb>;
+type Database = ReturnType<typeof import('@/db').getDb>;
 
 export type PublicGetParams = {
   offset: number;
   limit: number;
-  sortBy: "newest" | "oldest" | "title";
+  sortBy: 'newest' | 'oldest' | 'title';
   tagId?: string;
 };
 
-function resolvePublicOrder(sortBy: PublicGetParams["sortBy"]): SQL<unknown> {
+function resolvePublicOrder(sortBy: PublicGetParams['sortBy']): SQL<unknown> {
   switch (sortBy) {
-    case "oldest":
+    case 'oldest':
       return asc(changelog.publishedAt);
-    case "title":
+    case 'title':
       return asc(changelog.title);
     default:
       return desc(changelog.publishedAt);
@@ -28,7 +28,7 @@ export async function getPublished(
 ) {
   const whereConditions = [
     eq(changelog.organizationId, organizationId),
-    eq(changelog.status, "published"),
+    eq(changelog.status, 'published'),
   ];
   if (params.tagId) {
     whereConditions.push(eq(changelog.tagId, params.tagId));
@@ -90,7 +90,7 @@ export async function getPublishedBySlug(
       and(
         eq(changelog.organizationId, organizationId),
         eq(changelog.slug, slug),
-        eq(changelog.status, "published")
+        eq(changelog.status, 'published')
       )
     )
     .limit(1);
@@ -100,16 +100,16 @@ export async function getPublishedBySlug(
 export type AdminGetParams = {
   offset: number;
   limit: number;
-  sortBy: "newest" | "oldest" | "title";
-  status?: "draft" | "published" | "archived";
+  sortBy: 'newest' | 'oldest' | 'title';
+  status?: 'draft' | 'published' | 'archived';
   tagId?: string;
 };
 
-function resolveAdminOrder(sortBy: AdminGetParams["sortBy"]): SQL<unknown> {
+function resolveAdminOrder(sortBy: AdminGetParams['sortBy']): SQL<unknown> {
   switch (sortBy) {
-    case "oldest":
+    case 'oldest':
       return asc(changelog.createdAt);
-    case "title":
+    case 'title':
       return asc(changelog.title);
     default:
       return desc(changelog.createdAt);
@@ -240,7 +240,7 @@ export type InsertChangelogValues = {
   slug: string;
   content: unknown;
   htmlContent?: string | null;
-  status: "draft" | "published" | "archived";
+  status: 'draft' | 'published' | 'archived';
   publishedAt?: Date | null;
   authorId: string;
   tagId?: string | null;

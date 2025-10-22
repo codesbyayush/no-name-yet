@@ -188,9 +188,9 @@ export function BoardsSettings() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className='space-y-8'>
       {/* Guest Submissions Section */}
-      <Card className="border border-muted-foreground/10 bg-card">
+      <Card className='border border-muted-foreground/10 bg-card'>
         <CardHeader>
           <CardTitle>Allow Guest Submissions</CardTitle>
           <CardDescription>
@@ -198,19 +198,19 @@ export function BoardsSettings() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="guest-submissions">
+          <div className='flex items-center justify-between'>
+            <div className='space-y-0.5'>
+              <Label htmlFor='guest-submissions'>
                 Enable guest submissions
               </Label>
-              <p className="text-muted-foreground text-sm">
+              <p className='text-muted-foreground text-sm'>
                 Allow users to submit feedback without creating an account.
               </p>
             </div>
             <Switch
               checked={allowGuestSubmissions}
               disabled={!allowGuestSubmissions}
-              id="guest-submissions"
+              id='guest-submissions'
               onCheckedChange={setAllowGuestSubmissions} // Simulate paid feature
             />
           </div>
@@ -218,7 +218,7 @@ export function BoardsSettings() {
       </Card>
 
       {/* Manage Boards Section */}
-      <Card className="border border-muted-foreground/10 bg-card">
+      <Card className='border border-muted-foreground/10 bg-card'>
         <CardHeader>
           <CardTitle>Manage Boards</CardTitle>
           <CardDescription>
@@ -226,27 +226,27 @@ export function BoardsSettings() {
             that contain all of the feedback for a specific product or feature.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className='space-y-4'>
           <Table>
             <TableHeader>
-              <TableRow className="border-b-0 border-none">
+              <TableRow className='border-b-0 border-none'>
                 <TableHead>Symbol</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Visibility</TableHead>
-                <TableHead className="w-[100px]">Actions</TableHead>
+                <TableHead className='w-[100px]'>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {boardsLoading ? (
                 <TableRow>
-                  <TableCell className="py-8 text-center" colSpan={4}>
+                  <TableCell className='py-8 text-center' colSpan={4}>
                     Loading boards...
                   </TableCell>
                 </TableRow>
               ) : boards.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    className="py-8 text-center text-muted-foreground"
+                    className='py-8 text-center text-muted-foreground'
                     colSpan={4}
                   >
                     No boards found. Create your first board below.
@@ -254,11 +254,11 @@ export function BoardsSettings() {
                 </TableRow>
               ) : (
                 boards.map((board) => (
-                  <TableRow className="border-b-0" key={board.id}>
-                    <TableCell className="text-xl">
+                  <TableRow className='border-b-0' key={board.id}>
+                    <TableCell className='text-xl'>
                       {board.symbol || '📋'}
                     </TableCell>
-                    <TableCell className="font-medium">{board.name}</TableCell>
+                    <TableCell className='font-medium'>{board.name}</TableCell>
                     <TableCell>
                       <Badge
                         variant={board.isPrivate ? 'secondary' : 'default'}
@@ -267,12 +267,12 @@ export function BoardsSettings() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Button size="sm" variant="ghost">
-                          <EditIcon className="h-4 w-4" />
+                      <div className='flex items-center gap-2'>
+                        <Button size='sm' variant='ghost'>
+                          <EditIcon className='h-4 w-4' />
                         </Button>
-                        <Button disabled size="sm" variant="ghost">
-                          <TrashIcon className="h-4 w-4" />
+                        <Button disabled size='sm' variant='ghost'>
+                          <TrashIcon className='h-4 w-4' />
                         </Button>
                       </div>
                     </TableCell>
@@ -282,19 +282,19 @@ export function BoardsSettings() {
             </TableBody>
           </Table>
 
-          <div className="mt-4 border-muted-foreground/10 border-t pt-6">
-            <div className="space-y-4">
-              <div className="flex gap-3">
-                <div className="relative">
+          <div className='mt-4 border-muted-foreground/10 border-t pt-6'>
+            <div className='space-y-4'>
+              <div className='flex gap-3'>
+                <div className='relative'>
                   <Button
-                    className="h-10 w-16 p-0 text-xl"
+                    className='h-10 w-16 p-0 text-xl'
                     onClick={() => setShowEmojiDropdown(!showEmojiDropdown)}
-                    variant="outline"
+                    variant='outline'
                   >
                     {newBoardEmoji}
                   </Button>
                   {showEmojiDropdown && (
-                    <div className="absolute top-12 left-0 z-10 grid w-48 grid-cols-6 gap-1 rounded-md border border-border bg-card p-2 shadow-lg">
+                    <div className='absolute top-12 left-0 z-10 grid w-48 grid-cols-6 gap-1 rounded-md border border-border bg-card p-2 shadow-lg'>
                       {availableEmojis.map((emoji) => (
                         <button
                           className={`h-8 w-8 rounded text-xl hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50 ${
@@ -314,18 +314,18 @@ export function BoardsSettings() {
                   )}
                 </div>
                 <Input
-                  className="flex-1"
+                  className='flex-1'
                   onChange={(e) => setNewBoardName(e.target.value)}
-                  placeholder="Board name"
+                  placeholder='Board name'
                   value={newBoardName}
                 />
-                <div className="flex items-center gap-2">
-                  <Label className="text-sm" htmlFor="private-toggle">
+                <div className='flex items-center gap-2'>
+                  <Label className='text-sm' htmlFor='private-toggle'>
                     Private
                   </Label>
                   <Switch
                     checked={newBoardIsPrivate}
-                    id="private-toggle"
+                    id='private-toggle'
                     onCheckedChange={setNewBoardIsPrivate}
                   />
                 </div>
@@ -333,12 +333,12 @@ export function BoardsSettings() {
                   disabled={!(newBoardName.trim() && newBoardEmoji)}
                   onClick={createBoard}
                 >
-                  <PlusIcon className="mr-2 h-4 w-4" />
+                  <PlusIcon className='mr-2 h-4 w-4' />
                   Add Board
                 </Button>
               </div>
               {!(newBoardEmoji && newBoardName.trim()) && (
-                <p className="text-muted-foreground text-sm">
+                <p className='text-muted-foreground text-sm'>
                   Please select a symbol and enter a board name to continue.
                 </p>
               )}
@@ -348,7 +348,7 @@ export function BoardsSettings() {
       </Card>
 
       {/* Manage Tags Section */}
-      <Card className="border border-muted-foreground/10 bg-card">
+      <Card className='border border-muted-foreground/10 bg-card'>
         <CardHeader>
           <CardTitle>Manage Tags</CardTitle>
           <CardDescription>
@@ -356,39 +356,39 @@ export function BoardsSettings() {
             useful for categorizing feedback.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className='space-y-4'>
           {tagsLoading ? (
-            <div className="py-8 text-center text-muted-foreground">
+            <div className='py-8 text-center text-muted-foreground'>
               Loading tags...
             </div>
           ) : tags.length === 0 ? (
-            <div className="py-8 text-center text-muted-foreground">
+            <div className='py-8 text-center text-muted-foreground'>
               No tags found. Create your first tag below.
             </div>
           ) : (
-            <div className="flex flex-wrap gap-2">
+            <div className='flex flex-wrap gap-2'>
               {tags.map((tag) => (
-                <div className="group relative" key={tag.id}>
+                <div className='group relative' key={tag.id}>
                   <Badge
                     className={`${getColorClasses(tag.color)} relative border transition-all hover:pr-6`}
-                    variant="outline"
+                    variant='outline'
                   >
                     {tag.name}
                     <button
-                      className="-translate-y-1/2 absolute top-1/2 right-1 cursor-pointer rounded-full p-0.5 opacity-0 transition-opacity hover:bg-black/10 group-hover:opacity-100"
+                      className='-translate-y-1/2 absolute top-1/2 right-1 cursor-pointer rounded-full p-0.5 opacity-0 transition-opacity hover:bg-black/10 group-hover:opacity-100'
                       onClick={() => deleteTag(tag.id)}
                     >
                       <svg
-                        fill="none"
-                        height="12"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
-                        width="12"
+                        fill='none'
+                        height='12'
+                        stroke='currentColor'
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        strokeWidth='2'
+                        viewBox='0 0 24 24'
+                        width='12'
                       >
-                        <path d="M18 6L6 18M6 6l12 12" />
+                        <path d='M18 6L6 18M6 6l12 12' />
                       </svg>
                     </button>
                   </Badge>
@@ -397,36 +397,36 @@ export function BoardsSettings() {
             </div>
           )}
 
-          <div className="mt-8 border-muted-foreground/10 border-t pt-6">
-            <div className="space-y-4">
-              <div className="flex gap-3">
+          <div className='mt-8 border-muted-foreground/10 border-t pt-6'>
+            <div className='space-y-4'>
+              <div className='flex gap-3'>
                 <Input
-                  className="flex-1"
+                  className='flex-1'
                   onChange={(e) => setNewTagName(e.target.value)}
-                  placeholder="Tag name"
+                  placeholder='Tag name'
                   value={newTagName}
                 />
                 <select
-                  className="rounded-md border border-border bg-background px-3 py-2"
+                  className='rounded-md border border-border bg-background px-3 py-2'
                   onChange={(e) => setNewTagColor(e.target.value)}
                   value={newTagColor}
                 >
-                  <option value="blue">Blue</option>
-                  <option value="red">Red</option>
-                  <option value="green">Green</option>
-                  <option value="purple">Purple</option>
-                  <option value="orange">Orange</option>
-                  <option value="gray">Gray</option>
-                  <option value="pink">Pink</option>
-                  <option value="yellow">Yellow</option>
+                  <option value='blue'>Blue</option>
+                  <option value='red'>Red</option>
+                  <option value='green'>Green</option>
+                  <option value='purple'>Purple</option>
+                  <option value='orange'>Orange</option>
+                  <option value='gray'>Gray</option>
+                  <option value='pink'>Pink</option>
+                  <option value='yellow'>Yellow</option>
                 </select>
                 <Button disabled={!newTagName.trim()} onClick={createTag}>
-                  <PlusIcon className="mr-2 h-4 w-4" />
+                  <PlusIcon className='mr-2 h-4 w-4' />
                   Add Tag
                 </Button>
               </div>
               {!newTagName.trim() && (
-                <p className="text-muted-foreground text-sm">
+                <p className='text-muted-foreground text-sm'>
                   Please enter a tag name to continue.
                 </p>
               )}

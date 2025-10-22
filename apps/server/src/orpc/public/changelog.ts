@@ -1,17 +1,17 @@
-import { ORPCError } from "@orpc/server";
-import { getPublished, getPublishedBySlug } from "@/dal/changelog";
-import { publicProcedure } from "../procedures";
+import { ORPCError } from '@orpc/server';
+import { getPublished, getPublishedBySlug } from '@/dal/changelog';
+import { publicProcedure } from '../procedures';
 import {
   publicGetChangelogBySlugSchema,
   publicGetChangelogsSchema,
-} from "./schemas";
+} from './schemas';
 
 export const changelogPublicRouter = publicProcedure.router({
   getPublished: publicProcedure
     .input(publicGetChangelogsSchema)
     .handler(async ({ input, context }) => {
       if (!context.organization) {
-        throw new ORPCError("NOT_FOUND");
+        throw new ORPCError('NOT_FOUND');
       }
 
       try {
@@ -35,7 +35,7 @@ export const changelogPublicRouter = publicProcedure.router({
           },
         };
       } catch (_error) {
-        throw new ORPCError("INTERNAL_SERVER_ERROR");
+        throw new ORPCError('INTERNAL_SERVER_ERROR');
       }
     }),
 
@@ -44,7 +44,7 @@ export const changelogPublicRouter = publicProcedure.router({
     .input(publicGetChangelogBySlugSchema)
     .handler(async ({ input, context }) => {
       if (!context.organization) {
-        throw new ORPCError("NOT_FOUND");
+        throw new ORPCError('NOT_FOUND');
       }
 
       try {
@@ -54,7 +54,7 @@ export const changelogPublicRouter = publicProcedure.router({
           input.slug
         );
         if (!row) {
-          throw new ORPCError("NOT_FOUND");
+          throw new ORPCError('NOT_FOUND');
         }
         return {
           success: true,
@@ -68,7 +68,7 @@ export const changelogPublicRouter = publicProcedure.router({
         if (error instanceof ORPCError) {
           throw error;
         }
-        throw new ORPCError("INTERNAL_SERVER_ERROR");
+        throw new ORPCError('INTERNAL_SERVER_ERROR');
       }
     }),
 });

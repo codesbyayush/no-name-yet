@@ -4,7 +4,6 @@ import {
   pgTable,
   text,
   timestamp,
-  unique,
   uniqueIndex,
 } from 'drizzle-orm/pg-core';
 import { organization } from './organization';

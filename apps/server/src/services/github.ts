@@ -1,13 +1,13 @@
-import { eq } from "drizzle-orm";
-import type { Database } from "@/dal/posts";
-import { githubInstallations, organization } from "@/db/schema";
+import { eq } from 'drizzle-orm';
+import type { Database } from '@/dal/posts';
+import { githubInstallations, organization } from '@/db/schema';
 import {
   extractIssueKeyFromBranch,
   findFeedbackByIssueKey,
   mapPullRequestActionToStatus,
   type PullRequestAction,
   updateFeedbackStatus,
-} from "./issue";
+} from './issue';
 
 export type GitHubInstallation = {
   id: number;
@@ -116,7 +116,7 @@ export async function handlePullRequest(
     return;
   }
 
-  const branch = pr.head?.ref || "";
+  const branch = pr.head?.ref || '';
   const issueKey = extractIssueKeyFromBranch(branch);
 
   if (!issueKey) {
@@ -147,7 +147,7 @@ export async function handlePullRequest(
   const status = mapPullRequestActionToStatus(
     action,
     pr.merged,
-    pr.base?.ref || "",
+    pr.base?.ref || '',
     repository.default_branch
   );
 

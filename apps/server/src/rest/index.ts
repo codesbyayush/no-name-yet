@@ -12,8 +12,6 @@ v1Router.post('/post', async (c) => {
   return c.json({ message: 'POST request received', body });
 });
 
-v1Router.get('/get', async (c) => {
-  return c.json({ message: 'GET request received' });
-});
+v1Router.get('/get', async (c) => c.json({ message: 'GET request received' }));
 
 export default v1Router;

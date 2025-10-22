@@ -1,8 +1,8 @@
-import { ORPCError } from "@orpc/server";
-import { eq } from "drizzle-orm";
-import { z } from "zod";
-import { member, user } from "@/db/schema";
-import { adminOnlyProcedure } from "../procedures";
+import { ORPCError } from '@orpc/server';
+import { eq } from 'drizzle-orm';
+import { z } from 'zod';
+import { member, user } from '@/db/schema';
+import { adminOnlyProcedure } from '../procedures';
 
 // Local constants for schema defaults and boundaries
 const USERS_DEFAULT_LIMIT = 100 as const;
@@ -28,7 +28,7 @@ export const usersRouter = {
       const { limit, offset } = input;
 
       if (!context.organization) {
-        throw new ORPCError("NOT_FOUND");
+        throw new ORPCError('NOT_FOUND');
       }
 
       const organizationUsers = await context.db
@@ -48,26 +48,26 @@ export const usersRouter = {
         .offset(offset);
 
       // Transform to match the client User interface
-      const STATUS_ONLINE = "online" as const;
-      const AVATAR_BASE = "https://api.dicebear.com/9.x/glass/svg?seed=";
+      const STATUS_ONLINE = 'online' as const;
+      const AVATAR_BASE = 'https://api.dicebear.com/9.x/glass/svg?seed=';
 
       const transformedUsers = organizationUsers.map((orgUser) => {
-        let roleLabel: "Member" | "Admin" | "Guest";
-        if (orgUser.role === "admin") {
-          roleLabel = "Admin";
-        } else if (orgUser.role === "member") {
-          roleLabel = "Member";
+        let roleLabel: 'Member' | 'Admin' | 'Guest';
+        if (orgUser.role === 'admin') {
+          roleLabel = 'Admin';
+        } else if (orgUser.role === 'member') {
+          roleLabel = 'Member';
         } else {
-          roleLabel = "Guest";
+          roleLabel = 'Guest';
         }
         return {
           id: orgUser.id,
-          name: orgUser.name || "Unknown User",
+          name: orgUser.name || 'Unknown User',
           avatarUrl: orgUser.image || `${AVATAR_BASE}${orgUser.id}`,
           email: orgUser.email,
           status: STATUS_ONLINE,
           role: roleLabel,
-          joinedDate: orgUser.createdAt.toISOString().split("T")[0],
+          joinedDate: orgUser.createdAt.toISOString().split('T')[0],
           teamIds: [],
         };
       });

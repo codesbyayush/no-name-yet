@@ -135,31 +135,31 @@ export function GithubIntegrationTest() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       <Card>
         <CardHeader>
           <CardTitle>GitHub Integration Test</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className='space-y-4'>
           {error && (
-            <Alert variant="destructive">
+            <Alert variant='destructive'>
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
 
-          <div className="space-y-2">
-            <h3 className="font-medium text-lg">Connection Status</h3>
+          <div className='space-y-2'>
+            <h3 className='font-medium text-lg'>Connection Status</h3>
             {loading ? (
               <div>Loading...</div>
             ) : status ? (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
+              <div className='space-y-2'>
+                <div className='flex items-center gap-2'>
                   <Badge variant={status.linked ? 'default' : 'secondary'}>
                     {status.linked ? 'Connected' : 'Not Connected'}
                   </Badge>
                 </div>
                 {status.linked && (
-                  <div className="space-y-1 text-muted-foreground text-sm">
+                  <div className='space-y-1 text-muted-foreground text-sm'>
                     <div>Account: {status.accountLogin}</div>
                     <div>Installation ID: {status.installationId}</div>
                     <div>Repositories: {status.repoCount}</div>
@@ -173,10 +173,10 @@ export function GithubIntegrationTest() {
 
           <Separator />
 
-          <div className="space-y-3">
-            <h3 className="font-medium text-lg">Actions</h3>
-            <div className="flex flex-wrap gap-2">
-              <Button disabled={loading} onClick={loadStatus} variant="outline">
+          <div className='space-y-3'>
+            <h3 className='font-medium text-lg'>Actions</h3>
+            <div className='flex flex-wrap gap-2'>
+              <Button disabled={loading} onClick={loadStatus} variant='outline'>
                 Refresh Status
               </Button>
 
@@ -192,7 +192,7 @@ export function GithubIntegrationTest() {
                   <Button
                     disabled={loading}
                     onClick={handleUnlinkClick}
-                    variant="destructive"
+                    variant='destructive'
                   >
                     Unlink from Organization
                   </Button>
@@ -210,12 +210,12 @@ export function GithubIntegrationTest() {
 
           <Separator />
 
-          <div className="space-y-2">
-            <h3 className="font-medium text-lg">Testing Instructions</h3>
-            <div className="space-y-2 text-sm">
+          <div className='space-y-2'>
+            <h3 className='font-medium text-lg'>Testing Instructions</h3>
+            <div className='space-y-2 text-sm'>
               <div>
                 <strong>Local Development:</strong>
-                <div className="ml-2 space-y-1">
+                <div className='ml-2 space-y-1'>
                   <div>
                     1. Install ngrok: <code>npm install -g ngrok</code>
                   </div>
@@ -234,7 +234,7 @@ export function GithubIntegrationTest() {
               </div>
               <div>
                 <strong>Production Testing:</strong>
-                <div className="ml-2 space-y-1">
+                <div className='ml-2 space-y-1'>
                   <div>
                     1. Deploy Worker: <code>bun run wrangler:deploy</code>
                   </div>
@@ -247,7 +247,7 @@ export function GithubIntegrationTest() {
               </div>
               <div>
                 <strong>Webhook Testing:</strong>
-                <div className="ml-2 space-y-1">
+                <div className='ml-2 space-y-1'>
                   <div>1. Create an issue in a connected repository</div>
                   <div>
                     2. Check Worker logs: <code>wrangler tail</code>

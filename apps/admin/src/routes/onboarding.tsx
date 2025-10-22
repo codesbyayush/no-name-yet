@@ -19,7 +19,7 @@ export const Route = createFileRoute('/onboarding')({
 
 function OnboardingPage() {
   return (
-    <div className="flex min-h-svh items-center justify-center bg-gradient-to-b from-card via-90% to-black py-8">
+    <div className='flex min-h-svh items-center justify-center bg-gradient-to-b from-card via-90% to-black py-8'>
       <GeneratedForm />
     </div>
   );

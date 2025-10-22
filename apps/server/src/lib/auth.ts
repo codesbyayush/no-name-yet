@@ -1,10 +1,10 @@
 import { type BetterAuthOptions, betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { admin, anonymous, organization } from 'better-auth/plugins';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { getDb } from '../db';
 import * as schema from '../db/schema';
-import { boards, tags } from '../db/schema';
+import { boards, member, tags, team, teamMember } from '../db/schema';
 import { sendEmail } from '../email';
 import type { AppEnv } from './env';
 
@@ -19,12 +19,60 @@ interface AuthInstance {
 }
 
 export function getAuth(env: AppEnv): AuthInstance {
+  const db = getDb(env);
+
   const config = {
     baseURL: env.BETTER_AUTH_URL as string,
-    database: drizzleAdapter(getDb(env), {
+    database: drizzleAdapter(db, {
       provider: 'pg',
       schema,
     }),
+    databaseHooks: {
+      session: {
+        create: {
+          before: async (session) => {
+            try {
+              const userMembership = await db
+                .select({
+                  organizationId: member.organizationId,
+                })
+                .from(member)
+                .where(eq(member.userId, session.userId))
+                .limit(1);
+
+              const firstMembership = userMembership[0];
+              if (!firstMembership?.organizationId) {
+                return { data: session };
+              }
+
+              const userTeams = await db
+                .select({ teamId: teamMember.teamId })
+                .from(teamMember)
+                .innerJoin(team, eq(team.id, teamMember.teamId))
+                .where(
+                  and(
+                    eq(teamMember.userId, session.userId),
+                    eq(team.organizationId, firstMembership.organizationId)
+                  )
+                )
+                .limit(1);
+
+              return {
+                data: {
+                  ...session,
+                  activeOrganizationId: firstMembership.organizationId,
+                  ...(userTeams[0]?.teamId && {
+                    activeTeamId: userTeams[0].teamId,
+                  }),
+                },
+              };
+            } catch {
+              return { data: session };
+            }
+          },
+        },
+      },
+    },
     session: {
       cookieCache: {
         enabled: true,

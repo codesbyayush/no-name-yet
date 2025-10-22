@@ -123,26 +123,25 @@ function ChangelogListPage() {
     switch (status) {
       case 'published':
         return (
-          <Badge className="bg-green-500" variant="default">
+          <Badge className='bg-green-500' variant='default'>
             Published
           </Badge>
         );
       case 'draft':
-        return <Badge variant="secondary">Draft</Badge>;
+        return <Badge variant='secondary'>Draft</Badge>;
       case 'archived':
-        return <Badge variant="outline">Archived</Badge>;
+        return <Badge variant='outline'>Archived</Badge>;
       default:
-        return <Badge variant="secondary">Unknown</Badge>;
+        return <Badge variant='secondary'>Unknown</Badge>;
     }
   };
 
-  const formatDate = (dateString: string | Date) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+  const formatDate = (dateString: string | Date) =>
+    new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
     });
-  };
 
   // Hardcoded statuses and tags for filtering
   const statuses = [
@@ -159,8 +158,8 @@ function ChangelogListPage() {
   ];
 
   const sidebarFilters = (
-    <div className="space-y-4 px-2 py-2">
-      <div className="px-1 pt-1 pb-2 text-muted-foreground text-sm">Status</div>
+    <div className='space-y-4 px-2 py-2'>
+      <div className='px-1 pt-1 pb-2 text-muted-foreground text-sm'>Status</div>
       <SidebarMenu>
         {statuses.map((status) => {
           const active = statusFilter === status.key;
@@ -195,7 +194,7 @@ function ChangelogListPage() {
         })}
       </SidebarMenu>
 
-      <div className="px-1 pt-4 pb-2 text-muted-foreground text-sm">
+      <div className='px-1 pt-4 pb-2 text-muted-foreground text-sm'>
         Categories
       </div>
       <SidebarMenu>
@@ -226,11 +225,11 @@ function ChangelogListPage() {
         })}
       </SidebarMenu>
 
-      <div className="px-1 pt-4 pb-2 text-muted-foreground text-sm">More</div>
+      <div className='px-1 pt-4 pb-2 text-muted-foreground text-sm'>More</div>
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton>
-            <IconFileWord className="h-4 w-4" />
+            <IconFileWord className='h-4 w-4' />
             <span>Analytics</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
@@ -240,11 +239,11 @@ function ChangelogListPage() {
 
   return (
     <>
-      <SiteHeader title="Changelogs">
-        <div className="flex items-center gap-2">
+      <SiteHeader title='Changelogs'>
+        <div className='flex items-center gap-2'>
           <Button asChild>
-            <Link to="/changelogs/new">
-              <IconPlus className="mr-2 h-4 w-4" />
+            <Link to='/changelogs/new'>
+              <IconPlus className='mr-2 h-4 w-4' />
               Create Changelog
             </Link>
           </Button>
@@ -252,21 +251,21 @@ function ChangelogListPage() {
       </SiteHeader>
       <SidebarRightPortal>{sidebarFilters}</SidebarRightPortal>
 
-      <div className="flex flex-1 flex-col">
-        <div className="@container/main flex flex-1 flex-col gap-2">
-          <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-            <div className="px-4 lg:px-6">
+      <div className='flex flex-1 flex-col'>
+        <div className='@container/main flex flex-1 flex-col gap-2'>
+          <div className='flex flex-col gap-4 py-4 md:gap-6 md:py-6'>
+            <div className='px-4 lg:px-6'>
               {error && (
-                <Card className="border-red-200 bg-red-50">
-                  <CardContent className="pt-6">
-                    <p className="text-red-600">
+                <Card className='border-red-200 bg-red-50'>
+                  <CardContent className='pt-6'>
+                    <p className='text-red-600'>
                       Failed to load changelogs. Please try again.
                     </p>
                     <Button
-                      className="mt-2"
+                      className='mt-2'
                       onClick={() => refetch()}
-                      size="sm"
-                      variant="outline"
+                      size='sm'
+                      variant='outline'
                     >
                       Retry
                     </Button>
@@ -275,75 +274,75 @@ function ChangelogListPage() {
               )}
 
               {isLoading ? (
-                <div className="grid gap-4">
+                <div className='grid gap-4'>
                   {[...new Array(3)].map((_, i) => (
                     <Card key={i}>
                       <CardHeader>
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1 space-y-2">
-                            <Skeleton className="h-6 w-3/4" />
-                            <Skeleton className="h-4 w-1/2" />
+                        <div className='flex items-start justify-between'>
+                          <div className='flex-1 space-y-2'>
+                            <Skeleton className='h-6 w-3/4' />
+                            <Skeleton className='h-4 w-1/2' />
                           </div>
-                          <Skeleton className="h-6 w-20" />
+                          <Skeleton className='h-6 w-20' />
                         </div>
                       </CardHeader>
                       <CardContent>
-                        <div className="flex items-center gap-4 text-muted-foreground text-sm">
-                          <Skeleton className="h-4 w-24" />
-                          <Skeleton className="h-4 w-32" />
+                        <div className='flex items-center gap-4 text-muted-foreground text-sm'>
+                          <Skeleton className='h-4 w-24' />
+                          <Skeleton className='h-4 w-32' />
                         </div>
                       </CardContent>
                     </Card>
                   ))}
                 </div>
               ) : data?.data && data.data.length > 0 ? (
-                <div className="grid gap-4">
+                <div className='grid gap-4'>
                   {data.data.map((changelog) => (
                     <Card
-                      className="transition-shadow hover:shadow-md"
+                      className='transition-shadow hover:shadow-md'
                       key={changelog.id}
                     >
                       <CardHeader>
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1 space-y-1">
-                            <CardTitle className="text-lg">
+                        <div className='flex items-start justify-between'>
+                          <div className='flex-1 space-y-1'>
+                            <CardTitle className='text-lg'>
                               {changelog.title}
                             </CardTitle>
                             {changelog.excerpt && (
-                              <CardDescription className="line-clamp-2">
+                              <CardDescription className='line-clamp-2'>
                                 {changelog.excerpt}
                               </CardDescription>
                             )}
                             {changelog.tag && (
-                              <div className="flex items-center gap-2">
-                                <Badge className="text-xs" variant="outline">
+                              <div className='flex items-center gap-2'>
+                                <Badge className='text-xs' variant='outline'>
                                   {changelog.tag.name}
                                 </Badge>
                               </div>
                             )}
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className='flex items-center gap-2'>
                             {getStatusBadge(changelog.status)}
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button size="sm" variant="ghost">
-                                  <IconDots className="h-4 w-4" />
+                                <Button size='sm' variant='ghost'>
+                                  <IconDots className='h-4 w-4' />
                                 </Button>
                               </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
+                              <DropdownMenuContent align='end'>
                                 <DropdownMenuItem asChild>
                                   <Link to={`/changelogs/edit/${changelog.id}`}>
-                                    <IconEdit className="mr-2 h-4 w-4" />
+                                    <IconEdit className='mr-2 h-4 w-4' />
                                     Edit
                                   </Link>
                                 </DropdownMenuItem>
                                 {changelog.status === 'published' && (
                                   <DropdownMenuItem asChild>
                                     <Link
-                                      target="_blank"
+                                      target='_blank'
                                       to={`/public/changelog/${changelog.slug}`}
                                     >
-                                      <IconEye className="mr-2 h-4 w-4" />
+                                      <IconEye className='mr-2 h-4 w-4' />
                                       View Public
                                     </Link>
                                   </DropdownMenuItem>
@@ -357,13 +356,13 @@ function ChangelogListPage() {
                                     )
                                   }
                                 >
-                                  <IconEye className="mr-2 h-4 w-4" />
+                                  <IconEye className='mr-2 h-4 w-4' />
                                   {changelog.status === 'published'
                                     ? 'Unpublish'
                                     : 'Publish'}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
-                                  className="text-red-600 focus:text-red-600"
+                                  className='text-red-600 focus:text-red-600'
                                   onClick={() =>
                                     handleDeleteChangelog(
                                       changelog.id,
@@ -371,7 +370,7 @@ function ChangelogListPage() {
                                     )
                                   }
                                 >
-                                  <IconTrash className="mr-2 h-4 w-4" />
+                                  <IconTrash className='mr-2 h-4 w-4' />
                                   Delete
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
@@ -380,15 +379,15 @@ function ChangelogListPage() {
                         </div>
                       </CardHeader>
                       <CardContent>
-                        <div className="flex items-center gap-4 text-muted-foreground text-sm">
+                        <div className='flex items-center gap-4 text-muted-foreground text-sm'>
                           {changelog.author && (
-                            <div className="flex items-center gap-1">
-                              <IconUser className="h-3 w-3" />
+                            <div className='flex items-center gap-1'>
+                              <IconUser className='h-3 w-3' />
                               <span>{changelog.author.name}</span>
                             </div>
                           )}
-                          <div className="flex items-center gap-1">
-                            <IconCalendar className="h-3 w-3" />
+                          <div className='flex items-center gap-1'>
+                            <IconCalendar className='h-3 w-3' />
                             <span>
                               {changelog.publishedAt
                                 ? `Published ${formatDate(changelog.publishedAt)}`
@@ -402,19 +401,19 @@ function ChangelogListPage() {
                 </div>
               ) : (
                 <Card>
-                  <CardContent className="flex flex-col items-center justify-center py-12">
-                    <IconFileWord className="mb-4 h-12 w-12 text-muted-foreground" />
-                    <h3 className="mb-2 font-semibold text-lg">
+                  <CardContent className='flex flex-col items-center justify-center py-12'>
+                    <IconFileWord className='mb-4 h-12 w-12 text-muted-foreground' />
+                    <h3 className='mb-2 font-semibold text-lg'>
                       No changelogs found
                     </h3>
-                    <p className="mb-4 text-center text-muted-foreground">
+                    <p className='mb-4 text-center text-muted-foreground'>
                       {statusFilter
                         ? `No ${statusFilter} changelogs exist yet.`
                         : 'Get started by creating your first changelog entry.'}
                     </p>
                     <Button asChild>
-                      <Link to="/changelogs/new">
-                        <IconPlus className="mr-2 h-4 w-4" />
+                      <Link to='/changelogs/new'>
+                        <IconPlus className='mr-2 h-4 w-4' />
                         Create Changelog
                       </Link>
                     </Button>
@@ -423,7 +422,7 @@ function ChangelogListPage() {
               )}
 
               {data?.pagination && data.pagination.total > 0 && (
-                <div className="mt-6 text-center text-muted-foreground text-sm">
+                <div className='mt-6 text-center text-muted-foreground text-sm'>
                   Showing {data.data.length} of {data.pagination.total}{' '}
                   changelogs
                 </div>

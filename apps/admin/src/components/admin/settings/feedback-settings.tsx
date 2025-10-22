@@ -289,9 +289,9 @@ export function FeedbackSettings() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className='space-y-8'>
       {/* Feedback Module Section */}
-      <Card className="border border-muted-foreground/10 bg-card">
+      <Card className='border border-muted-foreground/10 bg-card'>
         <CardHeader>
           <CardTitle>Feedback module</CardTitle>
           <CardDescription>
@@ -299,50 +299,50 @@ export function FeedbackSettings() {
             from public portal or widgets.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex items-center justify-between">
+        <CardContent className='space-y-6'>
+          <div className='flex items-center justify-between'>
             <div />
-            <Button className="bg-primary" onClick={openCreateBoard}>
-              <PlusIcon className="mr-2 h-4 w-4" />
+            <Button className='bg-primary' onClick={openCreateBoard}>
+              <PlusIcon className='mr-2 h-4 w-4' />
               Add board
             </Button>
           </div>
 
-          <div className="space-y-3">
+          <div className='space-y-3'>
             {feedbackBoards.map((board) => (
               <div
-                className="flex items-center justify-between rounded-lg border border-muted-foreground/10 bg-muted/20 p-4"
+                className='flex items-center justify-between rounded-lg border border-muted-foreground/10 bg-muted/20 p-4'
                 key={board.id}
               >
-                <div className="flex items-center space-x-3">
-                  <Lightbulb className="h-5 w-5 text-yellow-500" />
-                  <span className="font-medium">{board.name}</span>
+                <div className='flex items-center space-x-3'>
+                  <Lightbulb className='h-5 w-5 text-yellow-500' />
+                  <span className='font-medium'>{board.name}</span>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className='flex items-center space-x-2'>
                   <Button
-                    className="h-8 w-8 p-0"
+                    className='h-8 w-8 p-0'
                     onClick={() => handleBoardInfo(board.id)}
-                    size="sm"
-                    variant="ghost"
+                    size='sm'
+                    variant='ghost'
                   >
-                    <Info className="h-4 w-4" />
+                    <Info className='h-4 w-4' />
                   </Button>
                   <Button
-                    className="h-8 px-3"
+                    className='h-8 px-3'
                     onClick={() => handleEditBoard(board.id)}
-                    size="sm"
-                    variant="ghost"
+                    size='sm'
+                    variant='ghost'
                   >
-                    <Settings className="mr-2 h-4 w-4" />
+                    <Settings className='mr-2 h-4 w-4' />
                     Edit
                   </Button>
                   <Button
-                    className="h-8 px-3 text-destructive hover:text-destructive"
+                    className='h-8 px-3 text-destructive hover:text-destructive'
                     onClick={() => handleDeleteBoard(board.id)}
-                    size="sm"
-                    variant="ghost"
+                    size='sm'
+                    variant='ghost'
                   >
-                    <X className="mr-2 h-4 w-4" />
+                    <X className='mr-2 h-4 w-4' />
                     Delete
                   </Button>
                 </div>
@@ -350,31 +350,31 @@ export function FeedbackSettings() {
             ))}
           </div>
 
-          <div className="space-y-3">
-            <Label className="font-medium">Default sorting</Label>
+          <div className='space-y-3'>
+            <Label className='font-medium'>Default sorting</Label>
             <Select
               onValueChange={handleDefaultSortingChange}
               value={defaultSorting}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger className='w-full'>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="recent-posts">
-                  <div className="flex items-center space-x-2">
-                    <Clock className="h-4 w-4" />
+                <SelectItem value='recent-posts'>
+                  <div className='flex items-center space-x-2'>
+                    <Clock className='h-4 w-4' />
                     <span>Recent posts</span>
                   </div>
                 </SelectItem>
-                <SelectItem value="most-voted">
-                  <div className="flex items-center space-x-2">
-                    <Clock className="h-4 w-4" />
+                <SelectItem value='most-voted'>
+                  <div className='flex items-center space-x-2'>
+                    <Clock className='h-4 w-4' />
                     <span>Most voted</span>
                   </div>
                 </SelectItem>
-                <SelectItem value="oldest-first">
-                  <div className="flex items-center space-x-2">
-                    <Clock className="h-4 w-4" />
+                <SelectItem value='oldest-first'>
+                  <div className='flex items-center space-x-2'>
+                    <Clock className='h-4 w-4' />
                     <span>Oldest first</span>
                   </div>
                 </SelectItem>
@@ -386,7 +386,7 @@ export function FeedbackSettings() {
 
       {/* Create Board Dialog */}
       <Dialog onOpenChange={setCreateBoardOpen} open={createBoardOpen}>
-        <DialogContent className="rounded-2xl border-muted-foreground/10 bg-card sm:max-w-xl">
+        <DialogContent className='rounded-2xl border-muted-foreground/10 bg-card sm:max-w-xl'>
           <DialogHeader>
             <DialogTitle>Create new board</DialogTitle>
             <DialogDescription>
@@ -394,28 +394,28 @@ export function FeedbackSettings() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label className="text-sm">Icon & name</Label>
-              <div className="relative flex items-center gap-3">
+          <div className='space-y-4'>
+            <div className='space-y-2'>
+              <Label className='text-sm'>Icon & name</Label>
+              <div className='relative flex items-center gap-3'>
                 <button
-                  aria-label="Choose icon"
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-muted text-xl"
+                  aria-label='Choose icon'
+                  className='inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-muted text-xl'
                   onClick={() => setShowEmojiDropdown((v) => !v)}
                   title={boardIcon?.name ?? 'Choose icon'}
-                  type="button"
+                  type='button'
                 >
                   {boardIcon?.emoji ?? '🙂'}
                 </button>
                 <input
-                  className="h-9 w-full rounded-md border border-border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+                  className='h-9 w-full rounded-md border border-border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring'
                   onChange={(e) => setBoardName(e.target.value)}
-                  placeholder="Feature Request"
+                  placeholder='Feature Request'
                   value={boardName}
                 />
                 {showEmojiDropdown && (
-                  <div className="absolute top-12 left-0 z-50 w-[260px] rounded-md border border-border bg-card p-2 shadow-xl">
-                    <div className="grid grid-cols-8 gap-2">
+                  <div className='absolute top-12 left-0 z-50 w-[260px] rounded-md border border-border bg-card p-2 shadow-xl'>
+                    <div className='grid grid-cols-8 gap-2'>
                       {availableEmojis.map((emoji) => (
                         <button
                           aria-label={`Select ${emoji}`}
@@ -426,7 +426,7 @@ export function FeedbackSettings() {
                             setShowEmojiDropdown(false);
                           }}
                           title={`${emoji}`}
-                          type="button"
+                          type='button'
                         >
                           {emoji}
                         </button>
@@ -437,23 +437,23 @@ export function FeedbackSettings() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label className="text-sm">Description</Label>
+            <div className='space-y-2'>
+              <Label className='text-sm'>Description</Label>
               <textarea
-                className="min-h-[72px] w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                className='min-h-[72px] w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring'
                 onChange={(e) => setBoardDescription(e.target.value)}
-                placeholder="Describe what this board is for…"
+                placeholder='Describe what this board is for…'
                 value={boardDescription}
               />
             </div>
 
-            <div className="space-y-2">
-              <Label className="text-sm">Visibility</Label>
-              <div className="flex gap-2">
+            <div className='space-y-2'>
+              <Label className='text-sm'>Visibility</Label>
+              <div className='flex gap-2'>
                 <Button
-                  className="flex-1"
+                  className='flex-1'
                   onClick={() => setBoardVisibility('public')}
-                  type="button"
+                  type='button'
                   variant={
                     boardVisibility === 'public' ? 'default' : 'secondary'
                   }
@@ -461,9 +461,9 @@ export function FeedbackSettings() {
                   Public
                 </Button>
                 <Button
-                  className="flex-1"
+                  className='flex-1'
                   onClick={() => setBoardVisibility('private')}
-                  type="button"
+                  type='button'
                   variant={
                     boardVisibility === 'private' ? 'default' : 'secondary'
                   }
@@ -476,12 +476,12 @@ export function FeedbackSettings() {
             {/* Icon picker is now in a dropdown next to the name input */}
           </div>
 
-          <DialogFooter className="mt-2">
-            <Button onClick={() => setCreateBoardOpen(false)} variant="ghost">
+          <DialogFooter className='mt-2'>
+            <Button onClick={() => setCreateBoardOpen(false)} variant='ghost'>
               Cancel
             </Button>
             <Button
-              className="bg-primary"
+              className='bg-primary'
               disabled={!boardName.trim()}
               onClick={handleCreateBoard}
             >
@@ -492,61 +492,61 @@ export function FeedbackSettings() {
       </Dialog>
 
       {/* Statuses Section */}
-      <Card className="border border-muted-foreground/10 bg-card">
+      <Card className='border border-muted-foreground/10 bg-card'>
         <CardHeader>
           <CardTitle>Statuses</CardTitle>
           <CardDescription>
             Customize existing ones or add extra statuses you can add for posts.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className='space-y-6'>
           {statusCategories.map((category) => (
-            <div className="space-y-4" key={category.id}>
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-lg">{category.name}</h3>
+            <div className='space-y-4' key={category.id}>
+              <div className='flex items-center justify-between'>
+                <h3 className='font-semibold text-lg'>{category.name}</h3>
                 <Button
-                  className="h-8 px-3"
+                  className='h-8 px-3'
                   onClick={() => handleAddStatus(category.id)}
-                  size="sm"
-                  variant="outline"
+                  size='sm'
+                  variant='outline'
                 >
-                  <PlusIcon className="h-4 w-4" />
+                  <PlusIcon className='h-4 w-4' />
                 </Button>
               </div>
-              <div className="space-y-2">
+              <div className='space-y-2'>
                 {category.statuses.map((status) => (
                   <div
-                    className="flex items-center justify-between rounded-lg border border-muted-foreground/10 bg-muted/20 p-3"
+                    className='flex items-center justify-between rounded-lg border border-muted-foreground/10 bg-muted/20 p-3'
                     key={status.id}
                   >
-                    <div className="flex items-center space-x-3">
+                    <div className='flex items-center space-x-3'>
                       <div
-                        className="h-3 w-3 rounded-full"
+                        className='h-3 w-3 rounded-full'
                         style={{ backgroundColor: status.hex ?? '#9E9E9E' }}
                       />
-                      <span className="font-medium">{status.name}</span>
+                      <span className='font-medium'>{status.name}</span>
                       {status.isDefault && (
-                        <Badge className="text-xs" variant="secondary">
+                        <Badge className='text-xs' variant='secondary'>
                           Default
                         </Badge>
                       )}
                     </div>
-                    <div className="flex items-center space-x-2">
+                    <div className='flex items-center space-x-2'>
                       <Button
-                        className="h-8 w-8 p-0"
+                        className='h-8 w-8 p-0'
                         onClick={() => handleEditStatus(status.id)}
-                        size="sm"
-                        variant="ghost"
+                        size='sm'
+                        variant='ghost'
                       >
-                        <Settings className="h-4 w-4" />
+                        <Settings className='h-4 w-4' />
                       </Button>
                       <Button
-                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                        className='h-8 w-8 p-0 text-destructive hover:text-destructive'
                         onClick={() => handleDeleteStatus(status.id)}
-                        size="sm"
-                        variant="ghost"
+                        size='sm'
+                        variant='ghost'
                       >
-                        <X className="h-4 w-4" />
+                        <X className='h-4 w-4' />
                       </Button>
                     </div>
                   </div>
@@ -556,7 +556,7 @@ export function FeedbackSettings() {
           ))}
           {/* Add Status Dialog */}
           <Dialog onOpenChange={setAddStatusOpen} open={addStatusOpen}>
-            <DialogContent className="rounded-2xl border-muted-foreground/10 bg-card">
+            <DialogContent className='rounded-2xl border-muted-foreground/10 bg-card'>
               <DialogHeader>
                 <DialogTitle>Add Status</DialogTitle>
                 <DialogDescription>
@@ -564,20 +564,20 @@ export function FeedbackSettings() {
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-sm">Name</Label>
+              <div className='space-y-4'>
+                <div className='space-y-2'>
+                  <Label className='text-sm'>Name</Label>
                   <input
-                    className="h-10 w-full rounded-md border border-muted-foreground/20 bg-background px-3 text-sm outline-none ring-offset-background placeholder:text-muted-foreground/70 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    className='h-10 w-full rounded-md border border-muted-foreground/20 bg-background px-3 text-sm outline-none ring-offset-background placeholder:text-muted-foreground/70 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
                     onChange={(e) => setNewStatusName(e.target.value)}
-                    placeholder="Next Release"
+                    placeholder='Next Release'
                     value={newStatusName}
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label className="text-sm">Choose color</Label>
-                  <div className="grid grid-cols-5 gap-2 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10">
+                <div className='space-y-2'>
+                  <Label className='text-sm'>Choose color</Label>
+                  <div className='grid grid-cols-5 gap-2 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10'>
                     {colorPalette.map((hex) => (
                       <button
                         aria-label={`Select color ${hex}`}
@@ -585,7 +585,7 @@ export function FeedbackSettings() {
                         key={hex}
                         onClick={() => setSelectedColor(hex)}
                         style={{ backgroundColor: hex }}
-                        type="button"
+                        type='button'
                       />
                     ))}
                   </div>
@@ -594,14 +594,14 @@ export function FeedbackSettings() {
 
               <DialogFooter>
                 <Button
-                  className="h-9"
+                  className='h-9'
                   onClick={() => setAddStatusOpen(false)}
-                  variant="ghost"
+                  variant='ghost'
                 >
                   Cancel
                 </Button>
                 <Button
-                  className="h-9 bg-primary"
+                  className='h-9 bg-primary'
                   disabled={!newStatusName.trim()}
                   onClick={handleConfirmAddStatus}
                 >
@@ -614,28 +614,28 @@ export function FeedbackSettings() {
       </Card>
 
       {/* Hiding Options Section */}
-      <Card className="border border-muted-foreground/10 bg-card">
+      <Card className='border border-muted-foreground/10 bg-card'>
         <CardHeader>
           <CardTitle>Hiding Options</CardTitle>
           <CardDescription>
             Configure visibility settings for your feedback board.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex items-start space-x-3">
+        <CardContent className='space-y-6'>
+          <div className='flex items-start space-x-3'>
             <Checkbox
               checked={hideCompletedCanceled}
-              id="hide-completed-canceled"
+              id='hide-completed-canceled'
               onCheckedChange={handleHideCompletedCanceledChange}
             />
-            <div className="space-y-1">
+            <div className='space-y-1'>
               <Label
-                className="font-medium text-sm"
-                htmlFor="hide-completed-canceled"
+                className='font-medium text-sm'
+                htmlFor='hide-completed-canceled'
               >
                 Hide completed and canceled posts from feedback board
               </Label>
-              <p className="text-muted-foreground text-sm">
+              <p className='text-muted-foreground text-sm'>
                 By default completed and canceled posts are shown on the
                 feedback board. You can hide them to keep your feedback board
                 clean.
@@ -643,20 +643,20 @@ export function FeedbackSettings() {
             </div>
           </div>
 
-          <div className="flex items-start space-x-3">
+          <div className='flex items-start space-x-3'>
             <Checkbox
               checked={hideAllStatuses}
-              id="hide-all-statuses"
+              id='hide-all-statuses'
               onCheckedChange={handleHideAllStatusesChange}
             />
-            <div className="space-y-1">
+            <div className='space-y-1'>
               <Label
-                className="font-medium text-sm"
-                htmlFor="hide-all-statuses"
+                className='font-medium text-sm'
+                htmlFor='hide-all-statuses'
               >
                 Hide all statuses from public feedback board
               </Label>
-              <p className="text-muted-foreground text-sm">
+              <p className='text-muted-foreground text-sm'>
                 By default users will be able to see statuses of posts on the
                 feedback board. Check this option to hide all statuses from the
                 public feedback board.

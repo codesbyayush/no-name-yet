@@ -1,12 +1,8 @@
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import type React from 'react';
-import { createContext, useContext } from 'react';
-import {
-  authClient,
-  type Session,
-  type User,
-  useSession,
-} from '@/lib/auth-client';
+import { createContext, useCallback, useContext, useMemo } from 'react';
+import { authClient, type Session, type User } from '@/lib/auth-client';
 
 // Define the auth context interface
 interface AuthContextType {
@@ -20,7 +16,10 @@ interface AuthContextType {
 
   // Auth actions
   signOut: () => Promise<void>;
-  refetchSession: () => void;
+  refetchSession: () => Promise<void>;
+
+  // Sync utilities
+  getSessionSync: () => Session | null;
 }
 
 // Create the context with default values
@@ -45,34 +44,58 @@ export function AuthProvider({
   requireAuth = true,
 }: AuthProviderProps) {
   const navigate = useNavigate();
-  const { data: session, isPending, error, refetch } = useSession();
+  const queryClient = useQueryClient();
+
+  const {
+    data: session,
+    isPending,
+    refetch,
+  } = useQuery({
+    queryKey: ['session'],
+    queryFn: async () => (await authClient.getSession()).data ?? null,
+    staleTime: 30_000,
+  });
 
   // Extract user from session
   const user = session?.user || null;
   const isAuthenticated = !!session && !!user;
 
   // Handle sign out
-  const handleSignOut = async () => {
-    try {
-      await authClient.signOut();
-      navigate({ to: '/auth', replace: true });
-    } catch (_error) {}
-  };
+  const handleSignOut = useCallback(async () => {
+    await authClient.signOut();
+    await queryClient.invalidateQueries({ queryKey: ['session'] });
+    navigate({ to: '/auth', replace: true });
+  }, [navigate, queryClient]);
+
+  // Context value
+  const value: AuthContextType = useMemo(
+    () => ({
+      session: session ?? null,
+      user,
+      isLoading: isPending,
+      isAuthenticated,
+      signOut: handleSignOut,
+      refetchSession: async () => {
+        await queryClient.invalidateQueries({ queryKey: ['session'] });
+        await refetch();
+      },
+      getSessionSync: () => queryClient.getQueryData(['session']) ?? null,
+    }),
+    [
+      session,
+      user,
+      isPending,
+      isAuthenticated,
+      queryClient,
+      handleSignOut,
+      refetch,
+    ]
+  );
 
   // Don't render children if auth requirements aren't met
   if (requireAuth && !isAuthenticated) {
     return null;
   }
-
-  // Context value
-  const value: AuthContextType = {
-    session,
-    user,
-    isLoading: isPending,
-    isAuthenticated,
-    signOut: handleSignOut,
-    refetchSession: refetch,
-  };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

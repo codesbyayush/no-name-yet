@@ -55,30 +55,30 @@ export function GroupIssues({ statusKey }: GroupIssuesProps) {
               : `${status?.color}08`,
           }}
         >
-          <div className="flex items-center gap-2">
+          <div className='flex items-center gap-2'>
             <status.icon />
-            <span className="font-medium text-sm">{status.name}</span>
-            <span className="text-muted-foreground text-sm">
+            <span className='font-medium text-sm'>{status.name}</span>
+            <span className='text-muted-foreground text-sm'>
               {source.length}
             </span>
           </div>
 
           <Button
-            className="size-6"
+            className='size-6'
             onClick={(e) => {
               e.stopPropagation();
               openModal(status.key);
             }}
-            size="icon"
-            variant="ghost"
+            size='icon'
+            variant='ghost'
           >
-            <Plus className="size-4" />
+            <Plus className='size-4' />
           </Button>
         </div>
       </div>
 
       {viewType === 'list' ? (
-        <div className="space-y-0">
+        <div className='space-y-0'>
           {sortedIssues.map((issue) => (
             <IssueLine issue={issue} key={issue.id} layoutId={true} />
           ))}
@@ -115,14 +115,14 @@ const IssueGridList: FC<{ issues: Issue[]; status: Status }> = ({
 
   return (
     <div
-      className="relative h-full flex-1 space-y-2 overflow-y-auto bg-zinc-50/50 p-2 dark:bg-zinc-900/50"
+      className='relative h-full flex-1 space-y-2 overflow-y-auto bg-zinc-50/50 p-2 dark:bg-zinc-900/50'
       ref={ref}
     >
       <AnimatePresence>
         {isOver && (
           <motion.div
             animate={{ opacity: 1 }}
-            className="pointer-events-none fixed top-0 right-0 bottom-0 left-0 z-10 flex items-center justify-center bg-background/90"
+            className='pointer-events-none fixed top-0 right-0 bottom-0 left-0 z-10 flex items-center justify-center bg-background/90'
             exit={{ opacity: 0 }}
             initial={{ opacity: 0 }}
             style={{
@@ -132,8 +132,8 @@ const IssueGridList: FC<{ issues: Issue[]; status: Status }> = ({
             }}
             transition={{ duration: 0.1 }}
           >
-            <div className="max-w-[90%] rounded-md border border-border bg-background p-3 shadow-md">
-              <p className="text-center font-medium text-sm">
+            <div className='max-w-[90%] rounded-md border border-border bg-background p-3 shadow-md'>
+              <p className='text-center font-medium text-sm'>
                 Board ordered by priority
               </p>
             </div>

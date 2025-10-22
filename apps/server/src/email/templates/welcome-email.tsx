@@ -7,7 +7,6 @@ import {
   Section,
   Text,
 } from '@react-email/components';
-import * as React from 'react';
 
 export const WelcomeSubject = 'How was your onboarding to OpenFeedback?';
 

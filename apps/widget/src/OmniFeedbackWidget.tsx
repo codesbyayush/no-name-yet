@@ -7,24 +7,24 @@ const AskIcon: React.FC<{
   style?: React.CSSProperties;
 }> = ({ className, style }) => (
   <svg
-    aria-hidden="true"
+    aria-hidden='true'
     className={className}
-    fill="none"
-    focusable="false"
-    height="20"
-    stroke="currentColor"
-    strokeLinecap="round"
-    strokeLinejoin="round"
+    fill='none'
+    focusable='false'
+    height='20'
+    stroke='currentColor'
+    strokeLinecap='round'
+    strokeLinejoin='round'
     strokeWidth={2}
     style={style}
-    viewBox="0 0 24 24"
-    width="20"
+    viewBox='0 0 24 24'
+    width='20'
   >
     {/* Chat bubble */}
-    <path d="M4 5H20V17H8L4 21V5Z" />
+    <path d='M4 5H20V17H8L4 21V5Z' />
     {/* Three lines */}
-    <path d="M7 9H17" />
-    <path d="M7 12H15" />
+    <path d='M7 9H17' />
+    <path d='M7 12H15' />
   </svg>
 );
 
@@ -33,23 +33,23 @@ const RoadmapIcon: React.FC<{
   style?: React.CSSProperties;
 }> = ({ className, style }) => (
   <svg
-    aria-hidden="true"
+    aria-hidden='true'
     className={className}
-    fill="none"
-    focusable="false"
-    height="20"
-    stroke="currentColor"
-    strokeLinecap="round"
-    strokeLinejoin="round"
+    fill='none'
+    focusable='false'
+    height='20'
+    stroke='currentColor'
+    strokeLinecap='round'
+    strokeLinejoin='round'
     strokeWidth={2}
     style={style}
-    viewBox="0 0 24 24"
-    width="20"
+    viewBox='0 0 24 24'
+    width='20'
   >
     {/* Folded map */}
-    <path d="M9 4L15 6L21 4V18L15 20L9 18L3 20V6L9 4Z" />
-    <path d="M9 4V18" />
-    <path d="M15 6V20" />
+    <path d='M9 4L15 6L21 4V18L15 20L9 18L3 20V6L9 4Z' />
+    <path d='M9 4V18' />
+    <path d='M15 6V20' />
   </svg>
 );
 
@@ -58,24 +58,24 @@ const ChangelogIcon: React.FC<{
   style?: React.CSSProperties;
 }> = ({ className, style }) => (
   <svg
-    aria-hidden="true"
+    aria-hidden='true'
     className={className}
-    fill="none"
-    focusable="false"
-    height="20"
-    stroke="currentColor"
-    strokeLinecap="round"
-    strokeLinejoin="round"
+    fill='none'
+    focusable='false'
+    height='20'
+    stroke='currentColor'
+    strokeLinecap='round'
+    strokeLinejoin='round'
     strokeWidth={2}
     style={style}
-    viewBox="0 0 24 24"
-    width="20"
+    viewBox='0 0 24 24'
+    width='20'
   >
     {/* Newspaper */}
-    <rect height="16" rx="2" width="18" x="3" y="4" />
-    <path d="M7 8H16" />
-    <path d="M7 12H17" />
-    <path d="M7 16H13" />
+    <rect height='16' rx='2' width='18' x='3' y='4' />
+    <path d='M7 8H16' />
+    <path d='M7 12H17' />
+    <path d='M7 16H13' />
   </svg>
 );
 
@@ -360,9 +360,9 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
         <div style={{ height: '100%', width: '100%' }}>
           {portalUrl ? (
             <iframe
-              className="iframe-container"
+              className='iframe-container'
               src={`${portalUrl.replace(/\/$/, '')}/roadmap`}
-              title="Roadmap"
+              title='Roadmap'
             />
           ) : (
             <div
@@ -382,9 +382,9 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
       <div style={{ height: '100%', width: '100%' }}>
         {portalUrl ? (
           <iframe
-            className="iframe-container"
+            className='iframe-container'
             src={`${portalUrl.replace(/\/$/, '')}/changelog`}
-            title="Changelog"
+            title='Changelog'
           />
         ) : (
           <div
@@ -403,7 +403,7 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
 
   return (
     <div
-      className="omni-feedback-widget"
+      className='omni-feedback-widget'
       style={{
         position: 'fixed',
         zIndex: 999_999,
@@ -473,7 +473,7 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
           transition: 'transform 0.3s ease',
           backgroundColor: theme.primaryColor || '#007bff',
         }}
-        type="button"
+        type='button'
       >
         <span
           style={{
@@ -488,50 +488,50 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
         >
           {/* Chat icon (closed state) - message-square-plus */}
           <svg
-            aria-hidden="true"
+            aria-hidden='true'
             className={chatIconAnimClass}
-            fill="none"
-            focusable="false"
-            height="20"
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
+            fill='none'
+            focusable='false'
+            height='20'
+            stroke='currentColor'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+            strokeWidth='2'
             style={{
               position: 'absolute',
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
             }}
-            viewBox="0 0 24 24"
-            width="20"
+            viewBox='0 0 24 24'
+            width='20'
           >
-            <path d="M21 14a4 4 0 0 1-4 4H9l-4 4v-4H5a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4v7Z" />
-            <path d="M12 8v5" />
-            <path d="M9.5 10.5H14.5" />
+            <path d='M21 14a4 4 0 0 1-4 4H9l-4 4v-4H5a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4v7Z' />
+            <path d='M12 8v5' />
+            <path d='M9.5 10.5H14.5' />
           </svg>
 
           {/* Chevron icon (open state) */}
           <svg
-            aria-hidden="true"
+            aria-hidden='true'
             className={chevronIconAnimClass}
-            fill="none"
-            focusable="false"
-            height="20"
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
+            fill='none'
+            focusable='false'
+            height='20'
+            stroke='currentColor'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+            strokeWidth='2'
             style={{
               position: 'absolute',
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
             }}
-            viewBox="0 0 24 24"
-            width="20"
+            viewBox='0 0 24 24'
+            width='20'
           >
-            <path d="M6 9L12 15L18 9" />
+            <path d='M6 9L12 15L18 9' />
           </svg>
         </span>
       </button>
@@ -542,7 +542,7 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
           <div className={animateClasses} style={panelStyle}>
             {/* Mobile-only close button overlay */}
             <button
-              aria-label="Close"
+              aria-label='Close'
               onClick={startCloseAnimation}
               style={{
                 position: 'absolute',
@@ -565,7 +565,7 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
                 border: 'none',
                 cursor: 'pointer',
               }}
-              type="button"
+              type='button'
             >
               ×
             </button>
@@ -630,9 +630,9 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
                             e.currentTarget.style.color = '#6b7280';
                           }
                         }}
-                        role="tab"
+                        role='tab'
                         style={baseStyle}
-                        type="button"
+                        type='button'
                       >
                         {key === 'submit' && (
                           <AskIcon style={{ height: '20px', width: '20px' }} />

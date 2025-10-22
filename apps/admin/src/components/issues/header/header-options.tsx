@@ -18,19 +18,19 @@ export default function HeaderOptions() {
   };
 
   return (
-    <div className="flex h-10 w-full items-center justify-between border-b px-6 py-1.5">
+    <div className='flex h-10 w-full items-center justify-between border-b px-6 py-1.5'>
       <Filter />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button className="relative" size="sm" variant="ghost">
-            <SlidersHorizontal className="mr-1 size-4" />
+          <Button className='relative' size='sm' variant='ghost'>
+            <SlidersHorizontal className='mr-1 size-4' />
             Display
             {viewType === 'grid' && (
-              <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-orange-500" />
+              <span className='absolute top-0 right-0 h-2 w-2 rounded-full bg-orange-500' />
             )}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="flex w-72 gap-2 p-3">
+        <DropdownMenuContent align='end' className='flex w-72 gap-2 p-3'>
           <DropdownMenuItem
             className={cn(
               'flex w-full flex-col gap-1 border border-accent text-xs',
@@ -38,7 +38,7 @@ export default function HeaderOptions() {
             )}
             onClick={() => handleViewChange('list')}
           >
-            <LayoutList className="size-4" />
+            <LayoutList className='size-4' />
             List
           </DropdownMenuItem>
           <DropdownMenuItem
@@ -48,7 +48,7 @@ export default function HeaderOptions() {
             )}
             onClick={() => handleViewChange('grid')}
           >
-            <LayoutGrid className="size-4" />
+            <LayoutGrid className='size-4' />
             Board
           </DropdownMenuItem>
         </DropdownMenuContent>

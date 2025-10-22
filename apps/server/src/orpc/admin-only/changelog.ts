@@ -1,6 +1,6 @@
-import { ServerBlockNoteEditor } from "@blocknote/server-util";
-import { ORPCError } from "@orpc/server";
-import { and, eq, inArray } from "drizzle-orm";
+import { ServerBlockNoteEditor } from '@blocknote/server-util';
+import { ORPCError } from '@orpc/server';
+import { and, eq, inArray } from 'drizzle-orm';
 import {
   deleteById,
   ensureUniqueSlug,
@@ -9,9 +9,9 @@ import {
   insert,
   updateById,
   updateManyByIds,
-} from "@/dal/changelog";
-import { changelog } from "../../db/schema/changelog";
-import { adminOnlyProcedure } from "../procedures";
+} from '@/dal/changelog';
+import { changelog } from '../../db/schema/changelog';
+import { adminOnlyProcedure } from '../procedures';
 import {
   createChangelogSchema,
   deleteChangelogSchema,
@@ -19,15 +19,15 @@ import {
   getChangelogSchema,
   updateAllChangelogsSchema,
   updateChangelogSchema,
-} from "../public/schemas";
+} from '../public/schemas';
 
 // Helper functions
 const generateSlug = (title: string): string => {
   return title
     .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "") // Remove special characters
-    .replace(/\s+/g, "-") // Replace spaces with hyphens
-    .replace(/-+/g, "-") // Replace multiple hyphens with single
+    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single
     .trim();
 };
 
@@ -40,7 +40,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
       const organizationId = context.organization?.id;
 
       if (!(userId && organizationId)) {
-        throw new ORPCError("UNAUTHORIZED");
+        throw new ORPCError('UNAUTHORIZED');
       }
 
       try {
@@ -51,7 +51,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
         }
 
         if (!slug) {
-          throw new ORPCError("BAD_REQUEST");
+          throw new ORPCError('BAD_REQUEST');
         }
 
         // Ensure slug is unique
@@ -73,7 +73,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
 
         // Set publishedAt if status is published and not provided
         let publishedAt = input.publishedAt;
-        if (input.status === "published" && !publishedAt) {
+        if (input.status === 'published' && !publishedAt) {
           publishedAt = new Date();
         }
 
@@ -92,13 +92,13 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
         return {
           success: true,
           data: newRow,
-          message: "Changelog created successfully",
+          message: 'Changelog created successfully',
         };
       } catch (error) {
         if (error instanceof ORPCError) {
           throw error;
         }
-        throw new ORPCError("INTERNAL_SERVER_ERROR");
+        throw new ORPCError('INTERNAL_SERVER_ERROR');
       }
     }),
 
@@ -109,7 +109,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
       const organizationId = context.organization?.id;
 
       if (!organizationId) {
-        throw new ORPCError("UNAUTHORIZED");
+        throw new ORPCError('UNAUTHORIZED');
       }
 
       try {
@@ -120,7 +120,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
         );
 
         if (!result) {
-          throw new ORPCError("NOT_FOUND");
+          throw new ORPCError('NOT_FOUND');
         }
 
         return {
@@ -131,7 +131,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
         if (error instanceof ORPCError) {
           throw error;
         }
-        throw new ORPCError("INTERNAL_SERVER_ERROR");
+        throw new ORPCError('INTERNAL_SERVER_ERROR');
       }
     }),
 
@@ -142,7 +142,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
       const organizationId = context.organization?.id;
 
       if (!organizationId) {
-        throw new ORPCError("UNAUTHORIZED");
+        throw new ORPCError('UNAUTHORIZED');
       }
 
       try {
@@ -163,7 +163,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
           },
         };
       } catch (_error) {
-        throw new ORPCError("INTERNAL_SERVER_ERROR");
+        throw new ORPCError('INTERNAL_SERVER_ERROR');
       }
     }),
 
@@ -175,14 +175,14 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
       const organizationId = context.organization?.id;
 
       if (!organizationId) {
-        throw new ORPCError("UNAUTHORIZED");
+        throw new ORPCError('UNAUTHORIZED');
       }
 
       try {
         // Verify changelog exists and belongs to organization
         const existing = await getByIdForOrg(context.db, organizationId, id);
         if (!existing) {
-          throw new ORPCError("NOT_FOUND");
+          throw new ORPCError('NOT_FOUND');
         }
 
         const updateValues: Record<string, unknown> = {
@@ -220,11 +220,11 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
         if (updates.status !== undefined) {
           updateValues.status = updates.status;
           if (
-            updates.status === "published" &&
-            existing.status !== "published"
+            updates.status === 'published' &&
+            existing.status !== 'published'
           ) {
             updateValues.publishedAt = updates.publishedAt || new Date();
-          } else if (updates.status !== "published") {
+          } else if (updates.status !== 'published') {
             updateValues.publishedAt = null;
           }
         }
@@ -236,11 +236,11 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
 
         // Add other direct updates
         const directUpdateFields = [
-          "title",
-          "excerpt",
-          "tagId",
-          "metaTitle",
-          "metaDescription",
+          'title',
+          'excerpt',
+          'tagId',
+          'metaTitle',
+          'metaDescription',
         ];
         for (const field of directUpdateFields) {
           if (updates[field as keyof typeof updates] !== undefined) {
@@ -253,13 +253,13 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
         return {
           success: true,
           data: updated,
-          message: "Changelog updated successfully",
+          message: 'Changelog updated successfully',
         };
       } catch (error) {
         if (error instanceof ORPCError) {
           throw error;
         }
-        throw new ORPCError("INTERNAL_SERVER_ERROR");
+        throw new ORPCError('INTERNAL_SERVER_ERROR');
       }
     }),
 
@@ -270,7 +270,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
       const organizationId = context.organization?.id;
 
       if (!organizationId) {
-        throw new ORPCError("UNAUTHORIZED");
+        throw new ORPCError('UNAUTHORIZED');
       }
 
       try {
@@ -285,7 +285,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
             )
           );
         if (existing.length !== input.ids.length) {
-          throw new ORPCError("NOT_FOUND");
+          throw new ORPCError('NOT_FOUND');
         }
 
         const updateValues: Record<string, unknown> = {
@@ -296,11 +296,11 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
         if (input.updates.status !== undefined) {
           updateValues.status = input.updates.status;
 
-          if (input.updates.status === "published") {
+          if (input.updates.status === 'published') {
             updateValues.publishedAt = input.updates.publishedAt || new Date();
           } else if (
-            input.updates.status === "draft" ||
-            input.updates.status === "archived"
+            input.updates.status === 'draft' ||
+            input.updates.status === 'archived'
           ) {
             updateValues.publishedAt = null;
           }
@@ -331,7 +331,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
         if (error instanceof ORPCError) {
           throw error;
         }
-        throw new ORPCError("INTERNAL_SERVER_ERROR");
+        throw new ORPCError('INTERNAL_SERVER_ERROR');
       }
     }),
 
@@ -342,7 +342,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
       const organizationId = context.organization?.id;
 
       if (!organizationId) {
-        throw new ORPCError("UNAUTHORIZED");
+        throw new ORPCError('UNAUTHORIZED');
       }
 
       try {
@@ -359,20 +359,20 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
           .limit(1);
 
         if (!existing.length) {
-          throw new ORPCError("NOT_FOUND");
+          throw new ORPCError('NOT_FOUND');
         }
 
         await deleteById(context.db, input.id);
 
         return {
           success: true,
-          message: "Changelog deleted successfully",
+          message: 'Changelog deleted successfully',
         };
       } catch (error) {
         if (error instanceof ORPCError) {
           throw error;
         }
-        throw new ORPCError("INTERNAL_SERVER_ERROR");
+        throw new ORPCError('INTERNAL_SERVER_ERROR');
       }
     }),
 });

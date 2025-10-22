@@ -1,17 +1,17 @@
-import { verify } from "@octokit/webhooks-methods";
-import { eq } from "drizzle-orm";
-import { Hono } from "hono";
-import { z } from "zod";
-import { getDb } from "../db";
-import { githubWebhookDeliveries } from "../db/schema";
-import { getEnvFromContext } from "../lib/env";
+import { verify } from '@octokit/webhooks-methods';
+import { eq } from 'drizzle-orm';
+import { Hono } from 'hono';
+import { z } from 'zod';
+import { getDb } from '../db';
+import { githubWebhookDeliveries } from '../db/schema';
+import { getEnvFromContext } from '../lib/env';
 import {
   deleteInstallation,
   type GitHubInstallation,
   handlePullRequest,
   type PullRequestPayload,
   upsertInstallation,
-} from "../services/github";
+} from '../services/github';
 
 const router = new Hono();
 
@@ -22,21 +22,21 @@ const HTTP_STATUS = {
   INTERNAL_SERVER_ERROR: 500,
 } as const;
 
-router.post("/github", async (c) => {
+router.post('/github', async (c) => {
   try {
     const env = getEnvFromContext(c);
     const db = getDb(env);
-    const deliveryId = c.req.header("x-github-delivery");
-    const event = c.req.header("x-github-event");
-    const signature256 = c.req.header("x-hub-signature-256") || "";
+    const deliveryId = c.req.header('x-github-delivery');
+    const event = c.req.header('x-github-event');
+    const signature256 = c.req.header('x-hub-signature-256') || '';
 
     if (!(deliveryId && event)) {
-      return c.text("Missing headers", HTTP_STATUS.BAD_REQUEST);
+      return c.text('Missing headers', HTTP_STATUS.BAD_REQUEST);
     }
 
     // Check if required env vars exist
     if (!env.GH_WEBHOOK_SECRET) {
-      return c.text("Configuration error", HTTP_STATUS.INTERNAL_SERVER_ERROR);
+      return c.text('Configuration error', HTTP_STATUS.INTERNAL_SERVER_ERROR);
     }
 
     const body = await c.req.text();
@@ -48,7 +48,7 @@ router.post("/github", async (c) => {
     ).catch(() => false);
 
     if (!isValid) {
-      return c.text("Invalid signature", HTTP_STATUS.UNAUTHORIZED);
+      return c.text('Invalid signature', HTTP_STATUS.UNAUTHORIZED);
     }
 
     // Idempotency
@@ -57,16 +57,16 @@ router.post("/github", async (c) => {
         .insert(githubWebhookDeliveries)
         .values({ id: deliveryId, deliveryId, event });
     } catch (_dbError) {
-      return c.text("Duplicate", HTTP_STATUS.ACCEPTED);
+      return c.text('Duplicate', HTTP_STATUS.ACCEPTED);
     }
 
     const payload = JSON.parse(body);
 
     // Process synchronously to support both local dev and Workers
     await handleEvent({ db, event, payload, deliveryId });
-    return c.text("OK");
+    return c.text('OK');
   } catch (_error) {
-    return c.text("Internal server error", HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    return c.text('Internal server error', HTTP_STATUS.INTERNAL_SERVER_ERROR);
   }
 });
 
@@ -81,7 +81,7 @@ const InstallationSchema = z.object({
 });
 
 const PullRequestSchema = z.object({
-  action: z.enum(["opened", "reopened", "ready_for_review", "closed"]),
+  action: z.enum(['opened', 'reopened', 'ready_for_review', 'closed']),
   pull_request: z.object({
     head: z.object({ ref: z.string() }),
     base: z.object({ ref: z.string() }),
@@ -104,7 +104,7 @@ async function handleEvent({
 }) {
   try {
     switch (event) {
-      case "installation": {
+      case 'installation': {
         const validated = InstallationSchema.safeParse(payload);
         if (!validated.success) {
           break;
@@ -116,14 +116,14 @@ async function handleEvent({
           break;
         }
 
-        if (action === "created") {
+        if (action === 'created') {
           await upsertInstallation(db, inst);
-        } else if (action === "deleted") {
+        } else if (action === 'deleted') {
           await deleteInstallation(db, inst.id);
         }
         break;
       }
-      case "pull_request": {
+      case 'pull_request': {
         const validated = PullRequestSchema.safeParse(payload);
         if (!validated.success) {
           break;

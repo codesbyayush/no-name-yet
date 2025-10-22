@@ -80,7 +80,7 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
       data-filled={hasVoted}
       disabled={disabled}
       onClick={handleVote}
-      type="button"
+      type='button'
     >
       <UpvoteIcon
         className={cn(

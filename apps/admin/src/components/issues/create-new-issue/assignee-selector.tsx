@@ -55,23 +55,23 @@ export function AssigneeSelector({
   };
 
   return (
-    <div className="*:not-first:mt-2">
+    <div className='*:not-first:mt-2'>
       <Popover onOpenChange={setOpen} open={open}>
         <PopoverTrigger asChild>
           <Button
             aria-expanded={open}
-            className="flex items-center justify-center capitalize"
+            className='flex items-center justify-center capitalize'
             id={id}
-            role="combobox"
-            size="sm"
-            variant="secondary"
+            role='combobox'
+            size='sm'
+            variant='secondary'
           >
             {value ? (
               (() => {
                 const selectedUser = users?.find((user) => user.id === value);
                 if (selectedUser) {
                   return (
-                    <Avatar className="size-5">
+                    <Avatar className='size-5'>
                       <AvatarImage
                         alt={selectedUser.name}
                         src={selectedUser.image || ''}
@@ -82,10 +82,10 @@ export function AssigneeSelector({
                     </Avatar>
                   );
                 }
-                return <UserCircle className="size-5" />;
+                return <UserCircle className='size-5' />;
               })()
             ) : (
-              <UserCircle className="size-5" />
+              <UserCircle className='size-5' />
             )}
             <span>
               {value
@@ -95,48 +95,48 @@ export function AssigneeSelector({
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          align="start"
-          className="w-full min-w-[var(--radix-popper-anchor-width)] border-input p-0"
+          align='start'
+          className='w-full min-w-[var(--radix-popper-anchor-width)] border-input p-0'
         >
           <Command>
-            <CommandInput placeholder="Assign to..." />
+            <CommandInput placeholder='Assign to...' />
             <CommandList>
               <CommandEmpty>No users found.</CommandEmpty>
               <CommandGroup>
                 <CommandItem
-                  className="flex items-center justify-between"
+                  className='flex items-center justify-between'
                   onSelect={() => handleAssigneeChange('unassigned')}
-                  value="unassigned"
+                  value='unassigned'
                 >
-                  <div className="flex items-center gap-2">
-                    <UserCircle className="size-5" />
+                  <div className='flex items-center gap-2'>
+                    <UserCircle className='size-5' />
                     Unassigned
                   </div>
                   {value === null && (
-                    <CheckIcon className="ml-auto" size={16} />
+                    <CheckIcon className='ml-auto' size={16} />
                   )}
-                  <span className="text-muted-foreground text-xs">
+                  <span className='text-muted-foreground text-xs'>
                     {issues?.filter((is) => is.assignee === null).length ?? 0}
                   </span>
                 </CommandItem>
                 {(users ?? []).map((user) => (
                   <CommandItem
-                    className="flex items-center justify-between"
+                    className='flex items-center justify-between'
                     key={user.id}
                     onSelect={() => handleAssigneeChange(user.id)}
                     value={user.id}
                   >
-                    <div className="flex items-center gap-2 capitalize">
-                      <Avatar className="size-5">
+                    <div className='flex items-center gap-2 capitalize'>
+                      <Avatar className='size-5'>
                         <AvatarImage alt={user.name} src={user.image || ''} />
                         <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                       </Avatar>
                       {user.name}
                     </div>
                     {value === user.id && (
-                      <CheckIcon className="ml-auto" size={16} />
+                      <CheckIcon className='ml-auto' size={16} />
                     )}
-                    <span className="text-muted-foreground text-xs">
+                    <span className='text-muted-foreground text-xs'>
                       {issues?.filter((is) => is.assignee?.id === user.id)
                         .length ?? 0}
                     </span>

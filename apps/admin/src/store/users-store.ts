@@ -55,21 +55,15 @@ export const useUsersStore = create<UsersState>((set, get) => ({
   // Getters
   getAllUsers: () => get().users,
 
-  getUserById: (id: string) => {
-    return get().usersById[id];
-  },
+  getUserById: (id: string) => get().usersById[id],
 
-  getUserByEmail: (email: string) => {
-    return get().usersByEmail[email];
-  },
+  getUserByEmail: (email: string) => get().usersByEmail[email],
 
-  getUsersByRole: (role: User['role']) => {
-    return get().users.filter((user) => user.role === role);
-  },
+  getUsersByRole: (role: User['role']) =>
+    get().users.filter((user) => user.role === role),
 
-  getUsersByTeam: (teamId: string) => {
-    return get().users.filter((user) => user.teamIds.includes(teamId));
-  },
+  getUsersByTeam: (teamId: string) =>
+    get().users.filter((user) => user.teamIds.includes(teamId)),
 
   // Actions
   addUser: (user: User) => {

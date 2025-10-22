@@ -1,7 +1,7 @@
-import { ORPCError } from "@orpc/server";
-import { z } from "zod";
-import { createTag, deleteTag, getAllTags } from "@/dal/tags";
-import { adminOnlyProcedure } from "../procedures";
+import { ORPCError } from '@orpc/server';
+import { z } from 'zod';
+import { createTag, deleteTag, getAllTags } from '@/dal/tags';
+import { adminOnlyProcedure } from '../procedures';
 
 export const tagsRouter = {
   getAll: adminOnlyProcedure
@@ -16,7 +16,7 @@ export const tagsRouter = {
     )
     .handler(async ({ context }) => {
       if (!context.organization?.id) {
-        throw new ORPCError("NOT_FOUND", { message: "Organization not found" });
+        throw new ORPCError('NOT_FOUND', { message: 'Organization not found' });
       }
       return await getAllTags(context.db, context.organization.id);
     }),
@@ -25,7 +25,7 @@ export const tagsRouter = {
     .input(
       z.object({
         name: z.string().min(1),
-        color: z.string().default("blue"),
+        color: z.string().default('blue'),
       })
     )
     .output(
@@ -40,7 +40,7 @@ export const tagsRouter = {
     )
     .handler(async ({ input, context }) => {
       if (!context.organization?.id) {
-        throw new ORPCError("NOT_FOUND", { message: "Organization not found" });
+        throw new ORPCError('NOT_FOUND', { message: 'Organization not found' });
       }
       const newTag = await createTag(
         context.db,
@@ -68,11 +68,11 @@ export const tagsRouter = {
     )
     .handler(async ({ input, context }) => {
       if (!context.organization?.id) {
-        throw new ORPCError("NOT_FOUND", { message: "Organization not found" });
+        throw new ORPCError('NOT_FOUND', { message: 'Organization not found' });
       }
       const deletedTag = await deleteTag(context.db, input.id);
       if (!deletedTag) {
-        throw new ORPCError("NOT_FOUND", { message: "Tag not found" });
+        throw new ORPCError('NOT_FOUND', { message: 'Tag not found' });
       }
       return { success: true, deletedTag };
     }),

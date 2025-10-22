@@ -25,29 +25,29 @@ type IssueGridProps = {
 // Custom DragLayer component to render the drag preview
 function IssueDragPreview({ issue }: { issue: Issue }) {
   return (
-    <div className="w-full overflow-hidden rounded-md border border-border/50 bg-background p-3">
-      <div className="mb-2 flex items-center justify-between">
-        <div className="flex items-center gap-1.5">
+    <div className='w-full overflow-hidden rounded-md border border-border/50 bg-background p-3'>
+      <div className='mb-2 flex items-center justify-between'>
+        <div className='flex items-center gap-1.5'>
           <PrioritySelector
             issueId={issue.id}
             priorityKey={issue.priorityKey}
           />
-          <span className="font-medium text-muted-foreground text-xs">
+          <span className='font-medium text-muted-foreground text-xs'>
             {issue.issueKey}
           </span>
         </div>
         <StatusSelector issueId={issue.id} statusKey={issue.statusKey} />
       </div>
 
-      <h3 className="mb-3 line-clamp-2 font-semibold text-sm">{issue.title}</h3>
+      <h3 className='mb-3 line-clamp-2 font-semibold text-sm'>{issue.title}</h3>
 
-      <div className="mb-3 flex min-h-[1.5rem] flex-wrap gap-1.5">
+      <div className='mb-3 flex min-h-[1.5rem] flex-wrap gap-1.5'>
         <LabelBadge tags={issue.tags} />
         {issue.project && <ProjectBadge project={issue.project} />}
       </div>
 
-      <div className="mt-auto flex items-center justify-between pt-2">
-        <span className="text-muted-foreground text-xs">
+      <div className='mt-auto flex items-center justify-between pt-2'>
+        <span className='text-muted-foreground text-xs'>
           {format(new Date(issue.createdAt), 'MMM dd')}
         </span>
         <AssigneeUser issueId={issue.id} userId={issue.assigneeId} />
@@ -73,7 +73,7 @@ export function CustomDragLayer() {
 
   return (
     <div
-      className="pointer-events-none fixed top-0 left-0 z-50"
+      className='pointer-events-none fixed top-0 left-0 z-50'
       style={{
         transform: `translate(${currentOffset.x}px, ${currentOffset.y}px)`,
         width: '348px', // Match the width of your cards
@@ -113,7 +113,7 @@ export function IssueGrid({ issue }: IssueGridProps) {
     <ContextMenu>
       <ContextMenuTrigger asChild>
         <motion.div
-          className="w-full cursor-default rounded-md border border-border/50 bg-background p-3 shadow-xs"
+          className='w-full cursor-default rounded-md border border-border/50 bg-background p-3 shadow-xs'
           layoutId={`issue-grid-${issue.issueKey}`}
           ref={ref}
           style={{
@@ -121,27 +121,27 @@ export function IssueGrid({ issue }: IssueGridProps) {
             cursor: isDragging ? 'grabbing' : 'default',
           }}
         >
-          <div className="mb-2 flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
+          <div className='mb-2 flex items-center justify-between'>
+            <div className='flex items-center gap-1.5'>
               <PrioritySelector
                 issueId={issue.id}
                 priorityKey={issue.priorityKey}
               />
-              <span className="font-medium text-muted-foreground text-xs">
+              <span className='font-medium text-muted-foreground text-xs'>
                 {issue.issueKey}
               </span>
             </div>
             <StatusSelector issueId={issue.id} statusKey={issue.statusKey} />
           </div>
-          <h3 className="mb-3 line-clamp-2 font-semibold text-sm">
+          <h3 className='mb-3 line-clamp-2 font-semibold text-sm'>
             {issue.title}
           </h3>
-          <div className="mb-3 flex min-h-[1.5rem] flex-wrap gap-1.5">
+          <div className='mb-3 flex min-h-[1.5rem] flex-wrap gap-1.5'>
             <LabelBadge tags={issue.tags} />
             {issue.project && <ProjectBadge project={issue.project} />}
           </div>
-          <div className="mt-auto flex items-center justify-between pt-2">
-            <span className="text-muted-foreground text-xs">
+          <div className='mt-auto flex items-center justify-between pt-2'>
+            <span className='text-muted-foreground text-xs'>
               {format(new Date(issue.createdAt), 'MMM dd')}
             </span>
             <AssigneeUser issueId={issue.id} userId={issue.assigneeId} />

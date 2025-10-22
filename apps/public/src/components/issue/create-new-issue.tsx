@@ -182,43 +182,43 @@ export function CreateNewIssue() {
   return (
     <Dialog onOpenChange={setIsOpen} open={isOpen}>
       <DialogTrigger asChild>
-        <Button className="size-8 shrink-0" size="icon" variant="secondary">
+        <Button className='size-8 shrink-0' size='icon' variant='secondary'>
           <RiEditLine />
         </Button>
       </DialogTrigger>
-      <DialogContent className="top-[30%] w-full p-0 shadow-xl sm:max-w-[750px]">
+      <DialogContent className='top-[30%] w-full p-0 shadow-xl sm:max-w-[750px]'>
         <DialogHeader>
           <DialogTitle>
-            <div className="flex items-center gap-2 px-4 pt-4">
-              <Button className="gap-1.5" size="sm" variant="outline">
-                <Heart className="size-4 fill-orange-500 text-orange-500" />
-                <span className="font-medium capitalize">new issue</span>
+            <div className='flex items-center gap-2 px-4 pt-4'>
+              <Button className='gap-1.5' size='sm' variant='outline'>
+                <Heart className='size-4 fill-orange-500 text-orange-500' />
+                <span className='font-medium capitalize'>new issue</span>
               </Button>
             </div>
           </DialogTitle>
         </DialogHeader>
 
-        <div className="w-full space-y-3 px-4 pb-0">
+        <div className='w-full space-y-3 px-4 pb-0'>
           <Input
             autoFocus
-            className="h-auto w-full overflow-hidden text-ellipsis whitespace-normal break-words border-none font-medium text-2xl shadow-none outline-none focus-visible:ring-0 dark:bg-transparent"
+            className='h-auto w-full overflow-hidden text-ellipsis whitespace-normal break-words border-none font-medium text-2xl shadow-none outline-none focus-visible:ring-0 dark:bg-transparent'
             onChange={(e) =>
               setNewIssueForm({ ...newIssueForm, title: e.target.value })
             }
-            placeholder="Issue title"
+            placeholder='Issue title'
             value={newIssueForm.title}
           />
 
           <Textarea
-            className="overflow-wrap min-h-16 w-full resize-none whitespace-normal break-words border-none shadow-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            className='overflow-wrap min-h-16 w-full resize-none whitespace-normal break-words border-none shadow-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
             onChange={(e) =>
               setNewIssueForm({ ...newIssueForm, description: e.target.value })
             }
-            placeholder="Add description..."
+            placeholder='Add description...'
             value={newIssueForm.description}
           />
 
-          <div className="flex w-full flex-wrap items-center justify-start gap-1.5">
+          <div className='flex w-full flex-wrap items-center justify-start gap-1.5'>
             <BoardSelector
               board={newIssueForm.boardId}
               onChange={(newProject: string) =>
@@ -227,15 +227,15 @@ export function CreateNewIssue() {
             />
           </div>
         </div>
-        <div className="flex w-full items-center justify-between border-t px-4 py-2.5">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center space-x-2">
+        <div className='flex w-full items-center justify-between border-t px-4 py-2.5'>
+          <div className='flex items-center gap-2'>
+            <div className='flex items-center space-x-2'>
               <Switch
                 checked={createMore}
-                id="create-more"
+                id='create-more'
                 onCheckedChange={setCreateMore}
               />
-              <Label htmlFor="create-more">Create more</Label>
+              <Label htmlFor='create-more'>Create more</Label>
             </div>
           </div>
           <Button
@@ -243,7 +243,7 @@ export function CreateNewIssue() {
             onClick={() => {
               createIssue();
             }}
-            size="sm"
+            size='sm'
           >
             {session?.user.isAnonymous
               ? 'Sign in to create issue'

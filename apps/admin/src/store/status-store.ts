@@ -26,9 +26,7 @@ export const useStatusesStore = create<StatusState>((set, get) => ({
   // Getters
   getAllStatuses: () => get().statuses,
 
-  getStatusById: (id: string) => {
-    return get().statusesById[id];
-  },
+  getStatusById: (id: string) => get().statusesById[id],
 
   searchStatuses: (query: string) => {
     const lowerCaseQuery = query.toLowerCase();

@@ -33,23 +33,21 @@ export function BoardSelector({ board, onChange }: BoardSelectorProps) {
   });
 
   return (
-    <div className="*:not-first:mt-2">
+    <div className='*:not-first:mt-2'>
       <Popover onOpenChange={setOpen} open={open}>
         <PopoverTrigger asChild>
           <Button
             aria-expanded={open}
-            className="flex items-center justify-center"
+            className='flex items-center justify-center'
             id={id}
-            role="combobox"
-            size="sm"
-            variant="secondary"
+            role='combobox'
+            size='sm'
+            variant='secondary'
           >
             {board ? (
-              (() => {
-                return <Box className="size-4" />;
-              })()
+              (() => <Box className='size-4' />)()
             ) : (
-              <Box className="size-4" />
+              <Box className='size-4' />
             )}
             <span>
               {board
@@ -59,24 +57,24 @@ export function BoardSelector({ board, onChange }: BoardSelectorProps) {
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          align="start"
-          className="w-full min-w-[var(--radix-popper-anchor-width)] border-input p-0"
+          align='start'
+          className='w-full min-w-[var(--radix-popper-anchor-width)] border-input p-0'
         >
           <Command>
-            <CommandInput placeholder="Set board..." />
+            <CommandInput placeholder='Set board...' />
             <CommandList>
               <CommandEmpty>No boards found.</CommandEmpty>
               <CommandGroup>
                 {allBoards?.boards.map((b) => (
                   <CommandItem
-                    className="flex items-center justify-between"
+                    className='flex items-center justify-between'
                     key={b.id}
                     onSelect={() => onChange(b.id)}
                     value={b.id}
                   >
-                    <div className="flex items-center gap-2">{b.name}</div>
+                    <div className='flex items-center gap-2'>{b.name}</div>
                     {board === b.id && (
-                      <CheckIcon className="ml-auto" size={16} />
+                      <CheckIcon className='ml-auto' size={16} />
                     )}
                   </CommandItem>
                 ))}

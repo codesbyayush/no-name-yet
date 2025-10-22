@@ -59,9 +59,9 @@ export function GeneralSettings() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className='space-y-8'>
       {/* Workspace Section */}
-      <Card className="border border-muted-foreground/10 bg-card">
+      <Card className='border border-muted-foreground/10 bg-card'>
         <CardHeader>
           <CardTitle>Workspace</CardTitle>
           <CardDescription>
@@ -69,41 +69,41 @@ export function GeneralSettings() {
             public portal.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="workspace-name">Workspace name *</Label>
+        <CardContent className='space-y-6'>
+          <div className='space-y-2'>
+            <Label htmlFor='workspace-name'>Workspace name *</Label>
             <Input
-              id="workspace-name"
+              id='workspace-name'
               onChange={(e) => setWorkspaceName(e.target.value)}
-              placeholder="Enter workspace name"
+              placeholder='Enter workspace name'
               value={workspaceName}
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="make-private">Make Workspace Private</Label>
-              <p className="text-muted-foreground text-sm">
+          <div className='flex items-center justify-between'>
+            <div className='space-y-0.5'>
+              <Label htmlFor='make-private'>Make Workspace Private</Label>
+              <p className='text-muted-foreground text-sm'>
                 Private workspaces are only accessible to team members.
               </p>
             </div>
             <Switch
               checked={isPrivate}
-              id="make-private"
+              id='make-private'
               onCheckedChange={setIsPrivate}
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="read-only">Make workspace read only</Label>
-              <p className="text-muted-foreground text-sm">
+          <div className='flex items-center justify-between'>
+            <div className='space-y-0.5'>
+              <Label htmlFor='read-only'>Make workspace read only</Label>
+              <p className='text-muted-foreground text-sm'>
                 User cannot submit any post to your workspace.
               </p>
             </div>
             <Switch
               checked={isReadOnly}
-              id="read-only"
+              id='read-only'
               onCheckedChange={setIsReadOnly}
             />
           </div>
@@ -111,7 +111,7 @@ export function GeneralSettings() {
       </Card>
 
       {/* Language Preference Section */}
-      <Card className="border border-muted-foreground/10 bg-card">
+      <Card className='border border-muted-foreground/10 bg-card'>
         <CardHeader>
           <CardTitle>Public hub language preference</CardTitle>
           <CardDescription>
@@ -121,23 +121,23 @@ export function GeneralSettings() {
         </CardHeader>
         <CardContent>
           <Select onValueChange={setLanguage} value={language}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select language" />
+            <SelectTrigger className='w-full'>
+              <SelectValue placeholder='Select language' />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="en">🇬🇧 English</SelectItem>
-              <SelectItem value="es">🇪🇸 Spanish</SelectItem>
-              <SelectItem value="fr">🇫🇷 French</SelectItem>
-              <SelectItem value="de">🇩🇪 German</SelectItem>
-              <SelectItem value="it">🇮🇹 Italian</SelectItem>
-              <SelectItem value="pt">🇵🇹 Portuguese</SelectItem>
+              <SelectItem value='en'>🇬🇧 English</SelectItem>
+              <SelectItem value='es'>🇪🇸 Spanish</SelectItem>
+              <SelectItem value='fr'>🇫🇷 French</SelectItem>
+              <SelectItem value='de'>🇩🇪 German</SelectItem>
+              <SelectItem value='it'>🇮🇹 Italian</SelectItem>
+              <SelectItem value='pt'>🇵🇹 Portuguese</SelectItem>
             </SelectContent>
           </Select>
         </CardContent>
       </Card>
 
       {/* Footer Links Section */}
-      <Card className="border border-muted-foreground/10 bg-card">
+      <Card className='border border-muted-foreground/10 bg-card'>
         <CardHeader>
           <CardTitle>Footer Links</CardTitle>
           <CardDescription>
@@ -145,37 +145,37 @@ export function GeneralSettings() {
             website.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className='space-y-4'>
           {footerLinks.map((link) => (
-            <div className="flex items-center gap-3" key={link.id}>
+            <div className='flex items-center gap-3' key={link.id}>
               <Input
-                className="flex-1"
+                className='flex-1'
                 onChange={(e) =>
                   updateFooterLink(link.id, 'label', e.target.value)
                 }
-                placeholder="Link label"
+                placeholder='Link label'
                 value={link.label}
               />
               <Input
-                className="flex-1"
+                className='flex-1'
                 onChange={(e) =>
                   updateFooterLink(link.id, 'url', e.target.value)
                 }
-                placeholder="https://example.com"
+                placeholder='https://example.com'
                 value={link.url}
               />
               <Button
                 onClick={() => removeFooterLink(link.id)}
-                size="sm"
-                variant="outline"
+                size='sm'
+                variant='outline'
               >
                 Remove
               </Button>
             </div>
           ))}
 
-          <Button className="w-full" onClick={addFooterLink} variant="outline">
-            <PlusIcon className="mr-2 h-4 w-4" />
+          <Button className='w-full' onClick={addFooterLink} variant='outline'>
+            <PlusIcon className='mr-2 h-4 w-4' />
             Add Link
           </Button>
         </CardContent>

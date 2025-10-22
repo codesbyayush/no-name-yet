@@ -108,9 +108,9 @@ export function ChangelogForm({
   });
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       <form
-        className="space-y-6"
+        className='space-y-6'
         onSubmit={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -120,9 +120,9 @@ export function ChangelogForm({
         {/* Title Field */}
         <form.Field
           children={(field) => (
-            <div className="space-y-2">
+            <div className='space-y-2'>
               <Label htmlFor={field.name}>
-                Title <span className="text-red-500">*</span>
+                Title <span className='text-red-500'>*</span>
               </Label>
               <Input
                 className={
@@ -132,29 +132,29 @@ export function ChangelogForm({
                 name={field.name}
                 onBlur={field.handleBlur}
                 onChange={(e) => field.handleChange(e.target.value)}
-                placeholder="Enter changelog title..."
+                placeholder='Enter changelog title...'
                 value={field.state.value}
               />
               {field.state.meta.errors.length > 0 && (
-                <p className="text-red-500 text-sm">
+                <p className='text-red-500 text-sm'>
                   {field.state.meta.errors[0]}
                 </p>
               )}
             </div>
           )}
-          name="title"
+          name='title'
         />
 
         {/* Content Editor */}
-        <div className="space-y-2">
+        <div className='space-y-2'>
           <Label>
-            Content <span className="text-red-500">*</span>
+            Content <span className='text-red-500'>*</span>
           </Label>
-          <div className="rounded-md border">
+          <div className='rounded-md border'>
             <BlockNoteEditor
-              className="min-h-[300px]"
+              className='min-h-[300px]'
               initialContent={initialData?.content}
-              placeholder="Start writing your changelog content..."
+              placeholder='Start writing your changelog content...'
               ref={editorRef}
             />
           </div>
@@ -163,57 +163,57 @@ export function ChangelogForm({
         {/* Status Field */}
         <form.Field
           children={(field) => (
-            <div className="space-y-3">
+            <div className='space-y-3'>
               <Label>Status</Label>
               <RadioGroup
-                className="grid w-full grid-cols-3 gap-4"
+                className='grid w-full grid-cols-3 gap-4'
                 onValueChange={field.handleChange}
                 value={field.state.value}
               >
-                <div className="flex items-center space-x-2 rounded-lg border border-input bg-background pl-2 text-sm ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground has-[:checked]:border-primary has-[:checked]:bg-primary/5">
-                  <RadioGroupItem id="draft" value="draft" />
+                <div className='flex items-center space-x-2 rounded-lg border border-input bg-background pl-2 text-sm ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground has-[:checked]:border-primary has-[:checked]:bg-primary/5'>
+                  <RadioGroupItem id='draft' value='draft' />
                   <Label
-                    className="flex-1 cursor-pointer px-3 py-2 font-normal"
-                    htmlFor="draft"
+                    className='flex-1 cursor-pointer px-3 py-2 font-normal'
+                    htmlFor='draft'
                   >
                     Draft
                   </Label>
                 </div>
-                <div className="flex items-center space-x-2 rounded-lg border border-input bg-background pl-2 text-sm ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground has-[:checked]:border-primary has-[:checked]:bg-primary/5">
-                  <RadioGroupItem id="published" value="published" />
+                <div className='flex items-center space-x-2 rounded-lg border border-input bg-background pl-2 text-sm ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground has-[:checked]:border-primary has-[:checked]:bg-primary/5'>
+                  <RadioGroupItem id='published' value='published' />
                   <Label
-                    className="flex-1 cursor-pointer px-3 py-2 font-normal"
-                    htmlFor="published"
+                    className='flex-1 cursor-pointer px-3 py-2 font-normal'
+                    htmlFor='published'
                   >
                     Published
                   </Label>
                 </div>
-                <div className="flex items-center space-x-2 rounded-lg border border-input bg-background pl-2 text-sm ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground has-[:checked]:border-primary has-[:checked]:bg-primary/5">
-                  <RadioGroupItem id="archived" value="archived" />
+                <div className='flex items-center space-x-2 rounded-lg border border-input bg-background pl-2 text-sm ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground has-[:checked]:border-primary has-[:checked]:bg-primary/5'>
+                  <RadioGroupItem id='archived' value='archived' />
                   <Label
-                    className="flex-1 cursor-pointer px-3 py-2 font-normal"
-                    htmlFor="archived"
+                    className='flex-1 cursor-pointer px-3 py-2 font-normal'
+                    htmlFor='archived'
                   >
                     Archived
                   </Label>
                 </div>
               </RadioGroup>
               {field.state.meta.errors.length > 0 && (
-                <p className="text-red-500 text-sm">
+                <p className='text-red-500 text-sm'>
                   {field.state.meta.errors[0]}
                 </p>
               )}
             </div>
           )}
-          name="status"
+          name='status'
         />
 
         {/* Form Actions */}
-        <div className="flex gap-4 pt-4">
-          <Button className="flex-1" disabled={isLoading} type="submit">
+        <div className='flex gap-4 pt-4'>
+          <Button className='flex-1' disabled={isLoading} type='submit'>
             {isLoading ? (
               <>
-                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-white border-b-2" />
+                <div className='mr-2 h-4 w-4 animate-spin rounded-full border-white border-b-2' />
                 Saving...
               </>
             ) : (

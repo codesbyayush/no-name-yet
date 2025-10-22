@@ -37,65 +37,65 @@ function RouteComponent() {
   };
 
   return (
-    <div className="text-card-foreground">
-      <div className="relative flex justify-center">
-        <div className="w-2xl flex-1 rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card shadow-xs">
-          <form className="space-y-6 p-6" onSubmit={onSave}>
-            <div className="space-y-1">
-              <h2 className="font-semibold text-xl">Personal Information</h2>
-              <p className="text-muted-foreground text-sm">
+    <div className='text-card-foreground'>
+      <div className='relative flex justify-center'>
+        <div className='w-2xl flex-1 rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card shadow-xs'>
+          <form className='space-y-6 p-6' onSubmit={onSave}>
+            <div className='space-y-1'>
+              <h2 className='font-semibold text-xl'>Personal Information</h2>
+              <p className='text-muted-foreground text-sm'>
                 Your personal information is not shared with anyone.
               </p>
             </div>
 
-            <div className="flex items-end gap-2">
-              <div className="flex-1 space-y-2">
-                <Label htmlFor="name">Name</Label>
+            <div className='flex items-end gap-2'>
+              <div className='flex-1 space-y-2'>
+                <Label htmlFor='name'>Name</Label>
                 <Input
                   disabled={isPending}
-                  id="name"
+                  id='name'
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Your name"
+                  placeholder='Your name'
                   value={name}
                 />
               </div>
-              <Avatar className="h-12 w-12 rounded-lg">
-                <AvatarImage alt="Avatar" src={user?.image || ''} />
-                <AvatarFallback className="rounded-lg">
+              <Avatar className='h-12 w-12 rounded-lg'>
+                <AvatarImage alt='Avatar' src={user?.image || ''} />
+                <AvatarFallback className='rounded-lg'>
                   {fallbackInitial}
                 </AvatarFallback>
               </Avatar>
             </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="email">Email</Label>
-                <span className="text-muted-foreground text-xs">
+            <div className='space-y-2'>
+              <div className='flex items-center justify-between'>
+                <Label htmlFor='email'>Email</Label>
+                <span className='text-muted-foreground text-xs'>
                   Invisible to public
                 </span>
               </div>
               <Input
                 disabled
-                id="email"
-                placeholder="Email"
+                id='email'
+                placeholder='Email'
                 readOnly
                 value={user?.email ?? ''}
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="account-id">Account ID</Label>
+            <div className='space-y-2'>
+              <Label htmlFor='account-id'>Account ID</Label>
               <Input
                 disabled
-                id="account-id"
-                placeholder="Account ID"
+                id='account-id'
+                placeholder='Account ID'
                 readOnly
                 value={user?.id ?? ''}
               />
             </div>
 
             <div>
-              <Button disabled={isPending} type="submit">
+              <Button disabled={isPending} type='submit'>
                 Save
               </Button>
             </div>

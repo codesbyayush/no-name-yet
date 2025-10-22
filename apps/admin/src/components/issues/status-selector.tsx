@@ -48,47 +48,47 @@ export function StatusSelector({ issueId, statusKey }: StatusSelectorProps) {
   };
 
   return (
-    <div className="*:not-first:mt-2">
+    <div className='*:not-first:mt-2'>
       <Popover onOpenChange={setOpen} open={open}>
         <PopoverTrigger asChild>
           <Button
             aria-expanded={open}
-            className="flex size-7 items-center justify-center"
+            className='flex size-7 items-center justify-center'
             id={id}
             onClick={(e) => {
               e.stopPropagation();
             }}
-            role="combobox"
-            size="icon"
-            variant="ghost"
+            role='combobox'
+            size='icon'
+            variant='ghost'
           >
             {renderStatusIcon(value)}
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          align="start"
-          className="w-full min-w-[var(--radix-popper-anchor-width)] border-input p-0"
+          align='start'
+          className='w-full min-w-[var(--radix-popper-anchor-width)] border-input p-0'
         >
           <Command>
-            <CommandInput placeholder="Set status..." />
+            <CommandInput placeholder='Set status...' />
             <CommandList>
               <CommandEmpty>No status found.</CommandEmpty>
               <CommandGroup>
                 {allStatus.map((item) => (
                   <CommandItem
-                    className="flex items-center justify-between"
+                    className='flex items-center justify-between'
                     key={item.id}
                     onSelect={handleStatusChange}
                     value={item.id}
                   >
-                    <div className="flex items-center gap-2">
+                    <div className='flex items-center gap-2'>
                       <item.icon />
                       {item.name}
                     </div>
                     {value === item.id && (
-                      <CheckIcon className="ml-auto" size={16} />
+                      <CheckIcon className='ml-auto' size={16} />
                     )}
-                    <span className="text-muted-foreground text-xs">
+                    <span className='text-muted-foreground text-xs'>
                       {/* {filterByStatus(item.id).length} */}
                     </span>
                   </CommandItem>

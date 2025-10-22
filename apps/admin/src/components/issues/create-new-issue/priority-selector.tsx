@@ -46,22 +46,22 @@ export function PrioritySelector({
   };
 
   return (
-    <div className="*:not-first:mt-2">
+    <div className='*:not-first:mt-2'>
       <Popover onOpenChange={setOpen} open={open}>
         <PopoverTrigger asChild>
           <Button
             aria-expanded={open}
-            className="flex items-center justify-center"
+            className='flex items-center justify-center'
             id={id}
-            role="combobox"
-            size="sm"
-            variant="secondary"
+            role='combobox'
+            size='sm'
+            variant='secondary'
           >
             {(() => {
               const selectedItem = priorities.find((item) => item.id === value);
               if (selectedItem) {
                 const Icon = selectedItem.icon;
-                return <Icon className="size-4 text-muted-foreground" />;
+                return <Icon className='size-4 text-muted-foreground' />;
               }
               return null;
             })()}
@@ -73,29 +73,29 @@ export function PrioritySelector({
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          align="start"
-          className="w-full min-w-[var(--radix-popper-anchor-width)] border-input p-0"
+          align='start'
+          className='w-full min-w-[var(--radix-popper-anchor-width)] border-input p-0'
         >
           <Command>
-            <CommandInput placeholder="Set priority..." />
+            <CommandInput placeholder='Set priority...' />
             <CommandList>
               <CommandEmpty>No priority found.</CommandEmpty>
               <CommandGroup>
                 {priorities.map((item) => (
                   <CommandItem
-                    className="flex items-center justify-between"
+                    className='flex items-center justify-between'
                     key={item.id}
                     onSelect={() => handlePriorityChange(item.id)}
                     value={item.id}
                   >
-                    <div className="flex items-center gap-2">
-                      <item.icon className="size-4 text-muted-foreground" />
+                    <div className='flex items-center gap-2'>
+                      <item.icon className='size-4 text-muted-foreground' />
                       {item.name}
                     </div>
                     {value === item.id && (
-                      <CheckIcon className="ml-auto" size={16} />
+                      <CheckIcon className='ml-auto' size={16} />
                     )}
-                    <span className="text-muted-foreground text-xs">
+                    <span className='text-muted-foreground text-xs'>
                       {issues?.filter((is) => is.priorityKey === item.id)
                         .length ?? 0}
                     </span>

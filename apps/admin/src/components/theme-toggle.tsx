@@ -1,22 +1,22 @@
 import { Monitor, Moon, Sun } from 'lucide-react';
-import { useTheme } from '@/components/theme-provider';
+import { useTheme } from '@/contexts';
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
 
   return (
-    <div className="flex items-center justify-between gap-2">
-      <div className="flex items-center gap-2 pr-2 font-medium text-sm">
+    <div className='flex items-center justify-between gap-2'>
+      <div className='flex items-center gap-2 pr-2 font-medium text-sm'>
         {theme === 'light' ? (
-          <Sun className="size-4" />
+          <Sun className='size-4' />
         ) : theme === 'dark' ? (
-          <Moon className="size-4" />
+          <Moon className='size-4' />
         ) : (
-          <Monitor className="size-4" />
+          <Monitor className='size-4' />
         )}
         <span>Theme</span>
       </div>
-      <div className="flex items-center gap-1 px-2">
+      <div className='flex items-center gap-1 px-2'>
         <button
           className={`flex items-center justify-center rounded-md p-2 transition-all ${
             theme === 'light'
@@ -24,9 +24,9 @@ export function ThemeToggle() {
               : 'text-muted-foreground hover:bg-accent hover:text-foreground'
           }`}
           onClick={() => setTheme('light')}
-          title="Light theme"
+          title='Light theme'
         >
-          <Sun className="size-4" />
+          <Sun className='size-4' />
         </button>
         <button
           className={`flex items-center justify-center rounded-md p-2 transition-all ${
@@ -35,9 +35,9 @@ export function ThemeToggle() {
               : 'text-muted-foreground hover:bg-accent hover:text-foreground'
           }`}
           onClick={() => setTheme('dark')}
-          title="Dark theme"
+          title='Dark theme'
         >
-          <Moon className="size-4" />
+          <Moon className='size-4' />
         </button>
         <button
           className={`flex items-center justify-center rounded-md p-2 transition-all ${
@@ -46,9 +46,9 @@ export function ThemeToggle() {
               : 'text-muted-foreground hover:bg-accent hover:text-foreground'
           }`}
           onClick={() => setTheme('system')}
-          title="System theme"
+          title='System theme'
         >
-          <Monitor className="size-4" />
+          <Monitor className='size-4' />
         </button>
       </div>
     </div>

@@ -74,33 +74,24 @@ export const useNotificationsStore = create<NotificationsState>((set, get) => ({
   },
 
   // Filters
-  getUnreadNotifications: () => {
-    return get().notifications.filter((notification) => !notification.read);
-  },
+  getUnreadNotifications: () =>
+    get().notifications.filter((notification) => !notification.read),
 
-  getReadNotifications: () => {
-    return get().notifications.filter((notification) => notification.read);
-  },
+  getReadNotifications: () =>
+    get().notifications.filter((notification) => notification.read),
 
-  getNotificationsByType: (type: NotificationType) => {
-    return get().notifications.filter(
-      (notification) => notification.type === type
-    );
-  },
+  getNotificationsByType: (type: NotificationType) =>
+    get().notifications.filter((notification) => notification.type === type),
 
-  getNotificationsByUser: (userId: string) => {
-    return get().notifications.filter(
+  getNotificationsByUser: (userId: string) =>
+    get().notifications.filter(
       (notification) => notification.user.id === userId
-    );
-  },
+    ),
 
   // Utility functions
-  getNotificationById: (id: string) => {
-    return get().notifications.find((notification) => notification.id === id);
-  },
+  getNotificationById: (id: string) =>
+    get().notifications.find((notification) => notification.id === id),
 
-  getUnreadCount: () => {
-    return get().notifications.filter((notification) => !notification.read)
-      .length;
-  },
+  getUnreadCount: () =>
+    get().notifications.filter((notification) => !notification.read).length,
 }));

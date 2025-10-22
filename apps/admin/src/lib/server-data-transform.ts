@@ -62,8 +62,5 @@ export const transformServerPostToIssue = (
 };
 
 // Transform multiple server posts to client issues
-export const transformServerPostsToIssues = (serverPosts: any[]): Issue[] => {
-  return serverPosts.map((post, index) =>
-    transformServerPostToIssue(post, index)
-  );
-};
+export const transformServerPostsToIssues = (serverPosts: any[]): Issue[] =>
+  serverPosts.map((post, index) => transformServerPostToIssue(post, index));

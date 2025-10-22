@@ -16,19 +16,19 @@ export const GeneratedForm = () => {
   };
 
   return (
-    <div className="mx-auto max-w-lg py-8">
-      <Card className="w-full border-none bg-transparent shadow-sm">
-        <CardHeader className="pb-2 text-center">
-          <CardTitle className="py-1 text-xl">
+    <div className='mx-auto max-w-lg py-8'>
+      <Card className='w-full border-none bg-transparent shadow-sm'>
+        <CardHeader className='pb-2 text-center'>
+          <CardTitle className='py-1 text-xl'>
             Create a new organization
           </CardTitle>
           <CardDescription>
             Organizations are top level shared spaces for your team
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className='space-y-4'>
           <CreateOrganizationForm
-            buttonText="Create Organization & Continue"
+            buttonText='Create Organization & Continue'
             onSuccess={handleOrganizationSuccess}
           />
         </CardContent>

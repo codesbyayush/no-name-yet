@@ -5,6 +5,4 @@ export const Route = createFileRoute('/_landing/')({
   component: () => <LandingPage />,
 });
 
-const LandingPage = () => {
-  return <HeroSection />;
-};
+const LandingPage = () => <HeroSection />;

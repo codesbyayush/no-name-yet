@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
-import type { Database } from "@/dal/posts";
-import { organization } from "@/db/schema";
+import { eq } from 'drizzle-orm';
+import type { Database } from '@/dal/posts';
+import { organization } from '@/db/schema';
 
 export type Organization = {
   id: string;
@@ -20,21 +20,21 @@ export type Organization = {
  * - "localhost:3000" -> null
  */
 export function extractSubdomainFromHost(host: string): string | null {
-  if (!host || host.startsWith("localhost")) {
+  if (!host || host.startsWith('localhost')) {
     return null;
   }
 
   // Remove port if present
-  const cleanHost = host.includes(":") ? host.split(":")[0] : host;
+  const cleanHost = host.includes(':') ? host.split(':')[0] : host;
 
-  const parts = cleanHost.split(".");
+  const parts = cleanHost.split('.');
   if (parts.length <= 2) {
     return null;
   }
 
   const candidate = parts[0];
   // Skip common prefixes
-  if (candidate === "www" || candidate === "api") {
+  if (candidate === 'www' || candidate === 'api') {
     return null;
   }
 
@@ -96,14 +96,14 @@ export async function resolveOrganizationFromHeaders(
   headers: Headers
 ): Promise<{ organization: Organization | null; subdomain: string | null }> {
   // Try X-Forwarded-Host first (for reverse proxies)
-  const xfHost = headers.get("x-forwarded-host");
-  const host = xfHost ? xfHost.split(",")[0].trim() : headers.get("host") || "";
+  const xfHost = headers.get('x-forwarded-host');
+  const host = xfHost ? xfHost.split(',')[0].trim() : headers.get('host') || '';
 
   let subdomain = extractSubdomainFromHost(host);
 
   // Fallback to Origin header
   if (!subdomain) {
-    const origin = headers.get("origin");
+    const origin = headers.get('origin');
     subdomain = origin ? extractSubdomainFromOrigin(origin) : null;
   }
 

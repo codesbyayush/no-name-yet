@@ -1,5 +1,4 @@
-import { createFileRoute, Navigate, useNavigate } from '@tanstack/react-router';
-import { useEffect } from 'react';
+import { createFileRoute, Navigate } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/')({
   component: LandingComponent,
@@ -109,5 +108,5 @@ export const Route = createFileRoute('/')({
 });
 
 function LandingComponent() {
-  return <Navigate replace search={{} as any} to="/boards" />;
+  return <Navigate replace search={{} as any} to='/boards' />;
 }

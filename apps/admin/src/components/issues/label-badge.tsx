@@ -6,13 +6,13 @@ export function LabelBadge({ tags }: { tags: LabelInterface[] }) {
     <>
       {tags.map((l) => (
         <Badge
-          className="gap-1.5 rounded-full bg-background text-muted-foreground"
+          className='gap-1.5 rounded-full bg-background text-muted-foreground'
           key={l.id}
-          variant="outline"
+          variant='outline'
         >
           <span
-            aria-hidden="true"
-            className="size-1.5 rounded-full"
+            aria-hidden='true'
+            className='size-1.5 rounded-full'
             style={{ backgroundColor: l.color }}
           />
           {l.name}

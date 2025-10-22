@@ -1,17 +1,17 @@
-import { ORPCError } from "@orpc/server";
-import { z } from "zod";
+import { ORPCError } from '@orpc/server';
+import { z } from 'zod';
 import {
   createBoard,
   deleteBoard,
   getAllBoards,
   updateBoard,
-} from "@/dal/boards";
-import { adminOnlyProcedure } from "../procedures";
+} from '@/dal/boards';
+import { adminOnlyProcedure } from '../procedures';
 
 export const boardsRouter = {
   getAll: adminOnlyProcedure.handler(async ({ context }) => {
     if (!context.organization?.id) {
-      throw new ORPCError("NOT_FOUND", { message: "Organization not found" });
+      throw new ORPCError('NOT_FOUND', { message: 'Organization not found' });
     }
 
     const list = await getAllBoards(context.db, context.organization.id);
@@ -48,7 +48,7 @@ export const boardsRouter = {
     .handler(async ({ input, context }) => {
       const updatedBoard = await updateBoard(context.db, input);
       if (!updatedBoard) {
-        throw new ORPCError("NOT_FOUND", { message: "Board not found" });
+        throw new ORPCError('NOT_FOUND', { message: 'Board not found' });
       }
       return updatedBoard;
     }),
@@ -63,7 +63,7 @@ export const boardsRouter = {
     .handler(async ({ input, context }) => {
       const deletedBoard = await deleteBoard(context.db, input.id);
       if (!deletedBoard) {
-        throw new ORPCError("NOT_FOUND", { message: "Board not found" });
+        throw new ORPCError('NOT_FOUND', { message: 'Board not found' });
       }
       return { success: true, deletedBoard };
     }),

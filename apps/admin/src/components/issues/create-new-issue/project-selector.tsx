@@ -48,27 +48,29 @@ export function ProjectSelector({ project, onChange }: ProjectSelectorProps) {
     setValue(project?.id);
   }, [project]);
 
-  const mappedProjects = useMemo<Project[]>(() => {
-    return (boards ?? []).map((b, idx) => {
-      const Icon = pickIconForId(b.id);
-      return {
-        id: b.id,
-        name: b.name,
-        status: allStatus[idx % allStatus.length],
-        icon: Icon,
-        percentComplete: 0,
-        startDate: new Date().toISOString().slice(0, 10),
-        lead: users[idx % users.length],
-        priority: priorities[idx % priorities.length],
-        health: {
-          id: 'on-track',
-          name: 'On Track',
-          color: '#00FF00',
-          description: '',
-        },
-      };
-    });
-  }, [boards]);
+  const mappedProjects = useMemo<Project[]>(
+    () =>
+      (boards ?? []).map((b, idx) => {
+        const Icon = pickIconForId(b.id);
+        return {
+          id: b.id,
+          name: b.name,
+          status: allStatus[idx % allStatus.length],
+          icon: Icon,
+          percentComplete: 0,
+          startDate: new Date().toISOString().slice(0, 10),
+          lead: users[idx % users.length],
+          priority: priorities[idx % priorities.length],
+          health: {
+            id: 'on-track',
+            name: 'On Track',
+            color: '#00FF00',
+            description: '',
+          },
+        };
+      }),
+    [boards]
+  );
 
   const handleProjectChange = (projectId: string) => {
     setValue(projectId);
@@ -80,16 +82,16 @@ export function ProjectSelector({ project, onChange }: ProjectSelectorProps) {
   };
 
   return (
-    <div className="*:not-first:mt-2">
+    <div className='*:not-first:mt-2'>
       <Popover onOpenChange={setOpen} open={open}>
         <PopoverTrigger asChild>
           <Button
             aria-expanded={open}
-            className="flex items-center justify-center"
+            className='flex items-center justify-center'
             id={id}
-            role="combobox"
-            size="sm"
-            variant="secondary"
+            role='combobox'
+            size='sm'
+            variant='secondary'
           >
             {value ? (
               (() => {
@@ -98,12 +100,12 @@ export function ProjectSelector({ project, onChange }: ProjectSelectorProps) {
                 );
                 if (selectedProject) {
                   const Icon = selectedProject.icon;
-                  return <Icon className="size-4" />;
+                  return <Icon className='size-4' />;
                 }
-                return <Box className="size-4" />;
+                return <Box className='size-4' />;
               })()
             ) : (
-              <Box className="size-4" />
+              <Box className='size-4' />
             )}
             <span>
               {value
@@ -113,11 +115,11 @@ export function ProjectSelector({ project, onChange }: ProjectSelectorProps) {
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          align="start"
-          className="w-full min-w-[var(--radix-popper-anchor-width)] border-input p-0"
+          align='start'
+          className='w-full min-w-[var(--radix-popper-anchor-width)] border-input p-0'
         >
           <Command>
-            <CommandInput placeholder="Set project..." />
+            <CommandInput placeholder='Set project...' />
             <CommandList>
               <CommandEmpty>No projects found.</CommandEmpty>
               <CommandGroup>
@@ -136,19 +138,19 @@ export function ProjectSelector({ project, onChange }: ProjectSelectorProps) {
 								</CommandItem> */}
                 {mappedProjects.map((project) => (
                   <CommandItem
-                    className="flex items-center justify-between"
+                    className='flex items-center justify-between'
                     key={project.id}
                     onSelect={() => handleProjectChange(project.id)}
                     value={project.id}
                   >
-                    <div className="flex items-center gap-2">
-                      <project.icon className="size-4" />
+                    <div className='flex items-center gap-2'>
+                      <project.icon className='size-4' />
                       {project.name}
                     </div>
                     {value === project.id && (
-                      <CheckIcon className="ml-auto" size={16} />
+                      <CheckIcon className='ml-auto' size={16} />
                     )}
-                    <span className="text-muted-foreground text-xs">
+                    <span className='text-muted-foreground text-xs'>
                       {issues?.filter((is) => is.project?.id === project.id)
                         .length ?? 0}
                     </span>

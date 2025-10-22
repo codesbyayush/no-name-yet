@@ -48,7 +48,7 @@ export function LabelSelector({
   };
 
   return (
-    <div className="*:not-first:mt-2">
+    <div className='*:not-first:mt-2'>
       <Popover onOpenChange={setOpen} open={open}>
         <PopoverTrigger asChild>
           <Button
@@ -58,16 +58,16 @@ export function LabelSelector({
               selectedLabels.length === 0 && 'size-7'
             )}
             id={id}
-            role="combobox"
+            role='combobox'
             size={selectedLabels.length > 0 ? 'sm' : 'icon'}
-            variant="secondary"
+            variant='secondary'
           >
-            <TagIcon className="size-4" />
+            <TagIcon className='size-4' />
             {selectedLabels.length > 0 && (
-              <div className="-space-x-0.5 flex">
+              <div className='-space-x-0.5 flex'>
                 {selectedLabels.map((tag) => (
                   <div
-                    className="size-3 rounded-full"
+                    className='size-3 rounded-full'
                     key={tag.id}
                     style={{ backgroundColor: tag.color }}
                   />
@@ -77,11 +77,11 @@ export function LabelSelector({
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          align="start"
-          className="w-full min-w-[var(--radix-popper-anchor-width)] border-input p-0"
+          align='start'
+          className='w-full min-w-[var(--radix-popper-anchor-width)] border-input p-0'
         >
           <Command>
-            <CommandInput placeholder="Search labels..." />
+            <CommandInput placeholder='Search labels...' />
             <CommandList>
               <CommandEmpty>No labels found.</CommandEmpty>
               <CommandGroup>
@@ -91,22 +91,22 @@ export function LabelSelector({
                   );
                   return (
                     <CommandItem
-                      className="flex items-center justify-between"
+                      className='flex items-center justify-between'
                       key={tag.id}
                       onSelect={() => handleLabelToggle(tag)}
                       value={tag.id}
                     >
-                      <div className="flex items-center gap-2">
+                      <div className='flex items-center gap-2'>
                         <div
-                          className="size-3 rounded-full"
+                          className='size-3 rounded-full'
                           style={{ backgroundColor: tag.color }}
                         />
                         <span>{tag.name}</span>
                       </div>
                       {isSelected && (
-                        <CheckIcon className="ml-auto" size={16} />
+                        <CheckIcon className='ml-auto' size={16} />
                       )}
-                      <span className="text-muted-foreground text-xs">
+                      <span className='text-muted-foreground text-xs'>
                         {issues?.filter((is) =>
                           is.tags.some((l) => l.id === tag.id)
                         ).length ?? 0}

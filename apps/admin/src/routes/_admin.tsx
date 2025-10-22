@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 import { AppSidebar } from '@/components/app-sidebar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import { AuthProvider } from '@/contexts/auth-context';
+import { Providers } from '@/contexts/providers';
 import { SidebarRightProvider } from '@/contexts/sidebar-right';
 import { authClient } from '@/lib/auth-client';
 
@@ -22,7 +22,7 @@ export const Route = createFileRoute('/_admin')({
 
 function AdminLayout() {
   return (
-    <AuthProvider>
+    <Providers>
       <SidebarProvider
         style={
           {
@@ -36,11 +36,11 @@ function AdminLayout() {
         <SidebarRightProvider>
           {/* <OmniFeedbackWidget /> */}
           <AppSidebar />
-          <SidebarInset className="!mt-0 !mx-0 min-h-max">
+          <SidebarInset className='!mt-0 !mx-0 min-h-max'>
             <Outlet />
           </SidebarInset>
         </SidebarRightProvider>
       </SidebarProvider>
-    </AuthProvider>
+    </Providers>
   );
 }

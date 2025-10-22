@@ -4,7 +4,7 @@ import type { Block } from '@blocknote/core';
 import { useCreateBlockNote } from '@blocknote/react';
 import { BlockNoteView } from '@blocknote/shadcn';
 import { forwardRef, useImperativeHandle, useMemo } from 'react';
-import { useTheme } from './theme-provider';
+import { useTheme } from '@/contexts';
 
 export interface BlockNoteEditorProps {
   initialContent?: Block[];

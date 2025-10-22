@@ -33,45 +33,37 @@ export default function AllIssues() {
 }
 
 const SearchIssuesView = () => (
-  <div className="mb-6 px-6">
+  <div className='mb-6 px-6'>
     <SearchIssues />
   </div>
 );
 
 const FilteredIssuesView: FC<{
   isViewTypeGrid: boolean;
-}> = ({ isViewTypeGrid = false }) => {
-  return (
-    <DndProvider backend={HTML5Backend}>
-      <CustomDragLayer />
-      <div
-        className={cn(
-          isViewTypeGrid && 'flex h-full min-w-max gap-3 px-2 py-2'
-        )}
-      >
-        {allStatus.map((statusItem) => (
-          <GroupIssues key={statusItem.key} statusKey={statusItem.key} />
-        ))}
-      </div>
-    </DndProvider>
-  );
-};
+}> = ({ isViewTypeGrid = false }) => (
+  <DndProvider backend={HTML5Backend}>
+    <CustomDragLayer />
+    <div
+      className={cn(isViewTypeGrid && 'flex h-full min-w-max gap-3 px-2 py-2')}
+    >
+      {allStatus.map((statusItem) => (
+        <GroupIssues key={statusItem.key} statusKey={statusItem.key} />
+      ))}
+    </div>
+  </DndProvider>
+);
 
 const GroupIssuesListView: FC<{
   isViewTypeGrid: boolean;
-}> = ({ isViewTypeGrid = false }) => {
-  return (
-    <DndProvider backend={HTML5Backend}>
-      <CustomDragLayer />
-      <div
-        className={cn(
-          isViewTypeGrid && 'flex h-full min-w-max gap-3 px-2 py-2'
-        )}
-      >
-        {allStatus.map((statusItem) => (
-          <GroupIssues key={statusItem.key} statusKey={statusItem.key} />
-        ))}
-      </div>
-    </DndProvider>
-  );
-};
+}> = ({ isViewTypeGrid = false }) => (
+  <DndProvider backend={HTML5Backend}>
+    <CustomDragLayer />
+    <div
+      className={cn(isViewTypeGrid && 'flex h-full min-w-max gap-3 px-2 py-2')}
+    >
+      {allStatus.map((statusItem) => (
+        <GroupIssues key={statusItem.key} statusKey={statusItem.key} />
+      ))}
+    </div>
+  </DndProvider>
+);

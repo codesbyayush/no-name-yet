@@ -156,7 +156,7 @@ export default function CreatePostForm({
             onFocus={(e) => {
               e.target.style.borderColor = '#3b82f6';
             }}
-            placeholder="Issue title"
+            placeholder='Issue title'
             required
             style={{
               width: '100%',
@@ -170,7 +170,7 @@ export default function CreatePostForm({
               fontSize: '16px',
               outline: 'none',
             }}
-            type="text"
+            type='text'
             value={form.title}
           />
         </div>
@@ -193,7 +193,7 @@ export default function CreatePostForm({
             onFocus={(e) => {
               e.target.style.borderColor = '#3b82f6';
             }}
-            placeholder="Add a clear description, steps, and context"
+            placeholder='Add a clear description, steps, and context'
             required
             rows={5}
             style={{
@@ -232,7 +232,7 @@ export default function CreatePostForm({
           <div ref={boardDropdownRef} style={{ position: 'relative' }}>
             <button
               aria-expanded={isBoardOpen}
-              aria-haspopup="listbox"
+              aria-haspopup='listbox'
               disabled={isLoadingBoards || boards.length === 0}
               onBlur={(e) => {
                 e.target.style.borderColor = '#e5e7eb';
@@ -265,7 +265,7 @@ export default function CreatePostForm({
                 opacity: isLoadingBoards || boards.length === 0 ? 0.6 : 1,
                 cursor: 'pointer',
               }}
-              type="button"
+              type='button'
             >
               <span
                 style={{
@@ -339,7 +339,7 @@ export default function CreatePostForm({
                         border: 'none',
                         cursor: 'pointer',
                       }}
-                      type="button"
+                      type='button'
                     >
                       <span
                         style={{
@@ -398,7 +398,7 @@ export default function CreatePostForm({
                   : 'pointer',
               border: 'none',
             }}
-            type="submit"
+            type='submit'
           >
             {isSubmitting ? 'Creating...' : 'Create issue'}
           </button>

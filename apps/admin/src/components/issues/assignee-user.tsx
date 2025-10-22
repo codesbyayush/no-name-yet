@@ -36,7 +36,7 @@ export function AssigneeUser({ userId, issueId }: AssigneeUserProps) {
   const renderAvatar = () => {
     if (currentAssignee) {
       return (
-        <Avatar className="size-6 shrink-0">
+        <Avatar className='size-6 shrink-0'>
           <AvatarImage
             alt={currentAssignee.name}
             src={currentAssignee.avatarUrl}
@@ -46,8 +46,8 @@ export function AssigneeUser({ userId, issueId }: AssigneeUserProps) {
       );
     }
     return (
-      <div className="flex size-6 items-center justify-center">
-        <CircleUserRound className="size-5 text-zinc-600" />
+      <div className='flex size-6 items-center justify-center'>
+        <CircleUserRound className='size-5 text-zinc-600' />
       </div>
     );
   };
@@ -55,21 +55,21 @@ export function AssigneeUser({ userId, issueId }: AssigneeUserProps) {
   return (
     <DropdownMenu onOpenChange={setOpen} open={open}>
       <DropdownMenuTrigger asChild>
-        <button className="relative w-fit focus:outline-none">
+        <button className='relative w-fit focus:outline-none'>
           {renderAvatar()}
           {currentAssignee && (
             <span
-              className="-end-0.5 -bottom-0.5 absolute size-2.5 rounded-full border-2 border-background"
+              className='-end-0.5 -bottom-0.5 absolute size-2.5 rounded-full border-2 border-background'
               style={{
                 backgroundColor: statusUserColors[currentAssignee.status],
               }}
             >
-              <span className="sr-only">{currentAssignee.status}</span>
+              <span className='sr-only'>{currentAssignee.status}</span>
             </span>
           )}
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-[206px]">
+      <DropdownMenuContent align='start' className='w-[206px]'>
         <DropdownMenuLabel>Assign to...</DropdownMenuLabel>
         <DropdownMenuItem
           onClick={(e) => {
@@ -79,11 +79,11 @@ export function AssigneeUser({ userId, issueId }: AssigneeUserProps) {
             setOpen(false);
           }}
         >
-          <div className="flex items-center gap-2">
-            <UserIcon className="h-5 w-5" />
+          <div className='flex items-center gap-2'>
+            <UserIcon className='h-5 w-5' />
             <span>No assignee</span>
           </div>
-          {!currentAssignee && <CheckIcon className="ml-auto h-4 w-4" />}
+          {!currentAssignee && <CheckIcon className='ml-auto h-4 w-4' />}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         {users.map((user) => (
@@ -107,23 +107,23 @@ export function AssigneeUser({ userId, issueId }: AssigneeUserProps) {
               setOpen(false);
             }}
           >
-            <div className="flex items-center gap-2">
-              <Avatar className="h-5 w-5">
+            <div className='flex items-center gap-2'>
+              <Avatar className='h-5 w-5'>
                 <AvatarImage alt={user.name} src={user.avatarUrl} />
                 <AvatarFallback>{user.name[0]}</AvatarFallback>
               </Avatar>
               <span>{user.name}</span>
             </div>
             {currentAssignee?.id === user.id && (
-              <CheckIcon className="ml-auto h-4 w-4" />
+              <CheckIcon className='ml-auto h-4 w-4' />
             )}
           </DropdownMenuItem>
         ))}
         <DropdownMenuSeparator />
         <DropdownMenuLabel>New user</DropdownMenuLabel>
         <DropdownMenuItem>
-          <div className="flex items-center gap-2">
-            <Send className="h-4 w-4" />
+          <div className='flex items-center gap-2'>
+            <Send className='h-4 w-4' />
             <span>Invite and assign...</span>
           </div>
         </DropdownMenuItem>

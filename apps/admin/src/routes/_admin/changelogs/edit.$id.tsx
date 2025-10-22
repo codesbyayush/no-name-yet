@@ -34,23 +34,23 @@ function EditChangelogPage() {
   if (isLoading) {
     return (
       <>
-        <SiteHeader title="Edit Changelog">
-          <Button asChild variant="outline">
-            <Link to="/changelogs">
-              <IconArrowLeft className="mr-2 h-4 w-4" />
+        <SiteHeader title='Edit Changelog'>
+          <Button asChild variant='outline'>
+            <Link to='/changelogs'>
+              <IconArrowLeft className='mr-2 h-4 w-4' />
               Back to Changelogs
             </Link>
           </Button>
         </SiteHeader>
 
-        <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-              <div className="px-4 lg:px-6">
-                <div className="mx-auto max-w-4xl">
-                  <div className="py-12 text-center">
-                    <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-primary border-b-2" />
-                    <p className="text-muted-foreground">
+        <div className='flex flex-1 flex-col'>
+          <div className='@container/main flex flex-1 flex-col gap-2'>
+            <div className='flex flex-col gap-4 py-4 md:gap-6 md:py-6'>
+              <div className='px-4 lg:px-6'>
+                <div className='mx-auto max-w-4xl'>
+                  <div className='py-12 text-center'>
+                    <div className='mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-primary border-b-2' />
+                    <p className='text-muted-foreground'>
                       Loading changelog...
                     </p>
                   </div>
@@ -66,30 +66,30 @@ function EditChangelogPage() {
   if (error || !changelogData) {
     return (
       <>
-        <SiteHeader title="Edit Changelog">
-          <Button asChild variant="outline">
-            <Link to="/changelogs">
-              <IconArrowLeft className="mr-2 h-4 w-4" />
+        <SiteHeader title='Edit Changelog'>
+          <Button asChild variant='outline'>
+            <Link to='/changelogs'>
+              <IconArrowLeft className='mr-2 h-4 w-4' />
               Back to Changelogs
             </Link>
           </Button>
         </SiteHeader>
 
-        <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-              <div className="px-4 lg:px-6">
-                <div className="mx-auto max-w-4xl">
-                  <div className="py-12 text-center">
-                    <h2 className="mb-4 font-semibold text-2xl text-red-600">
+        <div className='flex flex-1 flex-col'>
+          <div className='@container/main flex flex-1 flex-col gap-2'>
+            <div className='flex flex-col gap-4 py-4 md:gap-6 md:py-6'>
+              <div className='px-4 lg:px-6'>
+                <div className='mx-auto max-w-4xl'>
+                  <div className='py-12 text-center'>
+                    <h2 className='mb-4 font-semibold text-2xl text-red-600'>
                       Error
                     </h2>
-                    <p className="mb-6 text-muted-foreground">
+                    <p className='mb-6 text-muted-foreground'>
                       Failed to load changelog. Please try again.
                     </p>
                     <Button asChild>
-                      <Link to="/changelogs">
-                        <IconArrowLeft className="mr-2 h-4 w-4" />
+                      <Link to='/changelogs'>
+                        <IconArrowLeft className='mr-2 h-4 w-4' />
                         Back to Changelogs
                       </Link>
                     </Button>
@@ -105,25 +105,25 @@ function EditChangelogPage() {
 
   return (
     <>
-      <SiteHeader title="Edit Changelog">
-        <Button asChild variant="outline">
-          <Link to="/changelogs">
-            <IconArrowLeft className="mr-2 h-4 w-4" />
+      <SiteHeader title='Edit Changelog'>
+        <Button asChild variant='outline'>
+          <Link to='/changelogs'>
+            <IconArrowLeft className='mr-2 h-4 w-4' />
             Back to Changelogs
           </Link>
         </Button>
       </SiteHeader>
 
-      <div className="flex flex-1 flex-col">
-        <div className="@container/main flex flex-1 flex-col gap-2">
-          <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-            <div className="px-4 lg:px-6">
-              <div className="mx-auto max-w-4xl">
-                <div className="mb-6">
-                  <h1 className="mb-2 font-semibold text-2xl">
+      <div className='flex flex-1 flex-col'>
+        <div className='@container/main flex flex-1 flex-col gap-2'>
+          <div className='flex flex-col gap-4 py-4 md:gap-6 md:py-6'>
+            <div className='px-4 lg:px-6'>
+              <div className='mx-auto max-w-4xl'>
+                <div className='mb-6'>
+                  <h1 className='mb-2 font-semibold text-2xl'>
                     Edit Changelog
                   </h1>
-                  <p className="text-muted-foreground">
+                  <p className='text-muted-foreground'>
                     Update your changelog entry with new content and
                     information.
                   </p>
@@ -137,7 +137,7 @@ function EditChangelogPage() {
                     status: changelogData.status,
                     tag: changelogData.tag?.id,
                   }}
-                  mode="edit"
+                  mode='edit'
                   onSuccess={handleSuccess}
                 />
               </div>

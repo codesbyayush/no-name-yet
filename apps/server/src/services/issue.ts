@@ -1,20 +1,20 @@
-import { and, count, eq } from "drizzle-orm";
-import type { Database } from "@/dal/posts";
-import { boards, feedback } from "@/db/schema";
+import { and, count, eq } from 'drizzle-orm';
+import type { Database } from '@/dal/posts';
+import { boards, feedback } from '@/db/schema';
 
 export type IssueStatus =
-  | "to-do"
-  | "in-progress"
-  | "technical-review"
-  | "completed"
-  | "backlog"
-  | "paused";
+  | 'to-do'
+  | 'in-progress'
+  | 'technical-review'
+  | 'completed'
+  | 'backlog'
+  | 'paused';
 
 export type PullRequestAction =
-  | "opened"
-  | "reopened"
-  | "ready_for_review"
-  | "closed";
+  | 'opened'
+  | 'reopened'
+  | 'ready_for_review'
+  | 'closed';
 
 /**
  * Generate a unique issue key for a board
@@ -54,20 +54,20 @@ export function mapPullRequestActionToStatus(
   action: PullRequestAction,
   isMerged: boolean,
   baseBranch: string,
-  defaultBranch = "main"
+  defaultBranch = 'main'
 ): IssueStatus | null {
-  if (action === "opened" || action === "reopened") {
-    return "in-progress";
+  if (action === 'opened' || action === 'reopened') {
+    return 'in-progress';
   }
 
-  if (action === "ready_for_review") {
-    return "technical-review";
+  if (action === 'ready_for_review') {
+    return 'technical-review';
   }
 
-  if (action === "closed" && isMerged) {
+  if (action === 'closed' && isMerged) {
     const isDefaultBranch =
       baseBranch.toLowerCase() === defaultBranch.toLowerCase();
-    return isDefaultBranch ? "completed" : "paused";
+    return isDefaultBranch ? 'completed' : 'paused';
   }
 
   return null;

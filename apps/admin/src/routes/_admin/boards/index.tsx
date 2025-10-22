@@ -73,8 +73,8 @@ function RouteComponent() {
   };
 
   const sidebarFilters = (
-    <div className="space-y-4 px-2 py-2">
-      <div className="px-1 pt-1 pb-2 text-muted-foreground text-sm">
+    <div className='space-y-4 px-2 py-2'>
+      <div className='px-1 pt-1 pb-2 text-muted-foreground text-sm'>
         Statuses
       </div>
       <SidebarMenu>
@@ -104,7 +104,7 @@ function RouteComponent() {
         })}
       </SidebarMenu>
 
-      <div className="px-1 pt-4 pb-2 text-muted-foreground text-sm">
+      <div className='px-1 pt-4 pb-2 text-muted-foreground text-sm'>
         Quick Filters
       </div>
       <SidebarMenu>
@@ -124,7 +124,7 @@ function RouteComponent() {
         })}
       </SidebarMenu>
 
-      <div className="px-1 pt-4 pb-2 text-muted-foreground text-sm">Tags</div>
+      <div className='px-1 pt-4 pb-2 text-muted-foreground text-sm'>Tags</div>
       <SidebarMenu>
         {tags.map((t) => {
           const active = search.tag === t.key;
@@ -148,11 +148,11 @@ function RouteComponent() {
   return (
     <div>
       <SidebarRightPortal>{sidebarFilters}</SidebarRightPortal>
-      <div className="h-svh overflow-hidden lg:p-2">
+      <div className='h-svh overflow-hidden lg:p-2'>
         <CreateIssueModalProvider />
-        <div className="flex flex-col items-center justify-start overflow-hidden bg-container lg:rounded-md lg:border">
+        <div className='flex flex-col items-center justify-start overflow-hidden bg-container lg:rounded-md lg:border'>
           <Header />
-          <div className="h-[calc(100svh-80px)] w-full overflow-auto lg:h-[calc(100svh-96px)]">
+          <div className='h-[calc(100svh-80px)] w-full overflow-auto lg:h-[calc(100svh-96px)]'>
             <AllIssues />
           </div>
         </div>

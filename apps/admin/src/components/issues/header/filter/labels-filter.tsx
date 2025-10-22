@@ -11,18 +11,18 @@ type FilterType = 'status' | 'assignee' | 'priority' | 'labels' | 'project';
 export function LabelsFilter({ setActiveFilter }: LabelsFilterProps) {
   return (
     <Command>
-      <div className="flex items-center border-b p-2">
+      <div className='flex items-center border-b p-2'>
         <Button
-          className="size-6"
+          className='size-6'
           onClick={() => setActiveFilter(null)}
-          size="icon"
-          variant="ghost"
+          size='icon'
+          variant='ghost'
         >
-          <ChevronRight className="size-4 rotate-180" />
+          <ChevronRight className='size-4 rotate-180' />
         </Button>
-        <span className="ml-2 font-medium">Labels</span>
+        <span className='ml-2 font-medium'>Labels</span>
       </div>
-      <CommandInput placeholder="Search labels..." />
+      <CommandInput placeholder='Search labels...' />
       {/* <CommandList>
               <CommandEmpty>No labels found.</CommandEmpty>
               <CommandGroup>

@@ -24,36 +24,36 @@ export function StatusFilter({ setActiveFilter }: StatusFilterProps) {
 
   return (
     <Command>
-      <div className="flex items-center border-b p-2">
+      <div className='flex items-center border-b p-2'>
         <Button
-          className="size-6"
+          className='size-6'
           onClick={() => setActiveFilter(null)}
-          size="icon"
-          variant="ghost"
+          size='icon'
+          variant='ghost'
         >
-          <ChevronRight className="size-4 rotate-180" />
+          <ChevronRight className='size-4 rotate-180' />
         </Button>
-        <span className="ml-2 font-medium">Status</span>
+        <span className='ml-2 font-medium'>Status</span>
       </div>
-      <CommandInput placeholder="Search status..." />
+      <CommandInput placeholder='Search status...' />
       <CommandList>
         <CommandEmpty>No status found.</CommandEmpty>
         <CommandGroup>
           {allStatus.map((item) => (
             <CommandItem
-              className="flex items-center justify-between"
+              className='flex items-center justify-between'
               key={item.id}
               onSelect={() => toggleFilter('status', item.id)}
               value={item.id}
             >
-              <div className="flex items-center gap-2">
+              <div className='flex items-center gap-2'>
                 <item.icon />
                 {item.name}
               </div>
               {filters.status.includes(item.id) && (
-                <CheckIcon className="ml-auto" size={16} />
+                <CheckIcon className='ml-auto' size={16} />
               )}
-              <span className="text-muted-foreground text-xs">
+              <span className='text-muted-foreground text-xs'>
                 {statusCount?.find((status) => status.statusId === item.id)
                   ?.count || 0}
               </span>

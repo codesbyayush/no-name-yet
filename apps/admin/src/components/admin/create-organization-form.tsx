@@ -16,12 +16,11 @@ interface CreateOrganizationFormProps {
   buttonText?: string;
 }
 
-const slugify = (text: string) => {
-  return text
+const slugify = (text: string) =>
+  text
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
-};
 
 export function CreateOrganizationForm({
   className,
@@ -108,60 +107,60 @@ export function CreateOrganizationForm({
   return (
     <Card className={className}>
       <CardContent>
-        <form className="space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-2">
-            <Label htmlFor="name">Organization Name</Label>
+        <form className='space-y-6' onSubmit={handleSubmit}>
+          <div className='space-y-2'>
+            <Label htmlFor='name'>Organization Name</Label>
             <Input
               disabled={isSubmitting}
-              id="name"
+              id='name'
               onChange={handleNameChange}
-              placeholder="OpenFeedback"
+              placeholder='OpenFeedback'
               required
-              type="text"
+              type='text'
               value={name}
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="slug">Public url</Label>
-            <div className="flex items-center space-x-2">
+          <div className='space-y-2'>
+            <Label htmlFor='slug'>Public url</Label>
+            <div className='flex items-center space-x-2'>
               <Input
-                className="flex-1"
+                className='flex-1'
                 disabled={isSubmitting}
-                id="slug"
+                id='slug'
                 onChange={handleSlugChange}
                 onPaste={(e) =>
                   handleSlugChange(
                     e as unknown as React.ChangeEvent<HTMLInputElement>
                   )
                 }
-                placeholder="openfeedback"
+                placeholder='openfeedback'
                 required
-                type="text"
+                type='text'
                 value={slug}
               />
-              <span className="text-muted-foreground text-sm">
+              <span className='text-muted-foreground text-sm'>
                 .openfeedback.tech/
               </span>
             </div>
           </div>
 
           {error && (
-            <Alert variant="destructive">
-              <AlertTitle className="sr-only">Error</AlertTitle>
+            <Alert variant='destructive'>
+              <AlertTitle className='sr-only'>Error</AlertTitle>
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
 
           <Button
-            className="w-full"
+            className='w-full'
             disabled={isSubmitting || !name || !slug}
-            type="submit"
+            type='submit'
           >
             {isSubmitting ? (
               <>
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                <span className="ml-2">Creating...</span>
+                <span className='h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent' />
+                <span className='ml-2'>Creating...</span>
               </>
             ) : (
               buttonText || 'Create Organization'

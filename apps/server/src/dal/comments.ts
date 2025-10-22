@@ -1,7 +1,7 @@
-import { and, count, eq, isNull } from "drizzle-orm";
-import { comments, user } from "@/db/schema";
+import { and, count, eq, isNull } from 'drizzle-orm';
+import { comments, user } from '@/db/schema';
 
-export type Database = ReturnType<typeof import("@/db").getDb>;
+export type Database = ReturnType<typeof import('@/db').getDb>;
 
 export type CreateCommentInput = {
   feedbackId: string;

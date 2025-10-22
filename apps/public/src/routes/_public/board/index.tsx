@@ -102,18 +102,19 @@ function BoardIndexPage() {
     [isLoading, hasNextPage, fetchNextPage, isFetchingNextPage]
   );
 
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       if (observerRef.current) {
         observerRef.current.disconnect();
       }
-    };
-  }, []);
+    },
+    []
+  );
 
   return (
-    <div className="text-card-foreground">
-      <div className="relative flex gap-4">
-        <div className="w-2xl flex-1 rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card shadow-xs">
+    <div className='text-card-foreground'>
+      <div className='relative flex gap-4'>
+        <div className='w-2xl flex-1 rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card shadow-xs'>
           {isLoading && (
             <div>
               {Array.from({ length: 5 }, (_, i) => ({
@@ -155,16 +156,16 @@ function BoardIndexPage() {
                   }}
                   ref={isSecondLastPost ? lastPostCallback : null}
                 >
-                  <div className="flex items-center justify-between gap-3">
+                  <div className='flex items-center justify-between gap-3'>
                     <div>
-                      <h4 className="line-clamp-2 font-semibold text-card-foreground text-lg capitalize">
+                      <h4 className='line-clamp-2 font-semibold text-card-foreground text-lg capitalize'>
                         {f.title}
                       </h4>
-                      <p className="line-clamp-2 text-pretty font-medium text-muted-foreground text-sm capitalize">
+                      <p className='line-clamp-2 text-pretty font-medium text-muted-foreground text-sm capitalize'>
                         {f.content}
                       </p>
                     </div>
-                    <div className="flex items-center justify-end gap-3">
+                    <div className='flex items-center justify-end gap-3'>
                       <CommentButton
                         count={f.commentCount || 0}
                         onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
@@ -179,38 +180,38 @@ function BoardIndexPage() {
                       />
                     </div>
                   </div>
-                  <div className="flex items-center justify-between pt-4">
-                    <div className="flex items-center gap-3">
+                  <div className='flex items-center justify-between pt-4'>
+                    <div className='flex items-center gap-3'>
                       <div>
                         {f.author?.image ? (
                           <img
-                            alt="author"
-                            className="h-7 w-7 rounded-full"
+                            alt='author'
+                            className='h-7 w-7 rounded-full'
                             height={28}
                             src={f.author?.image || 'https://picsum/64'}
                             width={28}
                           />
                         ) : (
-                          <p className="flex size-7 items-center justify-center rounded-full bg-red-900/30 text-white">
+                          <p className='flex size-7 items-center justify-center rounded-full bg-red-900/30 text-white'>
                             ?
                           </p>
                         )}
                       </div>
-                      <div className="flex items-center gap-3 self-end pt-px">
-                        <h5 className="pb-0.5 font-medium text-sm capitalize">
+                      <div className='flex items-center gap-3 self-end pt-px'>
+                        <h5 className='pb-0.5 font-medium text-sm capitalize'>
                           {f.author?.name || 'Anon'}
                         </h5>
-                        <p className="font-medium text-muted-foreground text-xs">
+                        <p className='font-medium text-muted-foreground text-xs'>
                           {formatSmartDate(f.createdAt)}
                         </p>
                       </div>
                     </div>
                     <div>
-                      <Badge className="px-3 capitalize" variant="secondary">
+                      <Badge className='px-3 capitalize' variant='secondary'>
                         {f.board?.name}
                       </Badge>
                       <Badge
-                        className="ml-3 px-3 capitalize"
+                        className='ml-3 px-3 capitalize'
                         variant={
                           f.status === 'in-progress'
                             ? 'inprogress'
@@ -229,32 +230,32 @@ function BoardIndexPage() {
 
           {/* Loading indicator for next page */}
           {isFetchingNextPage && (
-            <div className="py-4 text-center">
-              <div className="text-gray-500 text-sm">Loading more posts...</div>
+            <div className='py-4 text-center'>
+              <div className='text-gray-500 text-sm'>Loading more posts...</div>
             </div>
           )}
         </div>
-        <div className="sticky top-6 flex h-fit flex-col gap-4">
-          <div className="z-10 flex w-3xs items-center gap-1 rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card p-3.5 shadow-xs">
-            <h4 className="flex-1 font-medium capitalize"> Got an idea?</h4>
+        <div className='sticky top-6 flex h-fit flex-col gap-4'>
+          <div className='z-10 flex w-3xs items-center gap-1 rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card p-3.5 shadow-xs'>
+            <h4 className='flex-1 font-medium capitalize'> Got an idea?</h4>
             <CreateNewIssue />
           </div>
-          <div className="z-10 w-3xs rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card p-3.5 shadow-xs">
-            <h4 className="mb-2 font-medium capitalize">boards</h4>
-            <div className="flex flex-col gap-2">
+          <div className='z-10 w-3xs rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card p-3.5 shadow-xs'>
+            <h4 className='mb-2 font-medium capitalize'>boards</h4>
+            <div className='flex flex-col gap-2'>
               {boards
                 ? boards.boards.map((board) => {
                     const isActive = search.board === board.id;
                     return (
                       <Button
-                        className="h-10 w-full rounded-xl p-0 font-medium text-base shadow-sm hover:bg-primary/90"
+                        className='h-10 w-full rounded-xl p-0 font-medium text-base shadow-sm hover:bg-primary/90'
                         key={board.id}
                         onClick={() => handleBoardClick(board.id)}
                         variant={isActive ? 'default' : 'secondary'}
                       >
-                        <p className="flex items-center gap-2 whitespace-break-spaces capitalize">
+                        <p className='flex items-center gap-2 whitespace-break-spaces capitalize'>
                           {/* {board.symbol} */}
-                          <span className="break-words text-left capitalize">
+                          <span className='break-words text-left capitalize'>
                             {board.name}
                           </span>
                         </p>
@@ -265,7 +266,7 @@ function BoardIndexPage() {
                     id: `board-skeleton-${i}`,
                   })).map(({ id }) => (
                     <div
-                      className="h-auto w-full justify-start p-1 text-left font-medium text-foreground"
+                      className='h-auto w-full justify-start p-1 text-left font-medium text-foreground'
                       key={id}
                     >
                       <BoardSkeleton />

@@ -29,17 +29,17 @@ export function Filter() {
   return (
     <Popover onOpenChange={setOpen} open={open}>
       <PopoverTrigger asChild>
-        <Button className="relative" size="sm" variant="ghost">
-          <ListFilter className="mr-1 size-4" />
+        <Button className='relative' size='sm' variant='ghost'>
+          <ListFilter className='mr-1 size-4' />
           Filter
           {getActiveFiltersCount() > 0 && (
-            <span className="-top-1 -right-1 absolute flex size-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
+            <span className='-top-1 -right-1 absolute flex size-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground'>
               {getActiveFiltersCount()}
             </span>
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-60 p-0">
+      <PopoverContent align='start' className='w-60 p-0'>
         {(() => {
           switch (activeFilter) {
             case 'status':

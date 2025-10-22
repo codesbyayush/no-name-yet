@@ -7,10 +7,10 @@ export const Route = createFileRoute('/_admin/settings/integrations')({
 
 function RouteComponent() {
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       <div>
-        <h1 className="font-semibold text-2xl tracking-tight">Integrations</h1>
-        <p className="text-muted-foreground">
+        <h1 className='font-semibold text-2xl tracking-tight'>Integrations</h1>
+        <p className='text-muted-foreground'>
           Connect your external services and tools to enhance your workflow.
         </p>
       </div>

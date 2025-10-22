@@ -368,38 +368,38 @@ export {};`,
   };
 
   return (
-    <div className="grid h-full grid-cols-1 gap-6 lg:grid-cols-3">
+    <div className='grid h-full grid-cols-1 gap-6 lg:grid-cols-3'>
       {/* Options Panel - Left Side */}
-      <div className="space-y-6 overflow-y-auto lg:col-span-1">
+      <div className='space-y-6 overflow-y-auto lg:col-span-1'>
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Settings className="h-5 w-5" />
+            <CardTitle className='flex items-center gap-2'>
+              <Settings className='h-5 w-5' />
               Widget Configuration
             </CardTitle>
             <CardDescription>
               Customize your widget settings and appearance
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className='space-y-6'>
             {optionGroups.map((group) => (
-              <div className="space-y-4" key={group.title}>
+              <div className='space-y-4' key={group.title}>
                 <div>
-                  <h3 className="font-semibold text-sm">{group.title}</h3>
-                  <p className="text-muted-foreground text-xs">
+                  <h3 className='font-semibold text-sm'>{group.title}</h3>
+                  <p className='text-muted-foreground text-xs'>
                     {group.description}
                   </p>
                 </div>
 
-                <div className="space-y-4">
+                <div className='space-y-4'>
                   {group.options.map((option) => (
-                    <div className="space-y-2" key={option.key}>
-                      <div className="flex items-center justify-between">
-                        <Label className="text-sm" htmlFor={option.key}>
+                    <div className='space-y-2' key={option.key}>
+                      <div className='flex items-center justify-between'>
+                        <Label className='text-sm' htmlFor={option.key}>
                           {option.label}
                         </Label>
                         <Badge
-                          className="text-xs"
+                          className='text-xs'
                           variant={option.changeable ? 'default' : 'secondary'}
                         >
                           {option.changeable ? 'Editable' : 'Fixed'}
@@ -442,14 +442,14 @@ export {};`,
                       )}
 
                       {option.type === 'color' && (
-                        <div className="flex items-center space-x-2">
+                        <div className='flex items-center space-x-2'>
                           <Input
-                            className="h-8 w-12 rounded border p-1"
+                            className='h-8 w-12 rounded border p-1'
                             disabled={!option.changeable}
                             onChange={(e) =>
                               updateConfig(option.key, e.target.value)
                             }
-                            type="color"
+                            type='color'
                             value={config[option.key] as string}
                           />
                           <Input
@@ -466,13 +466,13 @@ export {};`,
                         </div>
                       )}
 
-                      <div className="flex items-start gap-2 rounded-md bg-muted/50 p-2">
-                        <Info className="mt-0.5 h-3 w-3 flex-shrink-0 text-muted-foreground" />
-                        <div className="space-y-1">
-                          <p className="text-muted-foreground text-xs">
+                      <div className='flex items-start gap-2 rounded-md bg-muted/50 p-2'>
+                        <Info className='mt-0.5 h-3 w-3 flex-shrink-0 text-muted-foreground' />
+                        <div className='space-y-1'>
+                          <p className='text-muted-foreground text-xs'>
                             {option.description}
                           </p>
-                          <p className="font-medium text-muted-foreground text-xs">
+                          <p className='font-medium text-muted-foreground text-xs'>
                             {option.changeable
                               ? 'Why changeable: '
                               : 'Why fixed: '}
@@ -490,97 +490,97 @@ export {};`,
       </div>
 
       {/* Code Panel - Right Side */}
-      <div className="space-y-6 lg:col-span-2">
-        <Card className="h-full">
+      <div className='space-y-6 lg:col-span-2'>
+        <Card className='h-full'>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Code2 className="h-5 w-5" />
+            <CardTitle className='flex items-center gap-2'>
+              <Code2 className='h-5 w-5' />
               Embed Code
             </CardTitle>
             <CardDescription>
               Copy and paste this code into your website
             </CardDescription>
           </CardHeader>
-          <CardContent className="h-full">
-            <Tabs className="flex h-full flex-col" defaultValue="script">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="script">HTML Script</TabsTrigger>
-                <TabsTrigger value="react">React Component</TabsTrigger>
-                <TabsTrigger value="types">TypeScript</TabsTrigger>
+          <CardContent className='h-full'>
+            <Tabs className='flex h-full flex-col' defaultValue='script'>
+              <TabsList className='grid w-full grid-cols-3'>
+                <TabsTrigger value='script'>HTML Script</TabsTrigger>
+                <TabsTrigger value='react'>React Component</TabsTrigger>
+                <TabsTrigger value='types'>TypeScript</TabsTrigger>
               </TabsList>
 
-              <TabsContent className="mt-4 flex-1" value="script">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <p className="text-muted-foreground text-sm">
+              <TabsContent className='mt-4 flex-1' value='script'>
+                <div className='space-y-4'>
+                  <div className='flex items-center justify-between'>
+                    <p className='text-muted-foreground text-sm'>
                       Add this script tag to your HTML, preferably before the
                       closing &lt;/body&gt; tag
                     </p>
                     <Button
                       onClick={() => copyToClipboard(generateEmbedCode.script)}
-                      size="sm"
-                      variant="outline"
+                      size='sm'
+                      variant='outline'
                     >
-                      <Copy className="mr-2 h-4 w-4" />
+                      <Copy className='mr-2 h-4 w-4' />
                       {copied ? 'Copied!' : 'Copy'}
                     </Button>
                   </div>
                   <Textarea
-                    className="min-h-[300px] resize-none font-mono text-sm"
+                    className='min-h-[300px] resize-none font-mono text-sm'
                     readOnly
                     value={generateEmbedCode.script}
                   />
                 </div>
               </TabsContent>
 
-              <TabsContent className="mt-4 flex-1" value="react">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <p className="text-muted-foreground text-sm">
+              <TabsContent className='mt-4 flex-1' value='react'>
+                <div className='space-y-4'>
+                  <div className='flex items-center justify-between'>
+                    <p className='text-muted-foreground text-sm'>
                       Use this React component in your app
                     </p>
                     <Button
                       onClick={() => copyToClipboard(generateEmbedCode.react)}
-                      size="sm"
-                      variant="outline"
+                      size='sm'
+                      variant='outline'
                     >
-                      <Copy className="mr-2 h-4 w-4" />
+                      <Copy className='mr-2 h-4 w-4' />
                       {copied ? 'Copied!' : 'Copy'}
                     </Button>
                   </div>
                   <Textarea
-                    className="min-h-[300px] resize-none font-mono text-sm"
+                    className='min-h-[300px] resize-none font-mono text-sm'
                     readOnly
                     value={generateEmbedCode.react}
                   />
                 </div>
               </TabsContent>
 
-              <TabsContent className="mt-4 flex-1" value="types">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <p className="text-muted-foreground text-sm">
+              <TabsContent className='mt-4 flex-1' value='types'>
+                <div className='space-y-4'>
+                  <div className='flex items-center justify-between'>
+                    <p className='text-muted-foreground text-sm'>
                       TypeScript declarations for type safety
                     </p>
                     <Button
                       onClick={() => copyToClipboard(generateEmbedCode.types)}
-                      size="sm"
-                      variant="outline"
+                      size='sm'
+                      variant='outline'
                     >
-                      <Copy className="mr-2 h-4 w-4" />
+                      <Copy className='mr-2 h-4 w-4' />
                       {copied ? 'Copied!' : 'Copy'}
                     </Button>
                   </div>
                   <Textarea
-                    className="min-h-[300px] resize-none font-mono text-sm"
+                    className='min-h-[300px] resize-none font-mono text-sm'
                     readOnly
                     value={generateEmbedCode.types}
                   />
-                  <div className="rounded-md bg-muted/50 p-4">
-                    <p className="mb-2 font-semibold text-sm">
+                  <div className='rounded-md bg-muted/50 p-4'>
+                    <p className='mb-2 font-semibold text-sm'>
                       TypeScript Setup Options:
                     </p>
-                    <ul className="space-y-1 text-muted-foreground text-sm">
+                    <ul className='space-y-1 text-muted-foreground text-sm'>
                       <li>
                         • <strong>Copy the types above</strong> into your
                         project for immediate type safety

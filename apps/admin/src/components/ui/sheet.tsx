@@ -5,25 +5,25 @@ import type * as React from 'react';
 import { cn } from '@/lib/utils';
 
 function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
-  return <SheetPrimitive.Root data-slot="sheet" {...props} />;
+  return <SheetPrimitive.Root data-slot='sheet' {...props} />;
 }
 
 function SheetTrigger({
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Trigger>) {
-  return <SheetPrimitive.Trigger data-slot="sheet-trigger" {...props} />;
+  return <SheetPrimitive.Trigger data-slot='sheet-trigger' {...props} />;
 }
 
 function SheetClose({
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Close>) {
-  return <SheetPrimitive.Close data-slot="sheet-close" {...props} />;
+  return <SheetPrimitive.Close data-slot='sheet-close' {...props} />;
 }
 
 function SheetPortal({
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Portal>) {
-  return <SheetPrimitive.Portal data-slot="sheet-portal" {...props} />;
+  return <SheetPrimitive.Portal data-slot='sheet-portal' {...props} />;
 }
 
 function SheetOverlay({
@@ -36,7 +36,7 @@ function SheetOverlay({
         'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50 data-[state=closed]:animate-out data-[state=open]:animate-in',
         className
       )}
-      data-slot="sheet-overlay"
+      data-slot='sheet-overlay'
       {...props}
     />
   );
@@ -66,13 +66,13 @@ function SheetContent({
             'data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-0 bottom-0 h-auto border-t',
           className
         )}
-        data-slot="sheet-content"
+        data-slot='sheet-content'
         {...props}
       >
         {children}
-        <SheetPrimitive.Close className="absolute top-4 right-4 rounded-xs opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
-          <XIcon className="size-4" />
-          <span className="sr-only">Close</span>
+        <SheetPrimitive.Close className='absolute top-4 right-4 rounded-xs opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary'>
+          <XIcon className='size-4' />
+          <span className='sr-only'>Close</span>
         </SheetPrimitive.Close>
       </SheetPrimitive.Content>
     </SheetPortal>
@@ -83,7 +83,7 @@ function SheetHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       className={cn('flex flex-col gap-1.5 p-4', className)}
-      data-slot="sheet-header"
+      data-slot='sheet-header'
       {...props}
     />
   );
@@ -93,7 +93,7 @@ function SheetFooter({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       className={cn('mt-auto flex flex-col gap-2 p-4', className)}
-      data-slot="sheet-footer"
+      data-slot='sheet-footer'
       {...props}
     />
   );
@@ -106,7 +106,7 @@ function SheetTitle({
   return (
     <SheetPrimitive.Title
       className={cn('font-semibold text-foreground', className)}
-      data-slot="sheet-title"
+      data-slot='sheet-title'
       {...props}
     />
   );
@@ -119,7 +119,7 @@ function SheetDescription({
   return (
     <SheetPrimitive.Description
       className={cn('text-muted-foreground text-sm', className)}
-      data-slot="sheet-description"
+      data-slot='sheet-description'
       {...props}
     />
   );

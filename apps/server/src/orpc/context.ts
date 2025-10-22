@@ -1,11 +1,11 @@
-import type { InferSelectModel } from "drizzle-orm";
-import { eq } from "drizzle-orm";
-import type { Context as HonoContext } from "hono";
-import { getDb } from "../db";
-import { organization, user } from "../db/schema";
-import { getAuth } from "../lib/auth";
-import type { AppEnv } from "../lib/env";
-import { resolveOrganizationFromHeaders } from "../services/organization";
+import type { InferSelectModel } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
+import type { Context as HonoContext } from 'hono';
+import { getDb } from '../db';
+import { organization, user } from '../db/schema';
+import { getAuth } from '../lib/auth';
+import type { AppEnv } from '../lib/env';
+import { resolveOrganizationFromHeaders } from '../services/organization';
 
 export type CreateContextOptions = {
   context: HonoContext;

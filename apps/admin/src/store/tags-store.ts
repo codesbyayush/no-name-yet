@@ -33,9 +33,7 @@ export const useTagsStore = create<TagsState>((set, get) => ({
   // Getters
   getAllTags: () => get().tags,
 
-  getTagById: (id: string) => {
-    return get().tagsById[id];
-  },
+  getTagById: (id: string) => get().tagsById[id],
 
   searchTags: (query: string) => {
     const lowerCaseQuery = query.toLowerCase();

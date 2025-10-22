@@ -43,18 +43,18 @@ export default function HeaderNav() {
   }, [isSearchOpen, closeSearch, searchQuery]);
 
   return (
-    <div className="flex h-10 w-full items-center justify-between border-b px-6 py-1.5">
-      <SidebarTrigger className="" />
+    <div className='flex h-10 w-full items-center justify-between border-b px-6 py-1.5'>
+      <SidebarTrigger className='' />
 
-      <div className="flex items-center gap-2">
+      <div className='flex items-center gap-2'>
         {isSearchOpen ? (
           <div
-            className="relative flex w-64 items-center justify-center transition-all duration-200 ease-in-out"
+            className='relative flex w-64 items-center justify-center transition-all duration-200 ease-in-out'
             ref={searchContainerRef}
           >
-            <SearchIcon className="-translate-y-1/2 absolute top-1/2 left-2 h-4 w-4 text-muted-foreground" />
+            <SearchIcon className='-translate-y-1/2 absolute top-1/2 left-2 h-4 w-4 text-muted-foreground' />
             <Input
-              className="h-7 pl-8 text-sm"
+              className='h-7 pl-8 text-sm'
               onChange={(e) => {
                 previousValueRef.current = searchQuery;
                 const newValue = e.target.value;
@@ -79,22 +79,22 @@ export default function HeaderNav() {
                   }
                 }
               }}
-              placeholder="Search issues..."
+              placeholder='Search issues...'
               ref={searchInputRef}
-              type="search"
+              type='search'
               value={searchQuery}
             />
           </div>
         ) : (
           <>
             <Button
-              aria-label="Search"
-              className="h-8 w-8"
+              aria-label='Search'
+              className='h-8 w-8'
               onClick={toggleSearch}
-              size="icon"
-              variant="ghost"
+              size='icon'
+              variant='ghost'
             >
-              <SearchIcon className="h-4 w-4" />
+              <SearchIcon className='h-4 w-4' />
             </Button>
             {/* TODO: Add notifications
             <Notifications /> */}

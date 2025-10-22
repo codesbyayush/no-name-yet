@@ -63,12 +63,11 @@ export const createApiClient = ({ apiUrl, publicKey }: ApiClientOptions) => {
     /**
      * Fetches the list of public boards for the organization.
      */
-    getPublicBoards: (): Promise<Board[]> => {
-      return fetch(`${baseUrl}/boards`, {
+    getPublicBoards: (): Promise<Board[]> =>
+      fetch(`${baseUrl}/boards`, {
         method: 'GET',
         headers,
-      }).then((res) => handleResponse<Board[]>(res));
-    },
+      }).then((res) => handleResponse<Board[]>(res)),
 
     /**
      * Cached version of getPublicBoards. Cached per (apiUrl|publicKey) for this tab lifetime.
@@ -95,12 +94,11 @@ export const createApiClient = ({ apiUrl, publicKey }: ApiClientOptions) => {
     /**
      * Fetches the list of unique tags for the organization.
      */
-    getTags: (): Promise<string[]> => {
-      return fetch(`${baseUrl}/tags`, {
+    getTags: (): Promise<string[]> =>
+      fetch(`${baseUrl}/tags`, {
         method: 'GET',
         headers,
-      }).then((res) => handleResponse<string[]>(res));
-    },
+      }).then((res) => handleResponse<string[]>(res)),
 
     /**
      * Submits new feedback.
@@ -108,15 +106,14 @@ export const createApiClient = ({ apiUrl, publicKey }: ApiClientOptions) => {
      */
     submitFeedback: (
       payload: FeedbackSubmission
-    ): Promise<{ success: boolean; feedbackId: string }> => {
-      return fetch(`${baseUrl}/feedback`, {
+    ): Promise<{ success: boolean; feedbackId: string }> =>
+      fetch(`${baseUrl}/feedback`, {
         method: 'POST',
         headers,
         body: JSON.stringify(payload),
       }).then((res) =>
         handleResponse<{ success: boolean; feedbackId: string }>(res)
-      );
-    },
+      ),
   };
 };
 
