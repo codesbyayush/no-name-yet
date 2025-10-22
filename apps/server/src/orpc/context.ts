@@ -1,10 +1,11 @@
-import type { InferSelectModel } from 'drizzle-orm';
-import { eq } from 'drizzle-orm';
-import type { Context as HonoContext } from 'hono';
-import { getDb } from '../db';
-import { organization, user } from '../db/schema';
-import { getAuth } from '../lib/auth';
-import type { AppEnv } from '../lib/env';
+import type { InferSelectModel } from "drizzle-orm";
+import { eq } from "drizzle-orm";
+import type { Context as HonoContext } from "hono";
+import { getDb } from "../db";
+import { organization, user } from "../db/schema";
+import { getAuth } from "../lib/auth";
+import type { AppEnv } from "../lib/env";
+import { resolveOrganizationFromHeaders } from "../services/organization";
 
 export type CreateContextOptions = {
   context: HonoContext;
@@ -18,47 +19,10 @@ export async function createContext({ context, env }: CreateContextOptions) {
     headers: context.req.raw.headers,
   });
 
-  // Extract subdomain from trusted proxy headers or host
-  const xfHost = context.req.raw.headers.get('x-forwarded-host');
-  let host =
-    (xfHost
-      ? xfHost.split(',')[0]
-      : context.req.raw.headers.get('host')
-    )?.trim() || '';
-  if (host.includes(':')) {
-    host = host.split(':')[0];
-  }
-  let subdomain: string | undefined;
-  if (host && !host.startsWith('localhost')) {
-    const parts = host.split('.');
-    if (parts.length > 2) {
-      const candidate = parts[0];
-      if (candidate !== 'www' && candidate !== 'api') {
-        subdomain = candidate;
-      }
-    }
-  }
-
-  if (!subdomain) {
-    subdomain = context.req.raw.headers
-      .get('origin')
-      ?.replaceAll('https://', '')
-      .split('.')[0];
-  }
-
-  // Fetch organization based on subdomain
-  let org = null;
-  if (subdomain) {
-    try {
-      const orgResult = await db
-        .select()
-        .from(organization)
-        .where(eq(organization.slug, subdomain))
-        .limit(1);
-
-      org = orgResult[0] || null;
-    } catch (_error) {}
-  }
+  const { organization: org, subdomain } = await resolveOrganizationFromHeaders(
+    db,
+    context.req.raw.headers
+  );
 
   return {
     session,

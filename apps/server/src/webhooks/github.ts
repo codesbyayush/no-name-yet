@@ -1,34 +1,42 @@
-import { verify } from '@octokit/webhooks-methods';
-import { and, eq } from 'drizzle-orm';
-import { Hono } from 'hono';
-import { lower } from '@/db/utils';
-import { getDb } from '../db';
+import { verify } from "@octokit/webhooks-methods";
+import { eq } from "drizzle-orm";
+import { Hono } from "hono";
+import { z } from "zod";
+import { getDb } from "../db";
+import { githubWebhookDeliveries } from "../db/schema";
+import { getEnvFromContext } from "../lib/env";
 import {
-  boards,
-  feedback,
-  githubInstallations,
-  githubWebhookDeliveries,
-  organization,
-} from '../db/schema';
-import { getEnvFromContext } from '../lib/env';
+  deleteInstallation,
+  type GitHubInstallation,
+  handlePullRequest,
+  type PullRequestPayload,
+  upsertInstallation,
+} from "../services/github";
 
 const router = new Hono();
 
-router.post('/github', async (c) => {
+const HTTP_STATUS = {
+  BAD_REQUEST: 400,
+  UNAUTHORIZED: 401,
+  ACCEPTED: 202,
+  INTERNAL_SERVER_ERROR: 500,
+} as const;
+
+router.post("/github", async (c) => {
   try {
     const env = getEnvFromContext(c);
     const db = getDb(env);
-    const deliveryId = c.req.header('x-github-delivery');
-    const event = c.req.header('x-github-event');
-    const signature256 = c.req.header('x-hub-signature-256') || '';
+    const deliveryId = c.req.header("x-github-delivery");
+    const event = c.req.header("x-github-event");
+    const signature256 = c.req.header("x-hub-signature-256") || "";
 
     if (!(deliveryId && event)) {
-      return c.text('Missing headers', 400);
+      return c.text("Missing headers", HTTP_STATUS.BAD_REQUEST);
     }
 
     // Check if required env vars exist
     if (!env.GH_WEBHOOK_SECRET) {
-      return c.text('Configuration error', 500);
+      return c.text("Configuration error", HTTP_STATUS.INTERNAL_SERVER_ERROR);
     }
 
     const body = await c.req.text();
@@ -37,12 +45,10 @@ router.post('/github', async (c) => {
       env.GH_WEBHOOK_SECRET,
       body,
       signature256
-    ).catch((_error) => {
-      return false;
-    });
+    ).catch(() => false);
 
     if (!isValid) {
-      return c.text('Invalid signature', 401);
+      return c.text("Invalid signature", HTTP_STATUS.UNAUTHORIZED);
     }
 
     // Idempotency
@@ -51,41 +57,78 @@ router.post('/github', async (c) => {
         .insert(githubWebhookDeliveries)
         .values({ id: deliveryId, deliveryId, event });
     } catch (_dbError) {
-      return c.text('Duplicate', 202);
+      return c.text("Duplicate", HTTP_STATUS.ACCEPTED);
     }
 
     const payload = JSON.parse(body);
 
     // Process synchronously to support both local dev and Workers
-    await handleEvent({ db, env, event, payload, deliveryId });
-    return c.text('OK');
+    await handleEvent({ db, event, payload, deliveryId });
+    return c.text("OK");
   } catch (_error) {
-    return c.text('Internal server error', 500);
+    return c.text("Internal server error", HTTP_STATUS.INTERNAL_SERVER_ERROR);
   }
 });
 
-async function handleEvent({ db, env, event, payload, deliveryId }: any) {
+// Zod schemas for payload validation
+const InstallationSchema = z.object({
+  action: z.string(),
+  installation: z.object({
+    id: z.number(),
+    app_id: z.number(),
+    account: z.object({ login: z.string(), id: z.number() }),
+  }),
+});
+
+const PullRequestSchema = z.object({
+  action: z.enum(["opened", "reopened", "ready_for_review", "closed"]),
+  pull_request: z.object({
+    head: z.object({ ref: z.string() }),
+    base: z.object({ ref: z.string() }),
+    merged: z.boolean(),
+  }),
+  repository: z.object({ default_branch: z.string() }),
+  installation: z.object({ id: z.number() }).optional(),
+});
+
+async function handleEvent({
+  db,
+  event,
+  payload,
+  deliveryId,
+}: {
+  db: ReturnType<typeof getDb>;
+  event: string;
+  payload: Record<string, unknown>;
+  deliveryId: string;
+}) {
   try {
     switch (event) {
-      case 'installation': {
-        const action = payload.action;
-        const inst = payload.installation;
+      case "installation": {
+        const validated = InstallationSchema.safeParse(payload);
+        if (!validated.success) {
+          break;
+        }
+        const action = validated.data.action;
+        const inst = validated.data.installation as GitHubInstallation;
 
         if (!inst) {
           break;
         }
 
-        if (action === 'created') {
-          await upsertInstallation(db, inst, env);
-        } else if (action === 'deleted') {
-          await db
-            .delete(githubInstallations)
-            .where(eq(githubInstallations.githubInstallationId, inst.id));
+        if (action === "created") {
+          await upsertInstallation(db, inst);
+        } else if (action === "deleted") {
+          await deleteInstallation(db, inst.id);
         }
         break;
       }
-      case 'pull_request': {
-        await handlePullRequest(db, payload);
+      case "pull_request": {
+        const validated = PullRequestSchema.safeParse(payload);
+        if (!validated.success) {
+          break;
+        }
+        await handlePullRequest(db, validated.data as PullRequestPayload);
         break;
       }
       default:
@@ -98,114 +141,10 @@ async function handleEvent({ db, env, event, payload, deliveryId }: any) {
         .update(githubWebhookDeliveries)
         .set({ handledAt: new Date() })
         .where(eq(githubWebhookDeliveries.deliveryId, deliveryId));
-    } catch (_updateError) {}
+    } catch (_updateError) {
+      // Ignore update errors - webhook already processed
+    }
   }
-}
-
-async function upsertInstallation(db: any, inst: any, _env: any) {
-  const account = inst.account; // org or user
-  const id = String(inst.id);
-
-  const row = {
-    id,
-    githubInstallationId: inst.id,
-    accountLogin: account.login,
-    accountId: account.id,
-    appId: inst.app_id,
-  };
-
-  // Try to map to tenant by org slug = account.login
-  const org = await db
-    .select()
-    .from(organization)
-    .where(eq(organization.slug, account.login))
-    .limit(1);
-
-  if (org[0]?.id) {
-    (row as any).organizationId = org[0].id;
-  }
-
-  try {
-    await db.insert(githubInstallations).values(row);
-  } catch (_insertError) {
-    await db
-      .update(githubInstallations)
-      .set(row)
-      .where(eq(githubInstallations.githubInstallationId, inst.id));
-  }
-}
-
-async function handlePullRequest(db: any, payload: any) {
-  try {
-    const action: string = payload.action;
-    const pr = payload.pull_request;
-    const repo = payload.repository;
-    if (!(pr && repo)) {
-      return;
-    }
-
-    const branch: string = pr.head?.ref || ''; // e.g., ayush/pe-102/title or pe-102/title
-    const m = branch
-      .toLowerCase()
-      .match(/^(?:[a-z0-9][a-z0-9-]*\/)?([a-z0-9]+-\d+)(?:\/.*)?$/);
-    if (!m) {
-      return;
-    }
-    const issueKey = m[1];
-
-    // Find organization via installation id
-    const installationId: number | undefined = payload.installation?.id;
-    if (!installationId) {
-      return;
-    }
-    const instRows = await db
-      .select({ orgId: githubInstallations.organizationId })
-      .from(githubInstallations)
-      .where(eq(githubInstallations.githubInstallationId, installationId))
-      .limit(1);
-    const orgId = instRows[0]?.orgId;
-    if (!orgId) {
-      return;
-    }
-
-    // Resolve feedback by issueKey within org (join via boards)
-    const fbRows = await db
-      .select({ id: feedback.id })
-      .from(feedback)
-      .leftJoin(boards, eq(boards.id, feedback.boardId))
-      .where(
-        and(
-          eq(lower(feedback.issueKey), issueKey.toLowerCase()),
-          eq(boards.organizationId, orgId)
-        )
-      )
-      .limit(1);
-    const fbId = fbRows[0]?.id;
-    if (!fbId) {
-      return;
-    }
-
-    // Status mapping
-    let nextStatusKey: string | null = null;
-    if (action === 'opened' || action === 'reopened') {
-      nextStatusKey = 'in-progress';
-    } else if (action === 'ready_for_review') {
-      nextStatusKey = 'technical-review';
-    } else if (action === 'closed' && pr.merged) {
-      const defaultBranch = repo.default_branch || 'main';
-      if (pr.base?.ref?.toLowerCase() === defaultBranch.toLowerCase()) {
-        nextStatusKey = 'completed';
-      }
-    }
-    if (!nextStatusKey) {
-      return;
-    }
-
-    await db
-      .update(feedback)
-      .set({ status: nextStatusKey })
-      .where(eq(feedback.id, fbId));
-  } catch (_err) {}
 }
 
 export default router;

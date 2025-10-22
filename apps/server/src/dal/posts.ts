@@ -288,12 +288,14 @@ export async function createAdminPost(
 ) {
   const normalizedPriority =
     input.priority === "no_priority" ? "no-priority" : input.priority;
+  // Normalize issueKey to lowercase at write-time to avoid LOWER() in joins
+  const normalizedIssueKey = input.issueKey ? input.issueKey.toLowerCase() : "";
 
   const [newPost] = await db
     .insert(feedback)
     .values({
       boardId: input.boardId,
-      issueKey: input.issueKey ?? "",
+      issueKey: normalizedIssueKey,
       authorId,
       title: input.title,
       description: input.description,
@@ -409,7 +411,7 @@ export async function deleteAdminPost(db: Database, id: string) {
 }
 
 export async function getAdminAllPosts(db: Database) {
-  return db.select().from(feedback);
+  return await db.select().from(feedback);
 }
 
 export type PublicCreatePostInput = {
@@ -428,7 +430,7 @@ export async function createPublicPost(
     .from(feedback)
     .where(eq(feedback.boardId, input.boardId));
 
-  const issueKey = `OF-${(postsCount[0]?.count ?? 0) + 1}`;
+  const issueKey = `OF-${(postsCount[0]?.count ?? 0) + 1}`.toLowerCase();
 
   const [newPost] = await db
     .insert(feedback)

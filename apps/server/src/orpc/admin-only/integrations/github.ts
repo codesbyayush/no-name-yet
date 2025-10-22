@@ -1,9 +1,10 @@
-import { eq } from 'drizzle-orm';
-import { z } from 'zod';
-import { feedback, githubInstallations } from '../../../db/schema';
-import { signInstallState } from '../../../lib/state';
-import { buildBranchName } from '../../../utils/slug';
-import { adminOnlyProcedure } from '../../procedures';
+import { ORPCError } from "@orpc/server";
+import { eq } from "drizzle-orm";
+import { z } from "zod";
+import { feedback, githubInstallations } from "../../../db/schema";
+import { signInstallState } from "../../../lib/state";
+import { buildBranchName } from "../../../utils/slug";
+import { adminOnlyProcedure } from "../../procedures";
 
 export const githubAdminRouter = {
   getInstallStatus: adminOnlyProcedure.handler(async ({ context }) => {
@@ -29,11 +30,13 @@ export const githubAdminRouter = {
   getInstallUrl: adminOnlyProcedure.handler(async ({ context }) => {
     const base = `https://github.com/apps/${context.env.GH_APP_NAME}/installations/new`;
     const nonce = crypto.randomUUID();
+    const SECONDS_PER_MILLISECOND = 1000 as const;
+    const UNIX_SECONDS = Math.floor(Date.now() / SECONDS_PER_MILLISECOND);
     const state = await signInstallState(context.env, {
       orgId: context.organization?.id,
       returnTo: `${context.env.FRONTEND_URL}/settings/integrations`,
       nonce,
-      ts: Math.floor(Date.now() / 1000),
+      ts: UNIX_SECONDS,
     });
     const url = `${base}?state=${encodeURIComponent(state)}`;
     return { url };
@@ -106,14 +109,14 @@ export const githubAdminRouter = {
         url: `https://github.com/settings/installations/${installationId}`,
       };
     }
-    return { url: 'https://github.com/settings/installations' };
+    return { url: "https://github.com/settings/installations" };
   }),
 
   getBranchSuggestion: adminOnlyProcedure
     .input(z.object({ feedbackId: z.string() }))
     .handler(async ({ input, context }) => {
       if (!context.organization) {
-        throw new Error('Org required');
+        throw new ORPCError("UNAUTHORIZED");
       }
       const rows = await context.db
         .select({ title: feedback.title, issueKey: feedback.issueKey })
@@ -122,7 +125,7 @@ export const githubAdminRouter = {
         .limit(1);
       const row = rows[0];
       if (!row?.issueKey) {
-        throw new Error('Issue not found');
+        throw new ORPCError("NOT_FOUND", { message: "Issue not found" });
       }
       const branch = buildBranchName({
         issueKey: row.issueKey,

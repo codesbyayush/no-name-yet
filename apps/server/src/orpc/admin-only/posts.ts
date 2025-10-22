@@ -1,4 +1,4 @@
-import { ORPCError } from "@orpc/client";
+import { ORPCError } from "@orpc/server";
 import { z } from "zod";
 import {
   createAdminPost,
@@ -29,31 +29,27 @@ export const postsRouter = {
         throw new ORPCError("NOT_FOUND");
       }
       const userId = context.session?.user?.id;
-      try {
-        const { posts, hasMore } = await getAdminDetailedPosts(
-          context.db,
-          {
-            organizationId: context.organization.id,
-            boardId,
-            offset,
-            take,
-            sortBy,
-          },
-          userId
-        );
-        return {
-          posts,
+      const { posts, hasMore } = await getAdminDetailedPosts(
+        context.db,
+        {
           organizationId: context.organization.id,
-          organizationName: context.organization.name,
-          pagination: {
-            offset,
-            take,
-            hasMore,
-          },
-        };
-      } catch (_error) {
-        throw new ORPCError("INTERNAL_SERVER_ERROR");
-      }
+          boardId,
+          offset,
+          take,
+          sortBy,
+        },
+        userId
+      );
+      return {
+        posts,
+        organizationId: context.organization.id,
+        organizationName: context.organization.name,
+        pagination: {
+          offset,
+          take,
+          hasMore,
+        },
+      };
     }),
 
   getDetailedSinglePost: adminOnlyProcedure
@@ -68,20 +64,16 @@ export const postsRouter = {
         throw new ORPCError("NOT_FOUND");
       }
       const userId = context.session?.user?.id;
-      try {
-        const post = await getAdminDetailedSinglePost(
-          context.db,
-          feedbackId,
-          userId
-        );
-        return {
-          post,
-          organizationId: context.organization.id,
-          organizationName: context.organization.name,
-        };
-      } catch (_error) {
-        throw new ORPCError("INTERNAL_SERVER_ERROR");
-      }
+      const post = await getAdminDetailedSinglePost(
+        context.db,
+        feedbackId,
+        userId
+      );
+      return {
+        post,
+        organizationId: context.organization.id,
+        organizationName: context.organization.name,
+      };
     }),
 
   // Standard post CRUD from public/posts.ts
@@ -122,12 +114,8 @@ export const postsRouter = {
       if (!userId) {
         throw new ORPCError("UNAUTHORIZED");
       }
-      try {
-        const newPost = await createAdminPost(context.db, input, userId);
-        return newPost;
-      } catch (_error) {
-        throw new ORPCError("INTERNAL_SERVER_ERROR");
-      }
+      const newPost = await createAdminPost(context.db, input, userId);
+      return newPost;
     }),
 
   update: adminOnlyProcedure
@@ -187,7 +175,7 @@ export const postsRouter = {
       const _userId = context.session?.user.id;
       const updatedPost = await updateAdminPost(context.db, input);
       if (!updatedPost) {
-        throw new Error("Post not found");
+        throw new ORPCError("NOT_FOUND", { message: "Post not found" });
       }
       return updatedPost;
     }),
@@ -203,17 +191,13 @@ export const postsRouter = {
       const _userId = context.session?.user.id;
       const deletedPost = await deleteAdminPost(context.db, input.id);
       if (!deletedPost) {
-        throw new Error("Post not found");
+        throw new ORPCError("NOT_FOUND", { message: "Post not found" });
       }
       return { success: true, deletedPost };
     }),
 
   getAll: adminOnlyProcedure.handler(async ({ context }) => {
-    try {
-      const posts = await getAdminAllPosts(context.db);
-      return posts;
-    } catch (_error) {
-      throw new ORPCError("INTERNAL_SERVER_ERROR");
-    }
+    const posts = await getAdminAllPosts(context.db);
+    return posts;
   }),
 };

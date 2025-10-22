@@ -47,7 +47,7 @@ export const votesRouter = {
       }
       const deletedVote = await deleteVote(context.db, input, userId);
       if (!deletedVote) {
-        throw new Error("Vote not found");
+        throw new ORPCError("NOT_FOUND", { message: "Vote not found" });
       }
       return { success: true, deletedVote };
     }),
@@ -61,7 +61,7 @@ export const votesRouter = {
     )
     .handler(async ({ input, context }) => {
       if (!(input.feedbackId || input.commentId)) {
-        throw new Error("Resource not found");
+        throw new ORPCError("BAD_REQUEST");
       }
       return await countVotes(context.db, input);
     }),

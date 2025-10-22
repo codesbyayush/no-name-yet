@@ -1,3 +1,4 @@
+import { ORPCError } from "@orpc/server";
 import { z } from "zod";
 import {
   countPublicComments as dalCountPublic,
@@ -33,7 +34,7 @@ export const commentsRouter = {
     .handler(async ({ input, context }) => {
       const updatedComment = await dalUpdateComment(context.db, input);
       if (!updatedComment) {
-        throw new Error("Comment not found");
+        throw new ORPCError("NOT_FOUND", { message: "Comment not found" });
       }
       return updatedComment;
     }),
@@ -51,7 +52,7 @@ export const commentsRouter = {
         input.commentId
       );
       if (!deletedComment) {
-        throw new Error("Comment not found");
+        throw new ORPCError("NOT_FOUND", { message: "Comment not found" });
       }
       return { success: true, deletedComment };
     }),

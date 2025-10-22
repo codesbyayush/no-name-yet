@@ -1,4 +1,4 @@
-import { ORPCError } from "@orpc/client";
+import { ORPCError } from "@orpc/server";
 import { z } from "zod";
 import {
   createPublicPost,
@@ -27,30 +27,26 @@ export const postsRouter = {
         throw new ORPCError("NOT_FOUND");
       }
       const userId = context.session?.user?.id;
-      try {
-        const { posts, hasMore } = await getPostsWithAggregates(
-          context.db,
-          {
-            organizationId: context.organization.id,
-            boardId,
-            offset,
-            take,
-            sortBy,
-          },
-          userId
-        );
-        return {
-          posts,
-          organizationName: context.organization.name,
-          pagination: {
-            offset,
-            take,
-            hasMore,
-          },
-        };
-      } catch (_error) {
-        throw new ORPCError("INTERNAL_SERVER_ERROR");
-      }
+      const { posts, hasMore } = await getPostsWithAggregates(
+        context.db,
+        {
+          organizationId: context.organization.id,
+          boardId,
+          offset,
+          take,
+          sortBy,
+        },
+        userId
+      );
+      return {
+        posts,
+        organizationName: context.organization.name,
+        pagination: {
+          offset,
+          take,
+          hasMore,
+        },
+      };
     }),
 
   getDetailedSinglePost: protectedProcedure
@@ -65,12 +61,8 @@ export const postsRouter = {
         throw new ORPCError("NOT_FOUND");
       }
       const userId = context.session?.user?.id;
-      try {
-        const post = await getPostById(context.db, feedbackId, userId);
-        return post;
-      } catch (_error) {
-        throw new ORPCError("INTERNAL_SERVER_ERROR");
-      }
+      const post = await getPostById(context.db, feedbackId, userId);
+      return post;
     }),
 
   create: protectedProcedure
@@ -87,11 +79,7 @@ export const postsRouter = {
       if (!userId) {
         throw new ORPCError("UNAUTHORIZED");
       }
-      try {
-        return await createPublicPost(context.db, input, userId);
-      } catch (_error) {
-        throw new ORPCError("INTERNAL_SERVER_ERROR");
-      }
+      return await createPublicPost(context.db, input, userId);
     }),
 
   update: protectedProcedure
@@ -115,7 +103,7 @@ export const postsRouter = {
     .handler(async ({ input, context }) => {
       const deletedPost = await deletePublicPost(context.db, input.feedbackId);
       if (!deletedPost) {
-        throw new Error("Post not found");
+        throw new ORPCError("NOT_FOUND", { message: "Post not found" });
       }
       return { success: true, deletedPost };
     }),

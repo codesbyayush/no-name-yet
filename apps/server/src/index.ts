@@ -14,6 +14,10 @@ const app = new Hono();
 
 const authRouter = new Hono();
 
+const HTTP_STATUS = {
+  INTERNAL_SERVER_ERROR: 500,
+} as const;
+
 const corsOptions = {
   origin: (origin: string, c: Context) => {
     const env = getEnvFromContext(c);
@@ -50,7 +54,7 @@ authRouter.all("*", async (c) => {
         error: "Auth failed",
         details: error instanceof Error ? error.message : "Unknown error",
       },
-      500
+      HTTP_STATUS.INTERNAL_SERVER_ERROR
     );
   }
 });
@@ -103,7 +107,7 @@ app.use("/rpc/*", cors(corsOptions), async (c, next) => {
     context,
   });
   if (matched) {
-    return c.newResponse(response.body, response);
+    return response;
   }
   await next();
 });
@@ -121,7 +125,7 @@ app.use("/admin/*", cors(corsOptions), async (c, next) => {
     context,
   });
   if (matched) {
-    return c.newResponse(response.body, response);
+    return response;
   }
   await next();
 });
@@ -130,7 +134,7 @@ const isLocalEnvironment =
   typeof process !== "undefined" && process.env.NODE_ENV === "development";
 const isWorkersEnvironment =
   typeof globalThis !== "undefined" &&
-  (globalThis as any).__CLOUDFLARE_WORKER__;
+  (globalThis as { __CLOUDFLARE_WORKER__?: boolean }).__CLOUDFLARE_WORKER__;
 
 const createExport = async () => {
   if (isLocalEnvironment && !isWorkersEnvironment) {
