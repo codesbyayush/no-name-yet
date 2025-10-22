@@ -21,6 +21,7 @@ import { Route as AdminBoardsRouteImport } from './routes/_admin/boards'
 import { Route as AdminChangelogsIndexRouteImport } from './routes/_admin/changelogs/index'
 import { Route as AdminBoardsIndexRouteImport } from './routes/_admin/boards/index'
 import { Route as AdminSettingsPricingRouteImport } from './routes/_admin/settings/pricing'
+import { Route as AdminSettingsMembersRouteImport } from './routes/_admin/settings/members'
 import { Route as AdminSettingsIntegrationsRouteImport } from './routes/_admin/settings/integrations'
 import { Route as AdminSettingsGeneralRouteImport } from './routes/_admin/settings/general'
 import { Route as AdminChangelogsNewRouteImport } from './routes/_admin/changelogs/new'
@@ -86,6 +87,11 @@ const AdminSettingsPricingRoute = AdminSettingsPricingRouteImport.update({
   path: '/pricing',
   getParentRoute: () => AdminSettingsRoute,
 } as any)
+const AdminSettingsMembersRoute = AdminSettingsMembersRouteImport.update({
+  id: '/members',
+  path: '/members',
+  getParentRoute: () => AdminSettingsRoute,
+} as any)
 const AdminSettingsIntegrationsRoute =
   AdminSettingsIntegrationsRouteImport.update({
     id: '/integrations',
@@ -126,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/changelogs/new': typeof AdminChangelogsNewRoute
   '/settings/general': typeof AdminSettingsGeneralRoute
   '/settings/integrations': typeof AdminSettingsIntegrationsRoute
+  '/settings/members': typeof AdminSettingsMembersRoute
   '/settings/pricing': typeof AdminSettingsPricingRoute
   '/boards/': typeof AdminBoardsIndexRoute
   '/changelogs': typeof AdminChangelogsIndexRoute
@@ -143,6 +150,7 @@ export interface FileRoutesByTo {
   '/changelogs/new': typeof AdminChangelogsNewRoute
   '/settings/general': typeof AdminSettingsGeneralRoute
   '/settings/integrations': typeof AdminSettingsIntegrationsRoute
+  '/settings/members': typeof AdminSettingsMembersRoute
   '/settings/pricing': typeof AdminSettingsPricingRoute
   '/boards': typeof AdminBoardsIndexRoute
   '/changelogs': typeof AdminChangelogsIndexRoute
@@ -163,6 +171,7 @@ export interface FileRoutesById {
   '/_admin/changelogs/new': typeof AdminChangelogsNewRoute
   '/_admin/settings/general': typeof AdminSettingsGeneralRoute
   '/_admin/settings/integrations': typeof AdminSettingsIntegrationsRoute
+  '/_admin/settings/members': typeof AdminSettingsMembersRoute
   '/_admin/settings/pricing': typeof AdminSettingsPricingRoute
   '/_admin/boards/': typeof AdminBoardsIndexRoute
   '/_admin/changelogs/': typeof AdminChangelogsIndexRoute
@@ -183,6 +192,7 @@ export interface FileRouteTypes {
     | '/changelogs/new'
     | '/settings/general'
     | '/settings/integrations'
+    | '/settings/members'
     | '/settings/pricing'
     | '/boards/'
     | '/changelogs'
@@ -200,6 +210,7 @@ export interface FileRouteTypes {
     | '/changelogs/new'
     | '/settings/general'
     | '/settings/integrations'
+    | '/settings/members'
     | '/settings/pricing'
     | '/boards'
     | '/changelogs'
@@ -219,6 +230,7 @@ export interface FileRouteTypes {
     | '/_admin/changelogs/new'
     | '/_admin/settings/general'
     | '/_admin/settings/integrations'
+    | '/_admin/settings/members'
     | '/_admin/settings/pricing'
     | '/_admin/boards/'
     | '/_admin/changelogs/'
@@ -318,6 +330,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsPricingRouteImport
       parentRoute: typeof AdminSettingsRoute
     }
+    '/_admin/settings/members': {
+      id: '/_admin/settings/members'
+      path: '/members'
+      fullPath: '/settings/members'
+      preLoaderRoute: typeof AdminSettingsMembersRouteImport
+      parentRoute: typeof AdminSettingsRoute
+    }
     '/_admin/settings/integrations': {
       id: '/_admin/settings/integrations'
       path: '/integrations'
@@ -373,12 +392,14 @@ const AdminBoardsRouteWithChildren = AdminBoardsRoute._addFileChildren(
 interface AdminSettingsRouteChildren {
   AdminSettingsGeneralRoute: typeof AdminSettingsGeneralRoute
   AdminSettingsIntegrationsRoute: typeof AdminSettingsIntegrationsRoute
+  AdminSettingsMembersRoute: typeof AdminSettingsMembersRoute
   AdminSettingsPricingRoute: typeof AdminSettingsPricingRoute
 }
 
 const AdminSettingsRouteChildren: AdminSettingsRouteChildren = {
   AdminSettingsGeneralRoute: AdminSettingsGeneralRoute,
   AdminSettingsIntegrationsRoute: AdminSettingsIntegrationsRoute,
+  AdminSettingsMembersRoute: AdminSettingsMembersRoute,
   AdminSettingsPricingRoute: AdminSettingsPricingRoute,
 }
 
