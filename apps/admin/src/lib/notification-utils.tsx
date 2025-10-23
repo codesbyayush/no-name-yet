@@ -1,3 +1,4 @@
+import { cn } from '@workspace/ui/lib/utils';
 import {
   AtSign,
   Edit,
@@ -9,7 +10,6 @@ import {
   UserPlus,
   X,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import type { NotificationType } from '@/mock-data/inbox';
 
 export function getNotificationIcon(

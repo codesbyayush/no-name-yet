@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { defineConfig } from '@rsbuild/core';
 import { pluginBasicSsl } from '@rsbuild/plugin-basic-ssl';
 import { pluginReact } from '@rsbuild/plugin-react';
@@ -21,6 +22,10 @@ export default defineConfig({
   source: {
     entry: {
       index: './src/main.tsx',
+    },
+    alias: {
+      react: path.resolve(__dirname, './node_modules/react'),
+      'react-dom': path.resolve(__dirname, './node_modules/react-dom'),
     },
   },
   tools: {

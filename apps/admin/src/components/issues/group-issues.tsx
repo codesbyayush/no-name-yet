@@ -1,9 +1,9 @@
+import { Button } from '@workspace/ui/components/button';
+import { cn } from '@workspace/ui/lib/utils';
 import { Plus } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { type FC, useRef } from 'react';
 import { useDrop } from 'react-dnd';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 import type { Issue } from '@/mock-data/issues';
 import { sortIssuesByPriority } from '@/mock-data/issues';
 import { status as allStatus, type Status } from '@/mock-data/status';

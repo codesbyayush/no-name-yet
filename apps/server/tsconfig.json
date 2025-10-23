@@ -1,20 +1,17 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "verbatimModuleSyntax": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "baseUrl": "./",
-    "paths": {
-      "@/*": ["./src/*"]
-    },
     "outDir": "./dist",
     "types": ["@types/bun", "@cloudflare/workers-types"],
     "composite": true,
-    "jsx": "react-jsx"
+    "noEmit": false,
+    "allowImportingTsExtensions": false,
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
+  "include": ["src/**/*"],
   "tsc-alias": {
     "resolveFullPaths": true
   }

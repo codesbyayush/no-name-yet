@@ -1,10 +1,10 @@
 // import { Logo } from "@/components/landing/logo";
 
 import { Link } from '@tanstack/react-router';
+import { Button } from '@workspace/ui/components/button';
+import { cn } from '@workspace/ui/lib/utils';
 import { Menu, X } from 'lucide-react';
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 
 const menuItems: any[] = [
   // { name: "Features", to: "/about" },

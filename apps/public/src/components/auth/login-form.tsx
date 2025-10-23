@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@workspace/ui/components/button';
 import {
   Card,
   CardContent,
@@ -7,9 +6,10 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from '@workspace/ui/components/card';
+import { cn } from '@workspace/ui/lib/utils';
+import { useState } from 'react';
 import { signIn } from '@/lib/auth-client';
-import { cn } from '@/lib/utils';
 
 export default function SignIn({
   redirect,

@@ -4,6 +4,7 @@ import {
   Outlet,
 } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
+import '@workspace/ui/globals.css';
 import '../index.css';
 
 export type RouterAppContext = {};

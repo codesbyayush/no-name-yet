@@ -1,8 +1,8 @@
+import { Button } from '@workspace/ui/components/button';
+import { Input } from '@workspace/ui/components/input';
+import { SidebarTrigger } from '@workspace/ui/components/sidebar';
 import { SearchIcon } from 'lucide-react';
 import { useEffect, useRef } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useSearchStore } from '@/store/search-store';
 // import Notifications from './notifications';
 

@@ -1,4 +1,4 @@
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from '@workspace/ui/components/skeleton';
 
 export function FeedbackSkeleton() {
   return (

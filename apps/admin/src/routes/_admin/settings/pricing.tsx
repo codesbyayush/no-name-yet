@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { PricingSection } from '@/components/ui/pricing';
+import { PricingSection } from '@workspace/ui/components/pricing';
 
 export const Route = createFileRoute('/_admin/settings/pricing')({
   component: RouteComponent,

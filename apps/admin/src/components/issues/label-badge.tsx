@@ -1,4 +1,4 @@
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@workspace/ui/components/badge';
 import type { LabelInterface } from '@/mock-data/labels';
 
 export function LabelBadge({ tags }: { tags: LabelInterface[] }) {

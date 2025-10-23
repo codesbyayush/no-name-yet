@@ -10,29 +10,29 @@ import {
 } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { toast } from 'sonner';
-import { SiteHeader } from '@/components/site-header';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Badge } from '@workspace/ui/components/badge';
+import { Button } from '@workspace/ui/components/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from '@workspace/ui/components/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@workspace/ui/components/dropdown-menu';
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '@/components/ui/sidebar';
-import { Skeleton } from '@/components/ui/skeleton';
+} from '@workspace/ui/components/sidebar';
+import { Skeleton } from '@workspace/ui/components/skeleton';
+import { toast } from 'sonner';
+import { SiteHeader } from '@/components/site-header';
 import { SidebarRightPortal } from '@/contexts/sidebar-right';
 import { adminClient } from '@/utils/admin-orpc';
 

@@ -1,5 +1,4 @@
-import { CheckIcon, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@workspace/ui/components/button';
 import {
   Command,
   CommandEmpty,
@@ -7,7 +6,8 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command';
+} from '@workspace/ui/components/command';
+import { CheckIcon, ChevronRight } from 'lucide-react';
 import { priorities } from '@/mock-data/priorities';
 import { useIssueCountByPriority } from '@/react-db/issues';
 import { useFilterStore } from '@/store/filter-store';

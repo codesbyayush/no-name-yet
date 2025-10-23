@@ -1,6 +1,9 @@
-import { CheckIcon, ChevronRight, User } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@workspace/ui/components/avatar';
+import { Button } from '@workspace/ui/components/button';
 import {
   Command,
   CommandEmpty,
@@ -8,7 +11,8 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command';
+} from '@workspace/ui/components/command';
+import { CheckIcon, ChevronRight, User } from 'lucide-react';
 import { useIssueCountByAssignee } from '@/react-db/issues';
 import { useFilterStore } from '@/store/filter-store';
 import { useUsersStore } from '@/store/users-store';

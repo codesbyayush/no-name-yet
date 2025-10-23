@@ -1,12 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router';
-import AllIssues from '@/components/issues/all-issues';
-import { CreateIssueModalProvider } from '@/components/issues/create-issue-modal-provider';
-import Header from '@/components/issues/header/header';
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '@/components/ui/sidebar';
+} from '@workspace/ui/components/sidebar';
+import AllIssues from '@/components/issues/all-issues';
+import { CreateIssueModalProvider } from '@/components/issues/create-issue-modal-provider';
+import Header from '@/components/issues/header/header';
 import { SidebarRightPortal } from '@/contexts/sidebar-right';
 import { useUsers } from '@/hooks/use-users';
 

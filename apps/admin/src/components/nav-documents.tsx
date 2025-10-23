@@ -7,7 +7,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from '@/components/ui/sidebar';
+} from '@workspace/ui/components/sidebar';
 
 export function NavDocuments({
   items,

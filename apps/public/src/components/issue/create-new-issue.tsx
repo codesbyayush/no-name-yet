@@ -2,20 +2,20 @@ import { DialogTitle } from '@radix-ui/react-dialog';
 import { RiEditLine } from '@remixicon/react';
 import { type InfiniteData, useMutation } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
-import { Heart } from 'lucide-react';
-import { useState } from 'react';
-import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
+import { Button } from '@workspace/ui/components/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
+} from '@workspace/ui/components/dialog';
+import { Input } from '@workspace/ui/components/input';
+import { Label } from '@workspace/ui/components/label';
+import { Switch } from '@workspace/ui/components/switch';
+import { Textarea } from '@workspace/ui/components/textarea';
+import { Heart } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
 import { useSession } from '@/lib/auth-client';
 import { client, queryClient } from '@/utils/orpc';
 import { BoardSelector } from './board-selector';

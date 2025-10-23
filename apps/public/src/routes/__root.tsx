@@ -5,8 +5,9 @@ import {
   useLocation,
 } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
+import { Toaster } from '@workspace/ui/components/sonner';
 import { ThemeProvider } from '@/components/theme-provider';
-import { Toaster } from '@/components/ui/sonner';
+import '@workspace/ui/globals.css';
 import '../index.css';
 
 export type RouterAppContext = {};

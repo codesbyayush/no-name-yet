@@ -1,8 +1,8 @@
 import type { InfiniteData } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
+import { cn } from '@workspace/ui/lib/utils';
 import type React from 'react';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
 import { client, queryClient } from '@/utils/orpc';
 import { UpvoteIcon } from './upvote-icon';
 

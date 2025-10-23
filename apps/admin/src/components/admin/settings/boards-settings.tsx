@@ -1,19 +1,16 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { EditIcon, PlusIcon, TrashIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { toast } from 'sonner';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Badge } from '@workspace/ui/components/badge';
+import { Button } from '@workspace/ui/components/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
+} from '@workspace/ui/components/card';
+import { Input } from '@workspace/ui/components/input';
+import { Label } from '@workspace/ui/components/label';
+import { Switch } from '@workspace/ui/components/switch';
 import {
   Table,
   TableBody,
@@ -21,7 +18,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from '@workspace/ui/components/table';
+import { EditIcon, PlusIcon, TrashIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { adminClient } from '@/utils/admin-orpc';
 import { queryClient } from '@/utils/orpc';
 

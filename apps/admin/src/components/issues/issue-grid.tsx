@@ -1,3 +1,7 @@
+import {
+  ContextMenu,
+  ContextMenuTrigger,
+} from '@workspace/ui/components/context-menu';
 import { format } from 'date-fns';
 import { motion } from 'motion/react';
 import { useEffect, useRef } from 'react';
@@ -8,7 +12,6 @@ import {
   useDrop,
 } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
-import { ContextMenu, ContextMenuTrigger } from '@/components/ui/context-menu';
 import type { Issue } from '@/mock-data/issues';
 import { AssigneeUser } from './assignee-user';
 import { IssueContextMenu } from './issue-context-menu';

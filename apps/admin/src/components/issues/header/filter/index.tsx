@@ -1,11 +1,11 @@
-import { ListFilter } from 'lucide-react';
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@workspace/ui/components/button';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
+} from '@workspace/ui/components/popover';
+import { ListFilter } from 'lucide-react';
+import { useState } from 'react';
 import { useTags } from '@/hooks/use-tags';
 import { useFilterStore } from '@/store/filter-store';
 import { AssigneeFilter } from './assignee-filter';

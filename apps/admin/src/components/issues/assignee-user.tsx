@@ -1,6 +1,8 @@
-import { CheckIcon, CircleUserRound, Send, UserIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@workspace/ui/components/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,7 +10,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@workspace/ui/components/dropdown-menu';
+import { CheckIcon, CircleUserRound, Send, UserIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useUpdateIssue } from '@/react-db/issues';
 import {
   statusUserColors,

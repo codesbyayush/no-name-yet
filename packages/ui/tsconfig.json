@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "baseUrl": ".",
+    "paths": {
+      "@workspace/ui/*": ["./src/*"],
+      "@workspace/ui/lib/*": ["./src/lib/*"],
+      "@workspace/ui/components/*": ["./src/components/*"],
+      "@workspace/ui/hooks/*": ["./src/hooks/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["node_modules"]
+}

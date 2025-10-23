@@ -1,21 +1,11 @@
 import { Link, useLocation } from '@tanstack/react-router';
 import {
-  // Bell,
-  Command,
-  MessageSquare,
-  ScrollText,
-  Settings,
-} from 'lucide-react';
-import { type ComponentProps, useMemo } from 'react';
-
-import { NavUser } from '@/components/nav-user';
-import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from '@/components/ui/sheet';
+} from '@workspace/ui/components/sheet';
 import {
   Sidebar,
   SidebarContent,
@@ -27,7 +17,16 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from '@/components/ui/sidebar';
+} from '@workspace/ui/components/sidebar';
+import {
+  // Bell,
+  Command,
+  MessageSquare,
+  ScrollText,
+  Settings,
+} from 'lucide-react';
+import { type ComponentProps, useMemo } from 'react';
+import { NavUser } from '@/components/nav-user';
 import { useSidebarRight } from '@/contexts/sidebar-right';
 import { useIsMobile } from '@/hooks/use-mobile';
 

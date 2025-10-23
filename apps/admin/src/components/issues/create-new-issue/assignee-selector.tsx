@@ -1,9 +1,9 @@
-'use client';
-
-import { CheckIcon, UserCircle } from 'lucide-react';
-import { useEffect, useId, useState } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@workspace/ui/components/avatar';
+import { Button } from '@workspace/ui/components/button';
 import {
   Command,
   CommandEmpty,
@@ -11,12 +11,14 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command';
+} from '@workspace/ui/components/command';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
+} from '@workspace/ui/components/popover';
+import { CheckIcon, UserCircle } from 'lucide-react';
+import { useEffect, useId, useState } from 'react';
 import { useIssues } from '@/react-db/issues';
 import { useUsers } from '@/react-db/users';
 

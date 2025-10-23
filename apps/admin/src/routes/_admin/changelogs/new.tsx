@@ -1,8 +1,8 @@
 import { IconArrowLeft } from '@tabler/icons-react';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { Button } from '@workspace/ui/components/button';
 import { ChangelogForm } from '@/components/admin/changelog-form';
 import { SiteHeader } from '@/components/site-header';
-import { Button } from '@/components/ui/button';
 
 export const Route = createFileRoute('/_admin/changelogs/new')({
   component: CreateChangelogPage,

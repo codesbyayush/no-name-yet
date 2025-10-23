@@ -1,11 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
+import { AutosizeTextarea } from '@workspace/ui/components/autosize-textarea';
+import { Button } from '@workspace/ui/components/button';
+import { formatSmartDate } from '@workspace/ui/lib/utils';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { CommentButton, VoteButton } from '@/components/svg';
-import { AutosizeTextarea } from '@/components/ui/autosize-textarea';
-import { Button } from '@/components/ui/button';
-import { formatSmartDate } from '@/lib/utils';
 import { client } from '@/utils/orpc';
 
 export const Route = createFileRoute('/_public/board/$postId')({

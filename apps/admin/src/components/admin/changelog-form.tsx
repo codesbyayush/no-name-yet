@@ -1,12 +1,15 @@
 import type { Block } from '@blocknote/core';
 import { useForm } from '@tanstack/react-form';
+import { Button } from '@workspace/ui/components/button';
+import { Input } from '@workspace/ui/components/input';
+import { Label } from '@workspace/ui/components/label';
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from '@workspace/ui/components/radio-group';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { adminClient } from '@/utils/admin-orpc';
 import BlockNoteEditor, { type BlockNoteEditorRef } from '../blocknote-editor';
 

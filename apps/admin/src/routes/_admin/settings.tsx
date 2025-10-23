@@ -25,12 +25,12 @@ import {
   redirect,
   useLocation,
 } from '@tanstack/react-router';
-import { SiteHeader } from '@/components/site-header';
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '@/components/ui/sidebar';
+} from '@workspace/ui/components/sidebar';
+import { SiteHeader } from '@/components/site-header';
 import { SidebarRightPortal } from '@/contexts/sidebar-right';
 
 type NavItem = {

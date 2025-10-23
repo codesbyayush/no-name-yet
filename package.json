@@ -2,7 +2,8 @@
   "name": "my-better-t-app",
   "private": true,
   "workspaces": [
-    "apps/*"
+    "apps/*",
+    "packages/*"
   ],
   "scripts": {
     "dev": "bun run --filter '*' dev",
@@ -18,7 +19,8 @@
     "db:up": "docker compose up -d postgres neon-proxy",
     "db:down": "docker compose down",
     "db:logs": "docker compose logs -f postgres",
-    "prepare": "husky"
+    "prepare": "husky",
+    "one-version:check": "one-version check"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.6",
@@ -33,7 +35,9 @@
     "@tanstack/db": "0.1.1",
     "@tanstack/react-db": "0.1.1",
     "@tanstack/query-db-collection": "0.1.1",
-    "lucide-react": "0.525.0"
+    "lucide-react": "0.525.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
   },
   "packageManager": "bun@1.2.10",
   "dependencies": {

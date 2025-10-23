@@ -1,4 +1,10 @@
 import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@workspace/ui/components/avatar';
+import { Button } from '@workspace/ui/components/button';
+import {
   ArrowRight,
   ArrowUp,
   Calendar,
@@ -10,8 +16,6 @@ import {
   Sparkles,
   User,
 } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import type { Issue } from '@/mock-data/issues';
 import { StatusSelector } from './status-selector';
 

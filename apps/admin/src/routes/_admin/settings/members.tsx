@@ -1,11 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { MoreHorizontal } from 'lucide-react';
-import { type ReactNode, useEffect, useMemo, useState } from 'react';
-import { toast } from 'sonner';
-import { z } from 'zod';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@workspace/ui/components/avatar';
+import { Badge } from '@workspace/ui/components/badge';
+import { Button } from '@workspace/ui/components/button';
 import {
   Dialog,
   DialogClose,
@@ -15,23 +15,23 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from '@workspace/ui/components/dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+} from '@workspace/ui/components/dropdown-menu';
+import { Input } from '@workspace/ui/components/input';
+import { Label } from '@workspace/ui/components/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Skeleton } from '@/components/ui/skeleton';
+} from '@workspace/ui/components/select';
+import { Skeleton } from '@workspace/ui/components/skeleton';
 import {
   Table,
   TableBody,
@@ -39,8 +39,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Textarea } from '@/components/ui/textarea';
+} from '@workspace/ui/components/table';
+import { Textarea } from '@workspace/ui/components/textarea';
+import { MoreHorizontal } from 'lucide-react';
+import { type ReactNode, useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
+import { z } from 'zod';
 import { useUsers as useAdminUsers } from '@/hooks/use-users';
 import { authClient } from '@/lib/auth-client';
 

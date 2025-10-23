@@ -1,6 +1,4 @@
-import { Box, CheckIcon } from 'lucide-react';
-import { useEffect, useId, useMemo, useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@workspace/ui/components/button';
 import {
   Command,
   CommandEmpty,
@@ -8,12 +6,14 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command';
+} from '@workspace/ui/components/command';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
+} from '@workspace/ui/components/popover';
+import { Box, CheckIcon } from 'lucide-react';
+import { useEffect, useId, useMemo, useState } from 'react';
 import { priorities } from '@/mock-data/priorities';
 import { type Project, projects } from '@/mock-data/projects';
 import { status as allStatus } from '@/mock-data/status';

@@ -1,13 +1,13 @@
 import { RiSlackLine } from '@remixicon/react';
-import { Bell } from 'lucide-react';
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@workspace/ui/components/button';
+import { Checkbox } from '@workspace/ui/components/checkbox';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
+} from '@workspace/ui/components/popover';
+import { Bell } from 'lucide-react';
+import { useState } from 'react';
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState({

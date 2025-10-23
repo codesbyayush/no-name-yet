@@ -1,8 +1,8 @@
 import { Link } from '@tanstack/react-router';
+import { AnimatedGroup } from '@workspace/ui/components/animated-group';
+import { Button } from '@workspace/ui/components/button';
+import { TextEffect } from '@workspace/ui/components/text-effect';
 import { ChevronRight } from 'lucide-react';
-import { AnimatedGroup } from '@/components/ui/animated-group';
-import { Button } from '@/components/ui/button';
-import { TextEffect } from '@/components/ui/text-effect';
 import AdminShowcase from '../../../assets/admin-showcase.png';
 
 const transitionVariants = {

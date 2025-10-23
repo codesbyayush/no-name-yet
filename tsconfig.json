@@ -1,5 +1,57 @@
 {
   "compilerOptions": {
-    "strictNullChecks": true
-  }
+    // Environment setup & latest features (Bun optimized)
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "target": "ESNext",
+    "module": "Preserve",
+    "moduleDetection": "force",
+    "jsx": "react-jsx",
+    "allowJs": true,
+
+    // Bundler mode (Bun specific)
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+
+    // Best practices (Bun recommended)
+    "strict": true,
+    "skipLibCheck": true,
+    "noFallthroughCasesInSwitch": true,
+    // TODO: Enable this after updating to checked indexed access
+    // "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noUncheckedSideEffectImports": true,
+
+    // Bun recommended: stricter flags disabled by default
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noPropertyAccessFromIndexSignature": false,
+
+    // Interop Constraints
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "useDefineForClassFields": true,
+
+    // Path Mapping
+    "baseUrl": ".",
+    "paths": {
+      "@workspace/ui/*": ["./packages/ui/src/*"],
+      "@workspace/ui/lib/*": ["./packages/ui/src/lib/*"],
+      "@workspace/ui/components/*": ["./packages/ui/src/components/*"],
+      "@workspace/ui/hooks/*": ["./packages/ui/src/hooks/*"]
+    }
+  },
+  "include": [],
+  "exclude": ["node_modules", "dist", "build", "coverage"],
+  "references": [
+    { "path": "./apps/admin" },
+    { "path": "./apps/public" },
+    { "path": "./apps/server" },
+    { "path": "./apps/widget" },
+    { "path": "./packages/ui" }
+  ]
 }

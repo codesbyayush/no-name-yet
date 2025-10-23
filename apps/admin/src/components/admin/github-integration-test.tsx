@@ -1,10 +1,15 @@
 import { useLocation } from '@tanstack/react-router';
+import { Alert, AlertDescription } from '@workspace/ui/components/alert';
+import { Badge } from '@workspace/ui/components/badge';
+import { Button } from '@workspace/ui/components/button';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@workspace/ui/components/card';
+import { Separator } from '@workspace/ui/components/separator';
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { adminClient } from '@/utils/admin-orpc';
 
 interface InstallationStatus {

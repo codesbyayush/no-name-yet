@@ -1,7 +1,10 @@
 import { useNavigate } from '@tanstack/react-router';
+import {
+  ContextMenu,
+  ContextMenuTrigger,
+} from '@workspace/ui/components/context-menu';
 import { format } from 'date-fns';
 import { motion } from 'motion/react';
-import { ContextMenu, ContextMenuTrigger } from '@/components/ui/context-menu';
 import type { Issue } from '@/mock-data/issues';
 import { AssigneeUser } from './assignee-user';
 import { IssueContextMenu } from './issue-context-menu';

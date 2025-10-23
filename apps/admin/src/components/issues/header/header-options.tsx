@@ -1,12 +1,12 @@
-import { LayoutGrid, LayoutList, SlidersHorizontal } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@workspace/ui/components/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { cn } from '@/lib/utils';
+} from '@workspace/ui/components/dropdown-menu';
+import { cn } from '@workspace/ui/lib/utils';
+import { LayoutGrid, LayoutList, SlidersHorizontal } from 'lucide-react';
 import { useViewStore, type ViewType } from '@/store/view-store';
 import { Filter } from './filter';
 

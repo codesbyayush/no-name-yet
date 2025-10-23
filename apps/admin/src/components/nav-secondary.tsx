@@ -1,13 +1,13 @@
 import type { Icon } from '@tabler/icons-react';
 import { Link } from '@tanstack/react-router';
-import type * as React from 'react';
 import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '@/components/ui/sidebar';
+} from '@workspace/ui/components/sidebar';
+import type * as React from 'react';
 
 export function NavSecondary({
   items,

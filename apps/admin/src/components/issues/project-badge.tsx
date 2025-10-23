@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@workspace/ui/components/badge';
 import type { Project } from '@/mock-data/projects';
 
 export function ProjectBadge({ project }: { project: Project }) {

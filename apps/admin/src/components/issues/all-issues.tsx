@@ -1,7 +1,7 @@
+import { cn } from '@workspace/ui/lib/utils';
 import type { FC } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { cn } from '@/lib/utils';
 import { status as allStatus } from '@/mock-data/status';
 import { useFilterStore } from '@/store/filter-store';
 import { useSearchStore } from '@/store/search-store';

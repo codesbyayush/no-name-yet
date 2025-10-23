@@ -1,4 +1,4 @@
-import { LexoRank } from '@/lib/utils';
+import LexoRank from '@kayron013/lexorank';
 import type { Issue } from '@/mock-data/issues';
 import { labels } from '@/mock-data/labels';
 import { priorities } from '@/mock-data/priorities';

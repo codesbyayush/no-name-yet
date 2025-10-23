@@ -1,4 +1,11 @@
 import {
+  Command,
+  CommandGroup,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from '@workspace/ui/components/command';
+import {
   BarChart3,
   ChevronRight,
   CircleCheck,
@@ -6,13 +13,6 @@ import {
   Tag,
   User,
 } from 'lucide-react';
-import {
-  Command,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-} from '@/components/ui/command';
 import { useFilterStore } from '@/store/filter-store';
 
 interface FiltersListProps {

@@ -1,15 +1,13 @@
-import { Clock, Info, Lightbulb, PlusIcon, Settings, X } from 'lucide-react';
-import { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Badge } from '@workspace/ui/components/badge';
+import { Button } from '@workspace/ui/components/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
+} from '@workspace/ui/components/card';
+import { Checkbox } from '@workspace/ui/components/checkbox';
 import {
   Dialog,
   DialogContent,
@@ -17,15 +15,17 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
+} from '@workspace/ui/components/dialog';
+import { Label } from '@workspace/ui/components/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@workspace/ui/components/select';
+import { Clock, Info, Lightbulb, PlusIcon, Settings, X } from 'lucide-react';
+import { useState } from 'react';
 
 interface Status {
   id: string;

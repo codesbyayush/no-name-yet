@@ -1,6 +1,6 @@
+import { Button } from '@workspace/ui/components/button';
+import { Command, CommandInput } from '@workspace/ui/components/command';
 import { ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Command, CommandInput } from '@/components/ui/command';
 
 interface BoardsFilterProps {
   setActiveFilter: (filter: FilterType | null) => void;

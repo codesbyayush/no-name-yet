@@ -1,9 +1,9 @@
 import { IconArrowLeft } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { Button } from '@workspace/ui/components/button';
 import { ChangelogForm } from '@/components/admin/changelog-form';
 import { SiteHeader } from '@/components/site-header';
-import { Button } from '@/components/ui/button';
 import { adminClient } from '@/utils/admin-orpc';
 
 export const Route = createFileRoute('/_admin/changelogs/edit/$id')({

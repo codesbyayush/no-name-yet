@@ -1,8 +1,10 @@
 import { Link, useNavigate } from '@tanstack/react-router';
-import { LogOut, Monitor, Moon, Plus, Sun, User } from 'lucide-react';
-import { useTheme } from '@/components/theme-provider';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@workspace/ui/components/avatar';
+import { Button } from '@workspace/ui/components/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,9 +13,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '@workspace/ui/components/dropdown-menu';
+import { Skeleton } from '@workspace/ui/components/skeleton';
+import { LogOut, Monitor, Moon, Plus, Sun, User } from 'lucide-react';
+import { useTheme } from '@/components/theme-provider';
 import { authClient } from '@/lib/auth-client';
-import { Skeleton } from './ui/skeleton';
 
 export default function UserMenu() {
   const navigate = useNavigate();

@@ -1,9 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type React from 'react';
-import { useEffect, useState } from 'react';
-import { toast } from 'sonner';
-import { AutosizeTextarea } from '@/components/ui/autosize-textarea';
-import { Button } from '@/components/ui/button';
+import { AutosizeTextarea } from '@workspace/ui/components/autosize-textarea';
+import { Button } from '@workspace/ui/components/button';
 import {
   Dialog,
   DialogContent,
@@ -12,16 +9,19 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+} from '@workspace/ui/components/dialog';
+import { Input } from '@workspace/ui/components/input';
+import { Label } from '@workspace/ui/components/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@workspace/ui/components/select';
+import type React from 'react';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { client } from '@/utils/orpc';
 
 interface PostFormData {

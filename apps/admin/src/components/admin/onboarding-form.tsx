@@ -5,7 +5,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from '@workspace/ui/components/card';
 import { CreateOrganizationForm } from './create-organization-form';
 
 export const GeneratedForm = () => {

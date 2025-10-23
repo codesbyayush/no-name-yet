@@ -1,12 +1,12 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { Badge } from '@workspace/ui/components/badge';
+import { Button } from '@workspace/ui/components/button';
+import { formatSmartDate } from '@workspace/ui/lib/utils';
 import { useCallback, useEffect, useRef } from 'react';
 import { CreateNewIssue } from '@/components/issue/create-new-issue';
 import { BoardSkeleton, FeedbackSkeleton } from '@/components/loading';
 import { CommentButton, VoteButton } from '@/components/svg';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { formatSmartDate } from '@/lib/utils';
 import { client } from '@/utils/orpc';
 
 export const Route = createFileRoute('/_public/board/')({
