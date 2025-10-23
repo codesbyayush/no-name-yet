@@ -72,7 +72,7 @@ export function PrioritySelector({
         </PopoverTrigger>
         <PopoverContent
           align='start'
-          className='w-full min-w-[var(--radix-popper-anchor-width)] border-input p-0'
+          className='w-full min-w-(--radix-popper-anchor-width) border-input p-0'
         >
           <Command>
             <CommandInput placeholder='Set priority...' />
