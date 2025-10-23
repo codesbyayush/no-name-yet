@@ -16,7 +16,7 @@ function getApp(env: AppEnv) {
 export async function getInstallationOctokit(
   env: AppEnv,
   installationId: number
-) {
+): Promise<Awaited<ReturnType<App['getInstallationOctokit']>>> {
   const app = getApp(env);
   return await app.getInstallationOctokit(installationId);
 }
