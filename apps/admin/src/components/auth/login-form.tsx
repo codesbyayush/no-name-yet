@@ -9,33 +9,30 @@ import {
 } from '@workspace/ui/components/card';
 import { cn } from '@workspace/ui/lib/utils';
 import { useState } from 'react';
-import { signIn } from '@/lib/auth-client';
+import { useAuth } from '@/contexts/auth-context';
 
 export default function SignIn({
   redirect,
   newUserCallbackURL,
 }: {
-  redirect: string;
-  newUserCallbackURL: string;
+  redirect?: string;
+  newUserCallbackURL?: string;
 }) {
   const [loading, setLoading] = useState(false);
+  const { signIn } = useAuth();
 
   async function handleSignIn(provider: string) {
-    await signIn.social(
-      {
-        provider,
+    setLoading(true);
+    try {
+      await signIn(provider, {
         callbackURL: redirect,
         newUserCallbackURL,
-      },
-      {
-        onRequest: (_ctx) => {
-          setLoading(true);
-        },
-        onResponse: (_ctx) => {
-          setLoading(false);
-        },
-      }
-    );
+      });
+    } catch {
+      // Todo: handle error
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (

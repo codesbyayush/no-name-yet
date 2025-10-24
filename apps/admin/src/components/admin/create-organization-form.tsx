@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import {
   Alert,
@@ -11,7 +10,8 @@ import { Input } from '@workspace/ui/components/input';
 import { Label } from '@workspace/ui/components/label';
 import type React from 'react';
 import { useState } from 'react';
-import { authClient, useSession } from '@/lib/auth-client';
+import { useAuth } from '@/contexts';
+import { authClient } from '@/lib/auth-client';
 
 interface CreateOrganizationFormProps {
   className?: string;
@@ -37,9 +37,8 @@ export function CreateOrganizationForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const _queryClient = useQueryClient();
 
-  const { data: session } = useSession();
+  const { session, refetchSession } = useAuth();
 
   const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     //TODO: can't add dash in input but can be added if copy pasted
@@ -89,6 +88,7 @@ export function CreateOrganizationForm({
         organizationSlug: org.data?.slug,
         organizationId: org.data?.id,
       });
+      await refetchSession();
 
       if (onSuccess) {
         onSuccess();

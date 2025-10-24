@@ -38,14 +38,14 @@ const IndexRoute = IndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingIndexRoute = OnboardingIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => OnboardingRoute,
+  id: '/onboarding/',
+  path: '/onboarding/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthIndexRoute = AuthIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AuthRoute,
+  id: '/auth/',
+  path: '/auth/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminWikiRoute = AdminWikiRouteImport.update({
   id: '/wiki',
@@ -126,8 +126,8 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AdminSettingsRouteWithChildren
   '/widget': typeof AdminWidgetRoute
   '/wiki': typeof AdminWikiRoute
-  '/auth/': typeof AuthIndexRoute
-  '/onboarding/': typeof OnboardingIndexRoute
+  '/auth': typeof AuthIndexRoute
+  '/onboarding': typeof OnboardingIndexRoute
   '/boards/$postId': typeof AdminBoardsPostIdRoute
   '/changelogs/new': typeof AdminChangelogsNewRoute
   '/settings/general': typeof AdminSettingsGeneralRoute
@@ -186,8 +186,8 @@ export interface FileRouteTypes {
     | '/settings'
     | '/widget'
     | '/wiki'
-    | '/auth/'
-    | '/onboarding/'
+    | '/auth'
+    | '/onboarding'
     | '/boards/$postId'
     | '/changelogs/new'
     | '/settings/general'
@@ -240,6 +240,8 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
+  AuthIndexRoute: typeof AuthIndexRoute
+  OnboardingIndexRoute: typeof OnboardingIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -260,17 +262,17 @@ declare module '@tanstack/react-router' {
     }
     '/onboarding/': {
       id: '/onboarding/'
-      path: '/'
-      fullPath: '/onboarding/'
+      path: '/onboarding'
+      fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingIndexRouteImport
-      parentRoute: typeof OnboardingRoute
+      parentRoute: typeof rootRouteImport
     }
     '/auth/': {
       id: '/auth/'
-      path: '/'
-      fullPath: '/auth/'
+      path: '/auth'
+      fullPath: '/auth'
       preLoaderRoute: typeof AuthIndexRouteImport
-      parentRoute: typeof AuthRoute
+      parentRoute: typeof rootRouteImport
     }
     '/_admin/wiki': {
       id: '/_admin/wiki'
@@ -432,6 +434,8 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
+  AuthIndexRoute: AuthIndexRoute,
+  OnboardingIndexRoute: OnboardingIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

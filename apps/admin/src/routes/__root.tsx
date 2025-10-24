@@ -6,6 +6,7 @@ import {
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import '@workspace/ui/globals.css';
 import '../index.css';
+import { Providers } from '@/contexts';
 
 export type RouterAppContext = {};
 
@@ -35,9 +36,11 @@ function RootComponent() {
   return (
     <>
       <HeadContent />
-      <div className='grid h-svh grid-rows-[auto_1fr]'>
-        <Outlet />
-      </div>
+      <Providers>
+        <div className='grid h-svh grid-rows-[auto_1fr]'>
+          <Outlet />
+        </div>
+      </Providers>
       <TanStackRouterDevtools position='bottom-right' />
     </>
   );

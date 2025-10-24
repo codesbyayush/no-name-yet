@@ -1,7 +1,7 @@
 import { Navigate, useLocation } from '@tanstack/react-router';
 import type { ComponentType, ReactNode } from 'react';
 import Loader from '@/components/loader';
-import { useSession } from '@/lib/auth-client';
+import { useAuth } from '@/contexts';
 
 type WithAuthOptions = {
   requireOrganization?: boolean;
@@ -99,11 +99,9 @@ export function withAuthGuard<P extends object>(
 ) {
   function WithAuthGuard(props: P) {
     const location = useLocation();
-    const { data: session, isPending, error } = useSession();
+    const { isAuthenticated, hasActiveOrganization, isPending, error } =
+      useAuth();
 
-    const isAuthenticated = Boolean(session && !session.user.isAnonymous);
-    const activeOrganizationId = session?.session?.activeOrganizationId ?? null;
-    const hasActiveOrganization = Boolean(activeOrganizationId);
     const redirectTarget = buildRedirectTarget(
       location.pathname,
       location.searchStr ?? '',

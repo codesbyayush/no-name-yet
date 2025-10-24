@@ -1,25 +1,34 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from '@tanstack/react-router';
+import { useLocation, useNavigate } from '@tanstack/react-router';
 import type React from 'react';
 import { createContext, useCallback, useContext, useMemo } from 'react';
 import { authClient, type Session, type User } from '@/lib/auth-client';
 
-// Define the auth context interface
+const SESSION_QUERY_KEY = ['session'] as const;
+
+type AuthClientInstance = typeof authClient;
+type SignOutFn = AuthClientInstance['signOut'];
+type SignOutReturn = Awaited<ReturnType<SignOutFn>>;
+
+interface SignInOptions {
+  callbackURL?: string;
+  newUserCallbackURL?: string;
+}
+
 interface AuthContextType {
-  // Session data
   session: Session | null;
   user: User | null;
-
-  // Loading states
-  isLoading: boolean;
   isAuthenticated: boolean;
-
-  // Auth actions
-  signOut: () => Promise<void>;
-  refetchSession: () => Promise<void>;
+  hasActiveOrganization: boolean;
+  isPending: boolean;
+  auth: AuthClientInstance;
+  signIn: (provider: string, options?: SignInOptions) => Promise<void>;
+  signOut: () => Promise<SignOutReturn>;
+  refetchSession: () => Promise<Session | null>;
 
   // Sync utilities
-  getSessionSync: () => Session | null;
+  setSessionCache: (session: Session | null) => void;
+  error: Error | null;
 }
 
 // Create the context with default values
@@ -36,66 +45,122 @@ export const useAuth = () => {
 
 interface AuthProviderProps {
   children: React.ReactNode;
-  requireAuth?: boolean;
 }
 
-export function AuthProvider({
-  children,
-  requireAuth = true,
-}: AuthProviderProps) {
+export function AuthProvider({ children }: AuthProviderProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const queryClient = useQueryClient();
+
+  const fetchSession = useCallback(async () => {
+    const { data } = await authClient.getSession();
+    return data ?? null;
+  }, []);
 
   const {
     data: session,
     isPending,
-    refetch,
+    error,
   } = useQuery({
-    queryKey: ['session'],
-    queryFn: async () => (await authClient.getSession()).data ?? null,
+    queryKey: SESSION_QUERY_KEY,
+    queryFn: fetchSession,
     staleTime: 30_000,
   });
 
-  // Extract user from session
+  // Derived state
   const user = session?.user || null;
-  const isAuthenticated = !!session && !!user;
+  const isAuthenticated = Boolean(session && user && !user.isAnonymous);
+  const activeOrganizationId = session?.session?.activeOrganizationId ?? null;
+  const hasActiveOrganization = Boolean(activeOrganizationId);
 
-  // Handle sign out
+  const setSessionCache = useCallback(
+    (nextSession: Session | null) => {
+      queryClient.setQueryData<Session | null>(SESSION_QUERY_KEY, nextSession);
+    },
+    [queryClient]
+  );
+
+  const refetchSession = useCallback(async (): Promise<Session | null> => {
+    const next = await queryClient.fetchQuery<Session | null>({
+      queryKey: SESSION_QUERY_KEY,
+      queryFn: fetchSession,
+    });
+    return next ?? null;
+  }, [fetchSession, queryClient]);
+
+  const handleSignIn = useCallback(
+    async (provider: string, options?: SignInOptions) => {
+      const getRedirectUrl = () => {
+        if (options?.callbackURL) {
+          return options.callbackURL;
+        }
+
+        const searchParams = new URLSearchParams(location.search);
+        const redirectParam = searchParams.get('redirect');
+        if (redirectParam) {
+          return redirectParam.startsWith('http')
+            ? redirectParam
+            : `${window.location.origin}/${redirectParam}`;
+        }
+
+        return `${window.location.origin}/boards`;
+      };
+
+      const redirectUrl = getRedirectUrl();
+      const newUserCallbackURL =
+        options?.newUserCallbackURL || `${window.location.origin}/onboarding`;
+
+      await authClient.signIn.social(
+        {
+          provider,
+          callbackURL: redirectUrl,
+          newUserCallbackURL,
+        },
+        {
+          onResponse: () => {
+            queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY });
+          },
+        }
+      );
+    },
+    [location.search, queryClient]
+  );
+
   const handleSignOut = useCallback(async () => {
-    await authClient.signOut();
-    await queryClient.invalidateQueries({ queryKey: ['session'] });
+    const result = await authClient.signOut();
+    setSessionCache(null);
+    await queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY });
     navigate({ to: '/auth', replace: true });
-  }, [navigate, queryClient]);
+    return result as SignOutReturn;
+  }, [navigate, queryClient, setSessionCache]);
 
-  // Context value
   const value: AuthContextType = useMemo(
     () => ({
       session: session ?? null,
       user,
-      isLoading: isPending,
       isAuthenticated,
+      hasActiveOrganization,
+      isPending,
+      auth: authClient,
+      signIn: handleSignIn,
       signOut: handleSignOut,
-      refetchSession: async () => {
-        await queryClient.invalidateQueries({ queryKey: ['session'] });
-        await refetch();
-      },
-      getSessionSync: () => queryClient.getQueryData(['session']) ?? null,
+      refetchSession,
+      setSessionCache,
+      error,
     }),
     [
       session,
       user,
-      isPending,
       isAuthenticated,
-      queryClient,
+      hasActiveOrganization,
+      isPending,
+      handleSignIn,
       handleSignOut,
-      refetch,
+      refetchSession,
+      setSessionCache,
+      error,
     ]
   );
-
-  // Don't render children if auth requirements aren't met
-  if (requireAuth && !isAuthenticated) {
-    return null;
-  }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

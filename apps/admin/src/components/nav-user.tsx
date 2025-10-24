@@ -1,4 +1,3 @@
-import { useRouter } from '@tanstack/react-router';
 import {
   Avatar,
   AvatarFallback,
@@ -19,6 +18,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@workspace/ui/components/sidebar';
+import type { User } from 'better-auth';
 import {
   BadgeCheck,
   Bell,
@@ -27,16 +27,13 @@ import {
   LogOut,
   Sparkles,
 } from 'lucide-react';
-import { signOut, useSession } from '@/lib/auth-client';
+import { useAuth } from '@/contexts';
 
 export function NavUser() {
   const { isMobile } = useSidebar();
-  const { data: session } = useSession();
-  const router = useRouter();
-  const user = {
-    ...session?.user,
-    avatar: session?.user?.image || '',
-  };
+  const { signOut, user } = useAuth();
+
+  const { name, email, image } = user as User;
 
   return (
     <SidebarMenu>
@@ -48,12 +45,12 @@ export function NavUser() {
               size='lg'
             >
               <Avatar className='h-8 w-8 rounded-lg'>
-                <AvatarImage alt={user.name} src={user.avatar} />
+                <AvatarImage alt={name} src={image || ''} />
                 <AvatarFallback className='rounded-lg'>CN</AvatarFallback>
               </Avatar>
               <div className='grid flex-1 text-left text-sm leading-tight'>
-                <span className='truncate font-medium'>{user.name}</span>
-                <span className='truncate text-xs'>{user.email}</span>
+                <span className='truncate font-medium'>{name}</span>
+                <span className='truncate text-xs'>{email}</span>
               </div>
               <ChevronsUpDown className='ml-auto size-4' />
             </SidebarMenuButton>
@@ -67,12 +64,12 @@ export function NavUser() {
             <DropdownMenuLabel className='p-0 font-normal'>
               <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
                 <Avatar className='h-8 w-8 rounded-lg'>
-                  <AvatarImage alt={user.name} src={user.avatar} />
+                  <AvatarImage alt={name} src={image || ''} />
                   <AvatarFallback className='rounded-lg'>CN</AvatarFallback>
                 </Avatar>
                 <div className='grid flex-1 text-left text-sm leading-tight'>
-                  <span className='truncate font-medium'>{user.name}</span>
-                  <span className='truncate text-xs'>{user.email}</span>
+                  <span className='truncate font-medium'>{name}</span>
+                  <span className='truncate text-xs'>{email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
@@ -99,15 +96,7 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => {
-                signOut();
-                router.navigate({
-                  to: '/auth',
-                  search: { redirect: '/boards' },
-                });
-              }}
-            >
+            <DropdownMenuItem onClick={() => signOut()}>
               <LogOut />
               Log out
             </DropdownMenuItem>
