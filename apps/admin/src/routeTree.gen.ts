@@ -9,10 +9,10 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as OnboardingRouteImport } from './routes/onboarding'
-import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/_admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as OnboardingIndexRouteImport } from './routes/onboarding/index'
+import { Route as AuthIndexRouteImport } from './routes/auth/index'
 import { Route as AdminWikiRouteImport } from './routes/_admin/wiki'
 import { Route as AdminWidgetRouteImport } from './routes/_admin/widget'
 import { Route as AdminSettingsRouteImport } from './routes/_admin/settings'
@@ -28,16 +28,6 @@ import { Route as AdminChangelogsNewRouteImport } from './routes/_admin/changelo
 import { Route as AdminBoardsPostIdRouteImport } from './routes/_admin/boards/$postId'
 import { Route as AdminChangelogsEditIdRouteImport } from './routes/_admin/changelogs/edit.$id'
 
-const OnboardingRoute = OnboardingRouteImport.update({
-  id: '/onboarding',
-  path: '/onboarding',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/_admin',
   getParentRoute: () => rootRouteImport,
@@ -46,6 +36,16 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingIndexRoute = OnboardingIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => OnboardingRoute,
+} as any)
+const AuthIndexRoute = AuthIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthRoute,
 } as any)
 const AdminWikiRoute = AdminWikiRouteImport.update({
   id: '/wiki',
@@ -121,13 +121,13 @@ const AdminChangelogsEditIdRoute = AdminChangelogsEditIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
-  '/onboarding': typeof OnboardingRoute
   '/boards': typeof AdminBoardsRouteWithChildren
   '/editor': typeof AdminEditorRoute
   '/settings': typeof AdminSettingsRouteWithChildren
   '/widget': typeof AdminWidgetRoute
   '/wiki': typeof AdminWikiRoute
+  '/auth/': typeof AuthIndexRoute
+  '/onboarding/': typeof OnboardingIndexRoute
   '/boards/$postId': typeof AdminBoardsPostIdRoute
   '/changelogs/new': typeof AdminChangelogsNewRoute
   '/settings/general': typeof AdminSettingsGeneralRoute
@@ -140,12 +140,12 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
-  '/onboarding': typeof OnboardingRoute
   '/editor': typeof AdminEditorRoute
   '/settings': typeof AdminSettingsRouteWithChildren
   '/widget': typeof AdminWidgetRoute
   '/wiki': typeof AdminWikiRoute
+  '/auth': typeof AuthIndexRoute
+  '/onboarding': typeof OnboardingIndexRoute
   '/boards/$postId': typeof AdminBoardsPostIdRoute
   '/changelogs/new': typeof AdminChangelogsNewRoute
   '/settings/general': typeof AdminSettingsGeneralRoute
@@ -160,13 +160,13 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_admin': typeof AdminRouteWithChildren
-  '/auth': typeof AuthRoute
-  '/onboarding': typeof OnboardingRoute
   '/_admin/boards': typeof AdminBoardsRouteWithChildren
   '/_admin/editor': typeof AdminEditorRoute
   '/_admin/settings': typeof AdminSettingsRouteWithChildren
   '/_admin/widget': typeof AdminWidgetRoute
   '/_admin/wiki': typeof AdminWikiRoute
+  '/auth/': typeof AuthIndexRoute
+  '/onboarding/': typeof OnboardingIndexRoute
   '/_admin/boards/$postId': typeof AdminBoardsPostIdRoute
   '/_admin/changelogs/new': typeof AdminChangelogsNewRoute
   '/_admin/settings/general': typeof AdminSettingsGeneralRoute
@@ -181,13 +181,13 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/auth'
-    | '/onboarding'
     | '/boards'
     | '/editor'
     | '/settings'
     | '/widget'
     | '/wiki'
+    | '/auth/'
+    | '/onboarding/'
     | '/boards/$postId'
     | '/changelogs/new'
     | '/settings/general'
@@ -200,12 +200,12 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/auth'
-    | '/onboarding'
     | '/editor'
     | '/settings'
     | '/widget'
     | '/wiki'
+    | '/auth'
+    | '/onboarding'
     | '/boards/$postId'
     | '/changelogs/new'
     | '/settings/general'
@@ -219,13 +219,13 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_admin'
-    | '/auth'
-    | '/onboarding'
     | '/_admin/boards'
     | '/_admin/editor'
     | '/_admin/settings'
     | '/_admin/widget'
     | '/_admin/wiki'
+    | '/auth/'
+    | '/onboarding/'
     | '/_admin/boards/$postId'
     | '/_admin/changelogs/new'
     | '/_admin/settings/general'
@@ -240,26 +240,10 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
-  AuthRoute: typeof AuthRoute
-  OnboardingRoute: typeof OnboardingRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/onboarding': {
-      id: '/onboarding'
-      path: '/onboarding'
-      fullPath: '/onboarding'
-      preLoaderRoute: typeof OnboardingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_admin': {
       id: '/_admin'
       path: ''
@@ -273,6 +257,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/': {
+      id: '/onboarding/'
+      path: '/'
+      fullPath: '/onboarding/'
+      preLoaderRoute: typeof OnboardingIndexRouteImport
+      parentRoute: typeof OnboardingRoute
+    }
+    '/auth/': {
+      id: '/auth/'
+      path: '/'
+      fullPath: '/auth/'
+      preLoaderRoute: typeof AuthIndexRouteImport
+      parentRoute: typeof AuthRoute
     }
     '/_admin/wiki': {
       id: '/_admin/wiki'
@@ -434,8 +432,6 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
-  AuthRoute: AuthRoute,
-  OnboardingRoute: OnboardingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

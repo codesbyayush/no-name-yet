@@ -1,26 +1,17 @@
-import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
+import { createFileRoute, Outlet } from '@tanstack/react-router';
 import {
   SidebarInset,
   SidebarProvider,
 } from '@workspace/ui/components/sidebar';
 import { AppSidebar } from '@/components/app-sidebar';
+import { withAuthGuard } from '@/components/auth/auth-guard';
 import { Providers } from '@/contexts/providers';
 import { SidebarRightProvider } from '@/contexts/sidebar-right';
-import { authClient } from '@/lib/auth-client';
+
+const GuardedAdminLayout = withAuthGuard(AdminLayout);
 
 export const Route = createFileRoute('/_admin')({
-  beforeLoad: async ({ location }) => {
-    const { data: session } = await authClient.getSession();
-    if (!session || session.user.isAnonymous) {
-      throw redirect({
-        to: '/auth',
-        search: { redirect: location.pathname },
-        replace: true,
-      });
-    }
-    return { session };
-  },
-  component: AdminLayout,
+  component: GuardedAdminLayout,
 });
 
 function AdminLayout() {

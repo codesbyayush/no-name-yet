@@ -2,7 +2,7 @@ import { createFileRoute, redirect } from '@tanstack/react-router';
 import SignIn from '@/components/auth/login-form';
 import { authClient } from '@/lib/auth-client';
 
-export const Route = createFileRoute('/auth')({
+export const Route = createFileRoute('/auth/')({
   beforeLoad: async () => {
     const { data: session } = await authClient.getSession();
     if (session && !session.user.isAnonymous) {

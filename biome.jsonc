@@ -39,7 +39,8 @@
         "noExportedImports": "warn",
         "useCollapsedIf": "warn",
         "useFilenamingConvention": "warn",
-        "noDescendingSpecificity": "warn"
+        "noDescendingSpecificity": "warn",
+        "useBlockStatements": "off"
       },
       "performance": {
         "noNamespaceImport": "warn",
