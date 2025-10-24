@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { GeneratedForm } from '@/components/admin/onboarding-form';
-import { withAuthGuard } from '@/components/auth/auth-guard';
+import { withAuthGuard } from '@/features/auth';
 
 const GuardedOnboardingPage = withAuthGuard(OnboardingPage, {
   requireOrganization: false,

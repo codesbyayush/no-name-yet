@@ -4,8 +4,8 @@ import {
   SidebarProvider,
 } from '@workspace/ui/components/sidebar';
 import { AppSidebar } from '@/components/app-sidebar';
-import { withAuthGuard } from '@/components/auth/auth-guard';
 import { SidebarRightProvider } from '@/contexts/sidebar-right';
+import { withAuthGuard } from '@/features/auth';
 
 const GuardedAdminLayout = withAuthGuard(AdminLayout);
 
