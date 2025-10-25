@@ -23,6 +23,7 @@ export function getAuth(env: AppEnv): AuthInstance {
 
   const config = {
     baseURL: env.BETTER_AUTH_URL as string,
+    secret: env.BETTER_AUTH_SECRET as string,
     database: drizzleAdapter(db, {
       provider: 'pg',
       schema,
