@@ -9,7 +9,7 @@ import {
 } from '@workspace/ui/components/card';
 import { cn } from '@workspace/ui/lib/utils';
 import { useState } from 'react';
-import { useAuth } from '@/contexts/auth-context';
+import { useAuth } from '@/features/auth';
 
 export default function SignIn({
   redirect,

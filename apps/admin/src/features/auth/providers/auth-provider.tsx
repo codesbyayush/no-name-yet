@@ -1,47 +1,20 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocation, useNavigate } from '@tanstack/react-router';
 import type React from 'react';
-import { createContext, useCallback, useContext, useMemo } from 'react';
-import { authClient, type Session, type User } from '@/lib/auth-client';
+import { createContext, useCallback, useMemo } from 'react';
+import { SESSION_QUERY_KEY } from '@/features/auth/constants';
+import type {
+  AuthContextType,
+  SignInOptions,
+  SignOutReturn,
+} from '@/features/auth/types';
+import { authClient, type Session } from '@/features/auth/utils/auth-client';
+import { getRedirectUrl } from '@/features/auth/utils/redirect';
+import { fetchSession } from '@/features/auth/utils/session';
 
-const SESSION_QUERY_KEY = ['session'] as const;
-
-type AuthClientInstance = typeof authClient;
-type SignOutFn = AuthClientInstance['signOut'];
-type SignOutReturn = Awaited<ReturnType<SignOutFn>>;
-
-interface SignInOptions {
-  callbackURL?: string;
-  newUserCallbackURL?: string;
-}
-
-interface AuthContextType {
-  session: Session | null;
-  user: User | null;
-  isAuthenticated: boolean;
-  hasActiveOrganization: boolean;
-  isPending: boolean;
-  auth: AuthClientInstance;
-  signIn: (provider: string, options?: SignInOptions) => Promise<void>;
-  signOut: () => Promise<SignOutReturn>;
-  refetchSession: () => Promise<Session | null>;
-
-  // Sync utilities
-  setSessionCache: (session: Session | null) => void;
-  error: Error | null;
-}
-
-// Create the context with default values
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// Custom hook to use the auth context
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined
+);
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -51,11 +24,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const queryClient = useQueryClient();
-
-  const fetchSession = useCallback(async () => {
-    const { data } = await authClient.getSession();
-    return data ?? null;
-  }, []);
 
   const {
     data: session,
@@ -86,27 +54,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
       queryFn: fetchSession,
     });
     return next ?? null;
-  }, [fetchSession, queryClient]);
+  }, [queryClient]);
 
   const handleSignIn = useCallback(
     async (provider: string, options?: SignInOptions) => {
-      const getRedirectUrl = () => {
-        if (options?.callbackURL) {
-          return options.callbackURL;
-        }
-
-        const searchParams = new URLSearchParams(location.search);
-        const redirectParam = searchParams.get('redirect');
-        if (redirectParam) {
-          return redirectParam.startsWith('http')
-            ? redirectParam
-            : `${window.location.origin}/${redirectParam}`;
-        }
-
-        return `${window.location.origin}/boards`;
-      };
-
-      const redirectUrl = getRedirectUrl();
+      const redirectUrl = getRedirectUrl(
+        location.searchStr,
+        options?.callbackURL
+      );
       const newUserCallbackURL =
         options?.newUserCallbackURL || `${window.location.origin}/onboarding`;
 
@@ -123,7 +78,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
       );
     },
-    [location.search, queryClient]
+    [location.searchStr, queryClient]
   );
 
   const handleSignOut = useCallback(async () => {
