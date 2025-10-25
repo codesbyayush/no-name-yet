@@ -6,6 +6,7 @@ on:
       - 'apps/widget/**'
       - 'apps/public/**'
       - 'apps/admin/**'
+      - 'apps/server/**'
       - 'packages/**'
     branches:
       - main

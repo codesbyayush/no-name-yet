@@ -1,6 +1,5 @@
 import { neon, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-// import { reset, seed } from "drizzle-seed";
 import * as schema from './schema';
 
 // Accepts the Worker env object and returns a Drizzle db instance
@@ -17,6 +16,7 @@ export function getDb(env: {
         host === 'db.localtest.me' ? ['http', 4444] : ['https', 443];
       return `${protocol}://${host}:${port}/sql`;
     };
+
     const connectionStringUrl = new URL(connectionString);
     neonConfig.useSecureWebSocket =
       connectionStringUrl.hostname !== 'db.localtest.me';
@@ -25,14 +25,9 @@ export function getDb(env: {
   } else {
     connectionString = env.HYPERDRIVE.connectionString;
   }
+
   const sql = neon(connectionString);
   const db = drizzle(sql, { schema });
-
-  // await reset(db, schema);
-
-  // await seed(db, schema, {
-  // 	count: 100,
-  // });
 
   return db;
 }
