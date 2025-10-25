@@ -1,5 +1,3 @@
-import { DialogTitle } from '@radix-ui/react-dialog';
-import { RiEditLine } from '@remixicon/react';
 import { type InfiniteData, useMutation } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { Button } from '@workspace/ui/components/button';
@@ -7,13 +5,14 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogTitle,
   DialogTrigger,
 } from '@workspace/ui/components/dialog';
 import { Input } from '@workspace/ui/components/input';
 import { Label } from '@workspace/ui/components/label';
 import { Switch } from '@workspace/ui/components/switch';
 import { Textarea } from '@workspace/ui/components/textarea';
-import { Heart } from 'lucide-react';
+import { Heart, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useSession } from '@/lib/auth-client';
@@ -183,7 +182,7 @@ export function CreateNewIssue() {
     <Dialog onOpenChange={setIsOpen} open={isOpen}>
       <DialogTrigger asChild>
         <Button className='size-8 shrink-0' size='icon' variant='secondary'>
-          <RiEditLine />
+          <Plus />
         </Button>
       </DialogTrigger>
       <DialogContent className='top-[30%] w-full p-0 shadow-xl sm:max-w-[750px]'>

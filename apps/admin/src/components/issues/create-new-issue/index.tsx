@@ -1,10 +1,10 @@
-import { DialogTitle } from '@radix-ui/react-dialog';
 import { RiEditLine } from '@remixicon/react';
 import { Button } from '@workspace/ui/components/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogTitle,
   DialogTrigger,
 } from '@workspace/ui/components/dialog';
 import { Input } from '@workspace/ui/components/input';
