@@ -9,25 +9,18 @@ import {
 } from '@workspace/ui/components/card';
 import { cn } from '@workspace/ui/lib/utils';
 import { useState } from 'react';
-import { useAuth } from '@/features/auth';
 
 export default function SignIn({
-  redirect,
-  newUserCallbackURL,
+  onSignIn,
 }: {
-  redirect?: string;
-  newUserCallbackURL?: string;
+  onSignIn: (provider: string) => Promise<void> | void;
 }) {
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
 
   async function handleSignIn(provider: string) {
     setLoading(true);
     try {
-      await signIn(provider, {
-        callbackURL: redirect,
-        newUserCallbackURL,
-      });
+      await onSignIn(provider);
     } catch {
       // Todo: handle error
     } finally {
@@ -63,6 +56,7 @@ export default function SignIn({
                 width='0.98em'
                 xmlns='http://www.w3.org/2000/svg'
               >
+                <title>Sign in with Google</title>
                 <path
                   d='M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622l38.755 30.023l2.685.268c24.659-22.774 38.875-56.282 38.875-96.027'
                   fill='#4285F4'
@@ -94,6 +88,7 @@ export default function SignIn({
                 width='1em'
                 xmlns='http://www.w3.org/2000/svg'
               >
+                <title>Sign in with GitHub</title>
                 <path
                   d='M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5c.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34c-.46-1.16-1.11-1.47-1.11-1.47c-.91-.62.07-.6.07-.6c1 .07 1.53 1.03 1.53 1.03c.87 1.52 2.34 1.07 2.91.83c.09-.65.35-1.09.63-1.34c-2.22-.25-4.55-1.11-4.55-4.92c0-1.11.38-2 1.03-2.71c-.1-.25-.45-1.29.1-2.64c0 0 .84-.27 2.75 1.02c.79-.22 1.65-.33 2.5-.33s1.71.11 2.5.33c1.91-1.29 2.75-1.02 2.75-1.02c.55 1.35.2 2.39.1 2.64c.65.71 1.03 1.6 1.03 2.71c0 3.82-2.34 4.66-4.57 4.91c.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2'
                   fill='currentColor'
@@ -112,6 +107,7 @@ export default function SignIn({
                 width='1em'
                 xmlns='http://www.w3.org/2000/svg'
               >
+                <title>Sign in with GitLab</title>
                 <path
                   d='m22.749 9.769l-.031-.08l-3.027-7.9a.79.79 0 0 0-.782-.495a.8.8 0 0 0-.456.17a.8.8 0 0 0-.268.408L16.14 8.125H7.865L5.822 1.872a.8.8 0 0 0-.269-.409a.81.81 0 0 0-.926-.05c-.14.09-.25.22-.312.376L1.283 9.684l-.03.08a5.62 5.62 0 0 0 1.864 6.496l.01.008l.028.02l4.61 3.453l2.282 1.726l1.39 1.049a.935.935 0 0 0 1.13 0l1.389-1.05l2.281-1.726l4.639-3.473l.011-.01A5.62 5.62 0 0 0 22.75 9.77'
                   fill='currentColor'
