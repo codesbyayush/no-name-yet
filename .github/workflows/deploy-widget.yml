@@ -168,6 +168,7 @@ jobs:
             GH_PRIVATE_KEY
             GH_WEBHOOK_SECRET
             GH_APP_NAME
+            NODE_ENV
         env: 
           BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
@@ -181,3 +182,4 @@ jobs:
           GH_WEBHOOK_SECRET: ${{ secrets.GH_WEBHOOK_SECRET }}
           GH_APP_NAME: ${{ secrets.GH_APP_NAME }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NODE_ENV: production
