@@ -42,7 +42,7 @@
   "devDependencies": {
     "@types/bun": "^1.2.6",
     "@types/pg": "^8.11.11",
-    "drizzle-kit": "^0.30.5",
+    "drizzle-kit": "^0.31.5",
     "postgres": "^3.4.7",
     "tsc-alias": "^1.8.11",
     "wrangler": "^4.24.3"
