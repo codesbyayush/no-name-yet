@@ -28,6 +28,10 @@ export function getAuth(env: AppEnv): AuthInstance {
       provider: 'pg',
       schema,
     }),
+    logger: {
+      level: 'error',
+      disabled: false,
+    },
     databaseHooks: {
       session: {
         create: {
@@ -67,7 +71,7 @@ export function getAuth(env: AppEnv): AuthInstance {
                   }),
                 },
               };
-            } catch {
+            } catch (error) {
               return { data: session };
             }
           },
