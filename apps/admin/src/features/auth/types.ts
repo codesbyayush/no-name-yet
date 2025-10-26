@@ -51,6 +51,7 @@ export interface AuthContextType {
     options?: { callbackURL?: string; newUserCallbackURL?: string }
   ) => Promise<void>;
   signOut: () => Promise<unknown>;
+  handleActiveTeamChange: (teamId: string) => Promise<void>;
   refetchSession: () => Promise<Session | null>;
   setSessionCache: (session: Session | null) => void;
   error: Error | null;

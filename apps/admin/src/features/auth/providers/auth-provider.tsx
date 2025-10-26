@@ -89,6 +89,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return result as SignOutReturn;
   }, [navigate, queryClient, setSessionCache]);
 
+  const handleActiveTeamChange = useCallback(
+    async (teamId: string) => {
+      await authClient.organization.setActiveTeam({
+        teamId,
+      });
+      setSessionCache(null);
+      await queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY });
+    },
+    [queryClient, setSessionCache]
+  );
+
   const value: AuthContextType = useMemo(
     () => ({
       session: session ?? null,
@@ -99,6 +110,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       auth: authClient,
       signIn: handleSignIn,
       signOut: handleSignOut,
+      handleActiveTeamChange,
       refetchSession,
       setSessionCache,
       error,
@@ -111,6 +123,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       isPending,
       handleSignIn,
       handleSignOut,
+      handleActiveTeamChange,
       refetchSession,
       setSessionCache,
       error,

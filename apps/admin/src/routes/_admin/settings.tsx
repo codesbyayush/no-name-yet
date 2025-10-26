@@ -11,27 +11,14 @@ import {
   IconMoodSmile,
   IconPalette,
   IconProgress,
-  IconSettings,
   IconShield,
   IconTags,
   IconUser,
   IconUsers,
   IconX,
 } from '@tabler/icons-react';
-import {
-  createFileRoute,
-  Link,
-  Outlet,
-  redirect,
-  useLocation,
-} from '@tanstack/react-router';
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from '@workspace/ui/components/sidebar';
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 import { SiteHeader } from '@/components/site-header';
-import { SidebarRightPortal } from '@/contexts/sidebar-right';
 
 type NavItem = {
   key: string;
@@ -120,43 +107,13 @@ export const Route = createFileRoute('/_admin/settings')({
 });
 
 function SettingsLayout() {
-  const location = useLocation();
-
   return (
     <div>
       <div className='sticky top-0 z-20 bg-background'>
-        <div className='border-muted border-b-[1px] pl-2'>
+        <div className='border-muted border-b pl-2'>
           <SiteHeader title='Settings' />
         </div>
       </div>
-      <SidebarRightPortal>
-        <div className='space-y-4 px-2 py-2'>
-          {navGroups.map((group) => (
-            <div key={group.title}>
-              <div className='px-1 pt-1 pb-2 text-muted-foreground text-sm'>
-                {group.title}
-              </div>
-              <SidebarMenu>
-                {group.items.map((item) => {
-                  const Icon = item.icon ?? IconSettings;
-                  const href = `/settings/${item.key}`;
-                  const isActive = location.pathname.startsWith(href);
-                  return (
-                    <SidebarMenuItem key={item.key}>
-                      <SidebarMenuButton asChild isActive={isActive}>
-                        <Link to={href}>
-                          <Icon className='size-4' />
-                          <span className='text-sm'>{item.label}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  );
-                })}
-              </SidebarMenu>
-            </div>
-          ))}
-        </div>
-      </SidebarRightPortal>
       <div className='px-4 py-3'>
         <div className='mx-auto w-full max-w-6xl'>
           <div className='space-y-6'>

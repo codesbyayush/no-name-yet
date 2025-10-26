@@ -18,15 +18,12 @@ import { Route as AdminWidgetRouteImport } from './routes/_admin/widget'
 import { Route as AdminSettingsRouteImport } from './routes/_admin/settings'
 import { Route as AdminEditorRouteImport } from './routes/_admin/editor'
 import { Route as AdminBoardsRouteImport } from './routes/_admin/boards'
-import { Route as AdminChangelogsIndexRouteImport } from './routes/_admin/changelogs/index'
 import { Route as AdminBoardsIndexRouteImport } from './routes/_admin/boards/index'
 import { Route as AdminSettingsPricingRouteImport } from './routes/_admin/settings/pricing'
 import { Route as AdminSettingsMembersRouteImport } from './routes/_admin/settings/members'
 import { Route as AdminSettingsIntegrationsRouteImport } from './routes/_admin/settings/integrations'
 import { Route as AdminSettingsGeneralRouteImport } from './routes/_admin/settings/general'
-import { Route as AdminChangelogsNewRouteImport } from './routes/_admin/changelogs/new'
 import { Route as AdminBoardsPostIdRouteImport } from './routes/_admin/boards/$postId'
-import { Route as AdminChangelogsEditIdRouteImport } from './routes/_admin/changelogs/edit.$id'
 
 const AdminRoute = AdminRouteImport.update({
   id: '/_admin',
@@ -72,11 +69,6 @@ const AdminBoardsRoute = AdminBoardsRouteImport.update({
   path: '/boards',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminChangelogsIndexRoute = AdminChangelogsIndexRouteImport.update({
-  id: '/changelogs/',
-  path: '/changelogs/',
-  getParentRoute: () => AdminRoute,
-} as any)
 const AdminBoardsIndexRoute = AdminBoardsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -103,20 +95,10 @@ const AdminSettingsGeneralRoute = AdminSettingsGeneralRouteImport.update({
   path: '/general',
   getParentRoute: () => AdminSettingsRoute,
 } as any)
-const AdminChangelogsNewRoute = AdminChangelogsNewRouteImport.update({
-  id: '/changelogs/new',
-  path: '/changelogs/new',
-  getParentRoute: () => AdminRoute,
-} as any)
 const AdminBoardsPostIdRoute = AdminBoardsPostIdRouteImport.update({
   id: '/$postId',
   path: '/$postId',
   getParentRoute: () => AdminBoardsRoute,
-} as any)
-const AdminChangelogsEditIdRoute = AdminChangelogsEditIdRouteImport.update({
-  id: '/changelogs/edit/$id',
-  path: '/changelogs/edit/$id',
-  getParentRoute: () => AdminRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -129,14 +111,11 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
   '/boards/$postId': typeof AdminBoardsPostIdRoute
-  '/changelogs/new': typeof AdminChangelogsNewRoute
   '/settings/general': typeof AdminSettingsGeneralRoute
   '/settings/integrations': typeof AdminSettingsIntegrationsRoute
   '/settings/members': typeof AdminSettingsMembersRoute
   '/settings/pricing': typeof AdminSettingsPricingRoute
   '/boards/': typeof AdminBoardsIndexRoute
-  '/changelogs': typeof AdminChangelogsIndexRoute
-  '/changelogs/edit/$id': typeof AdminChangelogsEditIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -147,14 +126,11 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
   '/boards/$postId': typeof AdminBoardsPostIdRoute
-  '/changelogs/new': typeof AdminChangelogsNewRoute
   '/settings/general': typeof AdminSettingsGeneralRoute
   '/settings/integrations': typeof AdminSettingsIntegrationsRoute
   '/settings/members': typeof AdminSettingsMembersRoute
   '/settings/pricing': typeof AdminSettingsPricingRoute
   '/boards': typeof AdminBoardsIndexRoute
-  '/changelogs': typeof AdminChangelogsIndexRoute
-  '/changelogs/edit/$id': typeof AdminChangelogsEditIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -168,14 +144,11 @@ export interface FileRoutesById {
   '/auth/': typeof AuthIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/_admin/boards/$postId': typeof AdminBoardsPostIdRoute
-  '/_admin/changelogs/new': typeof AdminChangelogsNewRoute
   '/_admin/settings/general': typeof AdminSettingsGeneralRoute
   '/_admin/settings/integrations': typeof AdminSettingsIntegrationsRoute
   '/_admin/settings/members': typeof AdminSettingsMembersRoute
   '/_admin/settings/pricing': typeof AdminSettingsPricingRoute
   '/_admin/boards/': typeof AdminBoardsIndexRoute
-  '/_admin/changelogs/': typeof AdminChangelogsIndexRoute
-  '/_admin/changelogs/edit/$id': typeof AdminChangelogsEditIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -189,14 +162,11 @@ export interface FileRouteTypes {
     | '/auth'
     | '/onboarding'
     | '/boards/$postId'
-    | '/changelogs/new'
     | '/settings/general'
     | '/settings/integrations'
     | '/settings/members'
     | '/settings/pricing'
     | '/boards/'
-    | '/changelogs'
-    | '/changelogs/edit/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -207,14 +177,11 @@ export interface FileRouteTypes {
     | '/auth'
     | '/onboarding'
     | '/boards/$postId'
-    | '/changelogs/new'
     | '/settings/general'
     | '/settings/integrations'
     | '/settings/members'
     | '/settings/pricing'
     | '/boards'
-    | '/changelogs'
-    | '/changelogs/edit/$id'
   id:
     | '__root__'
     | '/'
@@ -227,14 +194,11 @@ export interface FileRouteTypes {
     | '/auth/'
     | '/onboarding/'
     | '/_admin/boards/$postId'
-    | '/_admin/changelogs/new'
     | '/_admin/settings/general'
     | '/_admin/settings/integrations'
     | '/_admin/settings/members'
     | '/_admin/settings/pricing'
     | '/_admin/boards/'
-    | '/_admin/changelogs/'
-    | '/_admin/changelogs/edit/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -309,13 +273,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBoardsRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/_admin/changelogs/': {
-      id: '/_admin/changelogs/'
-      path: '/changelogs'
-      fullPath: '/changelogs'
-      preLoaderRoute: typeof AdminChangelogsIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/_admin/boards/': {
       id: '/_admin/boards/'
       path: '/'
@@ -351,26 +308,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsGeneralRouteImport
       parentRoute: typeof AdminSettingsRoute
     }
-    '/_admin/changelogs/new': {
-      id: '/_admin/changelogs/new'
-      path: '/changelogs/new'
-      fullPath: '/changelogs/new'
-      preLoaderRoute: typeof AdminChangelogsNewRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/_admin/boards/$postId': {
       id: '/_admin/boards/$postId'
       path: '/$postId'
       fullPath: '/boards/$postId'
       preLoaderRoute: typeof AdminBoardsPostIdRouteImport
       parentRoute: typeof AdminBoardsRoute
-    }
-    '/_admin/changelogs/edit/$id': {
-      id: '/_admin/changelogs/edit/$id'
-      path: '/changelogs/edit/$id'
-      fullPath: '/changelogs/edit/$id'
-      preLoaderRoute: typeof AdminChangelogsEditIdRouteImport
-      parentRoute: typeof AdminRoute
     }
   }
 }
@@ -413,9 +356,6 @@ interface AdminRouteChildren {
   AdminSettingsRoute: typeof AdminSettingsRouteWithChildren
   AdminWidgetRoute: typeof AdminWidgetRoute
   AdminWikiRoute: typeof AdminWikiRoute
-  AdminChangelogsNewRoute: typeof AdminChangelogsNewRoute
-  AdminChangelogsIndexRoute: typeof AdminChangelogsIndexRoute
-  AdminChangelogsEditIdRoute: typeof AdminChangelogsEditIdRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
@@ -424,9 +364,6 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminSettingsRoute: AdminSettingsRouteWithChildren,
   AdminWidgetRoute: AdminWidgetRoute,
   AdminWikiRoute: AdminWikiRoute,
-  AdminChangelogsNewRoute: AdminChangelogsNewRoute,
-  AdminChangelogsIndexRoute: AdminChangelogsIndexRoute,
-  AdminChangelogsEditIdRoute: AdminChangelogsEditIdRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
