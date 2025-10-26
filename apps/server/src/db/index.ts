@@ -8,10 +8,10 @@ export function getDb(env: {
   DATABASE_URL: string;
   NODE_ENV: string;
 }) {
-  let connectionString: string;
+  let connectionString = env.DATABASE_URL;
   if (env.NODE_ENV === 'development') {
     connectionString = 'postgres://postgres:postgres@db.localtest.me:5432/main';
-    neonConfig.fetchEndpoint = (host) => {
+    neonConfig.fetchEndpoint = (host: string) => {
       const [protocol, port] =
         host === 'db.localtest.me' ? ['http', 4444] : ['https', 443];
       return `${protocol}://${host}:${port}/sql`;
@@ -22,8 +22,6 @@ export function getDb(env: {
       connectionStringUrl.hostname !== 'db.localtest.me';
     neonConfig.wsProxy = (host) =>
       host === 'db.localtest.me' ? `${host}:4444/v2` : `${host}/v2`;
-  } else {
-    connectionString = env.HYPERDRIVE.connectionString;
   }
 
   const sql = neon(connectionString);
