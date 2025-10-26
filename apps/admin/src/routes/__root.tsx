@@ -37,9 +37,7 @@ function RootComponent() {
     <>
       <HeadContent />
       <Providers>
-        <div className='grid h-svh grid-rows-[auto_1fr]'>
-          <Outlet />
-        </div>
+        <Outlet />
       </Providers>
       <TanStackRouterDevtools position='bottom-right' />
     </>

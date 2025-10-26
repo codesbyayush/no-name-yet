@@ -50,7 +50,7 @@ export function PostSidebar({ issue }: PostSidebarProps) {
   };
 
   return (
-    <div className='h-screen w-96 overflow-y-auto bg-sidebar'>
+    <div className='h-screen overflow-y-auto bg-sidebar'>
       {/* Header Section */}
       <div className='border-border border-b p-6'>
         <div className='mb-6 flex items-center justify-between'>

@@ -27,7 +27,7 @@ function RouteComponent() {
               </p>
             </div>
             <div className='rounded-lg bg-muted/50 p-4'>
-              <pre className='text-sm'>
+              <pre className='whitespace-pre-wrap break-all text-sm'>
                 {JSON.stringify(post?.[0], null, 2)}
               </pre>
             </div>

@@ -15,10 +15,12 @@ export const Route = createFileRoute('/_admin')({
 function AdminLayout() {
   return (
     <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <Outlet />
-      </SidebarInset>
+      <div className='flex min-h-screen w-full'>
+        <AppSidebar className='w-64' />
+        <SidebarInset className='max-w-full flex-1'>
+          <Outlet />
+        </SidebarInset>
+      </div>
     </SidebarProvider>
   );
 }
