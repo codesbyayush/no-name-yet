@@ -8,9 +8,7 @@ import '@workspace/ui/globals.css';
 import '../index.css';
 import { Providers } from '@/contexts';
 
-export type RouterAppContext = {};
-
-export const Route = createRootRouteWithContext<RouterAppContext>()({
+export const Route = createRootRouteWithContext()({
   component: RootComponent,
   head: () => ({
     meta: [

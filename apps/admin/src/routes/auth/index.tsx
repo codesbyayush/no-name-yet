@@ -8,13 +8,6 @@ export const Route = createFileRoute('/auth/')({
     if (session && !session.user.isAnonymous) {
       throw redirect({
         to: '/boards',
-        search: {
-          tab: undefined,
-          search: undefined,
-          tag: undefined,
-          status: undefined,
-          order: undefined,
-        },
         replace: true,
       });
     }
