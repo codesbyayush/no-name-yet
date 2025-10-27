@@ -17,7 +17,6 @@ import { Route as AdminWikiRouteImport } from './routes/_admin/wiki'
 import { Route as AdminWidgetRouteImport } from './routes/_admin/widget'
 import { Route as AdminSettingsRouteImport } from './routes/_admin/settings'
 import { Route as AdminEditorRouteImport } from './routes/_admin/editor'
-import { Route as AdminBoardsRouteImport } from './routes/_admin/boards'
 import { Route as AdminBoardsIndexRouteImport } from './routes/_admin/boards/index'
 import { Route as AdminSettingsPricingRouteImport } from './routes/_admin/settings/pricing'
 import { Route as AdminSettingsMembersRouteImport } from './routes/_admin/settings/members'
@@ -64,15 +63,10 @@ const AdminEditorRoute = AdminEditorRouteImport.update({
   path: '/editor',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminBoardsRoute = AdminBoardsRouteImport.update({
-  id: '/boards',
-  path: '/boards',
-  getParentRoute: () => AdminRoute,
-} as any)
 const AdminBoardsIndexRoute = AdminBoardsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AdminBoardsRoute,
+  id: '/boards/',
+  path: '/boards/',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminSettingsPricingRoute = AdminSettingsPricingRouteImport.update({
   id: '/pricing',
@@ -96,14 +90,13 @@ const AdminSettingsGeneralRoute = AdminSettingsGeneralRouteImport.update({
   getParentRoute: () => AdminSettingsRoute,
 } as any)
 const AdminBoardsPostIdRoute = AdminBoardsPostIdRouteImport.update({
-  id: '/$postId',
-  path: '/$postId',
-  getParentRoute: () => AdminBoardsRoute,
+  id: '/boards/$postId',
+  path: '/boards/$postId',
+  getParentRoute: () => AdminRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/boards': typeof AdminBoardsRouteWithChildren
   '/editor': typeof AdminEditorRoute
   '/settings': typeof AdminSettingsRouteWithChildren
   '/widget': typeof AdminWidgetRoute
@@ -115,7 +108,7 @@ export interface FileRoutesByFullPath {
   '/settings/integrations': typeof AdminSettingsIntegrationsRoute
   '/settings/members': typeof AdminSettingsMembersRoute
   '/settings/pricing': typeof AdminSettingsPricingRoute
-  '/boards/': typeof AdminBoardsIndexRoute
+  '/boards': typeof AdminBoardsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -136,7 +129,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_admin': typeof AdminRouteWithChildren
-  '/_admin/boards': typeof AdminBoardsRouteWithChildren
   '/_admin/editor': typeof AdminEditorRoute
   '/_admin/settings': typeof AdminSettingsRouteWithChildren
   '/_admin/widget': typeof AdminWidgetRoute
@@ -154,7 +146,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/boards'
     | '/editor'
     | '/settings'
     | '/widget'
@@ -166,7 +157,7 @@ export interface FileRouteTypes {
     | '/settings/integrations'
     | '/settings/members'
     | '/settings/pricing'
-    | '/boards/'
+    | '/boards'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -186,7 +177,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_admin'
-    | '/_admin/boards'
     | '/_admin/editor'
     | '/_admin/settings'
     | '/_admin/widget'
@@ -266,19 +256,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminEditorRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/_admin/boards': {
-      id: '/_admin/boards'
-      path: '/boards'
-      fullPath: '/boards'
-      preLoaderRoute: typeof AdminBoardsRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/_admin/boards/': {
       id: '/_admin/boards/'
-      path: '/'
-      fullPath: '/boards/'
+      path: '/boards'
+      fullPath: '/boards'
       preLoaderRoute: typeof AdminBoardsIndexRouteImport
-      parentRoute: typeof AdminBoardsRoute
+      parentRoute: typeof AdminRoute
     }
     '/_admin/settings/pricing': {
       id: '/_admin/settings/pricing'
@@ -310,27 +293,13 @@ declare module '@tanstack/react-router' {
     }
     '/_admin/boards/$postId': {
       id: '/_admin/boards/$postId'
-      path: '/$postId'
+      path: '/boards/$postId'
       fullPath: '/boards/$postId'
       preLoaderRoute: typeof AdminBoardsPostIdRouteImport
-      parentRoute: typeof AdminBoardsRoute
+      parentRoute: typeof AdminRoute
     }
   }
 }
-
-interface AdminBoardsRouteChildren {
-  AdminBoardsPostIdRoute: typeof AdminBoardsPostIdRoute
-  AdminBoardsIndexRoute: typeof AdminBoardsIndexRoute
-}
-
-const AdminBoardsRouteChildren: AdminBoardsRouteChildren = {
-  AdminBoardsPostIdRoute: AdminBoardsPostIdRoute,
-  AdminBoardsIndexRoute: AdminBoardsIndexRoute,
-}
-
-const AdminBoardsRouteWithChildren = AdminBoardsRoute._addFileChildren(
-  AdminBoardsRouteChildren,
-)
 
 interface AdminSettingsRouteChildren {
   AdminSettingsGeneralRoute: typeof AdminSettingsGeneralRoute
@@ -351,19 +320,21 @@ const AdminSettingsRouteWithChildren = AdminSettingsRoute._addFileChildren(
 )
 
 interface AdminRouteChildren {
-  AdminBoardsRoute: typeof AdminBoardsRouteWithChildren
   AdminEditorRoute: typeof AdminEditorRoute
   AdminSettingsRoute: typeof AdminSettingsRouteWithChildren
   AdminWidgetRoute: typeof AdminWidgetRoute
   AdminWikiRoute: typeof AdminWikiRoute
+  AdminBoardsPostIdRoute: typeof AdminBoardsPostIdRoute
+  AdminBoardsIndexRoute: typeof AdminBoardsIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
-  AdminBoardsRoute: AdminBoardsRouteWithChildren,
   AdminEditorRoute: AdminEditorRoute,
   AdminSettingsRoute: AdminSettingsRouteWithChildren,
   AdminWidgetRoute: AdminWidgetRoute,
   AdminWikiRoute: AdminWikiRoute,
+  AdminBoardsPostIdRoute: AdminBoardsPostIdRoute,
+  AdminBoardsIndexRoute: AdminBoardsIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
