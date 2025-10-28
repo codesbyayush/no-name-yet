@@ -16,7 +16,10 @@ import {
   Sparkles,
   User,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import type { Issue } from '@/mock-data/issues';
+import { buildBranchName } from '@/utils/github';
+
 import { StatusSelector } from './status-selector';
 
 interface PostSidebarProps {
@@ -65,8 +68,25 @@ export function PostSidebar({ issue }: PostSidebarProps) {
             <Button className='h-8 w-8' size='icon' variant='ghost'>
               <Share className='h-4 w-4' />
             </Button>
-            <Button className='h-8 w-8' size='icon' variant='ghost'>
-              {/*  TODO: fix this */}
+            <Button
+              className='h-8 w-8'
+              onClick={async () => {
+                try {
+                  const branch = buildBranchName({
+                    issueKey: issue.issueKey,
+                    title: issue.title,
+                    assigneeName: issue.assignee?.name || null,
+                  });
+                  await navigator.clipboard.writeText(branch);
+                  toast.success('GitHub branch copied');
+                } catch {
+                  toast.error('Failed to copy');
+                }
+              }}
+              size='icon'
+              type='button'
+              variant='ghost'
+            >
               <Github className='h-4 w-4' />
             </Button>
             <Button className='h-8 w-8' size='icon' variant='ghost'>
@@ -103,7 +123,8 @@ export function PostSidebar({ issue }: PostSidebarProps) {
             <div className='flex items-center gap-2'>
               <span className='text-muted-foreground text-sm'>
                 {/*  TODO: fix this */}
-                {issue.board?.name || 'Feature Request'}
+                {/* {issue.board?.name || 'Feature Request'} */}
+                Feature Request
               </span>
               <Button className='h-6 w-6' size='icon' variant='ghost'>
                 <ChevronDown className='h-3 w-3' />
