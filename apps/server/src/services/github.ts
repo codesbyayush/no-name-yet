@@ -1,12 +1,15 @@
-import { eq } from 'drizzle-orm';
+import {
+  deleteInstallationByInstallationId,
+  getOrganizationIdByInstallationId,
+  getOrganizationIdBySlug,
+  insertOrUpdateInstallation,
+} from '@/dal/integration';
 import type { Database } from '@/dal/posts';
-import { githubInstallations, organization } from '@/db/schema';
+import { findFeedbackByIssueKey, updateFeedbackStatus } from '@/dal/posts';
 import {
   extractIssueKeyFromBranch,
-  findFeedbackByIssueKey,
   mapPullRequestActionToStatus,
   type PullRequestAction,
-  updateFeedbackStatus,
 } from './issue';
 
 export type GitHubInstallation = {
@@ -50,25 +53,12 @@ export async function upsertInstallation(
   };
 
   // Try to map to organization by slug = account.login
-  const [org] = await db
-    .select()
-    .from(organization)
-    .where(eq(organization.slug, account.login))
-    .limit(1);
-
-  if (org?.id) {
-    (row as Record<string, unknown>).organizationId = org.id;
+  const orgId = await getOrganizationIdBySlug(db, account.login);
+  if (orgId) {
+    (row as Record<string, unknown>).organizationId = orgId;
   }
 
-  try {
-    await db.insert(githubInstallations).values(row);
-  } catch (_insertError) {
-    // Update if already exists
-    await db
-      .update(githubInstallations)
-      .set(row)
-      .where(eq(githubInstallations.githubInstallationId, installation.id));
-  }
+  await insertOrUpdateInstallation(db, row);
 }
 
 /**
@@ -78,9 +68,7 @@ export async function deleteInstallation(
   db: Database,
   installationId: number
 ): Promise<void> {
-  await db
-    .delete(githubInstallations)
-    .where(eq(githubInstallations.githubInstallationId, installationId));
+  await deleteInstallationByInstallationId(db, installationId);
 }
 
 /**
@@ -90,13 +78,7 @@ export async function getOrganizationByInstallation(
   db: Database,
   installationId: number
 ): Promise<string | null> {
-  const [result] = await db
-    .select({ organizationId: githubInstallations.organizationId })
-    .from(githubInstallations)
-    .where(eq(githubInstallations.githubInstallationId, installationId))
-    .limit(1);
-
-  return result?.organizationId || null;
+  return await getOrganizationIdByInstallationId(db, installationId);
 }
 
 /**

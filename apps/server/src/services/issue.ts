@@ -1,7 +1,3 @@
-import { and, eq } from 'drizzle-orm';
-import type { Database } from '@/dal/posts';
-import { feedback, team } from '@/db/schema';
-
 export type IssueStatus =
   | 'to-do'
   | 'in-progress'
@@ -20,16 +16,21 @@ export type PullRequestAction =
  * Generate a unique issue key for a board
  * Format: OF-{count + 1}
  */
+const MAX_TEAM_WORDS_FOR_SLUG = 3;
+const DEFAULT_SLUG_LENGTH = 3;
+
 export function generateIssueKey(teamName: string, teamSerial: number) {
   const teamNameSplit = teamName.split(' ');
   let slug: string;
   if (teamNameSplit.length > 1) {
     slug = teamNameSplit
-      .map((word, index) => (index < 3 ? word.charAt(0) : ''))
+      .map((word, index) =>
+        index < MAX_TEAM_WORDS_FOR_SLUG ? word.charAt(0) : ''
+      )
       .join('')
       .toLowerCase();
   } else {
-    slug = teamNameSplit[0].substring(0, 3).toLowerCase();
+    slug = teamNameSplit[0].substring(0, DEFAULT_SLUG_LENGTH).toLowerCase();
   }
 
   return `${slug}-${teamSerial}`;
@@ -74,42 +75,4 @@ export function mapPullRequestActionToStatus(
   }
 
   return null;
-}
-
-/**
- * Find feedback by issue key within an organization
- */
-export async function findFeedbackByIssueKey(
-  db: Database,
-  issueKey: string,
-  organizationId: string
-): Promise<{ id: string } | null> {
-  // issueKey is stored lowercase, compare directly
-  const [result] = await db
-    .select({ id: feedback.id })
-    .from(feedback)
-    .leftJoin(team, eq(team.id, feedback.teamId))
-    .where(
-      and(
-        eq(feedback.issueKey, issueKey.toLowerCase()),
-        eq(team.organizationId, organizationId)
-      )
-    )
-    .limit(1);
-
-  return result || null;
-}
-
-/**
- * Update feedback status by ID
- */
-export async function updateFeedbackStatus(
-  db: Database,
-  feedbackId: string,
-  status: IssueStatus
-): Promise<void> {
-  await db
-    .update(feedback)
-    .set({ status, updatedAt: new Date() })
-    .where(eq(feedback.id, feedbackId));
 }

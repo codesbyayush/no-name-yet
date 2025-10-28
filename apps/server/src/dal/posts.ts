@@ -16,6 +16,7 @@ import {
   feedback,
   feedbackTags,
   tags as tagsTable,
+  team,
   teamSerials,
   user,
   votes,
@@ -482,4 +483,43 @@ export async function getAndUpdatePostSerialCount(
     })
     .returning();
   return result[0].nextSerial - nextSerial;
+}
+
+export type IssueStatus =
+  | 'to-do'
+  | 'in-progress'
+  | 'technical-review'
+  | 'completed'
+  | 'backlog'
+  | 'paused';
+
+export async function findFeedbackByIssueKey(
+  db: Database,
+  issueKey: string,
+  organizationId: string
+): Promise<{ id: string } | null> {
+  const [result] = await db
+    .select({ id: feedback.id })
+    .from(feedback)
+    .leftJoin(team, eq(team.id, feedback.teamId))
+    .where(
+      and(
+        eq(feedback.issueKey, issueKey.toLowerCase()),
+        eq(team.organizationId, organizationId)
+      )
+    )
+    .limit(1);
+
+  return result || null;
+}
+
+export async function updateFeedbackStatus(
+  db: Database,
+  feedbackId: string,
+  status: IssueStatus
+): Promise<void> {
+  await db
+    .update(feedback)
+    .set({ status, updatedAt: new Date() })
+    .where(eq(feedback.id, feedbackId));
 }
