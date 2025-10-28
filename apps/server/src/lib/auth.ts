@@ -8,7 +8,7 @@ import { boards, member, tags, team, teamMember } from '../db/schema';
 import { sendEmail } from '../email';
 import type { AppEnv } from './env';
 
-export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | unknown {
+export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | any {
   const db = getDb(env);
 
   const config = {
