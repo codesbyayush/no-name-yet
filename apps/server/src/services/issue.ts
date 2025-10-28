@@ -1,6 +1,6 @@
 import { and, eq } from 'drizzle-orm';
 import type { Database } from '@/dal/posts';
-import { boards, feedback } from '@/db/schema';
+import { feedback, team } from '@/db/schema';
 
 export type IssueStatus =
   | 'to-do'
@@ -88,11 +88,11 @@ export async function findFeedbackByIssueKey(
   const [result] = await db
     .select({ id: feedback.id })
     .from(feedback)
-    .leftJoin(boards, eq(boards.id, feedback.boardId))
+    .leftJoin(team, eq(team.id, feedback.teamId))
     .where(
       and(
         eq(feedback.issueKey, issueKey.toLowerCase()),
-        eq(boards.organizationId, organizationId)
+        eq(team.organizationId, organizationId)
       )
     )
     .limit(1);
