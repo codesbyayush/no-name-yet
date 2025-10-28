@@ -2,6 +2,7 @@ import { sql } from 'drizzle-orm';
 import {
   boolean,
   index,
+  integer,
   pgEnum,
   pgTable,
   text,
@@ -9,6 +10,7 @@ import {
 } from 'drizzle-orm/pg-core';
 import { user } from './auth';
 import { boards } from './boards';
+import { team } from './organization';
 
 export const priorityEnum = pgEnum('priority_enum', [
   'low',
@@ -31,10 +33,13 @@ export const feedback = pgTable(
   'feedback',
   {
     id: text('id').primaryKey().default(sql`gen_random_uuid()::text`),
-    issueKey: text('issue_key').notNull().unique(),
-    boardId: text('board_id')
-      .notNull()
-      .references(() => boards.id, { onDelete: 'cascade' }),
+    issueKey: text('issue_key').unique(),
+    boardId: text('board_id').references(() => boards.id, {
+      onDelete: 'cascade',
+    }),
+    teamId: text('team_id').references(() => team.id, {
+      onDelete: 'cascade',
+    }),
     title: text('title').notNull(),
     description: text('description').notNull(),
     assigneeId: text('assignee_id').references(() => user.id, {
@@ -63,6 +68,11 @@ export const feedback = pgTable(
     index('idx_feedback_issue_key').on(table.issueKey),
   ]
 );
+
+export const teamSerials = pgTable('team_serials', {
+  teamId: text('team_id').primaryKey(),
+  nextSerial: integer('next_serial').notNull().default(1),
+});
 
 export type Feedback = typeof feedback.$inferSelect;
 export type NewFeedback = typeof feedback.$inferInsert;

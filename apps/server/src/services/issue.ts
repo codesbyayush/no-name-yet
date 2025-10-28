@@ -1,4 +1,4 @@
-import { and, count, eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import type { Database } from '@/dal/posts';
 import { boards, feedback } from '@/db/schema';
 
@@ -20,16 +20,19 @@ export type PullRequestAction =
  * Generate a unique issue key for a board
  * Format: OF-{count + 1}
  */
-export async function generateIssueKey(
-  db: Database,
-  boardId: string
-): Promise<string> {
-  const postsCount = await db
-    .select({ count: count() })
-    .from(feedback)
-    .where(eq(feedback.boardId, boardId));
+export function generateIssueKey(teamName: string, teamSerial: number) {
+  const teamNameSplit = teamName.split(' ');
+  let slug: string;
+  if (teamNameSplit.length > 1) {
+    slug = teamNameSplit
+      .map((word, index) => (index < 3 ? word.charAt(0) : ''))
+      .join('')
+      .toLowerCase();
+  } else {
+    slug = teamNameSplit[0].substring(0, 3).toLowerCase();
+  }
 
-  return `OF-${(postsCount[0]?.count ?? 0) + 1}`;
+  return `${slug}-${teamSerial}`;
 }
 
 // Regex pattern for issue key extraction - defined at module level for performance

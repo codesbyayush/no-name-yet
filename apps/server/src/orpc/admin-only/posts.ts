@@ -80,7 +80,7 @@ export const postsRouter = {
   create: adminOnlyProcedure
     .input(
       z.object({
-        boardId: z.string(),
+        boardId: z.string().optional(),
         type: z.enum(['bug', 'suggestion']).default('bug'),
         title: z.string(),
         description: z.string().min(1),
@@ -105,16 +105,19 @@ export const postsRouter = {
             'paused',
           ])
           .default('to-do'),
-        issueKey: z.string().optional(),
       })
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
       const userId = context.session?.user.id;
+      const teamId = context.session?.session.activeTeamId;
       if (!userId) {
         throw new ORPCError('UNAUTHORIZED');
       }
-      const newPost = await createAdminPost(context.db, input, userId);
+      if (!teamId) {
+        throw new ORPCError('NOT_FOUND');
+      }
+      const newPost = await createAdminPost(context.db, input, userId, teamId);
       return newPost;
     }),
 

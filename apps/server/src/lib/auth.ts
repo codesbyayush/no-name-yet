@@ -8,17 +8,7 @@ import { boards, member, tags, team, teamMember } from '../db/schema';
 import { sendEmail } from '../email';
 import type { AppEnv } from './env';
 
-interface AuthInstance {
-  handler: (request: Request) => Promise<Response>;
-  api: {
-    getSession: (context: { headers: Headers }) => Promise<any>;
-    createOrganization: (input: {
-      body: { name: string; slug: string; userId?: string };
-    }) => Promise<any>;
-  };
-}
-
-export function getAuth(env: AppEnv): AuthInstance {
+export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | unknown {
   const db = getDb(env);
 
   const config = {
@@ -217,5 +207,5 @@ export function getAuth(env: AppEnv): AuthInstance {
     ],
   } satisfies BetterAuthOptions;
 
-  return betterAuth(config) as AuthInstance;
+  return betterAuth(config);
 }

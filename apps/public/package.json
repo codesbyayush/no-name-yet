@@ -22,9 +22,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@hookform/resolvers": "^5.1.1",
     "@orpc/tanstack-query": "^1.9.4",
-    "@tailwindcss/vite": "^4.0.15",
     "@tanstack/react-table": "^8.21.3",
-    "@vitejs/plugin-basic-ssl": "^2.0.0",
     "react-hook-form": "^7.57.0",
     "@workspace/ui": "workspace:*",
     "recharts": "2.15.4"

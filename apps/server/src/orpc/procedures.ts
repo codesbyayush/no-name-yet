@@ -52,7 +52,6 @@ const requireAdminAuth = adminO.middleware(({ context, next }) => {
   if (!context.organization) {
     throw new ORPCError('UNAUTHORIZED');
   }
-
   return next({
     context,
   });

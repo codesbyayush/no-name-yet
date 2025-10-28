@@ -13,7 +13,6 @@ import { Route as AdminRouteImport } from './routes/_admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as OnboardingIndexRouteImport } from './routes/onboarding/index'
 import { Route as AuthIndexRouteImport } from './routes/auth/index'
-import { Route as AdminWikiRouteImport } from './routes/_admin/wiki'
 import { Route as AdminWidgetRouteImport } from './routes/_admin/widget'
 import { Route as AdminSettingsRouteImport } from './routes/_admin/settings'
 import { Route as AdminEditorRouteImport } from './routes/_admin/editor'
@@ -42,11 +41,6 @@ const AuthIndexRoute = AuthIndexRouteImport.update({
   id: '/auth/',
   path: '/auth/',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AdminWikiRoute = AdminWikiRouteImport.update({
-  id: '/wiki',
-  path: '/wiki',
-  getParentRoute: () => AdminRoute,
 } as any)
 const AdminWidgetRoute = AdminWidgetRouteImport.update({
   id: '/widget',
@@ -100,7 +94,6 @@ export interface FileRoutesByFullPath {
   '/editor': typeof AdminEditorRoute
   '/settings': typeof AdminSettingsRouteWithChildren
   '/widget': typeof AdminWidgetRoute
-  '/wiki': typeof AdminWikiRoute
   '/auth': typeof AuthIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
   '/boards/$postId': typeof AdminBoardsPostIdRoute
@@ -115,7 +108,6 @@ export interface FileRoutesByTo {
   '/editor': typeof AdminEditorRoute
   '/settings': typeof AdminSettingsRouteWithChildren
   '/widget': typeof AdminWidgetRoute
-  '/wiki': typeof AdminWikiRoute
   '/auth': typeof AuthIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
   '/boards/$postId': typeof AdminBoardsPostIdRoute
@@ -132,7 +124,6 @@ export interface FileRoutesById {
   '/_admin/editor': typeof AdminEditorRoute
   '/_admin/settings': typeof AdminSettingsRouteWithChildren
   '/_admin/widget': typeof AdminWidgetRoute
-  '/_admin/wiki': typeof AdminWikiRoute
   '/auth/': typeof AuthIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/_admin/boards/$postId': typeof AdminBoardsPostIdRoute
@@ -149,7 +140,6 @@ export interface FileRouteTypes {
     | '/editor'
     | '/settings'
     | '/widget'
-    | '/wiki'
     | '/auth'
     | '/onboarding'
     | '/boards/$postId'
@@ -164,7 +154,6 @@ export interface FileRouteTypes {
     | '/editor'
     | '/settings'
     | '/widget'
-    | '/wiki'
     | '/auth'
     | '/onboarding'
     | '/boards/$postId'
@@ -180,7 +169,6 @@ export interface FileRouteTypes {
     | '/_admin/editor'
     | '/_admin/settings'
     | '/_admin/widget'
-    | '/_admin/wiki'
     | '/auth/'
     | '/onboarding/'
     | '/_admin/boards/$postId'
@@ -227,13 +215,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth'
       preLoaderRoute: typeof AuthIndexRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_admin/wiki': {
-      id: '/_admin/wiki'
-      path: '/wiki'
-      fullPath: '/wiki'
-      preLoaderRoute: typeof AdminWikiRouteImport
-      parentRoute: typeof AdminRoute
     }
     '/_admin/widget': {
       id: '/_admin/widget'
@@ -323,7 +304,6 @@ interface AdminRouteChildren {
   AdminEditorRoute: typeof AdminEditorRoute
   AdminSettingsRoute: typeof AdminSettingsRouteWithChildren
   AdminWidgetRoute: typeof AdminWidgetRoute
-  AdminWikiRoute: typeof AdminWikiRoute
   AdminBoardsPostIdRoute: typeof AdminBoardsPostIdRoute
   AdminBoardsIndexRoute: typeof AdminBoardsIndexRoute
 }
@@ -332,7 +312,6 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminEditorRoute: AdminEditorRoute,
   AdminSettingsRoute: AdminSettingsRouteWithChildren,
   AdminWidgetRoute: AdminWidgetRoute,
-  AdminWikiRoute: AdminWikiRoute,
   AdminBoardsPostIdRoute: AdminBoardsPostIdRoute,
   AdminBoardsIndexRoute: AdminBoardsIndexRoute,
 }

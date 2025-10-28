@@ -16,9 +16,12 @@ import {
   feedback,
   feedbackTags,
   tags as tagsTable,
+  teamSerials,
   user,
   votes,
 } from '@/db/schema';
+import { generateIssueKey } from '@/services/issue';
+import { getTeamDetails } from './organization';
 
 export type Database = ReturnType<typeof import('@/db').getDb>;
 
@@ -201,6 +204,7 @@ export async function getAdminDetailedPosts(
     .offset(filters.offset)
     .limit(filters.take + 1);
 
+  // TODO: improve this n+1 query to 1 query
   const tagAugmented = await Promise.all(
     rows.slice(0, filters.take).map(async (post) => {
       const tags = await db
@@ -260,7 +264,8 @@ export async function getAdminDetailedSinglePost(
 }
 
 export type AdminCreatePostInput = {
-  boardId: string;
+  boardId?: string;
+  teamId?: string;
   title: string;
   description: string;
   priority:
@@ -284,18 +289,25 @@ export type AdminCreatePostInput = {
 export async function createAdminPost(
   db: Database,
   input: AdminCreatePostInput,
-  authorId: string
+  authorId: string,
+  teamId: string
 ) {
   const normalizedPriority =
     input.priority === 'no_priority' ? 'no-priority' : input.priority;
-  // Normalize issueKey to lowercase at write-time to avoid LOWER() in joins
-  const normalizedIssueKey = input.issueKey ? input.issueKey.toLowerCase() : '';
+
+  const teamDetails = await getTeamDetails(db, teamId);
+  const teamName = teamDetails[0]?.name;
+
+  const teamSerial = await getAndUpdatePostSerialCount(db, teamId);
+
+  const issueKey = generateIssueKey(teamName, teamSerial);
 
   const [newPost] = await db
     .insert(feedback)
     .values({
-      boardId: input.boardId,
-      issueKey: normalizedIssueKey,
+      ...(input.boardId && { boardId: input.boardId }),
+      teamId,
+      issueKey,
       authorId,
       title: input.title,
       description: input.description,
@@ -304,7 +316,7 @@ export async function createAdminPost(
     })
     .returning();
 
-  if (input.tags && input.tags.length > 0) {
+  if (input.tags && input.tags.length > 0 && newPost.boardId) {
     const orgId = (
       await db
         .select({ organizationId: boards.organizationId })
@@ -453,4 +465,21 @@ export async function deletePublicPost(db: Database, feedbackId: string) {
     .where(eq(feedback.id, feedbackId))
     .returning();
   return deletedPost ?? null;
+}
+
+export async function getAndUpdatePostSerialCount(
+  db: Database,
+  teamId: string,
+  insertionCount?: number
+): Promise<number> {
+  const nextSerial = insertionCount ?? 1;
+  const result = await db
+    .insert(teamSerials)
+    .values({ teamId, nextSerial: nextSerial + 1 })
+    .onConflictDoUpdate({
+      target: teamSerials.teamId,
+      set: { nextSerial: sql`${teamSerials.nextSerial} + ${nextSerial}` },
+    })
+    .returning();
+  return result[0].nextSerial - nextSerial;
 }
