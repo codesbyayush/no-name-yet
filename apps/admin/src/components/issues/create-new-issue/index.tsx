@@ -14,7 +14,6 @@ import { Textarea } from '@workspace/ui/components/textarea';
 import { Box, Heart } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { v4 as uuidv4 } from 'uuid';
 import type { Issue } from '@/mock-data/issues';
 import { ranks } from '@/mock-data/issues';
 import { priorities } from '@/mock-data/priorities';
@@ -82,7 +81,7 @@ export function CreateNewIssue() {
   const createDefaultData = useCallback(() => {
     const identifier = generateUniqueIdentifier();
     return {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       identifier: `LNUI-${identifier}`,
       issueKey: `LNUI-${identifier}`,
       title: '',

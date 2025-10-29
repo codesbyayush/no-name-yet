@@ -27,7 +27,6 @@
     "react-dnd-html5-backend": "^16.0.1",
     "server": "workspace:*",
     "@workspace/ui": "workspace:*",
-    "uuid": "^11.1.0",
     "zustand": "^5.0.8"
   },
   "overrides": {
