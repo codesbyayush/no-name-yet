@@ -7,7 +7,7 @@ export const Route = createFileRoute('/_admin/settings/pricing')({
 
 function RouteComponent() {
   return (
-    <div className='flex h-full items-center justify-center py-12'>
+    <div className='flex min-h-full items-center justify-center py-12'>
       <PricingSection
         description="Whether you're just starting out or growing fast, our flexible pricing has you covered — with no hidden costs."
         heading='Plans that Scale with You'
