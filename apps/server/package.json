@@ -21,7 +21,7 @@
     "deploy": "wrangler deploy"
   },
   "dependencies": {
-    "@blocknote/server-util": "^0.34.0",
+    "@blocknote/server-util": "^0.41.1",
     "@cloudflare/workers-types": "^4.20250712.0",
     "@hono/zod-validator": "^0.7.0",
     "@neondatabase/serverless": "^1.0.1",
@@ -35,7 +35,7 @@
     "drizzle-valibot": "^0.4.2",
     "hono": "^4.7.6",
     "pg": "^8.14.1",
-    "react-email": "4.0.7",
+    "react-email": "4.3.2",
     "resend": "^6.2.2",
     "valibot": "1.1.0"
   },
