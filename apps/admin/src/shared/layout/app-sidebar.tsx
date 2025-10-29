@@ -66,24 +66,24 @@ const data = {
     },
     {
       title: 'Settings',
-      url: '#',
+      url: '/settings',
       icon: Settings2,
       items: [
         {
           title: 'General',
-          url: '#',
+          url: '/settings/general',
         },
         {
-          title: 'Team',
-          url: '#',
+          title: 'Integrations',
+          url: '/settings/integrations',
         },
         {
-          title: 'Billing',
-          url: '#',
+          title: 'Pricing',
+          url: '/settings/pricing',
         },
         {
-          title: 'Limits',
-          url: '#',
+          title: 'Members',
+          url: '/settings/members',
         },
       ],
     },

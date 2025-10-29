@@ -108,17 +108,12 @@ export const Route = createFileRoute('/_admin/settings')({
 
 function SettingsLayout() {
   return (
-    <div>
-      <div className='sticky top-0 z-20 bg-background'>
-        <div className='border-muted border-b pl-2'>
-          <SiteHeader title='Settings' />
-        </div>
-      </div>
-      <div className='px-4 py-3'>
-        <div className='mx-auto w-full max-w-6xl'>
-          <div className='space-y-6'>
-            <Outlet />
-          </div>
+    <div className='h-svh overflow-hidden lg:p-2'>
+      <div className='flex h-full flex-col items-center justify-start overflow-hidden bg-container lg:rounded-md lg:border'>
+        <SiteHeader title='Settings' />
+
+        <div className='min-h-[calc(100svh-80px)] w-full overflow-auto p-6 lg:min-h-[calc(100svh-96px)]'>
+          <Outlet />
         </div>
       </div>
     </div>
