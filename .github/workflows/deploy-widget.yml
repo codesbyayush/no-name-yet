@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Checkout source repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
@@ -38,7 +38,7 @@ jobs:
           cp -r apps/widget/dist /tmp/widget-dist
 
       - name: Checkout public repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
         with:
           repository: codesbyayush/widget
           token: ${{ secrets.WIDGET_GH_ACTION }}
@@ -64,7 +64,7 @@ jobs:
 
     steps:
       - name: Checkout source repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
@@ -97,7 +97,7 @@ jobs:
 
     steps:
       - name: Checkout source repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
@@ -127,7 +127,7 @@ jobs:
 
     steps:
       - name: Checkout source repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
