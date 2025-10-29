@@ -19,9 +19,10 @@ import { Route as AdminEditorRouteImport } from './routes/_admin/editor'
 import { Route as AdminBoardsIndexRouteImport } from './routes/_admin/boards/index'
 import { Route as AdminSettingsPricingRouteImport } from './routes/_admin/settings/pricing'
 import { Route as AdminSettingsMembersRouteImport } from './routes/_admin/settings/members'
-import { Route as AdminSettingsIntegrationsRouteImport } from './routes/_admin/settings/integrations'
 import { Route as AdminSettingsGeneralRouteImport } from './routes/_admin/settings/general'
 import { Route as AdminBoardsPostIdRouteImport } from './routes/_admin/boards/$postId'
+import { Route as AdminSettingsIntegrationsIndexRouteImport } from './routes/_admin/settings/integrations/index'
+import { Route as AdminSettingsIntegrationsGithubRouteImport } from './routes/_admin/settings/integrations/github'
 
 const AdminRoute = AdminRouteImport.update({
   id: '/_admin',
@@ -72,12 +73,6 @@ const AdminSettingsMembersRoute = AdminSettingsMembersRouteImport.update({
   path: '/members',
   getParentRoute: () => AdminSettingsRoute,
 } as any)
-const AdminSettingsIntegrationsRoute =
-  AdminSettingsIntegrationsRouteImport.update({
-    id: '/integrations',
-    path: '/integrations',
-    getParentRoute: () => AdminSettingsRoute,
-  } as any)
 const AdminSettingsGeneralRoute = AdminSettingsGeneralRouteImport.update({
   id: '/general',
   path: '/general',
@@ -88,6 +83,18 @@ const AdminBoardsPostIdRoute = AdminBoardsPostIdRouteImport.update({
   path: '/boards/$postId',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminSettingsIntegrationsIndexRoute =
+  AdminSettingsIntegrationsIndexRouteImport.update({
+    id: '/integrations/',
+    path: '/integrations/',
+    getParentRoute: () => AdminSettingsRoute,
+  } as any)
+const AdminSettingsIntegrationsGithubRoute =
+  AdminSettingsIntegrationsGithubRouteImport.update({
+    id: '/integrations/github',
+    path: '/integrations/github',
+    getParentRoute: () => AdminSettingsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -98,10 +105,11 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof OnboardingIndexRoute
   '/boards/$postId': typeof AdminBoardsPostIdRoute
   '/settings/general': typeof AdminSettingsGeneralRoute
-  '/settings/integrations': typeof AdminSettingsIntegrationsRoute
   '/settings/members': typeof AdminSettingsMembersRoute
   '/settings/pricing': typeof AdminSettingsPricingRoute
   '/boards': typeof AdminBoardsIndexRoute
+  '/settings/integrations/github': typeof AdminSettingsIntegrationsGithubRoute
+  '/settings/integrations': typeof AdminSettingsIntegrationsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -112,10 +120,11 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingIndexRoute
   '/boards/$postId': typeof AdminBoardsPostIdRoute
   '/settings/general': typeof AdminSettingsGeneralRoute
-  '/settings/integrations': typeof AdminSettingsIntegrationsRoute
   '/settings/members': typeof AdminSettingsMembersRoute
   '/settings/pricing': typeof AdminSettingsPricingRoute
   '/boards': typeof AdminBoardsIndexRoute
+  '/settings/integrations/github': typeof AdminSettingsIntegrationsGithubRoute
+  '/settings/integrations': typeof AdminSettingsIntegrationsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -128,10 +137,11 @@ export interface FileRoutesById {
   '/onboarding/': typeof OnboardingIndexRoute
   '/_admin/boards/$postId': typeof AdminBoardsPostIdRoute
   '/_admin/settings/general': typeof AdminSettingsGeneralRoute
-  '/_admin/settings/integrations': typeof AdminSettingsIntegrationsRoute
   '/_admin/settings/members': typeof AdminSettingsMembersRoute
   '/_admin/settings/pricing': typeof AdminSettingsPricingRoute
   '/_admin/boards/': typeof AdminBoardsIndexRoute
+  '/_admin/settings/integrations/github': typeof AdminSettingsIntegrationsGithubRoute
+  '/_admin/settings/integrations/': typeof AdminSettingsIntegrationsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -144,10 +154,11 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/boards/$postId'
     | '/settings/general'
-    | '/settings/integrations'
     | '/settings/members'
     | '/settings/pricing'
     | '/boards'
+    | '/settings/integrations/github'
+    | '/settings/integrations'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -158,10 +169,11 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/boards/$postId'
     | '/settings/general'
-    | '/settings/integrations'
     | '/settings/members'
     | '/settings/pricing'
     | '/boards'
+    | '/settings/integrations/github'
+    | '/settings/integrations'
   id:
     | '__root__'
     | '/'
@@ -173,10 +185,11 @@ export interface FileRouteTypes {
     | '/onboarding/'
     | '/_admin/boards/$postId'
     | '/_admin/settings/general'
-    | '/_admin/settings/integrations'
     | '/_admin/settings/members'
     | '/_admin/settings/pricing'
     | '/_admin/boards/'
+    | '/_admin/settings/integrations/github'
+    | '/_admin/settings/integrations/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -258,13 +271,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsMembersRouteImport
       parentRoute: typeof AdminSettingsRoute
     }
-    '/_admin/settings/integrations': {
-      id: '/_admin/settings/integrations'
-      path: '/integrations'
-      fullPath: '/settings/integrations'
-      preLoaderRoute: typeof AdminSettingsIntegrationsRouteImport
-      parentRoute: typeof AdminSettingsRoute
-    }
     '/_admin/settings/general': {
       id: '/_admin/settings/general'
       path: '/general'
@@ -279,21 +285,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBoardsPostIdRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/_admin/settings/integrations/': {
+      id: '/_admin/settings/integrations/'
+      path: '/integrations'
+      fullPath: '/settings/integrations'
+      preLoaderRoute: typeof AdminSettingsIntegrationsIndexRouteImport
+      parentRoute: typeof AdminSettingsRoute
+    }
+    '/_admin/settings/integrations/github': {
+      id: '/_admin/settings/integrations/github'
+      path: '/integrations/github'
+      fullPath: '/settings/integrations/github'
+      preLoaderRoute: typeof AdminSettingsIntegrationsGithubRouteImport
+      parentRoute: typeof AdminSettingsRoute
+    }
   }
 }
 
 interface AdminSettingsRouteChildren {
   AdminSettingsGeneralRoute: typeof AdminSettingsGeneralRoute
-  AdminSettingsIntegrationsRoute: typeof AdminSettingsIntegrationsRoute
   AdminSettingsMembersRoute: typeof AdminSettingsMembersRoute
   AdminSettingsPricingRoute: typeof AdminSettingsPricingRoute
+  AdminSettingsIntegrationsGithubRoute: typeof AdminSettingsIntegrationsGithubRoute
+  AdminSettingsIntegrationsIndexRoute: typeof AdminSettingsIntegrationsIndexRoute
 }
 
 const AdminSettingsRouteChildren: AdminSettingsRouteChildren = {
   AdminSettingsGeneralRoute: AdminSettingsGeneralRoute,
-  AdminSettingsIntegrationsRoute: AdminSettingsIntegrationsRoute,
   AdminSettingsMembersRoute: AdminSettingsMembersRoute,
   AdminSettingsPricingRoute: AdminSettingsPricingRoute,
+  AdminSettingsIntegrationsGithubRoute: AdminSettingsIntegrationsGithubRoute,
+  AdminSettingsIntegrationsIndexRoute: AdminSettingsIntegrationsIndexRoute,
 }
 
 const AdminSettingsRouteWithChildren = AdminSettingsRoute._addFileChildren(
