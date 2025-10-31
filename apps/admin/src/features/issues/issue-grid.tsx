@@ -67,7 +67,7 @@ export function CustomDragLayer() {
       itemType: monitor.getItemType(),
       currentOffset: monitor.getSourceClientOffset(),
       isDragging: monitor.isDragging(),
-    })
+    }),
   );
 
   if (!isDragging || itemType !== IssueDragType || !currentOffset) {

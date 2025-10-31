@@ -19,7 +19,7 @@ export const slugSchema = z
   .max(100, 'Slug too long')
   .regex(
     /^[a-z0-9-]+$/,
-    'Slug must contain only lowercase letters, numbers, and hyphens'
+    'Slug must contain only lowercase letters, numbers, and hyphens',
   );
 
 export const titleSchema = z

@@ -21,7 +21,7 @@ export const postsRouter = {
         take: z.number().min(1).max(MAX_TAKE).default(DEFAULT_TAKE),
         sortBy: z.enum(['newest', 'oldest', 'most_voted']).default('newest'),
         boardId: z.string().optional(),
-      })
+      }),
     )
     .handler(async ({ input, context }) => {
       const { offset, take, sortBy, boardId } = input;
@@ -38,7 +38,7 @@ export const postsRouter = {
           take,
           sortBy,
         },
-        userId
+        userId,
       );
       return {
         posts,
@@ -56,7 +56,7 @@ export const postsRouter = {
     .input(
       z.object({
         feedbackId: z.string().optional(),
-      })
+      }),
     )
     .handler(async ({ input, context }) => {
       const { feedbackId } = input;
@@ -67,7 +67,7 @@ export const postsRouter = {
       const post = await getAdminDetailedSinglePost(
         context.db,
         feedbackId,
-        userId
+        userId,
       );
       return {
         post,
@@ -105,7 +105,7 @@ export const postsRouter = {
             'paused',
           ])
           .default('to-do'),
-      })
+      }),
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
@@ -167,11 +167,11 @@ export const postsRouter = {
               type: z.string(),
               size: z.number(),
               url: z.string(),
-            })
+            }),
           )
           .optional(),
         assigneeId: z.string().optional().nullable(),
-      })
+      }),
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
@@ -187,7 +187,7 @@ export const postsRouter = {
     .input(
       z.object({
         id: z.string(),
-      })
+      }),
     )
     .output(z.any())
     .handler(async ({ input, context }) => {

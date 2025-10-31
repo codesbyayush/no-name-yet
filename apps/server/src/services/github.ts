@@ -39,7 +39,7 @@ export type PullRequestPayload = {
  */
 export async function upsertInstallation(
   db: Database,
-  installation: GitHubInstallation
+  installation: GitHubInstallation,
 ): Promise<void> {
   const account = installation.account;
   const id = String(installation.id);
@@ -66,7 +66,7 @@ export async function upsertInstallation(
  */
 export async function deleteInstallation(
   db: Database,
-  installationId: number
+  installationId: number,
 ): Promise<void> {
   await deleteInstallationByInstallationId(db, installationId);
 }
@@ -76,7 +76,7 @@ export async function deleteInstallation(
  */
 export async function getOrganizationByInstallation(
   db: Database,
-  installationId: number
+  installationId: number,
 ): Promise<string | null> {
   return await getOrganizationIdByInstallationId(db, installationId);
 }
@@ -86,7 +86,7 @@ export async function getOrganizationByInstallation(
  */
 export async function handlePullRequest(
   db: Database,
-  payload: PullRequestPayload
+  payload: PullRequestPayload,
 ): Promise<void> {
   const { action, pull_request: pr, repository } = payload;
 
@@ -113,7 +113,7 @@ export async function handlePullRequest(
 
   const organizationId = await getOrganizationByInstallation(
     db,
-    installationId
+    installationId,
   );
   if (!organizationId) {
     return;
@@ -130,7 +130,7 @@ export async function handlePullRequest(
     action,
     pr.merged,
     pr.base?.ref || '',
-    repository.default_branch
+    repository.default_branch,
   );
 
   if (!status) {

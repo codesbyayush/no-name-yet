@@ -18,7 +18,7 @@ const generateRank = (index: number) => {
 // Transform server post data to client Issue format
 export const transformServerPostToIssue = (
   serverPost: any,
-  index: number
+  index: number,
 ): Issue => {
   // Map server data to client format
   const clientIssue: Issue = {

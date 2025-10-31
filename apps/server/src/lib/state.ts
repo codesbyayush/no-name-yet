@@ -34,12 +34,12 @@ async function hmacSHA256(keyBytes: Uint8Array, data: string): Promise<string> {
     keyBuffer,
     { name: 'HMAC', hash: 'SHA-256' },
     false,
-    ['sign']
+    ['sign'],
   );
   const sig = await crypto.subtle.sign(
     'HMAC',
     key,
-    new TextEncoder().encode(data)
+    new TextEncoder().encode(data),
   );
   return bytesToBase64Url(sig);
 }
@@ -53,7 +53,7 @@ export type InstallStatePayload = {
 
 export async function signInstallState(
   env: AppEnv,
-  payload: InstallStatePayload
+  payload: InstallStatePayload,
 ): Promise<string> {
   const secret = env.BETTER_AUTH_SECRET;
   const keyBytes = new TextEncoder().encode(secret);
@@ -64,7 +64,7 @@ export async function signInstallState(
 
 export async function verifyInstallState(
   env: AppEnv,
-  token: string
+  token: string,
 ): Promise<InstallStatePayload | null> {
   try {
     const [body, sig] = token.split('.');

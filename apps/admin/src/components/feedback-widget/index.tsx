@@ -177,7 +177,7 @@ const OmniFeedbackWidget = () => {
       try {
         // Load script only once per domain
         await loadScriptOnce(
-          'https://codesbyayush.github.io/widget/omnifeedback-widget.js'
+          'https://codesbyayush.github.io/widget/omnifeedback-widget.js',
         );
 
         // Initialize widget if not already initialized

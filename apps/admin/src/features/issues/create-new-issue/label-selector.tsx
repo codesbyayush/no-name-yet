@@ -55,7 +55,7 @@ export function LabelSelector({
             aria-expanded={open}
             className={cn(
               'flex items-center justify-center',
-              selectedLabels.length === 0 && 'size-7'
+              selectedLabels.length === 0 && 'size-7',
             )}
             id={id}
             role='combobox'
@@ -87,7 +87,7 @@ export function LabelSelector({
               <CommandGroup>
                 {tags.map((tag) => {
                   const isSelected = selectedLabels.some(
-                    (l) => l.id === tag.id
+                    (l) => l.id === tag.id,
                   );
                   return (
                     <CommandItem
@@ -108,7 +108,7 @@ export function LabelSelector({
                       )}
                       <span className='text-muted-foreground text-xs'>
                         {issues?.filter((is) =>
-                          is.tags.some((l) => l.id === tag.id)
+                          is.tags.some((l) => l.id === tag.id),
                         ).length ?? 0}
                       </span>
                     </CommandItem>

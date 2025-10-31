@@ -24,7 +24,7 @@ function resolvePublicOrder(sortBy: PublicGetParams['sortBy']): SQL<unknown> {
 export async function getPublished(
   db: Database,
   organizationId: string,
-  params: PublicGetParams
+  params: PublicGetParams,
 ) {
   const whereConditions = [
     eq(changelog.organizationId, organizationId),
@@ -68,7 +68,7 @@ export async function getPublished(
 export async function getPublishedBySlug(
   db: Database,
   organizationId: string,
-  slug: string
+  slug: string,
 ) {
   const rows = await db
     .select({
@@ -90,8 +90,8 @@ export async function getPublishedBySlug(
       and(
         eq(changelog.organizationId, organizationId),
         eq(changelog.slug, slug),
-        eq(changelog.status, 'published')
-      )
+        eq(changelog.status, 'published'),
+      ),
     )
     .limit(1);
   return rows[0] ?? null;
@@ -119,7 +119,7 @@ function resolveAdminOrder(sortBy: AdminGetParams['sortBy']): SQL<unknown> {
 export async function getAll(
   db: Database,
   organizationId: string,
-  params: AdminGetParams
+  params: AdminGetParams,
 ) {
   const whereConditions = [eq(changelog.organizationId, organizationId)];
   if (params.status) {
@@ -168,7 +168,7 @@ export async function getAll(
 export async function getByIdForOrg(
   db: Database,
   organizationId: string,
-  id: string
+  id: string,
 ) {
   const rows = await db
     .select({
@@ -197,7 +197,7 @@ export async function getByIdForOrg(
     .leftJoin(user, eq(changelog.authorId, user.id))
     .leftJoin(tags, eq(changelog.tagId, tags.id))
     .where(
-      and(eq(changelog.id, id), eq(changelog.organizationId, organizationId))
+      and(eq(changelog.id, id), eq(changelog.organizationId, organizationId)),
     )
     .limit(1);
   return rows[0] ?? null;
@@ -207,7 +207,7 @@ export async function ensureUniqueSlug(
   db: Database,
   organizationId: string,
   baseSlug: string,
-  excludeId?: string
+  excludeId?: string,
 ) {
   let slug = baseSlug;
   let counter = 0;
@@ -254,7 +254,7 @@ export async function insert(db: Database, values: InsertChangelogValues) {
 export async function updateById(
   db: Database,
   id: string,
-  values: Record<string, unknown>
+  values: Record<string, unknown>,
 ) {
   const updated = await db
     .update(changelog)
@@ -267,7 +267,7 @@ export async function updateById(
 export async function updateManyByIds(
   db: Database,
   ids: string[],
-  values: Record<string, unknown>
+  values: Record<string, unknown>,
 ) {
   return await db
     .update(changelog)

@@ -73,7 +73,7 @@ export function CreateOrganizationForm({
       const isSlugAvailable = await checkSlugAvailability();
       if (!isSlugAvailable) {
         setError(
-          'This organization slug is already taken. Please choose another one.'
+          'This organization slug is already taken. Please choose another one.',
         );
         setIsSubmitting(false);
         return;
@@ -135,7 +135,7 @@ export function CreateOrganizationForm({
                 onChange={handleSlugChange}
                 onPaste={(e) =>
                   handleSlugChange(
-                    e as unknown as React.ChangeEvent<HTMLInputElement>
+                    e as unknown as React.ChangeEvent<HTMLInputElement>,
                   )
                 }
                 placeholder='openfeedback'

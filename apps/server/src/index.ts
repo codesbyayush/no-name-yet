@@ -57,7 +57,7 @@ authRouter.all('*', async (c) => {
         error: 'Auth failed',
         details: error instanceof Error ? error.message : 'Unknown error',
       },
-      HTTP_STATUS.INTERNAL_SERVER_ERROR
+      HTTP_STATUS.INTERNAL_SERVER_ERROR,
     );
   }
 });
@@ -72,7 +72,7 @@ app.use(
     allowHeaders: ['Content-Type', 'X-Public-Key'],
     credentials: false,
     maxAge: 86_400,
-  })
+  }),
 );
 
 app.use(
@@ -88,7 +88,7 @@ app.use(
       'X-Requested-With',
       'X-Public-Key',
     ],
-  })
+  }),
 );
 
 app.get('/docs', (c) => c.redirect('/api/docs'));
@@ -147,7 +147,7 @@ const createExport = async () => {
     // TLS configuration for HTTPS in development
     const tlsConfig = {
       key: readFileSync(
-        resolve(import.meta.dir, '../certs/localhost+2-key.pem')
+        resolve(import.meta.dir, '../certs/localhost+2-key.pem'),
       ),
       cert: readFileSync(resolve(import.meta.dir, '../certs/localhost+2.pem')),
     };

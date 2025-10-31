@@ -8,110 +8,110 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as PublicRouteImport } from './routes/_public'
-import { Route as LandingRouteImport } from './routes/_landing'
-import { Route as LandingIndexRouteImport } from './routes/_landing/index'
-import { Route as PublicProfileRouteImport } from './routes/_public/profile'
-import { Route as PublicChangelogRouteImport } from './routes/_public/changelog'
-import { Route as PublicBoardRouteImport } from './routes/_public/board'
-import { Route as LandingContactRouteImport } from './routes/_landing/contact'
-import { Route as LandingAboutRouteImport } from './routes/_landing/about'
-import { Route as PublicBoardIndexRouteImport } from './routes/_public/board/index'
-import { Route as PublicBoardPostIdRouteImport } from './routes/_public/board/$postId'
+import { Route as rootRouteImport } from './routes/__root';
+import { Route as LandingRouteImport } from './routes/_landing';
+import { Route as LandingAboutRouteImport } from './routes/_landing/about';
+import { Route as LandingContactRouteImport } from './routes/_landing/contact';
+import { Route as LandingIndexRouteImport } from './routes/_landing/index';
+import { Route as PublicRouteImport } from './routes/_public';
+import { Route as PublicBoardRouteImport } from './routes/_public/board';
+import { Route as PublicBoardPostIdRouteImport } from './routes/_public/board/$postId';
+import { Route as PublicBoardIndexRouteImport } from './routes/_public/board/index';
+import { Route as PublicChangelogRouteImport } from './routes/_public/changelog';
+import { Route as PublicProfileRouteImport } from './routes/_public/profile';
+import { Route as AuthRouteImport } from './routes/auth';
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const PublicRoute = PublicRouteImport.update({
   id: '/_public',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const LandingRoute = LandingRouteImport.update({
   id: '/_landing',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const LandingIndexRoute = LandingIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => LandingRoute,
-} as any)
+} as any);
 const PublicProfileRoute = PublicProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
   getParentRoute: () => PublicRoute,
-} as any)
+} as any);
 const PublicChangelogRoute = PublicChangelogRouteImport.update({
   id: '/changelog',
   path: '/changelog',
   getParentRoute: () => PublicRoute,
-} as any)
+} as any);
 const PublicBoardRoute = PublicBoardRouteImport.update({
   id: '/board',
   path: '/board',
   getParentRoute: () => PublicRoute,
-} as any)
+} as any);
 const LandingContactRoute = LandingContactRouteImport.update({
   id: '/contact',
   path: '/contact',
   getParentRoute: () => LandingRoute,
-} as any)
+} as any);
 const LandingAboutRoute = LandingAboutRouteImport.update({
   id: '/about',
   path: '/about',
   getParentRoute: () => LandingRoute,
-} as any)
+} as any);
 const PublicBoardIndexRoute = PublicBoardIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => PublicBoardRoute,
-} as any)
+} as any);
 const PublicBoardPostIdRoute = PublicBoardPostIdRouteImport.update({
   id: '/$postId',
   path: '/$postId',
   getParentRoute: () => PublicBoardRoute,
-} as any)
+} as any);
 
 export interface FileRoutesByFullPath {
-  '/auth': typeof AuthRoute
-  '/about': typeof LandingAboutRoute
-  '/contact': typeof LandingContactRoute
-  '/board': typeof PublicBoardRouteWithChildren
-  '/changelog': typeof PublicChangelogRoute
-  '/profile': typeof PublicProfileRoute
-  '/': typeof LandingIndexRoute
-  '/board/$postId': typeof PublicBoardPostIdRoute
-  '/board/': typeof PublicBoardIndexRoute
+  '/auth': typeof AuthRoute;
+  '/about': typeof LandingAboutRoute;
+  '/contact': typeof LandingContactRoute;
+  '/board': typeof PublicBoardRouteWithChildren;
+  '/changelog': typeof PublicChangelogRoute;
+  '/profile': typeof PublicProfileRoute;
+  '/': typeof LandingIndexRoute;
+  '/board/$postId': typeof PublicBoardPostIdRoute;
+  '/board/': typeof PublicBoardIndexRoute;
 }
 export interface FileRoutesByTo {
-  '/auth': typeof AuthRoute
-  '/about': typeof LandingAboutRoute
-  '/contact': typeof LandingContactRoute
-  '/changelog': typeof PublicChangelogRoute
-  '/profile': typeof PublicProfileRoute
-  '/': typeof LandingIndexRoute
-  '/board/$postId': typeof PublicBoardPostIdRoute
-  '/board': typeof PublicBoardIndexRoute
+  '/auth': typeof AuthRoute;
+  '/about': typeof LandingAboutRoute;
+  '/contact': typeof LandingContactRoute;
+  '/changelog': typeof PublicChangelogRoute;
+  '/profile': typeof PublicProfileRoute;
+  '/': typeof LandingIndexRoute;
+  '/board/$postId': typeof PublicBoardPostIdRoute;
+  '/board': typeof PublicBoardIndexRoute;
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport
-  '/_landing': typeof LandingRouteWithChildren
-  '/_public': typeof PublicRouteWithChildren
-  '/auth': typeof AuthRoute
-  '/_landing/about': typeof LandingAboutRoute
-  '/_landing/contact': typeof LandingContactRoute
-  '/_public/board': typeof PublicBoardRouteWithChildren
-  '/_public/changelog': typeof PublicChangelogRoute
-  '/_public/profile': typeof PublicProfileRoute
-  '/_landing/': typeof LandingIndexRoute
-  '/_public/board/$postId': typeof PublicBoardPostIdRoute
-  '/_public/board/': typeof PublicBoardIndexRoute
+  __root__: typeof rootRouteImport;
+  '/_landing': typeof LandingRouteWithChildren;
+  '/_public': typeof PublicRouteWithChildren;
+  '/auth': typeof AuthRoute;
+  '/_landing/about': typeof LandingAboutRoute;
+  '/_landing/contact': typeof LandingContactRoute;
+  '/_public/board': typeof PublicBoardRouteWithChildren;
+  '/_public/changelog': typeof PublicChangelogRoute;
+  '/_public/profile': typeof PublicProfileRoute;
+  '/_landing/': typeof LandingIndexRoute;
+  '/_public/board/$postId': typeof PublicBoardPostIdRoute;
+  '/_public/board/': typeof PublicBoardIndexRoute;
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
+  fileRoutesByFullPath: FileRoutesByFullPath;
   fullPaths:
     | '/auth'
     | '/about'
@@ -121,8 +121,8 @@ export interface FileRouteTypes {
     | '/profile'
     | '/'
     | '/board/$postId'
-    | '/board/'
-  fileRoutesByTo: FileRoutesByTo
+    | '/board/';
+  fileRoutesByTo: FileRoutesByTo;
   to:
     | '/auth'
     | '/about'
@@ -131,7 +131,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/'
     | '/board/$postId'
-    | '/board'
+    | '/board';
   id:
     | '__root__'
     | '/_landing'
@@ -144,146 +144,146 @@ export interface FileRouteTypes {
     | '/_public/profile'
     | '/_landing/'
     | '/_public/board/$postId'
-    | '/_public/board/'
-  fileRoutesById: FileRoutesById
+    | '/_public/board/';
+  fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
-  LandingRoute: typeof LandingRouteWithChildren
-  PublicRoute: typeof PublicRouteWithChildren
-  AuthRoute: typeof AuthRoute
+  LandingRoute: typeof LandingRouteWithChildren;
+  PublicRoute: typeof PublicRouteWithChildren;
+  AuthRoute: typeof AuthRoute;
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
     '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
+      id: '/auth';
+      path: '/auth';
+      fullPath: '/auth';
+      preLoaderRoute: typeof AuthRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     '/_public': {
-      id: '/_public'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof PublicRouteImport
-      parentRoute: typeof rootRouteImport
-    }
+      id: '/_public';
+      path: '';
+      fullPath: '';
+      preLoaderRoute: typeof PublicRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     '/_landing': {
-      id: '/_landing'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof LandingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
+      id: '/_landing';
+      path: '';
+      fullPath: '';
+      preLoaderRoute: typeof LandingRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     '/_landing/': {
-      id: '/_landing/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof LandingIndexRouteImport
-      parentRoute: typeof LandingRoute
-    }
+      id: '/_landing/';
+      path: '/';
+      fullPath: '/';
+      preLoaderRoute: typeof LandingIndexRouteImport;
+      parentRoute: typeof LandingRoute;
+    };
     '/_public/profile': {
-      id: '/_public/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof PublicProfileRouteImport
-      parentRoute: typeof PublicRoute
-    }
+      id: '/_public/profile';
+      path: '/profile';
+      fullPath: '/profile';
+      preLoaderRoute: typeof PublicProfileRouteImport;
+      parentRoute: typeof PublicRoute;
+    };
     '/_public/changelog': {
-      id: '/_public/changelog'
-      path: '/changelog'
-      fullPath: '/changelog'
-      preLoaderRoute: typeof PublicChangelogRouteImport
-      parentRoute: typeof PublicRoute
-    }
+      id: '/_public/changelog';
+      path: '/changelog';
+      fullPath: '/changelog';
+      preLoaderRoute: typeof PublicChangelogRouteImport;
+      parentRoute: typeof PublicRoute;
+    };
     '/_public/board': {
-      id: '/_public/board'
-      path: '/board'
-      fullPath: '/board'
-      preLoaderRoute: typeof PublicBoardRouteImport
-      parentRoute: typeof PublicRoute
-    }
+      id: '/_public/board';
+      path: '/board';
+      fullPath: '/board';
+      preLoaderRoute: typeof PublicBoardRouteImport;
+      parentRoute: typeof PublicRoute;
+    };
     '/_landing/contact': {
-      id: '/_landing/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof LandingContactRouteImport
-      parentRoute: typeof LandingRoute
-    }
+      id: '/_landing/contact';
+      path: '/contact';
+      fullPath: '/contact';
+      preLoaderRoute: typeof LandingContactRouteImport;
+      parentRoute: typeof LandingRoute;
+    };
     '/_landing/about': {
-      id: '/_landing/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof LandingAboutRouteImport
-      parentRoute: typeof LandingRoute
-    }
+      id: '/_landing/about';
+      path: '/about';
+      fullPath: '/about';
+      preLoaderRoute: typeof LandingAboutRouteImport;
+      parentRoute: typeof LandingRoute;
+    };
     '/_public/board/': {
-      id: '/_public/board/'
-      path: '/'
-      fullPath: '/board/'
-      preLoaderRoute: typeof PublicBoardIndexRouteImport
-      parentRoute: typeof PublicBoardRoute
-    }
+      id: '/_public/board/';
+      path: '/';
+      fullPath: '/board/';
+      preLoaderRoute: typeof PublicBoardIndexRouteImport;
+      parentRoute: typeof PublicBoardRoute;
+    };
     '/_public/board/$postId': {
-      id: '/_public/board/$postId'
-      path: '/$postId'
-      fullPath: '/board/$postId'
-      preLoaderRoute: typeof PublicBoardPostIdRouteImport
-      parentRoute: typeof PublicBoardRoute
-    }
+      id: '/_public/board/$postId';
+      path: '/$postId';
+      fullPath: '/board/$postId';
+      preLoaderRoute: typeof PublicBoardPostIdRouteImport;
+      parentRoute: typeof PublicBoardRoute;
+    };
   }
 }
 
 interface LandingRouteChildren {
-  LandingAboutRoute: typeof LandingAboutRoute
-  LandingContactRoute: typeof LandingContactRoute
-  LandingIndexRoute: typeof LandingIndexRoute
+  LandingAboutRoute: typeof LandingAboutRoute;
+  LandingContactRoute: typeof LandingContactRoute;
+  LandingIndexRoute: typeof LandingIndexRoute;
 }
 
 const LandingRouteChildren: LandingRouteChildren = {
   LandingAboutRoute: LandingAboutRoute,
   LandingContactRoute: LandingContactRoute,
   LandingIndexRoute: LandingIndexRoute,
-}
+};
 
 const LandingRouteWithChildren =
-  LandingRoute._addFileChildren(LandingRouteChildren)
+  LandingRoute._addFileChildren(LandingRouteChildren);
 
 interface PublicBoardRouteChildren {
-  PublicBoardPostIdRoute: typeof PublicBoardPostIdRoute
-  PublicBoardIndexRoute: typeof PublicBoardIndexRoute
+  PublicBoardPostIdRoute: typeof PublicBoardPostIdRoute;
+  PublicBoardIndexRoute: typeof PublicBoardIndexRoute;
 }
 
 const PublicBoardRouteChildren: PublicBoardRouteChildren = {
   PublicBoardPostIdRoute: PublicBoardPostIdRoute,
   PublicBoardIndexRoute: PublicBoardIndexRoute,
-}
+};
 
 const PublicBoardRouteWithChildren = PublicBoardRoute._addFileChildren(
   PublicBoardRouteChildren,
-)
+);
 
 interface PublicRouteChildren {
-  PublicBoardRoute: typeof PublicBoardRouteWithChildren
-  PublicChangelogRoute: typeof PublicChangelogRoute
-  PublicProfileRoute: typeof PublicProfileRoute
+  PublicBoardRoute: typeof PublicBoardRouteWithChildren;
+  PublicChangelogRoute: typeof PublicChangelogRoute;
+  PublicProfileRoute: typeof PublicProfileRoute;
 }
 
 const PublicRouteChildren: PublicRouteChildren = {
   PublicBoardRoute: PublicBoardRouteWithChildren,
   PublicChangelogRoute: PublicChangelogRoute,
   PublicProfileRoute: PublicProfileRoute,
-}
+};
 
 const PublicRouteWithChildren =
-  PublicRoute._addFileChildren(PublicRouteChildren)
+  PublicRoute._addFileChildren(PublicRouteChildren);
 
 const rootRouteChildren: RootRouteChildren = {
   LandingRoute: LandingRouteWithChildren,
   PublicRoute: PublicRouteWithChildren,
   AuthRoute: AuthRoute,
-}
+};
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();

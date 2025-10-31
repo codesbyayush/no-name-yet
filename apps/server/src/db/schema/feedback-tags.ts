@@ -24,7 +24,7 @@ export const feedbackTags = pgTable(
     primaryKey({ columns: [table.feedbackId, table.tagId] }),
     index('idx_feedback_tags_feedback_id').on(table.feedbackId),
     index('idx_feedback_tags_tag_id').on(table.tagId),
-  ]
+  ],
 );
 
 export type FeedbackTag = typeof feedbackTags.$inferSelect;

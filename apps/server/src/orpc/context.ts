@@ -21,7 +21,7 @@ export async function createContext({ context, env }: CreateContextOptions) {
 
   const { organization: org, subdomain } = await resolveOrganizationFromHeaders(
     db,
-    context.req.raw.headers
+    context.req.raw.headers,
   );
 
   return {

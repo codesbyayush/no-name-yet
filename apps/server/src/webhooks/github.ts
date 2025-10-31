@@ -44,7 +44,7 @@ router.post('/github', async (c) => {
     const isValid = await verify(
       env.GH_WEBHOOK_SECRET,
       body,
-      signature256
+      signature256,
     ).catch(() => false);
 
     if (!isValid) {

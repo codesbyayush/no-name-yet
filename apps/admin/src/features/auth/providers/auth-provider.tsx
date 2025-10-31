@@ -13,7 +13,7 @@ import { getRedirectUrl } from '@/features/auth/utils/redirect';
 import { fetchSession } from '@/features/auth/utils/session';
 
 export const AuthContext = createContext<AuthContextType | undefined>(
-  undefined
+  undefined,
 );
 
 interface AuthProviderProps {
@@ -45,7 +45,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     (nextSession: Session | null) => {
       queryClient.setQueryData<Session | null>(SESSION_QUERY_KEY, nextSession);
     },
-    [queryClient]
+    [queryClient],
   );
 
   const refetchSession = useCallback(async (): Promise<Session | null> => {
@@ -60,7 +60,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     async (provider: string, options?: SignInOptions) => {
       const redirectUrl = getRedirectUrl(
         location.searchStr,
-        options?.callbackURL
+        options?.callbackURL,
       );
       const newUserCallbackURL =
         options?.newUserCallbackURL || `${window.location.origin}/onboarding`;
@@ -75,10 +75,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
           onResponse: () => {
             queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY });
           },
-        }
+        },
       );
     },
-    [location.searchStr, queryClient]
+    [location.searchStr, queryClient],
   );
 
   const handleSignOut = useCallback(async () => {
@@ -97,7 +97,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setSessionCache(null);
       await queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY });
     },
-    [queryClient, setSessionCache]
+    [queryClient, setSessionCache],
   );
 
   const value: AuthContextType = useMemo(
@@ -127,7 +127,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       refetchSession,
       setSessionCache,
       error,
-    ]
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

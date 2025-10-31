@@ -11,8 +11,8 @@ export const tagsRouter = {
           id: z.string(),
           name: z.string(),
           color: z.string(),
-        })
-      )
+        }),
+      ),
     )
     .handler(async ({ context }) => {
       if (!context.organization?.id) {
@@ -26,7 +26,7 @@ export const tagsRouter = {
       z.object({
         name: z.string().min(1),
         color: z.string().default('blue'),
-      })
+      }),
     )
     .output(
       z.object({
@@ -36,7 +36,7 @@ export const tagsRouter = {
         organizationId: z.string(),
         createdAt: z.date(),
         updatedAt: z.date(),
-      })
+      }),
     )
     .handler(async ({ input, context }) => {
       if (!context.organization?.id) {
@@ -45,7 +45,7 @@ export const tagsRouter = {
       const newTag = await createTag(
         context.db,
         context.organization.id,
-        input
+        input,
       );
       return newTag;
     }),
@@ -54,7 +54,7 @@ export const tagsRouter = {
     .input(
       z.object({
         id: z.string(),
-      })
+      }),
     )
     .output(
       z.object({
@@ -64,7 +64,7 @@ export const tagsRouter = {
           name: z.string(),
           color: z.string(),
         }),
-      })
+      }),
     )
     .handler(async ({ input, context }) => {
       if (!context.organization?.id) {

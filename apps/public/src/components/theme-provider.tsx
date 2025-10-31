@@ -33,7 +33,7 @@ function applyTheme(theme: Theme) {
     // Apply dark class if system prefers dark
     root.classList.toggle(
       'dark',
-      window.matchMedia('(prefers-color-scheme: dark)').matches
+      window.matchMedia('(prefers-color-scheme: dark)').matches,
     );
   } else {
     // Set explicit theme

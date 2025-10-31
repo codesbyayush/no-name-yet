@@ -18,7 +18,7 @@ export const comments = pgTable(
       .notNull()
       .references(() => feedback.id, { onDelete: 'cascade' }),
     parentCommentId: text('parent_comment_id').references(
-      (): any => comments.id
+      (): any => comments.id,
     ),
     authorId: text('author_id').references(() => user.id, {
       onDelete: 'cascade',
@@ -34,10 +34,10 @@ export const comments = pgTable(
     uniqueIndex('idx_comments_feedback_id').on(table.feedbackId),
     index('idx_comments_feedback_created').on(
       table.feedbackId,
-      table.createdAt
+      table.createdAt,
     ),
     index('idx_comments_parent_comment_id').on(table.parentCommentId),
-  ]
+  ],
 );
 
 // Export types for TypeScript

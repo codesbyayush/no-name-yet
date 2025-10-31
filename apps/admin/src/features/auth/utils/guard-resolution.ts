@@ -3,7 +3,7 @@ import type { GuardResolution, GuardResolutionParams } from '../types';
 export function buildRedirectTarget(
   pathname: string,
   searchStr: string,
-  hash: string
+  hash: string,
 ) {
   const suffix = `${searchStr}${hash}`;
   return suffix ? `${pathname}${suffix}` : pathname;

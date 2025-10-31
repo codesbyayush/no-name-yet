@@ -34,7 +34,7 @@ export default function HeaderOptions() {
           <DropdownMenuItem
             className={cn(
               'flex w-full flex-col gap-1 border border-accent text-xs',
-              viewType === 'list' ? 'bg-accent' : ''
+              viewType === 'list' ? 'bg-accent' : '',
             )}
             onClick={() => handleViewChange('list')}
           >
@@ -44,7 +44,7 @@ export default function HeaderOptions() {
           <DropdownMenuItem
             className={cn(
               'flex w-full flex-col gap-1 border border-accent text-xs',
-              viewType === 'grid' ? 'bg-accent' : ''
+              viewType === 'grid' ? 'bg-accent' : '',
             )}
             onClick={() => handleViewChange('grid')}
           >

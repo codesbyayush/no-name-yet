@@ -58,10 +58,10 @@ export const changelog = pgTable(
     index('idx_changelog_published').on(table.publishedAt),
     index('idx_changelog_organization_id_slug').on(
       table.organizationId,
-      table.slug
+      table.slug,
     ),
     index('idx_changelog_author').on(table.authorId),
-  ]
+  ],
 );
 
 export type Changelog = typeof changelog.$inferSelect;

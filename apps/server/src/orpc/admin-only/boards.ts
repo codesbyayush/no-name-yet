@@ -26,12 +26,12 @@ export const boardsRouter = {
         description: z.string().optional(),
         isPrivate: z.boolean().default(false),
         customFields: z.any().optional(),
-      })
+      }),
     )
     .output(z.any())
     .handler(
       async ({ input, context }) =>
-        await createBoard(context.db, context.organization.id, input)
+        await createBoard(context.db, context.organization.id, input),
     ),
 
   update: adminOnlyProcedure
@@ -42,7 +42,7 @@ export const boardsRouter = {
         slug: z.string().min(1).optional(),
         description: z.string().optional(),
         isPrivate: z.boolean().optional(),
-      })
+      }),
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
@@ -57,7 +57,7 @@ export const boardsRouter = {
     .input(
       z.object({
         id: z.string(),
-      })
+      }),
     )
     .output(z.any())
     .handler(async ({ input, context }) => {

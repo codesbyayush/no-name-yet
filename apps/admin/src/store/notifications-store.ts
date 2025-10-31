@@ -40,7 +40,7 @@ export const useNotificationsStore = create<NotificationsState>((set, get) => ({
   markAsRead: (id: string) => {
     set((state) => ({
       notifications: state.notifications.map((notification) =>
-        notification.id === id ? { ...notification, read: true } : notification
+        notification.id === id ? { ...notification, read: true } : notification,
       ),
       selectedNotification:
         state.selectedNotification?.id === id
@@ -64,7 +64,9 @@ export const useNotificationsStore = create<NotificationsState>((set, get) => ({
   markAsUnread: (id: string) => {
     set((state) => ({
       notifications: state.notifications.map((notification) =>
-        notification.id === id ? { ...notification, read: false } : notification
+        notification.id === id
+          ? { ...notification, read: false }
+          : notification,
       ),
       selectedNotification:
         state.selectedNotification?.id === id
@@ -85,7 +87,7 @@ export const useNotificationsStore = create<NotificationsState>((set, get) => ({
 
   getNotificationsByUser: (userId: string) =>
     get().notifications.filter(
-      (notification) => notification.user.id === userId
+      (notification) => notification.user.id === userId,
     ),
 
   // Utility functions

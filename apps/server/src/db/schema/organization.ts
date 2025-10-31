@@ -20,7 +20,7 @@ export const organization = pgTable(
     publicKey: text('public_key').default(sql`gen_random_uuid()::text`),
     createdAt: timestamp('created_at').notNull(),
   },
-  (table) => [uniqueIndex('idx_organization_slug').on(table.slug)]
+  (table) => [uniqueIndex('idx_organization_slug').on(table.slug)],
 );
 
 export const team = pgTable('team', {
@@ -48,9 +48,9 @@ export const teamMember = pgTable(
   (table) => [
     uniqueIndex('idx_team_member_team_id_user_id').on(
       table.teamId,
-      table.userId
+      table.userId,
     ),
-  ]
+  ],
 );
 
 export const member = pgTable(
@@ -69,7 +69,7 @@ export const member = pgTable(
   (table) => [
     index('idx_member_user_org').on(table.userId, table.organizationId),
     index('idx_member_org').on(table.organizationId),
-  ]
+  ],
 );
 
 // Invitation table - for inviting users to organizations
@@ -94,5 +94,5 @@ export const invitation = pgTable(
     index('idx_invitation_email_org').on(table.email, table.organizationId),
     index('idx_invitation_status').on(table.status),
     index('idx_invitation_expires').on(table.expiresAt),
-  ]
+  ],
 );

@@ -53,7 +53,7 @@ interface IssuesState {
   // Project management
   updateIssueProject: (
     issueId: string,
-    newProject: Project | undefined
+    newProject: Project | undefined,
   ) => void;
 
   // Utility functions
@@ -85,10 +85,10 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
       // Merge new issues with existing ones, avoiding duplicates by ID
       const existingIds = new Set(state.issues.map((issue) => issue.id));
       const uniqueNewIssues = newIssues.filter(
-        (issue) => !existingIds.has(issue.id)
+        (issue) => !existingIds.has(issue.id),
       );
       const allIssues = [...state.issues, ...uniqueNewIssues].sort((a, b) =>
-        b.rank.localeCompare(a.rank)
+        b.rank.localeCompare(a.rank),
       );
 
       return {
@@ -101,7 +101,7 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
   updateIssue: (id: string, updatedIssue: Partial<Issue>) => {
     set((state) => {
       const newIssues = state.issues.map((issue) =>
-        issue.id === id ? { ...issue, ...updatedIssue } : issue
+        issue.id === id ? { ...issue, ...updatedIssue } : issue,
       );
 
       return {
@@ -137,7 +137,7 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
 
   filterByLabel: (labelId: string) =>
     get().issues.filter((issue) =>
-      issue.tags.some((label) => label.id === labelId)
+      issue.tags.some((label) => label.id === labelId),
     ),
 
   filterByProject: (projectId: string) =>
@@ -148,7 +148,7 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
     return get().issues.filter(
       (issue) =>
         issue.title.toLowerCase().includes(lowerCaseQuery) ||
-        issue.issueKey.toLowerCase().includes(lowerCaseQuery)
+        issue.issueKey.toLowerCase().includes(lowerCaseQuery),
     );
   },
 
@@ -158,7 +158,7 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
     // Filter by status
     if (filters.status && filters.status.length > 0) {
       filteredIssues = filteredIssues.filter((issue) =>
-        filters.status?.includes(issue.status.id)
+        filters.status?.includes(issue.status.id),
       );
     }
 
@@ -179,21 +179,21 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
     // Filter by priority
     if (filters.priority && filters.priority.length > 0) {
       filteredIssues = filteredIssues.filter((issue) =>
-        filters.priority?.includes(issue.priority.id)
+        filters.priority?.includes(issue.priority.id),
       );
     }
 
     // Filter by labels
     if (filters.labels && filters.labels.length > 0) {
       filteredIssues = filteredIssues.filter((issue) =>
-        issue.tags.some((label) => filters.labels?.includes(label.id))
+        issue.tags.some((label) => filters.labels?.includes(label.id)),
       );
     }
 
     // Filter by project
     if (filters.project && filters.project.length > 0) {
       filteredIssues = filteredIssues.filter(
-        (issue) => issue.project && filters.project?.includes(issue.project.id)
+        (issue) => issue.project && filters.project?.includes(issue.project.id),
       );
     }
 

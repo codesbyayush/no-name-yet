@@ -85,7 +85,7 @@ export const useUsersStore = create<UsersState>((set, get) => ({
       // Merge new users with existing ones, avoiding duplicates by ID
       const existingIds = new Set(state.users.map((user) => user.id));
       const uniqueNewUsers = newUsers.filter(
-        (user) => !existingIds.has(user.id)
+        (user) => !existingIds.has(user.id),
       );
       const allUsers = [...state.users, ...uniqueNewUsers];
 
@@ -109,7 +109,7 @@ export const useUsersStore = create<UsersState>((set, get) => ({
   updateUser: (id: string, updatedUser: Partial<User>) => {
     set((state) => {
       const newUsers: User[] = state.users.map((user) =>
-        user.id === id ? { ...user, ...updatedUser } : user
+        user.id === id ? { ...user, ...updatedUser } : user,
       );
 
       // Update lookup objects

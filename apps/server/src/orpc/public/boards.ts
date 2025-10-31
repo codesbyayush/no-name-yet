@@ -7,7 +7,7 @@ export const boardsRouter = {
     try {
       const publicBoards = await getPublicBoards(
         context.db,
-        context.organization?.id || ''
+        context.organization?.id || '',
       );
 
       return {

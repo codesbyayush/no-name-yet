@@ -57,13 +57,13 @@ export function useGithubIntegration(locationSearch: string) {
         }
       } catch (e) {
         setError(
-          e instanceof Error ? e.message : 'Failed to link installation'
+          e instanceof Error ? e.message : 'Failed to link installation',
         );
       } finally {
         setLoading(false);
       }
     },
-    [loadStatus]
+    [loadStatus],
   );
 
   const unlink = useCallback(async () => {
@@ -79,7 +79,7 @@ export function useGithubIntegration(locationSearch: string) {
       }
     } catch (e) {
       setError(
-        e instanceof Error ? e.message : 'Failed to unlink installation'
+        e instanceof Error ? e.message : 'Failed to unlink installation',
       );
     } finally {
       setLoading(false);
@@ -94,7 +94,7 @@ export function useGithubIntegration(locationSearch: string) {
       window.open(res.url, '_blank');
     } catch (e) {
       setError(
-        e instanceof Error ? e.message : 'Failed to open GitHub settings URL'
+        e instanceof Error ? e.message : 'Failed to open GitHub settings URL',
       );
     } finally {
       setLoading(false);

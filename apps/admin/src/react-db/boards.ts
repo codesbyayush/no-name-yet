@@ -51,7 +51,7 @@ const boardsCollection = createCollection(
         id: m.key as string,
       });
     },
-  })
+  }),
 );
 
 export const useBoards = () =>
@@ -62,7 +62,7 @@ export const useBoardById = (id: string | undefined) =>
     q
       .from({ board: boardsCollection })
       .where(({ board }) => (id ? eq(board.id, id) : false))
-      .limit(1)
+      .limit(1),
   );
 
 export const useSearchBoards = (query: string | undefined) => {
@@ -77,7 +77,7 @@ export const useSearchBoards = (query: string | undefined) => {
         const slug = lower(board.slug);
         return ilike(name, `%${term}%`) || ilike(slug, `%${term}%`);
       }),
-    [term]
+    [term],
   );
 };
 

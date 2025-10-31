@@ -29,7 +29,7 @@ function RouteComponent() {
 
   const fallbackInitial = useMemo(
     () => (name?.trim()?.charAt(0) || 'U').toLowerCase(),
-    [name]
+    [name],
   );
 
   const onSave = async (e: React.FormEvent<HTMLFormElement>) => {

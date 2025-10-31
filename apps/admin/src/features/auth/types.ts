@@ -48,7 +48,7 @@ export interface AuthContextType {
   auth: typeof import('@/features/auth/utils/auth-client').authClient;
   signIn: (
     provider: string,
-    options?: { callbackURL?: string; newUserCallbackURL?: string }
+    options?: { callbackURL?: string; newUserCallbackURL?: string },
   ) => Promise<void>;
   signOut: () => Promise<unknown>;
   handleActiveTeamChange: (teamId: string) => Promise<void>;

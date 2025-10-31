@@ -54,8 +54,8 @@ export const githubAdminRouter = {
         .where(
           eq(
             githubInstallations.githubInstallationId,
-            input.githubInstallationId
-          )
+            input.githubInstallationId,
+          ),
         )
         .limit(1);
       const installation = rows[0];

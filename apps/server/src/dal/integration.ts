@@ -4,7 +4,7 @@ import { githubInstallations, organization } from '@/db/schema';
 
 export async function getOrganizationIdBySlug(
   db: Database,
-  slug: string
+  slug: string,
 ): Promise<string | null> {
   const [org] = await db
     .select({ id: organization.id })
@@ -25,7 +25,7 @@ export type GitHubInstallationRow = {
 
 export async function insertOrUpdateInstallation(
   db: Database,
-  row: GitHubInstallationRow
+  row: GitHubInstallationRow,
 ): Promise<void> {
   try {
     await db.insert(githubInstallations).values(row);
@@ -34,14 +34,14 @@ export async function insertOrUpdateInstallation(
       .update(githubInstallations)
       .set(row)
       .where(
-        eq(githubInstallations.githubInstallationId, row.githubInstallationId)
+        eq(githubInstallations.githubInstallationId, row.githubInstallationId),
       );
   }
 }
 
 export async function deleteInstallationByInstallationId(
   db: Database,
-  installationId: number
+  installationId: number,
 ): Promise<void> {
   await db
     .delete(githubInstallations)
@@ -50,7 +50,7 @@ export async function deleteInstallationByInstallationId(
 
 export async function getOrganizationIdByInstallationId(
   db: Database,
-  installationId: number
+  installationId: number,
 ): Promise<string | null> {
   const [result] = await db
     .select({ organizationId: githubInstallations.organizationId })

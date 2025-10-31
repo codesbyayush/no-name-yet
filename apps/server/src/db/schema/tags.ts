@@ -24,14 +24,14 @@ export const tags = pgTable(
   (table) => [
     uniqueIndex('idx_tags_organization_id_name').on(
       table.organizationId,
-      table.name
+      table.name,
     ),
     index('idx_tags_organization_id').on(table.organizationId),
     index('idx_tags_organization_id_name_lower').on(
       table.organizationId,
-      table.name
+      table.name,
     ),
-  ]
+  ],
 );
 
 // Export types for TypeScript

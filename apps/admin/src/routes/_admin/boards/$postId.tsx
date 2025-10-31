@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { PostSidebar } from '@/components/issues/post-sidebar';
+import { PostSidebar } from '@/features/issues/post-sidebar';
 import { useIssueById } from '@/react-db/issues';
 
 export const Route = createFileRoute('/_admin/boards/$postId')({

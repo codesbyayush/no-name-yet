@@ -26,7 +26,7 @@ export function GroupIssues({ statusKey }: GroupIssuesProps) {
   const source = issuesByCurrentStatus;
   const sortedIssues = sortIssuesByPriority(source);
   const status: Status = (allStatus.find(
-    (status) => status.key === statusKey
+    (status) => status.key === statusKey,
   ) || allStatus.find((status) => status.key === 'to-do'))!;
 
   return (
@@ -35,19 +35,19 @@ export function GroupIssues({ statusKey }: GroupIssuesProps) {
         'bg-conainer',
         isViewTypeGrid
           ? 'flex h-full w-[348px] flex-shrink-0 flex-col overflow-hidden rounded-md'
-          : ''
+          : '',
       )}
     >
       <div
         className={cn(
           'sticky top-0 z-10 w-full bg-container',
-          isViewTypeGrid ? 'h-[50px] rounded-t-md' : 'h-10'
+          isViewTypeGrid ? 'h-[50px] rounded-t-md' : 'h-10',
         )}
       >
         <div
           className={cn(
             'flex h-full w-full items-center justify-between backdrop-blur-xs',
-            isViewTypeGrid ? 'px-3' : 'px-6'
+            isViewTypeGrid ? 'px-3' : 'px-6',
           )}
           style={{
             backgroundColor: isViewTypeGrid

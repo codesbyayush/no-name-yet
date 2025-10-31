@@ -41,7 +41,7 @@ const handleResponse = async <T>(response: Response): Promise<T> => {
     try {
       const errorBody = await response.json();
       error = new Error(
-        errorBody.message || `API Error: ${response.statusText}`
+        errorBody.message || `API Error: ${response.statusText}`,
       );
     } catch {
       error = new Error(`API Error: ${response.statusText}`);
@@ -105,14 +105,14 @@ export const createApiClient = ({ apiUrl, publicKey }: ApiClientOptions) => {
      * Note: This endpoint needs to be created on the server.
      */
     submitFeedback: (
-      payload: FeedbackSubmission
+      payload: FeedbackSubmission,
     ): Promise<{ success: boolean; feedbackId: string }> =>
       fetch(`${baseUrl}/feedback`, {
         method: 'POST',
         headers,
         body: JSON.stringify(payload),
       }).then((res) =>
-        handleResponse<{ success: boolean; feedbackId: string }>(res)
+        handleResponse<{ success: boolean; feedbackId: string }>(res),
       ),
   };
 };

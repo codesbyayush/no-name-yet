@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
-import AllIssues from '@/components/issues/all-issues';
-import { CreateIssueModalProvider } from '@/components/issues/create-issue-modal-provider';
-import Header from '@/components/issues/header/header';
+import AllIssues from '@/features/issues/all-issues';
+import { CreateIssueModalProvider } from '@/features/issues/create-issue-modal-provider';
+import Header from '@/features/issues/header/header';
 
 export const Route = createFileRoute('/_admin/boards/')({
   component: RouteComponent,

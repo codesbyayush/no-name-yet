@@ -31,7 +31,7 @@ function ChangelogPage() {
     getNextPageParam: (lastPage, allPages) => {
       const totalLoaded = allPages.reduce(
         (acc, page) => acc + page.changelogs.length,
-        0
+        0,
       );
       return lastPage.pagination.hasMore ? totalLoaded : undefined;
     },
@@ -47,7 +47,7 @@ function ChangelogPage() {
           fetchNextPage();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     const currentRef = loadMoreRef.current;
@@ -231,7 +231,7 @@ function ChangelogPage() {
                             year: 'numeric',
                             month: 'long',
                             day: 'numeric',
-                          }
+                          },
                         )}
                     </time>
                   </div>

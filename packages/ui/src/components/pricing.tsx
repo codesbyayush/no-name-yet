@@ -44,14 +44,14 @@ export function PricingSection({
   ...props
 }: PricingSectionProps) {
   const [frequency, setFrequency] = React.useState<'monthly' | 'yearly'>(
-    'monthly'
+    'monthly',
   );
 
   return (
     <div
       className={cn(
         'flex w-full flex-col items-center justify-center space-y-5 p-4',
-        props.className
+        props.className,
       )}
       {...props}
     >
@@ -92,7 +92,7 @@ export function PricingFrequencyToggle({
     <div
       className={cn(
         'mx-auto flex w-fit rounded-full border bg-muted/30 p-1',
-        props.className
+        props.className,
       )}
       {...props}
     >
@@ -132,7 +132,7 @@ export function PricingCard({
     <div
       className={cn(
         'relative flex w-full flex-col rounded-lg border',
-        className
+        className,
       )}
       key={plan.name}
       {...props}
@@ -149,7 +149,7 @@ export function PricingCard({
       <div
         className={cn(
           'rounded-t-lg border-b bg-muted/20 p-4',
-          plan.highlighted && 'bg-muted/40'
+          plan.highlighted && 'bg-muted/40',
         )}
       >
         <div className='absolute top-2 right-2 z-10 flex items-center gap-2'>
@@ -165,7 +165,7 @@ export function PricingCard({
                 ((plan.price.monthly * 12 - plan.price.yearly) /
                   plan.price.monthly /
                   12) *
-                  100
+                  100,
               )}
               % off
             </p>
@@ -186,7 +186,7 @@ export function PricingCard({
       <div
         className={cn(
           'space-y-4 px-4 py-6 text-muted-foreground text-sm',
-          plan.highlighted && 'bg-muted/10'
+          plan.highlighted && 'bg-muted/10',
         )}
       >
         {plan.features.map((feature, index) => (
@@ -197,7 +197,8 @@ export function PricingCard({
                 <TooltipTrigger asChild>
                   <p
                     className={cn(
-                      feature.tooltip && 'cursor-pointer border-b border-dashed'
+                      feature.tooltip &&
+                        'cursor-pointer border-b border-dashed',
                     )}
                   >
                     {feature.text}
@@ -216,7 +217,7 @@ export function PricingCard({
       <div
         className={cn(
           'mt-auto w-full border-t p-3',
-          plan.highlighted && 'bg-muted/40'
+          plan.highlighted && 'bg-muted/40',
         )}
       >
         <Button

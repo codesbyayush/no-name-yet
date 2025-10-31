@@ -117,7 +117,7 @@ class OmniFeedbackWidgetManager {
       // Clone host styles to iframe so widget styles apply inside
       const head = doc.head;
       const hostLinks = document.querySelectorAll<HTMLLinkElement>(
-        'link[rel="stylesheet"]'
+        'link[rel="stylesheet"]',
       );
       for (const link of Array.from(hostLinks)) {
         const cloned = doc.createElement('link');
@@ -160,7 +160,7 @@ class OmniFeedbackWidgetManager {
               onOpenChange={handleOpenChange}
               position={position}
             />
-          </div>
+          </div>,
         );
       };
 

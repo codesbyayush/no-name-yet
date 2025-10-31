@@ -38,7 +38,7 @@ export const useTagsStore = create<TagsState>((set, get) => ({
   searchTags: (query: string) => {
     const lowerCaseQuery = query.toLowerCase();
     return get().tags.filter((tag) =>
-      tag.name.toLowerCase().includes(lowerCaseQuery)
+      tag.name.toLowerCase().includes(lowerCaseQuery),
     );
   },
 
@@ -77,7 +77,7 @@ export const useTagsStore = create<TagsState>((set, get) => ({
   updateTag: (id: string, updatedTag: Partial<Tag>) => {
     set((state) => {
       const newTags = state.tags.map((tag) =>
-        tag.id === id ? { ...tag, ...updatedTag } : tag
+        tag.id === id ? { ...tag, ...updatedTag } : tag,
       );
 
       const newTagsById = { ...state.tagsById };

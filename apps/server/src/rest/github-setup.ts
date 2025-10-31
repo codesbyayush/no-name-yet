@@ -29,7 +29,10 @@ router.get('/setup', async (c) => {
           .update(githubInstallations)
           .set({ organizationId: decoded.orgId })
           .where(
-            eq(githubInstallations.githubInstallationId, Number(installationId))
+            eq(
+              githubInstallations.githubInstallationId,
+              Number(installationId),
+            ),
           );
       } catch {}
     }

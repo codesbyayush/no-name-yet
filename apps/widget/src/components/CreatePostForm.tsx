@@ -61,7 +61,7 @@ export default function CreatePostForm({
 
   const selectedBoardName = useMemo(
     () => boards.find((b) => b.id === form.board)?.name,
-    [boards, form.board]
+    [boards, form.board],
   );
 
   useEffect(() => {

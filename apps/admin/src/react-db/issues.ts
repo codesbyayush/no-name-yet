@@ -89,7 +89,7 @@ const issuesCollection = createCollection<IssueDoc>(
         tags: changes.tags.map((tag) => tag.id),
       });
     },
-  })
+  }),
 );
 
 export const useIssues = () =>
@@ -101,7 +101,7 @@ export const useIssueById = (id: string | undefined) =>
       .from({ issue: issuesCollection })
       .where(({ issue }) => (id ? eq(issue.id, id) : false))
       .orderBy(({ issue }) => issue.createdAt, 'desc')
-      .limit(1)
+      .limit(1),
   );
 
 export const useIssuesByStatus = (statusId: string | undefined) =>
@@ -109,8 +109,8 @@ export const useIssuesByStatus = (statusId: string | undefined) =>
     q
       .from({ issue: issuesCollection })
       .where(({ issue }) =>
-        issue.statusKey && statusId ? eq(issue.statusKey, statusId) : false
-      )
+        issue.statusKey && statusId ? eq(issue.statusKey, statusId) : false,
+      ),
   );
 
 export const useIssueCountByStatus = () =>
@@ -121,7 +121,7 @@ export const useIssueCountByStatus = () =>
       .select(({ issue }) => ({
         count: count(issue.id),
         statusId: issue.status.id,
-      }))
+      })),
   );
 
 export const useIssueCountByAssignee = () =>
@@ -132,7 +132,7 @@ export const useIssueCountByAssignee = () =>
       .select(({ issue }) => ({
         count: count(issue.id),
         assignee: issue.assignee,
-      }))
+      })),
   );
 
 export const useIssueCountByPriority = () =>
@@ -143,14 +143,14 @@ export const useIssueCountByPriority = () =>
       .select(({ issue }) => ({
         count: count(issue.id),
         priority: issue.priority,
-      }))
+      })),
   );
 
 export const useIssueCountByLabel = (labelId: string) =>
   useLiveQuery((q) =>
     q
       .from({ issue: issuesCollection })
-      .where(({ issue }) => issue.tags.some((tag) => eq(tag.id, labelId)))
+      .where(({ issue }) => issue.tags.some((tag) => eq(tag.id, labelId))),
   );
 
 export const useSearchIssues = (query: string | undefined) => {
@@ -165,7 +165,7 @@ export const useSearchIssues = (query: string | undefined) => {
         const identifier = lower(issue.issueKey);
         return ilike(title, `%${safe}%`) || ilike(identifier, `%${safe}%`);
       }),
-    [safe]
+    [safe],
   );
 };
 

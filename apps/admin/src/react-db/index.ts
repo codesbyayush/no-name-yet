@@ -21,7 +21,7 @@ const statusesCollection = createCollection<StatusDoc>(
     queryClient,
     queryFn: async () => await adminClient.organization.status.getAll(),
     getKey: (item) => item.id,
-  })
+  }),
 );
 
 export const useStatuses = () =>
@@ -32,7 +32,7 @@ export const useStatusDetails = (statusId: string | undefined) =>
     q
       .from({ status: statusesCollection })
       .where(({ status }) => eq(status.id, statusId))
-      .limit(1)
+      .limit(1),
   );
 
 export const useDeleteStatus = () => ({
@@ -42,7 +42,7 @@ export const useDeleteStatus = () => ({
 export const useEditStatus = () => ({
   mutate: (status: any) =>
     statusesCollection.update(status.id, (draft) =>
-      Object.assign(status, draft)
+      Object.assign(status, draft),
     ),
 });
 

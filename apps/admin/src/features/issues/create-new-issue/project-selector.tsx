@@ -69,7 +69,7 @@ export function ProjectSelector({ project, onChange }: ProjectSelectorProps) {
           },
         };
       }),
-    [boards]
+    [boards],
   );
 
   const handleProjectChange = (projectId: string) => {
@@ -96,7 +96,7 @@ export function ProjectSelector({ project, onChange }: ProjectSelectorProps) {
             {value ? (
               (() => {
                 const selectedProject = mappedProjects.find(
-                  (p) => p.id === value
+                  (p) => p.id === value,
                 );
                 if (selectedProject) {
                   const Icon = selectedProject.icon;

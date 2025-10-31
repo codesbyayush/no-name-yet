@@ -14,7 +14,7 @@ const isSameYear = (a: Date, b: Date) => a.getFullYear() === b.getFullYear();
 
 export function formatSmartDate(
   input: Date | string | number,
-  now: Date = new Date()
+  now: Date = new Date(),
 ): string {
   const date = input instanceof Date ? input : new Date(input);
   if (Number.isNaN(date.getTime())) {

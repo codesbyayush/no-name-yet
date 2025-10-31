@@ -32,13 +32,6 @@ export function IssueLine({
             navigate({
               to: '/boards/$postId',
               params: { postId: issue.id },
-              search: {
-                search: undefined,
-                tag: undefined,
-                status: undefined,
-                order: undefined,
-                tab: undefined,
-              },
             });
           }}
         >
@@ -47,7 +40,7 @@ export function IssueLine({
               issueId={issue.id}
               priorityKey={issue.priorityKey}
             />
-            <span className='mr-0.5 hidden w-[66px] shrink-0 truncate font-medium text-muted-foreground text-sm sm:inline-block'>
+            <span className='mr-0.5 hidden w-[66px] shrink-0 truncate align-bottom font-medium text-muted-foreground text-sm uppercase sm:inline-block'>
               {issue.issueKey}
             </span>
             <StatusSelector issueId={issue.id} statusKey={issue.statusKey} />

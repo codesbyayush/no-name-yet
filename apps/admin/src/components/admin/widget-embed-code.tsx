@@ -170,7 +170,7 @@ export function WidgetEmbedCode() {
         position: config.position, // Use the actual position value
       },
       null,
-      2
+      2,
     );
 
     const domain = config.customDomain || 'localhost:3000'; // Default to localhost for development
@@ -460,7 +460,7 @@ export {};`,
                           <Input
                             className={cn(
                               'flex-1',
-                              !option.changeable && 'opacity-50'
+                              !option.changeable && 'opacity-50',
                             )}
                             disabled={!option.changeable}
                             onChange={(e) =>

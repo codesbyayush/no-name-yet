@@ -18,7 +18,7 @@ export const changelogPublicRouter = publicProcedure.router({
         const { rows, totalCount } = await getPublished(
           context.db,
           context.organization.id,
-          input
+          input,
         );
         return {
           success: true,
@@ -51,7 +51,7 @@ export const changelogPublicRouter = publicProcedure.router({
         const row = await getPublishedBySlug(
           context.db,
           context.organization.id,
-          input.slug
+          input.slug,
         );
         if (!row) {
           throw new ORPCError('NOT_FOUND');

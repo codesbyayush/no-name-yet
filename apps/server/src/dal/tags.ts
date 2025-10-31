@@ -13,7 +13,7 @@ export async function getAllTags(db: Database, organizationId: string) {
 export async function createTag(
   db: Database,
   organizationId: string,
-  input: { name: string; color: string }
+  input: { name: string; color: string },
 ) {
   const [newTag] = await db
     .insert(tags)

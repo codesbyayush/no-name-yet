@@ -24,10 +24,10 @@ export const githubInstallations = pgTable(
   },
   (table) => [
     uniqueIndex('idx_github_installations_github_installation_id').on(
-      table.githubInstallationId
+      table.githubInstallationId,
     ),
     index('idx_github_installations_account').on(table.accountLogin),
-  ]
+  ],
 );
 
 export const githubWebhookDeliveries = pgTable(
@@ -42,7 +42,7 @@ export const githubWebhookDeliveries = pgTable(
   },
   (table) => [
     uniqueIndex('idx_github_webhook_deliveries_delivery_id').on(
-      table.deliveryId
+      table.deliveryId,
     ),
-  ]
+  ],
 );

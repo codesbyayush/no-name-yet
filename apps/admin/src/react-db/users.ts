@@ -43,7 +43,7 @@ const usersCollection = createCollection<UserDoc>(
       // No server endpoint yet; keep local-only until available
       await new Promise((r) => setTimeout(r, 200));
     },
-  })
+  }),
 );
 
 // Queries
@@ -55,14 +55,14 @@ export const useUserById = (id: string | undefined) =>
     q
       .from({ user: usersCollection })
       .where(({ user }) => eq(user.id, id))
-      .limit(1)
+      .limit(1),
   );
 
 export const useUsersByRole = (role: string | undefined) =>
   useLiveQuery((q) =>
     q
       .from({ user: usersCollection })
-      .where(({ user }) => (role ? eq(user.role, role) : true))
+      .where(({ user }) => (role ? eq(user.role, role) : true)),
   );
 
 export const useUsersByTeam = (teamId: string | undefined) =>
@@ -73,7 +73,7 @@ export const useUsersByTeam = (teamId: string | undefined) =>
       }
       const teams = (user.teamIds ?? []) as unknown as string[];
       return teams.includes(teamId);
-    })
+    }),
   );
 
 export const useSearchUsers = (query: string | undefined) => {
@@ -88,7 +88,7 @@ export const useSearchUsers = (query: string | undefined) => {
         const email = lower(user.email);
         return ilike(name, `%${term}%`) || ilike(email, `%${term}%`);
       }),
-    [term]
+    [term],
   );
 };
 

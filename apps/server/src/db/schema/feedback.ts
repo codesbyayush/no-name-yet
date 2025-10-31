@@ -62,11 +62,11 @@ export const feedback = pgTable(
     index('idx_feedback_board_id').on(table.boardId),
     index('idx_feedback_board_status_created').on(
       table.boardId,
-      table.createdAt.desc()
+      table.createdAt.desc(),
     ),
     index('idx_feedback_status_created').on(table.createdAt.desc()),
     index('idx_feedback_issue_key').on(table.issueKey),
-  ]
+  ],
 );
 
 export const teamSerials = pgTable('team_serials', {

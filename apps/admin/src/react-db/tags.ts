@@ -16,7 +16,7 @@ const tagsCollection = createCollection<TagDoc>(
       return rows as TagDoc[];
     },
     getKey: (item) => item.id,
-  })
+  }),
 );
 
 export const useTags = () =>
@@ -27,7 +27,7 @@ export const useTagById = (id: string | undefined) =>
     q
       .from({ tag: tagsCollection })
       .where(({ tag }) => (id ? eq(tag.id, id) : false))
-      .limit(1)
+      .limit(1),
   );
 
 export const tags = tagsCollection;

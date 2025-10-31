@@ -107,18 +107,18 @@ export function CreateNewIssue() {
           pages: old.pages.map((page, idx) =>
             idx === 0
               ? { ...page, posts: [optimisticItem, ...(page.posts ?? [])] }
-              : page
+              : page,
           ),
         } as PostsInfiniteData;
       };
 
       queryClient.setQueryData<PostsInfiniteData>(
         allPostsKeyForBoard,
-        prependOptimistic(previousForBoard)
+        prependOptimistic(previousForBoard),
       );
       queryClient.setQueryData<PostsInfiniteData>(
         allPostsKeyAll,
-        prependOptimistic(previousForAll)
+        prependOptimistic(previousForAll),
       );
 
       return { previousForBoard, previousForAll, optimisticId, boardId };
@@ -127,13 +127,13 @@ export function CreateNewIssue() {
       if (context?.previousForBoard) {
         queryClient.setQueryData(
           ['all-posts', context.boardId],
-          context.previousForBoard
+          context.previousForBoard,
         );
       }
       if (context?.previousForAll) {
         queryClient.setQueryData(
           ['all-posts', undefined],
-          context.previousForAll
+          context.previousForAll,
         );
       }
       toast.error('Failed to create issue');

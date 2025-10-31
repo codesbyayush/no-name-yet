@@ -15,7 +15,7 @@ export const commentsRouter = {
       z.object({
         feedbackId: z.string(),
         content: z.string().min(1),
-      })
+      }),
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
@@ -28,7 +28,7 @@ export const commentsRouter = {
       z.object({
         id: z.string(),
         content: z.string().min(1).optional(),
-      })
+      }),
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
@@ -43,13 +43,13 @@ export const commentsRouter = {
     .input(
       z.object({
         commentId: z.string(),
-      })
+      }),
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
       const deletedComment = await dalDeleteComment(
         context.db,
-        input.commentId
+        input.commentId,
       );
       if (!deletedComment) {
         throw new ORPCError('NOT_FOUND', { message: 'Comment not found' });
@@ -61,13 +61,13 @@ export const commentsRouter = {
   getAll: protectedProcedure
     .input(z.object({ feedbackId: z.string() }))
     .handler(async ({ input, context }) =>
-      dalListTopLevel(context.db, input.feedbackId)
+      dalListTopLevel(context.db, input.feedbackId),
     ),
 
   count: protectedProcedure
     .input(z.object({ feedbackId: z.string() }))
     .output(z.any())
     .handler(async ({ input, context }) =>
-      dalCountPublic(context.db, input.feedbackId)
+      dalCountPublic(context.db, input.feedbackId),
     ),
 };

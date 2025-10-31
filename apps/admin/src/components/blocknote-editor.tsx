@@ -27,7 +27,7 @@ const BlockNoteEditor = forwardRef<BlockNoteEditorRef, BlockNoteEditorProps>(
       editable = true,
       className,
     },
-    ref
+    ref,
   ) => {
     // Creates a new editor instance with initial content
     const editor = useCreateBlockNote({
@@ -42,7 +42,7 @@ const BlockNoteEditor = forwardRef<BlockNoteEditorRef, BlockNoteEditorProps>(
       () => ({
         getContent: () => editor.document,
       }),
-      [editor]
+      [editor],
     );
 
     // Handle content changes if onChange is provided
@@ -64,7 +64,7 @@ const BlockNoteEditor = forwardRef<BlockNoteEditorRef, BlockNoteEditorProps>(
         editable,
         placeholder,
       }),
-      [editor, editable, placeholder, theme]
+      [editor, editable, placeholder, theme],
     );
 
     return (
@@ -72,7 +72,7 @@ const BlockNoteEditor = forwardRef<BlockNoteEditorRef, BlockNoteEditorProps>(
         <BlockNoteView {...editorConfig} />
       </div>
     );
-  }
+  },
 );
 
 BlockNoteEditor.displayName = 'BlockNoteEditor';

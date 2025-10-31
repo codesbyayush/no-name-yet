@@ -47,7 +47,7 @@ function BoardIndexPage() {
 
   const handleCommentClick = (
     feedbackId: string,
-    e: React.MouseEvent<HTMLButtonElement>
+    e: React.MouseEvent<HTMLButtonElement>,
   ) => {
     e.stopPropagation();
     navigate({ to: feedbackId });
@@ -92,14 +92,14 @@ function BoardIndexPage() {
         },
         {
           rootMargin: '100px', // Trigger 100px before reaching the element
-        }
+        },
       );
 
       if (node) {
         observerRef.current.observe(node);
       }
     },
-    [isLoading, hasNextPage, fetchNextPage, isFetchingNextPage]
+    [isLoading, hasNextPage, fetchNextPage, isFetchingNextPage],
   );
 
   useEffect(
@@ -108,13 +108,13 @@ function BoardIndexPage() {
         observerRef.current.disconnect();
       }
     },
-    []
+    [],
   );
 
   return (
     <div className='text-card-foreground'>
       <div className='relative flex gap-4'>
-        <div className='w-2xl flex-1 rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card shadow-xs'>
+        <div className='w-2xl flex-1 rounded-3xl border border-muted-foreground/10 bg-linear-to-bl from-card-foreground/5 to-card shadow-xs'>
           {isLoading && (
             <div>
               {Array.from({ length: 5 }, (_, i) => ({

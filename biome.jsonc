@@ -1,6 +1,9 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "extends": ["ultracite"],
+  "files": {
+    "includes": ["**", "!**/dist", "!**/node_modules"]
+  },
   "formatter": {
     "enabled": true,
     "lineWidth": 80,
@@ -21,10 +24,8 @@
         "noDocumentCookie": "warn"
       },
       "nursery": {
-        "useConsistentTypeDefinitions": "off",
         "noShadow": "warn",
-        "noUnnecessaryConditions": "warn",
-        "useImageSize": "warn"
+        "noUnnecessaryConditions": "warn"
       },
       "complexity": {
         "noExcessiveCognitiveComplexity": "warn",
@@ -34,7 +35,7 @@
       "style": {
         "noNestedTernary": "warn",
         "noNonNullAssertion": "warn",
-        "noMagicNumbers": "warn",
+        "noMagicNumbers": "off",
         "useCollapsedElseIf": "warn",
         "noExportedImports": "warn",
         "useCollapsedIf": "warn",
@@ -43,9 +44,9 @@
         "useBlockStatements": "off"
       },
       "performance": {
-        "noNamespaceImport": "warn",
+        "noNamespaceImport": "off",
         "noImgElement": "warn",
-        "noBarrelFile": "warn",
+        "noBarrelFile": "off",
         "useTopLevelRegex": "warn"
       },
       "correctness": {
@@ -71,6 +72,11 @@
     "formatter": {
       "jsxQuoteStyle": "single",
       "quoteStyle": "single"
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
     }
   }
 }

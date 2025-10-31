@@ -45,12 +45,12 @@ export function GeneralSettings() {
   const updateFooterLink = (
     id: string,
     field: 'label' | 'url',
-    value: string
+    value: string,
   ) => {
     setFooterLinks(
       footerLinks.map((link) =>
-        link.id === id ? { ...link, [field]: value } : link
-      )
+        link.id === id ? { ...link, [field]: value } : link,
+      ),
     );
   };
 

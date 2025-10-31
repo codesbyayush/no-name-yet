@@ -75,7 +75,7 @@ export function CreateNewIssue() {
           },
         };
       }),
-    [boards]
+    [boards],
   );
 
   const createDefaultData = useCallback(() => {

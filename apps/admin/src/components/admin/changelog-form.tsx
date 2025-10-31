@@ -178,7 +178,7 @@ export function ChangelogForm({
                 className='grid w-full grid-cols-3 gap-4'
                 onValueChange={(value) =>
                   field.handleChange(
-                    value as 'draft' | 'published' | 'archived'
+                    value as 'draft' | 'published' | 'archived',
                   )
                 }
                 value={field.state.value}

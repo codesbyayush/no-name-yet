@@ -41,7 +41,7 @@ export default function SignIn({
           <div
             className={cn(
               'flex w-full items-center gap-2',
-              'flex-col justify-between'
+              'flex-col justify-between',
             )}
           >
             <Button

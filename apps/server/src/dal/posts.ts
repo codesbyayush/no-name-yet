@@ -37,7 +37,7 @@ export type GetPostsFilters = {
 export async function getPostsWithAggregates(
   db: Database,
   filters: GetPostsFilters,
-  userId?: string
+  userId?: string,
 ) {
   const orderBy: SQL<unknown> = ((): SQL<unknown> => {
     switch (filters.sortBy) {
@@ -93,7 +93,7 @@ export async function getPostsWithAggregates(
 export async function getPostById(
   db: Database,
   feedbackId: string,
-  userId?: string
+  userId?: string,
 ) {
   const rows = await db
     .select({
@@ -134,7 +134,7 @@ export type GetAdminPostsFilters = {
 export async function getAdminDetailedPosts(
   db: Database,
   filters: GetAdminPostsFilters,
-  userId?: string
+  userId?: string,
 ) {
   const orderBy: SQL<unknown> = ((): SQL<unknown> => {
     switch (filters.sortBy) {
@@ -191,8 +191,11 @@ export async function getAdminDetailedPosts(
               .select()
               .from(votes)
               .where(
-                and(eq(votes.feedbackId, feedback.id), eq(votes.userId, userId))
-              )
+                and(
+                  eq(votes.feedbackId, feedback.id),
+                  eq(votes.userId, userId),
+                ),
+              ),
           )
         : sql`false`,
     })
@@ -218,7 +221,7 @@ export async function getAdminDetailedPosts(
         .innerJoin(feedbackTags, eq(tagsTable.id, feedbackTags.tagId))
         .where(eq(feedbackTags.feedbackId, post.id));
       return { ...post, tags } as const;
-    })
+    }),
   );
 
   const hasMore = rows.length > filters.take;
@@ -228,7 +231,7 @@ export async function getAdminDetailedPosts(
 export async function getAdminDetailedSinglePost(
   db: Database,
   feedbackId: string,
-  userId?: string
+  userId?: string,
 ) {
   const row = await db
     .select({
@@ -251,8 +254,11 @@ export async function getAdminDetailedSinglePost(
               .select()
               .from(votes)
               .where(
-                and(eq(votes.feedbackId, feedback.id), eq(votes.userId, userId))
-              )
+                and(
+                  eq(votes.feedbackId, feedback.id),
+                  eq(votes.userId, userId),
+                ),
+              ),
           )
         : sql`false`,
     })
@@ -291,7 +297,7 @@ export async function createAdminPost(
   db: Database,
   input: AdminCreatePostInput,
   authorId: string,
-  teamId: string
+  teamId: string,
 ) {
   const normalizedPriority =
     input.priority === 'no_priority' ? 'no-priority' : input.priority;
@@ -333,8 +339,8 @@ export async function createAdminPost(
         .where(
           and(
             eq(tagsTable.organizationId, orgId),
-            inArray(tagsTable.name, input.tags)
-          )
+            inArray(tagsTable.name, input.tags),
+          ),
         );
 
       if (tagRows.length > 0) {
@@ -342,7 +348,7 @@ export async function createAdminPost(
           tagRows.map((t: { id: string }) => ({
             feedbackId: newPost.id,
             tagId: t.id,
-          }))
+          })),
         );
       }
     }
@@ -390,7 +396,7 @@ export type AdminUpdatePostInput = {
 
 export async function updateAdminPost(
   db: Database,
-  input: AdminUpdatePostInput
+  input: AdminUpdatePostInput,
 ) {
   const normalizedPriority =
     input.priority === 'no_priority' ? 'no-priority' : input.priority;
@@ -436,7 +442,7 @@ export type PublicCreatePostInput = {
 export async function createPublicPost(
   db: Database,
   input: PublicCreatePostInput,
-  authorId: string
+  authorId: string,
 ) {
   const postsCount = await db
     .select({ count: count() })
@@ -471,7 +477,7 @@ export async function deletePublicPost(db: Database, feedbackId: string) {
 export async function getAndUpdatePostSerialCount(
   db: Database,
   teamId: string,
-  insertionCount?: number
+  insertionCount?: number,
 ): Promise<number> {
   const nextSerial = insertionCount ?? 1;
   const result = await db
@@ -496,7 +502,7 @@ export type IssueStatus =
 export async function findFeedbackByIssueKey(
   db: Database,
   issueKey: string,
-  organizationId: string
+  organizationId: string,
 ): Promise<{ id: string } | null> {
   const [result] = await db
     .select({ id: feedback.id })
@@ -505,8 +511,8 @@ export async function findFeedbackByIssueKey(
     .where(
       and(
         eq(feedback.issueKey, issueKey.toLowerCase()),
-        eq(team.organizationId, organizationId)
-      )
+        eq(team.organizationId, organizationId),
+      ),
     )
     .limit(1);
 
@@ -516,7 +522,7 @@ export async function findFeedbackByIssueKey(
 export async function updateFeedbackStatus(
   db: Database,
   feedbackId: string,
-  status: IssueStatus
+  status: IssueStatus,
 ): Promise<void> {
   await db
     .update(feedback)

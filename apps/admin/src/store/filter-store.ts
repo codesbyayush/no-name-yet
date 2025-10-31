@@ -13,15 +13,15 @@ export interface FilterState {
   // Actions
   setFilter: (
     type: 'status' | 'assignee' | 'priority' | 'labels' | 'project',
-    ids: string[]
+    ids: string[],
   ) => void;
   toggleFilter: (
     type: 'status' | 'assignee' | 'priority' | 'labels' | 'project',
-    id: string
+    id: string,
   ) => void;
   clearFilters: () => void;
   clearFilterType: (
-    type: 'status' | 'assignee' | 'priority' | 'labels' | 'project'
+    type: 'status' | 'assignee' | 'priority' | 'labels' | 'project',
   ) => void;
 
   // Utility

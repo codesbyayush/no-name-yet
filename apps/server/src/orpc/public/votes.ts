@@ -13,7 +13,7 @@ export const votesRouter = {
         })
         .refine((data) => data.feedbackId || data.commentId, {
           message: 'Either feedbackId or commentId must be provided',
-        })
+        }),
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
@@ -37,7 +37,7 @@ export const votesRouter = {
       z.object({
         feedbackId: z.string().optional(),
         commentId: z.string().optional(),
-      })
+      }),
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
@@ -57,7 +57,7 @@ export const votesRouter = {
       z.object({
         feedbackId: z.string().optional(),
         commentId: z.string().optional(),
-      })
+      }),
     )
     .handler(async ({ input, context }) => {
       if (!(input.feedbackId || input.commentId)) {

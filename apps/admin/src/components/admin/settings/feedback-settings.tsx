@@ -118,7 +118,7 @@ export function FeedbackSettings() {
   // Add Status Dialog state
   const [addStatusOpen, setAddStatusOpen] = useState(false);
   const [pendingCategoryId, setPendingCategoryId] = useState<string | null>(
-    null
+    null,
   );
   const [newStatusName, setNewStatusName] = useState('');
   const colorPalette = [
@@ -150,7 +150,7 @@ export function FeedbackSettings() {
   const [boardName, setBoardName] = useState('');
   const [boardDescription, setBoardDescription] = useState('');
   const [boardVisibility, setBoardVisibility] = useState<'public' | 'private'>(
-    'public'
+    'public',
   );
   const [boardIcon, setBoardIcon] = useState<{
     emoji: string;
@@ -249,8 +249,8 @@ export function FeedbackSettings() {
                 },
               ],
             }
-          : cat
-      )
+          : cat,
+      ),
     );
     setAddStatusOpen(false);
     setPendingCategoryId(null);

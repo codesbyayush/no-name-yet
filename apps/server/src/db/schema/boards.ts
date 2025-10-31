@@ -27,11 +27,11 @@ export const boards = pgTable(
   (table) => [
     uniqueIndex('idx_boards_organization_id_slug').on(
       table.organizationId,
-      table.slug
+      table.slug,
     ),
     index('idx_boards_organization_id').on(table.organizationId),
     index('idx_boards_slug').on(table.slug),
-  ]
+  ],
 );
 
 // Export types for TypeScript

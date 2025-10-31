@@ -14,7 +14,7 @@ import type { NotificationType } from '@/mock-data/inbox';
 
 export function getNotificationIcon(
   type: NotificationType,
-  className?: string
+  className?: string,
 ) {
   switch (type) {
     case 'comment':

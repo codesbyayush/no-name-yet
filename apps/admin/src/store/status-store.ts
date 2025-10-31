@@ -31,7 +31,7 @@ export const useStatusesStore = create<StatusState>((set, get) => ({
   searchStatuses: (query: string) => {
     const lowerCaseQuery = query.toLowerCase();
     return get().statuses.filter((status) =>
-      status.name.toLowerCase().includes(lowerCaseQuery)
+      status.name.toLowerCase().includes(lowerCaseQuery),
     );
   },
 
@@ -52,7 +52,7 @@ export const useStatusesStore = create<StatusState>((set, get) => ({
       // Merge new statuses with existing ones, avoiding duplicates by ID
       const existingIds = new Set(state.statuses.map((status) => status.id));
       const uniqueNewStatuses = newStatuses.filter(
-        (status) => !existingIds.has(status.id)
+        (status) => !existingIds.has(status.id),
       );
       const allStatuses = [...state.statuses, ...uniqueNewStatuses];
 
@@ -72,7 +72,7 @@ export const useStatusesStore = create<StatusState>((set, get) => ({
   updateStatus: (id: string, updatedStatus: Partial<Status>) => {
     set((state) => {
       const newStatuses = state.statuses.map((status) =>
-        status.id === id ? { ...status, ...updatedStatus } : status
+        status.id === id ? { ...status, ...updatedStatus } : status,
       );
 
       const newStatusesById = { ...state.statusesById };

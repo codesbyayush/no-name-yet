@@ -22,7 +22,7 @@ export const usersRouter = {
           .max(USERS_MAX_LIMIT)
           .default(USERS_DEFAULT_LIMIT),
         offset: z.number().min(USERS_MIN_OFFSET).default(USERS_DEFAULT_OFFSET),
-      })
+      }),
     )
     .handler(async ({ input, context }) => {
       const { limit, offset } = input;

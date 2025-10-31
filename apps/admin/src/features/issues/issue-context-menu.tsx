@@ -97,7 +97,7 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
       : null;
     updateIssueAssignee(issueId, newAssignee);
     toast.success(
-      newAssignee ? `Assigned to ${newAssignee.name}` : 'Unassigned'
+      newAssignee ? `Assigned to ${newAssignee.name}` : 'Unassigned',
     );
   };
 
@@ -132,7 +132,7 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
       : undefined;
     updateIssueProject(issueId, newProject);
     toast.success(
-      newProject ? `Project set to ${newProject.name}` : 'Project removed'
+      newProject ? `Project set to ${newProject.name}` : 'Project removed',
     );
   };
 
@@ -169,7 +169,7 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
   const handleSubscribe = () => {
     setIsSubscribed(!isSubscribed);
     toast.success(
-      isSubscribed ? 'Unsubscribed from issue' : 'Subscribed to issue'
+      isSubscribed ? 'Unsubscribed from issue' : 'Subscribed to issue',
     );
   };
 

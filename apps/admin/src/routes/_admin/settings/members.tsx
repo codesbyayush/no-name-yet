@@ -179,7 +179,7 @@ function RouteComponent() {
       if ((result as { error?: { message?: string } }).error) {
         toast.error(
           (result as { error?: { message?: string } }).error?.message ??
-            'Failed to resend invite'
+            'Failed to resend invite',
         );
       } else {
         toast.success(`Resent invite to ${invite.email}`);
@@ -213,7 +213,7 @@ function RouteComponent() {
 
     const csv = [headers, ...rows]
       .map((r) =>
-        r.map((v) => `"${String(v).replaceAll('"', '""')}"`).join(',')
+        r.map((v) => `"${String(v).replaceAll('"', '""')}"`).join(','),
       )
       .join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -241,9 +241,9 @@ function RouteComponent() {
   const skeletonKeys = useMemo(
     () =>
       Array.from({ length: SKELETON_ROW_COUNT }, () =>
-        Math.random().toString(RANDOM_BASE).slice(RANDOM_SLICE_START)
+        Math.random().toString(RANDOM_BASE).slice(RANDOM_SLICE_START),
       ),
-    []
+    [],
   );
 
   let tableContent: ReactNode;
@@ -522,7 +522,7 @@ function InviteUsersDialog() {
         toast.error(result.error.message ?? 'Failed to invite user');
       } else {
         toast.success(
-          `Invitation email has been sent to ${result.data.email}.`
+          `Invitation email has been sent to ${result.data.email}.`,
         );
       }
     }

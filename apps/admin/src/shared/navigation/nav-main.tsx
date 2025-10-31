@@ -74,7 +74,7 @@ export function NavMain({
                 </SidebarMenuButton>
               </Link>
             </SidebarMenuItem>
-          )
+          ),
         )}
       </SidebarMenu>
     </SidebarGroup>

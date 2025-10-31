@@ -75,7 +75,7 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
           ? 'border-primary hover:border-primary/80'
           : 'border-gray-300 hover:border-primary dark:border-gray-600 dark:hover:border-primary',
         disabled && 'cursor-not-allowed opacity-50',
-        className
+        className,
       )}
       data-filled={hasVoted}
       disabled={disabled}
@@ -87,7 +87,7 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
           'transition-all duration-300',
           hasVoted
             ? 'fill-primary stroke-primary'
-            : 'fill-transparent stroke-[1.5] stroke-gray-600 dark:stroke-gray-400'
+            : 'fill-transparent stroke-[1.5] stroke-gray-600 dark:stroke-gray-400',
         )}
         filled={hasVoted}
         size={iconSize}
@@ -95,7 +95,7 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
       <p
         className={cn(
           'font-semibold text-sm leading-none transition-all duration-300',
-          hasVoted ? 'text-primary' : 'text-gray-600 dark:text-gray-400'
+          hasVoted ? 'text-primary' : 'text-gray-600 dark:text-gray-400',
         )}
       >
         {count}

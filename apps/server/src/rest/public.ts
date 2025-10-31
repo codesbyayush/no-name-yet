@@ -25,7 +25,7 @@ publicApiRouter.use('*', async (c, next) => {
   if (!publicKey) {
     return c.json(
       { error: 'Unauthorized', message: 'API key is missing.' },
-      401
+      401,
     );
   }
 
@@ -40,7 +40,7 @@ publicApiRouter.use('*', async (c, next) => {
     if (!org || org.length === 0) {
       return c.json(
         { error: 'Unauthorized', message: 'Invalid API key.' },
-        401
+        401,
       );
     }
 
@@ -81,8 +81,8 @@ publicApiRouter.get('/boards', async (c) => {
         and(
           eq(boards.organizationId, org.id),
           eq(boards.isPrivate, false),
-          isNull(boards.deletedAt)
-        )
+          isNull(boards.deletedAt),
+        ),
       );
 
     return c.json(publicBoards);
@@ -152,7 +152,7 @@ publicApiRouter.post('/feedback', async (c) => {
   if (!validation.success) {
     return c.json(
       { error: 'Invalid input', details: validation.error.flatten() },
-      400
+      400,
     );
   }
 
@@ -171,7 +171,7 @@ publicApiRouter.post('/feedback', async (c) => {
     if (!board) {
       return c.json(
         { error: 'Forbidden', message: 'Board not found or access denied.' },
-        403
+        403,
       );
     }
 

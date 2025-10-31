@@ -65,6 +65,6 @@ export function sortIssuesByPriority(issues: Issue[]): Issue[] {
     .sort(
       (a, b) =>
         priorityOrder[a.priorityKey as keyof typeof priorityOrder] -
-        priorityOrder[b.priorityKey as keyof typeof priorityOrder]
+        priorityOrder[b.priorityKey as keyof typeof priorityOrder],
     );
 }

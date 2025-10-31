@@ -47,8 +47,8 @@ export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | any {
                 .where(
                   and(
                     eq(teamMember.userId, session.userId),
-                    eq(team.organizationId, firstMembership.organizationId)
-                  )
+                    eq(team.organizationId, firstMembership.organizationId),
+                  ),
                 )
                 .limit(1);
 
@@ -165,7 +165,7 @@ export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | any {
                     organizationId: organization.id,
                     name: t.name,
                     color: t.color,
-                  }))
+                  })),
                 );
               }
             } catch {

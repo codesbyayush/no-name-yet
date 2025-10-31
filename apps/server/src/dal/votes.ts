@@ -11,7 +11,7 @@ export type CreateVoteInput = {
 export async function createVote(
   db: Database,
   input: CreateVoteInput,
-  userId: string
+  userId: string,
 ) {
   const [newVote] = await db
     .insert(votes)
@@ -27,7 +27,7 @@ export async function createVote(
 export async function deleteVote(
   db: Database,
   input: CreateVoteInput,
-  userId: string
+  userId: string,
 ) {
   const filters: SQL<unknown>[] = [eq(votes.userId, userId)];
   if (input.feedbackId) {
@@ -44,7 +44,7 @@ export async function deleteVote(
 
 export async function countVotes(
   db: Database,
-  input: { feedbackId?: string; commentId?: string }
+  input: { feedbackId?: string; commentId?: string },
 ) {
   const filters: SQL[] = [];
   if (input.feedbackId) {

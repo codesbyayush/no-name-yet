@@ -63,7 +63,7 @@ export function extractSubdomainFromOrigin(origin: string): string | null {
  */
 export async function getOrganizationBySubdomain(
   db: Database,
-  subdomain: string
+  subdomain: string,
 ): Promise<Organization | null> {
   const [result] = await db
     .select()
@@ -93,7 +93,7 @@ export async function getOrganizationBySubdomain(
  */
 export async function resolveOrganizationFromHeaders(
   db: Database,
-  headers: Headers
+  headers: Headers,
 ): Promise<{ organization: Organization | null; subdomain: string | null }> {
   // Try X-Forwarded-Host first (for reverse proxies)
   const xfHost = headers.get('x-forwarded-host');

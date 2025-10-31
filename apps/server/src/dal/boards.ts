@@ -15,8 +15,8 @@ export async function getPublicBoards(db: Database, organizationId: string) {
     .where(
       and(
         eq(boards.organizationId, organizationId),
-        eq(boards.isPrivate, false)
-      )
+        eq(boards.isPrivate, false),
+      ),
     )
     .orderBy(asc(boards.createdAt));
 }
@@ -38,7 +38,7 @@ export type CreateBoardInput = {
 export async function createBoard(
   db: Database,
   organizationId: string,
-  input: CreateBoardInput
+  input: CreateBoardInput,
 ) {
   const boardId = crypto.randomUUID();
   const [newBoard] = await db

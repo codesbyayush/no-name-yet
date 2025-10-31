@@ -60,10 +60,7 @@
     "@tanstack/db": "0.1.1",
     "@tanstack/react-db": "0.1.1",
     "@tanstack/query-db-collection": "0.1.1",
-    "@tanstack/query-core": "5.90.5",
-    "lucide-react": "0.525.0",
-    "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "@tanstack/query-core": "5.90.5"
   },
   "packageManager": "bun@1.2.10",
   "dependencies": {

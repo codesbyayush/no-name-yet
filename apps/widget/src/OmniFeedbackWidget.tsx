@@ -168,7 +168,7 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
 
   // Use window dimensions to decide breakpoint behavior (works correctly inside iframe)
   const [isDesktop, setIsDesktop] = useState(
-    typeof window !== 'undefined' && window.innerWidth >= 768
+    typeof window !== 'undefined' && window.innerWidth >= 768,
   );
 
   useEffect(() => {

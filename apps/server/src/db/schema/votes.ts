@@ -29,11 +29,11 @@ export const votes = pgTable(
     uniqueIndex('idx_votes_user_id_feedback_id_comment_id').on(
       table.userId,
       table.feedbackId,
-      table.commentId
+      table.commentId,
     ),
     index('idx_votes_feedback_id').on(table.feedbackId),
     index('idx_votes_comment_id').on(table.commentId),
-  ]
+  ],
 );
 
 export type Vote = typeof votes.$inferSelect;

@@ -16,7 +16,7 @@ export const sendEmail = async (
   env: AppEnv,
   to: string,
   type: keyof typeof templates,
-  name?: string
+  name?: string,
 ) => {
   const resend = new Resend(env.RESEND_DOMAIN_KEY);
   const { from, subject, ReactEmail } = templates[type];

@@ -81,7 +81,7 @@ export function AssigneeFilter({ setActiveFilter }: AssigneeFilterProps) {
               )}
               <span className='text-muted-foreground text-xs'>
                 {assigneeCount?.find(
-                  (assignee) => assignee.assignee?.id === user.id
+                  (assignee) => assignee.assignee?.id === user.id,
                 )?.count || 0}
               </span>
             </CommandItem>

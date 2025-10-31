@@ -25,7 +25,7 @@ export function generateIssueKey(teamName: string, teamSerial: number) {
   if (teamNameSplit.length > 1) {
     slug = teamNameSplit
       .map((word, index) =>
-        index < MAX_TEAM_WORDS_FOR_SLUG ? word.charAt(0) : ''
+        index < MAX_TEAM_WORDS_FOR_SLUG ? word.charAt(0) : '',
       )
       .join('')
       .toLowerCase();
@@ -58,7 +58,7 @@ export function mapPullRequestActionToStatus(
   action: PullRequestAction,
   isMerged: boolean,
   baseBranch: string,
-  defaultBranch = 'main'
+  defaultBranch = 'main',
 ): IssueStatus | null {
   if (action === 'opened' || action === 'reopened') {
     return 'in-progress';

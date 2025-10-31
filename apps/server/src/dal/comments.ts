@@ -11,7 +11,7 @@ export type CreateCommentInput = {
 export async function createComment(
   db: Database,
   input: CreateCommentInput,
-  authorId: string | undefined
+  authorId: string | undefined,
 ) {
   const [newComment] = await db
     .insert(comments)
@@ -66,8 +66,8 @@ export async function listTopLevelComments(db: Database, feedbackId: string) {
         eq(comments.feedbackId, feedbackId),
         isNull(comments.parentCommentId),
         isNull(comments.deletedAt),
-        eq(comments.isInternal, false)
-      )
+        eq(comments.isInternal, false),
+      ),
     );
 }
 
@@ -79,8 +79,8 @@ export async function countPublicComments(db: Database, feedbackId: string) {
       and(
         eq(comments.feedbackId, feedbackId),
         isNull(comments.deletedAt),
-        eq(comments.isInternal, false)
-      )
+        eq(comments.isInternal, false),
+      ),
     );
   return totalCount[0]?.count || 0;
 }

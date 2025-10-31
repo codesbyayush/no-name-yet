@@ -58,7 +58,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
         const finalSlug = await ensureUniqueSlug(
           context.db,
           organizationId,
-          slug
+          slug,
         );
 
         // Generate HTML content from blocks if content is provided
@@ -116,7 +116,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
         const result = await getByIdForOrg(
           context.db,
           organizationId,
-          input.id
+          input.id,
         );
 
         if (!result) {
@@ -149,7 +149,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
         const { rows: results, totalCount } = await getAll(
           context.db,
           organizationId,
-          input
+          input,
         );
 
         return {
@@ -195,7 +195,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
             context.db,
             organizationId,
             updates.slug,
-            id
+            id,
           );
         }
 
@@ -281,8 +281,8 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
           .where(
             and(
               inArray(changelog.id, input.ids),
-              eq(changelog.organizationId, organizationId)
-            )
+              eq(changelog.organizationId, organizationId),
+            ),
           );
         if (existing.length !== input.ids.length) {
           throw new ORPCError('NOT_FOUND');
@@ -319,7 +319,7 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
         const updatedChangelogs = await updateManyByIds(
           context.db,
           input.ids,
-          updateValues
+          updateValues,
         );
 
         return {
@@ -353,8 +353,8 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
           .where(
             and(
               eq(changelog.id, input.id),
-              eq(changelog.organizationId, organizationId)
-            )
+              eq(changelog.organizationId, organizationId),
+            ),
           )
           .limit(1);
 

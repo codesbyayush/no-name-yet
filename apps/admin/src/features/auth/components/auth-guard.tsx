@@ -21,7 +21,7 @@ export function withAuthGuard<P extends object>(
     redirectTo = DEFAULT_REDIRECT_PATH,
     onboardingPath = DEFAULT_ONBOARDING_PATH,
     postOnboardingRedirect = DEFAULT_POST_ONBOARDING_REDIRECT,
-  }: WithAuthOptions = {}
+  }: WithAuthOptions = {},
 ) {
   function WithAuthGuard(props: P) {
     const location = useLocation();
@@ -31,7 +31,7 @@ export function withAuthGuard<P extends object>(
     const redirectTarget = buildRedirectTarget(
       location.pathname,
       location.searchStr ?? '',
-      location.hash ?? ''
+      location.hash ?? '',
     );
     const redirectSearch: Record<string, unknown> = {
       redirect: redirectTarget,

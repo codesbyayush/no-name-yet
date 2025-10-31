@@ -37,15 +37,15 @@ export const user = pgTable(
   (table) => [
     uniqueIndex('idx_user_organization_id_email').on(
       table.organizationId,
-      table.email
+      table.email,
     ),
     uniqueIndex('idx_user_organization_id_external_id').on(
       table.organizationId,
-      table.externalId
+      table.externalId,
     ),
     index('idx_user_organization_id').on(table.organizationId),
     index('idx_user_email').on(table.email),
-  ]
+  ],
 );
 
 export const session = pgTable('session', {
