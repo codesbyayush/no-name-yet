@@ -2,7 +2,13 @@
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "extends": ["ultracite"],
   "files": {
-    "includes": ["**", "!**/dist", "!**/node_modules"]
+    "includes": [
+      "**",
+      "!**/dist",
+      "!**/node_modules",
+      "!**/routeTree.gen.ts",
+      "!**/ui/src/components/*.tsx"
+    ]
   },
   "formatter": {
     "enabled": true,
