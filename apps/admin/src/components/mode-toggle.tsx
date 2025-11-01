@@ -1,36 +1,67 @@
-import { Button } from '@workspace/ui/components/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@workspace/ui/components/dropdown-menu';
-import { Moon, Sun } from 'lucide-react';
+import { cn } from '@workspace/ui/lib/utils';
+import { Monitor, Moon, Sun } from 'lucide-react';
 import { useTheme } from '@/contexts';
 
 export function ModeToggle() {
-  const { setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button size='icon' variant='outline'>
-          <Sun className='dark:-rotate-90 h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:scale-0' />
-          <Moon className='absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100' />
-          <span className='sr-only'>Toggle theme</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align='end'>
-        <DropdownMenuItem onClick={() => setTheme('light')}>
-          Light
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('dark')}>
-          Dark
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('system')}>
-          System
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <div
+      role='radiogroup'
+      aria-label='Theme selection'
+      className='flex items-center gap-2 w-full '
+    >
+      <label
+        className={cn(
+          'flex items-center justify-center aspect-square size-8 shrink-0 rounded-md border border-input transition-all hover:bg-accent hover:text-foreground focus-within:outline-none focus-within:ring-[3px] focus-within:ring-ring/50 cursor-pointer',
+          theme === 'light' && 'text-primary-foreground border-primary',
+        )}
+      >
+        <input
+          type='radio'
+          name='theme'
+          value='light'
+          checked={theme === 'light'}
+          onChange={() => setTheme('light')}
+          className='sr-only'
+          aria-label='Light theme'
+        />
+        <Sun className='size-4' />
+      </label>
+      <label
+        className={cn(
+          'flex items-center justify-center aspect-square size-8 shrink-0 rounded-md border border-input transition-all hover:bg-accent hover:text-foreground focus-within:outline-none focus-within:ring-[3px] focus-within:ring-ring/50 cursor-pointer',
+          theme === 'dark' && 'text-primary-foreground border-primary',
+        )}
+      >
+        <input
+          type='radio'
+          name='theme'
+          value='dark'
+          checked={theme === 'dark'}
+          onChange={() => setTheme('dark')}
+          className='sr-only'
+          aria-label='Dark theme'
+        />
+        <Moon className='size-4' />
+      </label>
+      <label
+        className={cn(
+          'flex items-center justify-center aspect-square size-8 shrink-0 rounded-md border border-input transition-all hover:bg-accent hover:text-foreground focus-within:outline-none focus-within:ring-[3px] focus-within:ring-ring/50 cursor-pointer',
+          theme === 'system' && 'text-primary-foreground border-primary',
+        )}
+      >
+        <input
+          type='radio'
+          name='theme'
+          value='system'
+          checked={theme === 'system'}
+          onChange={() => setTheme('system')}
+          className='sr-only'
+          aria-label='System theme'
+        />
+        <Monitor className='size-4' />
+      </label>
+    </div>
   );
 }
