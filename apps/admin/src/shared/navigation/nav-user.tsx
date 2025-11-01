@@ -26,8 +26,8 @@ import {
   LogOut,
   Sparkles,
 } from 'lucide-react';
-import { ModeToggle } from '@/components/mode-toggle';
 import type { User } from '@/features/auth';
+import { ModeToggle } from '@/shared/navigation/mode-toggle';
 
 export function NavUser({
   onSignOut,
