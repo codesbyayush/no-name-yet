@@ -13,12 +13,9 @@ import {
 } from '@workspace/ui/components/dropdown-menu';
 import { CheckIcon, CircleUserRound, Send, UserIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import useTeamMembers from '@/features/auth/hooks/useTeamMembers';
 import { useUpdateIssue } from '@/react-db/issues';
-import {
-  statusUserColors,
-  type User,
-  useUsersStore,
-} from '@/store/users-store';
+import { statusUserColors } from '@/store/users-store';
 
 interface AssigneeUserProps {
   userId?: string;
@@ -27,24 +24,27 @@ interface AssigneeUserProps {
 
 export function AssigneeUser({ userId, issueId }: AssigneeUserProps) {
   const [open, setOpen] = useState(false);
-  const [currentAssignee, setCurrentAssignee] = useState<User | null>(null);
-  const { users } = useUsersStore();
+  const [currentAssignee, setCurrentAssignee] = useState<
+    | NonNullable<
+        ReturnType<typeof useTeamMembers>['teamUsers']
+      >['members'][number]
+    | null
+  >(null);
+  const { teamUsers } = useTeamMembers();
   const { mutate } = useUpdateIssue();
-  const currUser = users.find((u) => u.id === userId);
+
   useEffect(() => {
+    const currUser = teamUsers?.members.find((u) => u.userId === userId);
     if (currUser) {
       setCurrentAssignee(currUser);
     }
-  }, [currUser]);
+  }, [teamUsers]);
 
   const renderAvatar = () => {
     if (currentAssignee) {
       return (
         <Avatar className='size-6 shrink-0'>
-          <AvatarImage
-            alt={currentAssignee.name}
-            src={currentAssignee.avatarUrl}
-          />
+          <AvatarImage alt={currentAssignee.name} src={currentAssignee.image} />
           <AvatarFallback>{currentAssignee.name[0]}</AvatarFallback>
         </Avatar>
       );
@@ -65,10 +65,10 @@ export function AssigneeUser({ userId, issueId }: AssigneeUserProps) {
             <span
               className='-end-0.5 -bottom-0.5 absolute size-2.5 rounded-full border-2 border-background'
               style={{
-                backgroundColor: statusUserColors[currentAssignee.status],
+                backgroundColor: statusUserColors['online'],
               }}
             >
-              <span className='sr-only'>{currentAssignee.status}</span>
+              <span className='sr-only'>{'online'}</span>
             </span>
           )}
         </button>
@@ -90,22 +90,22 @@ export function AssigneeUser({ userId, issueId }: AssigneeUserProps) {
           {!currentAssignee && <CheckIcon className='ml-auto h-4 w-4' />}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        {users.map((user) => (
+        {teamUsers?.members.map((user) => (
           <DropdownMenuItem
-            key={user.id}
+            key={user.userId}
             onClick={(e) => {
               e.stopPropagation();
               setCurrentAssignee(user);
               mutate(issueId, {
                 assignee: {
-                  id: user.id,
+                  id: user.userId,
                   name: user.name,
                   email: user.email,
-                  avatarUrl: user.avatarUrl,
-                  status: user.status,
-                  role: user.role,
-                  joinedDate: user.joinedDate,
-                  teamIds: user.teamIds,
+                  avatarUrl: user.image || '',
+                  status: 'online',
+                  role: user.role as 'Member' | 'Admin' | 'Guest',
+                  joinedDate: user.joinedTeamAt.toISOString(),
+                  teamIds: [],
                 },
               });
               setOpen(false);
@@ -113,12 +113,12 @@ export function AssigneeUser({ userId, issueId }: AssigneeUserProps) {
           >
             <div className='flex items-center gap-2'>
               <Avatar className='h-5 w-5'>
-                <AvatarImage alt={user.name} src={user.avatarUrl} />
+                <AvatarImage alt={user.name} src={user.image} />
                 <AvatarFallback>{user.name[0]}</AvatarFallback>
               </Avatar>
               <span>{user.name}</span>
             </div>
-            {currentAssignee?.id === user.id && (
+            {currentAssignee?.userId === user.userId && (
               <CheckIcon className='ml-auto h-4 w-4' />
             )}
           </DropdownMenuItem>
