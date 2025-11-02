@@ -6,10 +6,9 @@ keep_vars = true
 
 route = { pattern = "api.openfeedback.tech/*", zone_name = "openfeedback.tech" }
 
-[[hyperdrive]]
-binding = "HYPERDRIVE"
-id = "93d625eb7bcb407a95ba9fa864cf5413"
-
 [observability]
 enabled = true
 
+[[kv_namespaces]]
+binding = "OF_STORE"
+id = "019d1859a7f64115a889f397093cc94f"
