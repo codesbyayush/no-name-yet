@@ -76,9 +76,13 @@ export class RedisCache implements Cache {
  */
 export async function getCache(env: AppEnv): Promise<Cache> {
   if (env.NODE_ENV === 'development' && env.REDIS_URL) {
-    const { RedisClient } = await import('bun');
-    const redisClient = new RedisClient(env.REDIS_URL);
-    return new RedisCache(redisClient);
+    try {
+      const { RedisClient } = await import('bun');
+      const redisClient = new RedisClient(env.REDIS_URL);
+      return new RedisCache(redisClient);
+    } catch (error) {
+      console.error('Error importing RedisClient:', error);
+    }
   }
 
   if (env.OF_STORE) {
