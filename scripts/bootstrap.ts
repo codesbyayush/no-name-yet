@@ -57,7 +57,7 @@ async function main() {
 
   if (shouldStartDocker) {
     console.info('🐘 Starting local database (docker compose up)...');
-    await $`docker compose up -d postgres neon-proxy`;
+    await $`docker compose up -d postgres neon-proxy redis`;
   } else {
     console.info('⏭ Skipping docker compose (--no-docker)');
   }

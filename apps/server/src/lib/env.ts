@@ -1,3 +1,4 @@
+import type { Context } from 'hono';
 import { env } from 'hono/adapter';
 
 // Environment variable interface
@@ -22,9 +23,11 @@ export interface AppEnv {
   GH_PRIVATE_KEY: string;
   GH_WEBHOOK_SECRET: string;
   GH_APP_NAME: string;
+  OF_STORE?: KVNamespace;
+  REDIS_URL?: string;
 }
 
 // Use Hono's official env adapter to get environment variables
-export function getEnvFromContext(context: any): AppEnv {
+export function getEnvFromContext(context: Context): AppEnv {
   return env(context) as AppEnv;
 }
