@@ -16,7 +16,7 @@ export type CreateContextOptions = {
 export async function createContext({ context, env }: CreateContextOptions) {
   const db = getDb(env);
   const auth = getAuth(env);
-  const cache = getCache(env);
+  const cache = await getCache(env);
   const session = await auth.api.getSession({
     headers: context.req.raw.headers,
   });
@@ -42,7 +42,7 @@ export async function createAdminContext({
 }: CreateContextOptions) {
   const db = getDb(env);
   const auth = getAuth(env);
-  const cache = getCache(env);
+  const cache = await getCache(env);
   const session = await auth.api.getSession({
     headers: context.req.raw.headers,
   });

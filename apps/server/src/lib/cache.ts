@@ -1,4 +1,10 @@
-import { RedisClient } from 'bun';
+/**
+ * Importing redis client as type only here and adding dynamic import for redis client
+ * in the factory function to avoid bundling the redis client with the server as this
+ * is only used in dev and not available in workers environment
+ */
+
+import type { RedisClient as BunRedisClient } from 'bun';
 import type { AppEnv } from './env';
 
 /**
@@ -42,9 +48,9 @@ export class KVStoreCache implements Cache {
  * Cache implementation using Redis
  */
 export class RedisCache implements Cache {
-  private redis: RedisClient;
+  private redis: BunRedisClient;
 
-  constructor(redisClient: RedisClient) {
+  constructor(redisClient: BunRedisClient) {
     this.redis = redisClient;
   }
 
@@ -68,8 +74,9 @@ export class RedisCache implements Cache {
 /**
  * Factory function to get the appropriate cache implementation based on environment
  */
-export function getCache(env: AppEnv): Cache {
+export async function getCache(env: AppEnv): Promise<Cache> {
   if (env.NODE_ENV === 'development' && env.REDIS_URL) {
+    const { RedisClient } = await import('bun');
     const redisClient = new RedisClient(env.REDIS_URL);
     return new RedisCache(redisClient);
   }
