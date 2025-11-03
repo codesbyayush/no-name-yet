@@ -16,8 +16,24 @@ const generateRank = (index: number) => {
 };
 
 // Transform server post data to client Issue format
+type ServerTag = { id: string; name: string; color?: string };
+type ServerPost = {
+  id: string;
+  title: string;
+  description?: string;
+  status: string;
+  priority: string;
+  assigneeId?: string | null;
+  assigneeName?: string | null;
+  assigneeEmail?: string | null;
+  assigneeImage?: string | null;
+  tags?: ServerTag[];
+  createdAt?: string | Date | null;
+  dueDate?: string | Date | null;
+};
+
 export const transformServerPostToIssue = (
-  serverPost: any,
+  serverPost: ServerPost,
   index: number,
 ): Issue => {
   // Map server data to client format
@@ -43,7 +59,7 @@ export const transformServerPostToIssue = (
     priorityKey: serverPost.priority,
     priority:
       priorities.find((p) => p.id === serverPost.priority) || priorities[4],
-    tags: serverPost.tags?.map((tag: any) => ({
+    tags: serverPost.tags?.map((tag: ServerTag) => ({
       id: tag.id,
       name: tag.name,
       color: tag.color,
@@ -62,5 +78,7 @@ export const transformServerPostToIssue = (
 };
 
 // Transform multiple server posts to client issues
-export const transformServerPostsToIssues = (serverPosts: any[]): Issue[] =>
+export const transformServerPostsToIssues = (
+  serverPosts: ServerPost[],
+): Issue[] =>
   serverPosts.map((post, index) => transformServerPostToIssue(post, index));

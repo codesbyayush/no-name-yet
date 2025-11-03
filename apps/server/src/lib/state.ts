@@ -1,12 +1,14 @@
 import type { AppEnv } from './env';
 
 function bytesToBase64Url(input: ArrayBuffer | Uint8Array | string): string {
-  const bytes =
-    typeof input === 'string'
-      ? new TextEncoder().encode(input)
-      : input instanceof Uint8Array
-        ? input
-        : new Uint8Array(input);
+  let bytes: Uint8Array;
+  if (typeof input === 'string') {
+    bytes = new TextEncoder().encode(input);
+  } else if (input instanceof Uint8Array) {
+    bytes = input;
+  } else {
+    bytes = new Uint8Array(input);
+  }
   let binary = '';
   for (const byte of bytes) {
     binary += String.fromCharCode(byte);

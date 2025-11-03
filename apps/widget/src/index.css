@@ -1,3 +1,29 @@
+* {
+  --sb-track-color: rgba(255, 255, 255, 0.1);
+  --sb-thumb-color: #afafaf;
+  --sb-size: 4px;
+}
+
+*::-webkit-scrollbar {
+  width: var(--sb-size);
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--sb-track-color);
+  border-radius: 16px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--sb-thumb-color);
+  border-radius: 16px;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
+  }
+}
+
 /* Custom styles for the widget to ensure isolation */
 .omni-feedback-widget {
   all: initial;
@@ -216,31 +242,5 @@
 @media (prefers-contrast: high) {
   .omni-feedback-widget .border-gray-200 {
     border-color: #000 !important;
-  }
-}
-
-* {
-  --sb-track-color: rgba(255, 255, 255, 0.1);
-  --sb-thumb-color: #afafaf;
-  --sb-size: 4px;
-}
-
-*::-webkit-scrollbar {
-  width: var(--sb-size);
-}
-
-*::-webkit-scrollbar-track {
-  background: var(--sb-track-color);
-  border-radius: 16px;
-}
-
-*::-webkit-scrollbar-thumb {
-  background: var(--sb-thumb-color);
-  border-radius: 16px;
-}
-
-@supports not selector(::-webkit-scrollbar) {
-  * {
-    scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
   }
 }

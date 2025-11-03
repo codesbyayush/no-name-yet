@@ -108,13 +108,11 @@ export default function UserMenu() {
           <div className='p-2'>
             <div className='flex items-center justify-between gap-2'>
               <div className='flex items-center gap-2 pr-2 font-medium text-sm'>
-                {theme === 'light' ? (
-                  <Sun className='size-4' />
-                ) : theme === 'dark' ? (
-                  <Moon className='size-4' />
-                ) : (
-                  <Monitor className='size-4' />
-                )}
+                {(() => {
+                  if (theme === 'light') return <Sun className='size-4' />;
+                  if (theme === 'dark') return <Moon className='size-4' />;
+                  return <Monitor className='size-4' />;
+                })()}
                 <span>Theme</span>
               </div>
               <div className='flex items-center gap-1 px-2'>

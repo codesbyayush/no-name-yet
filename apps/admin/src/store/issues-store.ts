@@ -164,16 +164,12 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
 
     // Filter by assignee
     if (filters.assignee && filters.assignee.length > 0) {
-      filteredIssues = filteredIssues.filter((issue) => {
-        if (filters.assignee?.includes('unassigned')) {
-          // If 'unassigned' is selected and the issue has no assignee
-          if (issue.assignee === null) {
-            return true;
-          }
-        }
-        // Check if the issue's assignee is in the selected assignees
-        return issue.assignee && filters.assignee?.includes(issue.assignee.id);
-      });
+      filteredIssues = filteredIssues.filter(
+        (issue) =>
+          (filters.assignee?.includes('unassigned') &&
+            issue.assignee === null) ||
+          (!!issue.assignee && filters.assignee?.includes(issue.assignee.id)),
+      );
     }
 
     // Filter by priority

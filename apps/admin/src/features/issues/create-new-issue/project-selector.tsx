@@ -31,9 +31,10 @@ function pickIconForId(id: string) {
   const icons = projects.map((p) => p.icon);
   let hash = 0;
   for (let i = 0; i < id.length; i++) {
-    hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+    hash = Math.imul(hash, 31) + id.charCodeAt(i);
   }
-  return icons[hash % icons.length] ?? Box;
+  const index = ((hash % icons.length) + icons.length) % icons.length;
+  return icons[index] ?? Box;
 }
 
 export function ProjectSelector({ project, onChange }: ProjectSelectorProps) {
@@ -136,22 +137,22 @@ export function ProjectSelector({ project, onChange }: ProjectSelectorProps) {
 										<CheckIcon size={16} className="ml-auto" />
 									)}
 								</CommandItem> */}
-                {mappedProjects.map((project) => (
+                {mappedProjects.map((proj) => (
                   <CommandItem
                     className='flex items-center justify-between'
-                    key={project.id}
-                    onSelect={() => handleProjectChange(project.id)}
-                    value={project.id}
+                    key={proj.id}
+                    onSelect={() => handleProjectChange(proj.id)}
+                    value={proj.id}
                   >
                     <div className='flex items-center gap-2'>
-                      <project.icon className='size-4' />
-                      {project.name}
+                      <proj.icon className='size-4' />
+                      {proj.name}
                     </div>
-                    {value === project.id && (
+                    {value === proj.id && (
                       <CheckIcon className='ml-auto' size={16} />
                     )}
                     <span className='text-muted-foreground text-xs'>
-                      {issues?.filter((is) => is.project?.id === project.id)
+                      {issues?.filter((is) => is.project?.id === proj.id)
                         .length ?? 0}
                     </span>
                   </CommandItem>

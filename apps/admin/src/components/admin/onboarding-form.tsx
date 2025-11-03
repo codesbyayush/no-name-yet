@@ -11,8 +11,12 @@ import { CreateOrganizationForm } from './create-organization-form';
 export const GeneratedForm = () => {
   const navigate = useNavigate();
 
-  const handleOrganizationSuccess = async () => {
-    navigate({ to: '/boards', replace: true, search: {} as any });
+  const handleOrganizationSuccess = () => {
+    navigate({
+      to: '/boards',
+      replace: true,
+      search: {} as unknown as Record<string, never>,
+    });
   };
 
   return (

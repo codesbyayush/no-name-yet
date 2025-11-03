@@ -1,4 +1,7 @@
 import type React from 'react';
+
+const TRAILING_SLASH_RE = /\/$/;
+
 import { useEffect, useState } from 'react';
 
 // Inline icon components for the bottom navigation
@@ -157,14 +160,16 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
     };
   }, [isOpen]);
 
-  const animateClasses =
-    position === 'center'
-      ? isClosing
-        ? 'zoom-out-95 fade-out animate-out duration-200 origin-center'
-        : 'zoom-in-95 fade-in animate-in duration-300 origin-center'
-      : isClosing
-        ? 'shrink-out-br fade-out animate-out duration-200 origin-bottom-right'
-        : 'grow-in-br fade-in animate-in duration-300 origin-bottom-right';
+  let animateClasses = '';
+  if (position === 'center') {
+    animateClasses = isClosing
+      ? 'zoom-out-95 fade-out animate-out duration-200 origin-center'
+      : 'zoom-in-95 fade-in animate-in duration-300 origin-center';
+  } else {
+    animateClasses = isClosing
+      ? 'shrink-out-br fade-out animate-out duration-200 origin-bottom-right'
+      : 'grow-in-br fade-in animate-in duration-300 origin-bottom-right';
+  }
 
   // Use window dimensions to decide breakpoint behavior (works correctly inside iframe)
   const [isDesktop, setIsDesktop] = useState(
@@ -361,7 +366,7 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
           {portalUrl ? (
             <iframe
               className='iframe-container'
-              src={`${portalUrl.replace(/\/$/, '')}/roadmap`}
+              src={`${portalUrl.replace(TRAILING_SLASH_RE, '')}/roadmap`}
               title='Roadmap'
             />
           ) : (
@@ -383,7 +388,7 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
         {portalUrl ? (
           <iframe
             className='iframe-container'
-            src={`${portalUrl.replace(/\/$/, '')}/changelog`}
+            src={`${portalUrl.replace(TRAILING_SLASH_RE, '')}/changelog`}
             title='Changelog'
           />
         ) : (
@@ -422,7 +427,7 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
           // Re-trigger bounce
           setIsFabBouncing(false);
           // Force reflow to restart animation on next tick
-          void document.body.offsetHeight;
+          document.body.offsetHeight;
           setIsFabBouncing(true);
           setTimeout(() => setIsFabBouncing(false), 450);
 

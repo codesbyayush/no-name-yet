@@ -10,6 +10,16 @@ export const Route = createFileRoute('/_public/changelog')({
   component: ChangelogPage,
 });
 
+function HtmlContent({ html }: { html: string }) {
+  return (
+    <div
+      className='prose prose-sm dark:prose-invert max-w-none prose-blockquote:border-l-muted-foreground/30 prose-headings:font-semibold prose-blockquote:text-muted-foreground prose-code:text-foreground prose-headings:text-foreground prose-li:text-foreground prose-p:text-foreground prose-strong:text-foreground'
+      // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML is generated server-side and sanitized
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  );
+}
+
 function ChangelogPage() {
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
@@ -246,10 +256,7 @@ function ChangelogPage() {
 
                   {entry.htmlContent && (
                     <div className='mt-2'>
-                      <div
-                        className='prose prose-sm dark:prose-invert max-w-none prose-blockquote:border-l-muted-foreground/30 prose-headings:font-semibold prose-blockquote:text-muted-foreground prose-code:text-foreground prose-headings:text-foreground prose-li:text-foreground prose-p:text-foreground prose-strong:text-foreground'
-                        dangerouslySetInnerHTML={{ __html: entry.htmlContent }}
-                      />
+                      <HtmlContent html={entry.htmlContent} />
                     </div>
                   )}
 

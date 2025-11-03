@@ -93,7 +93,11 @@ export function CreateOrganizationForm({
       if (onSuccess) {
         onSuccess();
       } else {
-        navigate({ to: '/boards', replace: true, search: {} as any });
+        navigate({
+          to: '/boards',
+          replace: true,
+          search: {} as unknown as Record<string, never>,
+        });
       }
     } catch (err) {
       const errorMessage =

@@ -244,11 +244,15 @@ export function CreateNewIssue() {
             }}
             size='sm'
           >
-            {session?.user.isAnonymous
-              ? 'Sign in to create issue'
-              : createIssueMutation.isPending
-                ? 'Creating…'
-                : 'Create issue'}
+            {(() => {
+              if (session?.user.isAnonymous) {
+                return 'Sign in to create issue';
+              }
+              if (createIssueMutation.isPending) {
+                return 'Creating…';
+              }
+              return 'Create issue';
+            })()}
           </Button>
         </div>
       </DialogContent>

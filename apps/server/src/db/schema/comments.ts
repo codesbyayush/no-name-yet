@@ -1,4 +1,5 @@
 import { sql } from 'drizzle-orm';
+import type { AnyPgColumn } from 'drizzle-orm/pg-core';
 import {
   boolean,
   index,
@@ -18,7 +19,10 @@ export const comments = pgTable(
       .notNull()
       .references(() => feedback.id, { onDelete: 'cascade' }),
     parentCommentId: text('parent_comment_id').references(
-      (): any => comments.id,
+      (): AnyPgColumn => comments.id,
+      {
+        onDelete: 'cascade',
+      },
     ),
     authorId: text('author_id').references(() => user.id, {
       onDelete: 'cascade',

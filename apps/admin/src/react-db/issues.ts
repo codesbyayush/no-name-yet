@@ -33,8 +33,8 @@ const issuesCollection = createCollection<IssueDoc>(
       const changes = mutation.changes as Partial<Issue>;
       // map client changes → server payload
       const toServerPriority = (id: string) =>
-        id === 'no-priority' ? 'no_priority' : (id as any);
-      const payload: any = { id: mutation.key as string };
+        id === 'no-priority' ? 'no_priority' : id;
+      const payload: Record<string, unknown> = { id: String(mutation.key) };
       if (changes.title) {
         payload.title = changes.title;
       }

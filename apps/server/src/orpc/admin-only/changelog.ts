@@ -31,6 +31,141 @@ const generateSlug = (title: string): string => {
     .trim();
 };
 
+type ChangelogUpdates = {
+  slug?: string;
+  content?: unknown;
+  htmlContent?: string | null;
+  status?: 'draft' | 'published' | 'archived' | string;
+  publishedAt?: Date | string | null;
+  title?: string;
+  excerpt?: string | null;
+  tagId?: string | null;
+  metaTitle?: string | null;
+  metaDescription?: string | null;
+};
+
+type DbType = Parameters<typeof ensureUniqueSlug>[0];
+
+async function applySlugUpdate(params: {
+  updates: ChangelogUpdates;
+  existing: { id: string; slug: string };
+  organizationId: string;
+  db: DbType;
+  accumulator: Record<string, unknown>;
+}) {
+  const { updates, existing, organizationId, db, accumulator } = params;
+  if (updates.slug && updates.slug !== existing.slug) {
+    accumulator.slug = await ensureUniqueSlug(
+      db,
+      organizationId,
+      updates.slug,
+      existing.id,
+    );
+  }
+}
+
+async function applyContentUpdates(params: {
+  updates: ChangelogUpdates;
+  accumulator: Record<string, unknown>;
+}) {
+  const { updates, accumulator } = params;
+  if (updates.content !== undefined) {
+    accumulator.content = updates.content;
+    if (!updates.htmlContent && Array.isArray(updates.content)) {
+      const editor = ServerBlockNoteEditor.create();
+      accumulator.htmlContent = await editor
+        .blocksToFullHTML(updates.content)
+        .then((s) => s)
+        .catch(() => accumulator.htmlContent);
+    }
+  }
+}
+
+function applyHtmlUpdate(params: {
+  updates: ChangelogUpdates;
+  accumulator: Record<string, unknown>;
+}) {
+  const { updates, accumulator } = params;
+  if (updates.htmlContent !== undefined) {
+    accumulator.htmlContent = updates.htmlContent;
+  }
+}
+
+function applyStatusAndPublishedAt(params: {
+  updates: ChangelogUpdates;
+  existingStatus: string;
+  accumulator: Record<string, unknown>;
+}) {
+  const { updates, existingStatus, accumulator } = params;
+  if (updates.status !== undefined) {
+    accumulator.status = updates.status;
+    if (updates.status === 'published' && existingStatus !== 'published') {
+      accumulator.publishedAt = updates.publishedAt || new Date();
+    } else if (updates.status !== 'published') {
+      accumulator.publishedAt = null;
+    }
+  }
+}
+
+function applyPublishedAtOverride(params: {
+  updates: ChangelogUpdates;
+  accumulator: Record<string, unknown>;
+}) {
+  const { updates, accumulator } = params;
+  if (updates.publishedAt !== undefined) {
+    accumulator.publishedAt = updates.publishedAt;
+  }
+}
+
+function applyDirectFields(params: {
+  updates: ChangelogUpdates;
+  accumulator: Record<string, unknown>;
+}) {
+  const { updates, accumulator } = params;
+  const directUpdateFields = [
+    'title',
+    'excerpt',
+    'tagId',
+    'metaTitle',
+    'metaDescription',
+  ] as const;
+  for (const field of directUpdateFields) {
+    if (updates[field] !== undefined) {
+      accumulator[field] = updates[field];
+    }
+  }
+}
+
+async function computeUpdateValues(options: {
+  updates: ChangelogUpdates;
+  existing: { id: string; slug: string; status: string };
+  organizationId: string;
+  db: DbType;
+}) {
+  const { updates, existing, organizationId, db } = options;
+  const updateValues: Record<string, unknown> = { updatedAt: new Date() };
+
+  await applySlugUpdate({
+    updates,
+    existing: { id: existing.id, slug: existing.slug },
+    organizationId,
+    db,
+    accumulator: updateValues,
+  });
+
+  await applyContentUpdates({ updates, accumulator: updateValues });
+  applyHtmlUpdate({ updates, accumulator: updateValues });
+  applyStatusAndPublishedAt({
+    updates,
+    existingStatus: existing.status,
+    accumulator: updateValues,
+  });
+  applyPublishedAtOverride({ updates, accumulator: updateValues });
+  applyDirectFields({ updates, accumulator: updateValues });
+
+  return updateValues;
+}
+
 export const changelogAdminRouter = adminOnlyProcedure.router({
   // CREATE - Add new changelog
   add: adminOnlyProcedure
@@ -185,68 +320,12 @@ export const changelogAdminRouter = adminOnlyProcedure.router({
           throw new ORPCError('NOT_FOUND');
         }
 
-        const updateValues: Record<string, unknown> = {
-          updatedAt: new Date(),
-        };
-
-        // Handle slug update with uniqueness check
-        if (updates.slug && updates.slug !== existing.slug) {
-          updateValues.slug = await ensureUniqueSlug(
-            context.db,
-            organizationId,
-            updates.slug,
-            id,
-          );
-        }
-
-        // Handle content update and HTML generation
-        if (updates.content !== undefined) {
-          updateValues.content = updates.content;
-
-          if (!updates.htmlContent) {
-            const editor = ServerBlockNoteEditor.create();
-            updateValues.htmlContent = await editor
-              .blocksToFullHTML(updates.content)
-              .then((s) => s)
-              .catch(() => updateValues.htmlContent);
-          }
-        }
-
-        if (updates.htmlContent !== undefined) {
-          updateValues.htmlContent = updates.htmlContent;
-        }
-
-        // Handle status change and publishedAt
-        if (updates.status !== undefined) {
-          updateValues.status = updates.status;
-          if (
-            updates.status === 'published' &&
-            existing.status !== 'published'
-          ) {
-            updateValues.publishedAt = updates.publishedAt || new Date();
-          } else if (updates.status !== 'published') {
-            updateValues.publishedAt = null;
-          }
-        }
-
-        // Handle explicit publishedAt update
-        if (updates.publishedAt !== undefined) {
-          updateValues.publishedAt = updates.publishedAt;
-        }
-
-        // Add other direct updates
-        const directUpdateFields = [
-          'title',
-          'excerpt',
-          'tagId',
-          'metaTitle',
-          'metaDescription',
-        ];
-        for (const field of directUpdateFields) {
-          if (updates[field as keyof typeof updates] !== undefined) {
-            updateValues[field] = updates[field as keyof typeof updates];
-          }
-        }
+        const updateValues = await computeUpdateValues({
+          updates,
+          existing: { id, slug: existing.slug, status: existing.status },
+          organizationId,
+          db: context.db,
+        });
 
         const updated = await updateById(context.db, id, updateValues);
 

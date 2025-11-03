@@ -7,7 +7,8 @@
       "!**/dist",
       "!**/node_modules",
       "!**/routeTree.gen.ts",
-      "!**/ui/src/components/*.tsx"
+      "!**/ui/src/components/*.tsx",
+      "!**/.wrangler"
     ]
   },
   "formatter": {
@@ -20,13 +21,6 @@
   "linter": {
     "rules": {
       "suspicious": {
-        "noEmptyBlockStatements": "warn",
-        "noExplicitAny": "warn",
-        "useAwait": "warn",
-        "noEvolvingTypes": "warn",
-        "noUnknownAtRules": "warn",
-        "noArrayIndexKey": "warn",
-        "noBitwiseOperators": "warn",
         "noDocumentCookie": "warn"
       },
       "nursery": {
@@ -34,40 +28,18 @@
         "noUnnecessaryConditions": "warn"
       },
       "complexity": {
-        "noExcessiveCognitiveComplexity": "warn",
-        "noVoid": "warn",
-        "noBannedTypes": "warn"
-      },
-      "style": {
-        "noNestedTernary": "warn",
-        "noNonNullAssertion": "warn",
-        "noMagicNumbers": "off",
-        "useCollapsedElseIf": "warn",
-        "noExportedImports": "warn",
-        "useCollapsedIf": "warn",
-        "useFilenamingConvention": "warn",
-        "noDescendingSpecificity": "warn",
-        "useBlockStatements": "off"
+        "noImportantStyles": "off"
       },
       "performance": {
         "noNamespaceImport": "off",
-        "noImgElement": "warn",
-        "noBarrelFile": "off",
-        "useTopLevelRegex": "warn"
+        "noImgElement": "off",
+        "noBarrelFile": "off"
       },
       "correctness": {
-        "useExhaustiveDependencies": "warn",
-        "noUnusedVariables": "warn",
-        "noChildrenProp": "warn",
-        "noUnusedImports": "warn",
-        "noUnusedFunctionParameters": "warn"
+        "noChildrenProp": "warn"
       },
       "a11y": {
-        "useButtonType": "warn",
-        "noStaticElementInteractions": "warn",
-        "noNoninteractiveElementInteractions": "warn",
-        "noSvgWithoutTitle": "warn",
-        "useValidAnchor": "warn"
+        "noSvgWithoutTitle": "warn"
       },
       "security": {
         "noDangerouslySetInnerHtml": "warn"
@@ -84,5 +56,17 @@
     "parser": {
       "tailwindDirectives": true
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["!**/*", "**/src/routes/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useFilenamingConvention": "off"
+          }
+        }
+      }
+    }
+  ]
 }

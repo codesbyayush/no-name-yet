@@ -37,28 +37,36 @@ export const VoteButton: React.FC<VoteButtonProps> = ({
   };
 
   const createVoteMutation = useMutation({
-    mutationFn: ({ feedbackId }: { feedbackId: string }) =>
-      client.public.votes.create({ feedbackId }),
+    mutationFn: ({ feedbackId: id }: { feedbackId: string }) =>
+      client.public.votes.create({ feedbackId: id }),
     onSuccess: () => {
       toast.success('Vote added!');
       // Invalidate posts to refresh vote counts and vote status
       queryClient.invalidateQueries({ queryKey: ['all-posts'] });
     },
-    onError: (error: any) => {
-      toast.error(error.message || 'Failed to vote');
+    onError: (error: unknown) => {
+      const message =
+        error && typeof error === 'object' && 'message' in error
+          ? String((error as { message?: unknown }).message)
+          : 'Failed to vote';
+      toast.error(message);
     },
   });
 
   const deleteVoteMutation = useMutation({
-    mutationFn: ({ feedbackId }: { feedbackId: string }) =>
-      client.public.votes.delete({ feedbackId }),
+    mutationFn: ({ feedbackId: id }: { feedbackId: string }) =>
+      client.public.votes.delete({ feedbackId: id }),
     onSuccess: () => {
       toast.success('Vote removed!');
       // Invalidate posts to refresh vote counts and vote status
       queryClient.invalidateQueries({ queryKey: ['all-posts'] });
     },
-    onError: (error: any) => {
-      toast.error(error.message || 'Failed to remove vote');
+    onError: (error: unknown) => {
+      const message =
+        error && typeof error === 'object' && 'message' in error
+          ? String((error as { message?: unknown }).message)
+          : 'Failed to remove vote';
+      toast.error(message);
     },
   });
 

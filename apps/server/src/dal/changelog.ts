@@ -212,6 +212,7 @@ export async function ensureUniqueSlug(
   let slug = baseSlug;
   let counter = 0;
   // Mirrors existing logic
+  // biome-ignore lint/nursery/noUnnecessaryConditions: loop intentionally runs until a unique slug is found
   while (true) {
     const whereConditions = [
       eq(changelog.organizationId, organizationId),

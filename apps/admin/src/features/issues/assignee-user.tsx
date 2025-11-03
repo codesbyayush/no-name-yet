@@ -38,7 +38,7 @@ export function AssigneeUser({ userId, issueId }: AssigneeUserProps) {
     if (currUser) {
       setCurrentAssignee(currUser);
     }
-  }, [teamUsers]);
+  }, [teamUsers, userId]);
 
   const renderAvatar = () => {
     if (currentAssignee) {
@@ -59,13 +59,13 @@ export function AssigneeUser({ userId, issueId }: AssigneeUserProps) {
   return (
     <DropdownMenu onOpenChange={setOpen} open={open}>
       <DropdownMenuTrigger asChild>
-        <button className='relative w-fit focus:outline-none'>
+        <button className='relative w-fit focus:outline-none' type='button'>
           {renderAvatar()}
           {currentAssignee && (
             <span
               className='-end-0.5 -bottom-0.5 absolute size-2.5 rounded-full border-2 border-background'
               style={{
-                backgroundColor: statusUserColors['online'],
+                backgroundColor: statusUserColors.online,
               }}
             >
               <span className='sr-only'>{'online'}</span>

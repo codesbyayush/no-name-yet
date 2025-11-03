@@ -30,7 +30,7 @@ export const changelog = pgTable(
     // Content and metadata
     title: text('title').notNull(),
     slug: text('slug').notNull(), // URL-friendly identifier
-    content: jsonb('content').notNull().$type<any>(), // BlockNote JSON format
+    content: jsonb('content').notNull().$type<unknown>(), // BlockNote JSON format
     htmlContent: text('html_content'), // Pre-rendered HTML for fast display
     excerpt: text('excerpt'), // Auto-generated or manual summary
 

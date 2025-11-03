@@ -31,15 +31,15 @@ const usersCollection = createCollection<UserDoc>(
       return resp.users;
     },
     getKey: (item) => item.id,
-    onInsert: async ({ transaction }) => {
+    onInsert: async () => {
       // Simulate server latency for now
       await new Promise((r) => setTimeout(r, 400));
     },
-    onUpdate: async ({ transaction }) => {
+    onUpdate: async () => {
       // No server endpoint yet; keep local-only until available
       await new Promise((r) => setTimeout(r, 300));
     },
-    onDelete: async ({ transaction }) => {
+    onDelete: async () => {
       // No server endpoint yet; keep local-only until available
       await new Promise((r) => setTimeout(r, 200));
     },
@@ -103,8 +103,8 @@ export const useAddUser = () => ({
 });
 
 export const useAddUsers = () => ({
-  mutate: (users: UserDoc[]) => {
-    for (const u of users) {
+  mutate: (newUsers: UserDoc[]) => {
+    for (const u of newUsers) {
       usersCollection.insert(u);
     }
   },

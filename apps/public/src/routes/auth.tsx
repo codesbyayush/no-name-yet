@@ -21,12 +21,13 @@ function RouteComponent() {
     typeof window !== 'undefined'
       ? new URLSearchParams(window.location.search)
       : null;
-  const redirect = search?.get('redirect') || '/board';
-  const callbackURL = redirect
-    ? redirect.startsWith('http')
-      ? redirect
-      : `${window.location.origin}${redirect}`
-    : `${window.location.origin}/board`;
+  const redirectTo = search?.get('redirect') || '/board';
+  let callbackURL = `${window.location.origin}/board`;
+  if (redirectTo) {
+    callbackURL = redirectTo.startsWith('http')
+      ? redirectTo
+      : `${window.location.origin}${redirectTo}`;
+  }
 
   return (
     <div className='mx-auto flex min-h-screen w-full items-center justify-center bg-gradient-to-b from-card via-90% to-black py-8'>

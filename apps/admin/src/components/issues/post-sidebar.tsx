@@ -17,41 +17,33 @@ import {
   User,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { StatusSelector } from '@/features/issues/status-selector';
 import type { Issue } from '@/mock-data/issues';
 import { buildBranchName } from '@/utils/github';
-
-import { StatusSelector } from './status-selector';
 
 interface PostSidebarProps {
   issue: Issue;
 }
 
+function humanizeDateDistance(dateString: string): string {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInDays = Math.floor(
+    (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
+  );
+  if (diffInDays === 0) return 'Today';
+  if (diffInDays === 1) return 'Yesterday';
+  if (diffInDays < 7) return `${diffInDays} days ago`;
+  const weeks = Math.floor(diffInDays / 7);
+  if (diffInDays < 30) return `About ${weeks} week${weeks > 1 ? 's' : ''} ago`;
+  const months = Math.floor(diffInDays / 30);
+  if (diffInDays < 365)
+    return `About ${months} month${months > 1 ? 's' : ''} ago`;
+  const years = Math.floor(diffInDays / 365);
+  return `About ${years} year${years > 1 ? 's' : ''} ago`;
+}
+
 export function PostSidebar({ issue }: PostSidebarProps) {
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInDays = Math.floor(
-      (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
-    );
-
-    if (diffInDays === 0) {
-      return 'Today';
-    }
-    if (diffInDays === 1) {
-      return 'Yesterday';
-    }
-    if (diffInDays < 7) {
-      return `${diffInDays} days ago`;
-    }
-    if (diffInDays < 30) {
-      return `About ${Math.floor(diffInDays / 7)} week${Math.floor(diffInDays / 7) > 1 ? 's' : ''} ago`;
-    }
-    if (diffInDays < 365) {
-      return `About ${Math.floor(diffInDays / 30)} month${Math.floor(diffInDays / 30) > 1 ? 's' : ''} ago`;
-    }
-    return `About ${Math.floor(diffInDays / 365)} year${Math.floor(diffInDays / 365) > 1 ? 's' : ''} ago`;
-  };
-
   return (
     <div className='h-screen overflow-y-auto bg-sidebar'>
       {/* Header Section */}
@@ -157,7 +149,7 @@ export function PostSidebar({ issue }: PostSidebarProps) {
               <span className='font-medium text-sm'>Date</span>
             </div>
             <span className='text-muted-foreground text-sm'>
-              {formatDate(issue.createdAt)}
+              {humanizeDateDistance(issue.createdAt)}
             </span>
           </div>
 

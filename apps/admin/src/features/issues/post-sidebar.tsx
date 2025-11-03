@@ -34,22 +34,34 @@ export function PostSidebar({ issue }: PostSidebarProps) {
       (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
     );
 
-    if (diffInDays === 0) {
-      return 'Today';
+    const pluralize = (count: number, unit: string) =>
+      `${count} ${unit}${count > 1 ? 's' : ''}`;
+
+    const rules: Array<{
+      limit: number;
+      format: (days: number) => string;
+    }> = [
+      { limit: 1, format: () => 'Today' },
+      { limit: 2, format: () => 'Yesterday' },
+      { limit: 7, format: (d) => `${d} days ago` },
+      {
+        limit: 30,
+        format: (d) => `About ${pluralize(Math.floor(d / 7), 'week')} ago`,
+      },
+      {
+        limit: 365,
+        format: (d) => `About ${pluralize(Math.floor(d / 30), 'month')} ago`,
+      },
+    ];
+
+    for (const rule of rules) {
+      if (diffInDays < rule.limit) {
+        return rule.format(diffInDays);
+      }
     }
-    if (diffInDays === 1) {
-      return 'Yesterday';
-    }
-    if (diffInDays < 7) {
-      return `${diffInDays} days ago`;
-    }
-    if (diffInDays < 30) {
-      return `About ${Math.floor(diffInDays / 7)} week${Math.floor(diffInDays / 7) > 1 ? 's' : ''} ago`;
-    }
-    if (diffInDays < 365) {
-      return `About ${Math.floor(diffInDays / 30)} month${Math.floor(diffInDays / 30) > 1 ? 's' : ''} ago`;
-    }
-    return `About ${Math.floor(diffInDays / 365)} year${Math.floor(diffInDays / 365) > 1 ? 's' : ''} ago`;
+
+    const years = Math.floor(diffInDays / 365);
+    return `About ${pluralize(years, 'year')} ago`;
   };
 
   return (

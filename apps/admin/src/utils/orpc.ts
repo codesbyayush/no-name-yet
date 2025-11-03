@@ -21,8 +21,13 @@ export const queryClient = new QueryClient({
   }),
 });
 
+const baseUrl = String(import.meta.env.PUBLIC_BACKEND_SERVER_URL || '');
+if (!baseUrl) {
+  throw new Error('PUBLIC_BACKEND_SERVER_URL is not defined');
+}
+
 export const link = new RPCLink({
-  url: `${import.meta.env.PUBLIC_BACKEND_SERVER_URL!}/rpc`,
+  url: `${baseUrl}/rpc`,
   fetch(url, options) {
     return fetch(url, {
       ...options,

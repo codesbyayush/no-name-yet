@@ -184,7 +184,9 @@ const OmniFeedbackWidget = () => {
         if (window.OmniFeedbackWidget && !instanceRef.current) {
           instanceRef.current = window.OmniFeedbackWidget.init({
             publicKey: '0d9f0628-0547-4887-8931-2ea1e0eab302',
-            apiUrl: import.meta.env.PUBLIC_BACKEND_SERVER_URL!,
+            apiUrl:
+              import.meta.env.PUBLIC_BACKEND_SERVER_URL ||
+              'http://localhost:8080',
             theme: {
               primaryColor: '#3b82f6',
               buttonText: 'Feedback',
@@ -192,7 +194,9 @@ const OmniFeedbackWidget = () => {
             position: 'above-button',
           });
         }
-      } catch (_error) {}
+      } catch (_error) {
+        console.error('Error initializing OmniFeedback widget:', _error);
+      }
     };
 
     initWidget();

@@ -76,7 +76,7 @@ function BoardIndexPage() {
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   const lastPostCallback = useCallback(
-    (node: HTMLDivElement | null) => {
+    (node: HTMLButtonElement | null) => {
       if (isLoading) {
         return;
       }
@@ -123,7 +123,7 @@ function BoardIndexPage() {
               })).map(({ id, index }) => (
                 <div
                   className={
-                    index > 0 ? 'border-muted-foreground/5 border-t-[1px]' : ''
+                    index > 0 ? 'border-muted-foreground/5 border-t' : ''
                   }
                   key={id}
                 >
@@ -139,8 +139,8 @@ function BoardIndexPage() {
               const isSecondLastPost = i === allPosts.length - 2;
 
               return (
-                <div
-                  className={`${i > 0 ? 'border-muted-foreground/5 border-t-[1px]' : ''} cursor-pointer space-y-1 p-6`}
+                <button
+                  className={`${i > 0 ? 'border-muted-foreground/5 border-t' : ''} cursor-pointer space-y-1 p-6`}
                   key={f.id}
                   onClick={() =>
                     navigate({
@@ -154,6 +154,8 @@ function BoardIndexPage() {
                       });
                     }
                   }}
+                  type='button'
+                  tabIndex={0}
                   ref={isSecondLastPost ? lastPostCallback : null}
                 >
                   <div className='flex items-center justify-between gap-3'>
@@ -212,19 +214,17 @@ function BoardIndexPage() {
                       </Badge>
                       <Badge
                         className='ml-3 px-3 capitalize'
-                        variant={
-                          f.status === 'in-progress'
-                            ? 'inprogress'
-                            : f.status === 'completed'
-                              ? 'completed'
-                              : 'secondary'
-                        }
+                        variant={(() => {
+                          if (f.status === 'in-progress') return 'inprogress';
+                          if (f.status === 'completed') return 'completed';
+                          return 'secondary';
+                        })()}
                       >
                         {f.status}
                       </Badge>
                     </div>
                   </div>
-                </div>
+                </button>
               );
             })}
 
@@ -236,11 +236,11 @@ function BoardIndexPage() {
           )}
         </div>
         <div className='sticky top-6 flex h-fit flex-col gap-4'>
-          <div className='z-10 flex w-3xs items-center gap-1 rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card p-3.5 shadow-xs'>
+          <div className='z-10 flex w-3xs items-center gap-1 rounded-3xl border border-muted-foreground/10 bg-linear-to-bl from-card-foreground/5 to-card p-3.5 shadow-xs'>
             <h4 className='flex-1 font-medium capitalize'> Got an idea?</h4>
             <CreateNewIssue />
           </div>
-          <div className='z-10 w-3xs rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card p-3.5 shadow-xs'>
+          <div className='z-10 w-3xs rounded-3xl border border-muted-foreground/10 bg-linear-to-bl from-card-foreground/5 to-card p-3.5 shadow-xs'>
             <h4 className='mb-2 font-medium capitalize'>boards</h4>
             <div className='flex flex-col gap-2'>
               {boards
@@ -255,7 +255,7 @@ function BoardIndexPage() {
                       >
                         <p className='flex items-center gap-2 whitespace-break-spaces capitalize'>
                           {/* {board.symbol} */}
-                          <span className='break-words text-left capitalize'>
+                          <span className='wrap-break-word text-left capitalize'>
                             {board.name}
                           </span>
                         </p>

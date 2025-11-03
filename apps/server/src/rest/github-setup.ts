@@ -5,6 +5,7 @@ import { githubInstallations } from '../db/schema';
 import { getEnvFromContext } from '../lib/env';
 import { verifyInstallState } from '../lib/state';
 
+const HTTP_PROTOCOL_RE = /^https?:\/\//i;
 const router = new Hono();
 
 router.get('/setup', async (c) => {
@@ -16,7 +17,7 @@ router.get('/setup', async (c) => {
 
   // Normalize FRONTEND_URL to a fully-qualified URL with protocol
   let frontendBase = (env.FRONTEND_URL || '').trim();
-  if (!/^https?:\/\//i.test(frontendBase)) {
+  if (!HTTP_PROTOCOL_RE.test(frontendBase)) {
     frontendBase = `https://app.${frontendBase}`;
   }
 
@@ -34,7 +35,9 @@ router.get('/setup', async (c) => {
               Number(installationId),
             ),
           );
-      } catch {}
+      } catch {
+        // no-op: best-effort linking only
+      }
     }
   }
 

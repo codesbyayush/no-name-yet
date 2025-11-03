@@ -182,9 +182,12 @@ const OmniFeedbackWidget = () => {
 
         // Initialize widget if not already initialized
         if (window.OmniFeedbackWidget && !instanceRef.current) {
+          const apiUrl = import.meta.env.PUBLIC_BACKEND_SERVER_URL as
+            | string
+            | undefined;
           instanceRef.current = window.OmniFeedbackWidget.init({
             publicKey: '0d9f0628-0547-4887-8931-2ea1e0eab302',
-            apiUrl: import.meta.env.PUBLIC_BACKEND_SERVER_URL!,
+            ...(apiUrl ? { apiUrl } : {}),
             theme: {
               primaryColor: '#3b82f6',
               buttonText: 'Feedback',
@@ -192,7 +195,9 @@ const OmniFeedbackWidget = () => {
             position: 'above-button',
           });
         }
-      } catch (_error) {}
+      } catch (_error) {
+        // no-op: widget script failed to load; widget is optional in public site
+      }
     };
 
     initWidget();

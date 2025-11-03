@@ -40,7 +40,7 @@ export const useDeleteStatus = () => ({
 });
 
 export const useEditStatus = () => ({
-  mutate: (status: any) =>
+  mutate: (status: StatusDoc) =>
     statusesCollection.update(status.id, (draft) =>
       Object.assign(status, draft),
     ),

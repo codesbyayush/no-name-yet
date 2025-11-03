@@ -22,6 +22,8 @@ export const BrandLogoIcon: React.FC<BrandLogoIconProps> = ({
     xmlnsXlink='http://www.w3.org/1999/xlink'
     xmlSpace='preserve'
     y='0px'
+    role='img'
+    aria-label='Brand Logo Icon'
   >
     <path
       d='

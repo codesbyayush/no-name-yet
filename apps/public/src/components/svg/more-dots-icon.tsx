@@ -15,6 +15,7 @@ export const MoreDotsIcon = ({
     width={size}
     xmlns='http://www.w3.org/2000/svg'
   >
+    <title>More options</title>
     <circle cx='5' cy='12' fill='currentColor' r='1.5' />
     <circle cx='12' cy='12' fill='currentColor' r='1.5' />
     <circle cx='19' cy='12' fill='currentColor' r='1.5' />

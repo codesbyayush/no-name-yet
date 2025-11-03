@@ -10,6 +10,7 @@ export interface Status {
 
 export const BacklogIcon: React.FC = () => (
   <svg fill='none' height='14' viewBox='0 0 14 14' width='14'>
+    <title>Backlog status</title>
     <circle
       cx='7'
       cy='7'
@@ -37,6 +38,7 @@ export const BacklogIcon: React.FC = () => (
 
 export const PausedIcon: React.FC = () => (
   <svg fill='none' height='14' viewBox='0 0 14 14' width='14'>
+    <title>Paused status</title>
     <circle
       cx='7'
       cy='7'
@@ -64,6 +66,7 @@ export const PausedIcon: React.FC = () => (
 
 export const ToDoIcon: React.FC = () => (
   <svg fill='none' height='14' viewBox='0 0 14 14' width='14'>
+    <title>To-do status</title>
     <circle
       cx='7'
       cy='7'
@@ -91,6 +94,7 @@ export const ToDoIcon: React.FC = () => (
 
 export const InProgressIcon: React.FC = () => (
   <svg fill='none' height='14' viewBox='0 0 14 14' width='14'>
+    <title>In progress status</title>
     <circle
       cx='7'
       cy='7'
@@ -118,6 +122,7 @@ export const InProgressIcon: React.FC = () => (
 
 export const TechnicalReviewIcon: React.FC = () => (
   <svg fill='none' height='14' viewBox='0 0 14 14' width='14'>
+    <title>Technical review status</title>
     <circle
       cx='7'
       cy='7'
@@ -145,6 +150,7 @@ export const TechnicalReviewIcon: React.FC = () => (
 
 export const CompletedIcon: React.FC = () => (
   <svg fill='none' height='14' viewBox='0 0 14 14' width='14'>
+    <title>Completed status</title>
     <circle
       cx='7'
       cy='7'

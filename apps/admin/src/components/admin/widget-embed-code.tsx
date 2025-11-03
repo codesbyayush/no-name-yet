@@ -360,7 +360,7 @@ export {};`,
     };
   }, [config]);
 
-  const updateConfig = (key: keyof WidgetConfig, value: any) => {
+  const updateConfig = (key: keyof WidgetConfig, value: string) => {
     setConfig((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -369,7 +369,9 @@ export {};`,
       await navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (_err) {}
+    } catch (_err) {
+      // Clipboard might be unavailable in some contexts (e.g., insecure contexts)
+    }
   };
 
   return (

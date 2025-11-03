@@ -23,6 +23,7 @@ export const BrandLogoIcon: React.FC<BrandLogoIconProps> = ({
     xmlSpace='preserve'
     y='0px'
   >
+    <title>Brand logo</title>
     <path
       d='
 M449.000000,243.531342 

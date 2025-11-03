@@ -25,16 +25,20 @@ export function GroupIssues({ statusKey }: GroupIssuesProps) {
 
   const source = issuesByCurrentStatus;
   const sortedIssues = sortIssuesByPriority(source);
-  const status: Status = (allStatus.find(
-    (status) => status.key === statusKey,
-  ) || allStatus.find((status) => status.key === 'to-do'))!;
+  const resolvedStatus =
+    allStatus.find((s) => s.key === statusKey) ||
+    allStatus.find((s) => s.key === 'to-do');
+  if (!resolvedStatus) {
+    return null;
+  }
+  const status: Status = resolvedStatus;
 
   return (
     <div
       className={cn(
         'bg-conainer',
         isViewTypeGrid
-          ? 'flex h-full w-[348px] flex-shrink-0 flex-col overflow-hidden rounded-md'
+          ? 'flex h-full w-[348px] shrink-0 flex-col overflow-hidden rounded-md'
           : '',
       )}
     >

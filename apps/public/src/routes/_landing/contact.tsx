@@ -43,7 +43,7 @@ function ContactPage() {
           </p>
           <a
             className='mt-4 inline-flex items-center rounded-lg border border-white/15 bg-white/10 px-4 py-2 text-sm hover:bg-white/20'
-            href='#'
+            href='/'
           >
             Calendar coming soon
           </a>

@@ -14,6 +14,8 @@ export const MoreDotsIcon = ({
     viewBox='0 0 24 24'
     width={size}
     xmlns='http://www.w3.org/2000/svg'
+    role='img'
+    aria-label='More Dots Icon'
   >
     <circle cx='5' cy='12' fill='currentColor' r='1.5' />
     <circle cx='12' cy='12' fill='currentColor' r='1.5' />

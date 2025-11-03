@@ -108,5 +108,11 @@ export const Route = createFileRoute('/')({
 });
 
 function LandingComponent() {
-  return <Navigate replace search={{} as any} to='/boards' />;
+  return (
+    <Navigate
+      replace
+      search={{} as unknown as Record<string, never>}
+      to='/boards'
+    />
+  );
 }

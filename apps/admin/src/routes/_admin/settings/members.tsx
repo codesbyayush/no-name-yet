@@ -48,6 +48,46 @@ import { z } from 'zod';
 import { useUsers as useAdminUsers } from '@/hooks/use-users';
 import { authClient } from '@/lib/auth-client';
 
+// Helpers to reduce complexity in effects/handlers
+async function resolveOrganizationId(existingOrgId?: string) {
+  if (existingOrgId) {
+    return existingOrgId;
+  }
+  const { data: orgs } = await authClient.organization.list();
+  return orgs?.[0]?.id as string | undefined;
+}
+
+type NormalizedInvitation = {
+  id: string;
+  email: string;
+  role: string;
+  status: string;
+  createdAt: string | Date;
+};
+
+function normalizeInvitations(input: unknown): NormalizedInvitation[] {
+  if (Array.isArray(input)) {
+    return input as NormalizedInvitation[];
+  }
+  if (
+    input &&
+    typeof input === 'object' &&
+    'response' in (input as Record<string, unknown>) &&
+    Array.isArray((input as { response?: unknown }).response)
+  ) {
+    return (input as { response: NormalizedInvitation[] }).response;
+  }
+  if (
+    input &&
+    typeof input === 'object' &&
+    'invitations' in (input as Record<string, unknown>) &&
+    Array.isArray((input as { invitations?: unknown }).invitations)
+  ) {
+    return (input as { invitations: NormalizedInvitation[] }).invitations;
+  }
+  return [];
+}
+
 // Invite dialog helpers (top-level for performance and consistency)
 const EMAIL_SPLIT_REGEX = /[\s,;]+/g;
 const emailSchema = z.email();
@@ -117,34 +157,19 @@ function RouteComponent() {
 
   useEffect(() => {
     const controller = new AbortController();
-    async function fetchInvitations() {
+    async function run() {
       try {
         setIsInvitesLoading(true);
-        let orgId = organizationId;
+        const orgId = await resolveOrganizationId(organizationId);
         if (!orgId) {
-          const { data: orgs, error } = await authClient.organization.list();
-          if (error || !orgs?.length) {
-            setInvitations([]);
-            setIsInvitesLoading(false);
-            return;
-          }
-          orgId = orgs[0].id;
+          setInvitations([]);
+          return;
         }
         const list = await authClient.organization.listInvitations({
           query: { organizationId: orgId },
         });
         if (!controller.signal.aborted) {
-          let normalized: unknown = list as unknown;
-          if (Array.isArray(list)) {
-            normalized = list;
-          } else if (list && Array.isArray((list as any).response)) {
-            normalized = (list as any).response;
-          } else if (list && Array.isArray((list as any).invitations)) {
-            normalized = (list as any).invitations;
-          } else {
-            normalized = [] as Invitation[];
-          }
-          setInvitations(normalized as Invitation[]);
+          setInvitations(normalizeInvitations(list));
         }
       } catch {
         setInvitations([]);
@@ -152,7 +177,7 @@ function RouteComponent() {
         setIsInvitesLoading(false);
       }
     }
-    fetchInvitations();
+    run();
     return () => {
       controller.abort();
     };

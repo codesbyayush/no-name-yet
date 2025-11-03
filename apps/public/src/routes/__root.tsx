@@ -10,7 +10,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import '@workspace/ui/globals.css';
 import '../index.css';
 
-export type RouterAppContext = {};
+export type RouterAppContext = Record<string, never>;
 
 export const Route = createRootRouteWithContext<RouterAppContext>()({
   component: RootComponent,

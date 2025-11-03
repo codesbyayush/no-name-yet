@@ -19,15 +19,18 @@ export default function AllIssues() {
   const isViewTypeGrid = viewType === 'grid';
   const isFiltering = hasActiveFilters();
 
+  let content: React.ReactNode;
+  if (isSearching) {
+    content = <SearchIssuesView />;
+  } else if (isFiltering) {
+    content = <FilteredIssuesView isViewTypeGrid={isViewTypeGrid} />;
+  } else {
+    content = <GroupIssuesListView isViewTypeGrid={isViewTypeGrid} />;
+  }
+
   return (
     <div className={cn('h-full w-full', isViewTypeGrid && 'overflow-x-auto')}>
-      {isSearching ? (
-        <SearchIssuesView />
-      ) : isFiltering ? (
-        <FilteredIssuesView isViewTypeGrid={isViewTypeGrid} />
-      ) : (
-        <GroupIssuesListView isViewTypeGrid={isViewTypeGrid} />
-      )}
+      {content}
     </div>
   );
 }

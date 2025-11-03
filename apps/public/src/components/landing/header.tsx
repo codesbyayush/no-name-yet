@@ -6,7 +6,8 @@ import { cn } from '@workspace/ui/lib/utils';
 import { Menu, X } from 'lucide-react';
 import React from 'react';
 
-const menuItems: any[] = [
+type MenuItem = { name: string; to: string };
+const menuItems: MenuItem[] = [
   // { name: "Features", to: "/about" },
   // { name: "Solution", to: "/board" },
   // { name: "Pricing", to: "/contact" },
@@ -51,6 +52,7 @@ export const HeroHeader = () => {
               </Link>
 
               <button
+                type='button'
                 aria-label={menuState === true ? 'Close Menu' : 'Open Menu'}
                 className='-m-2.5 -mr-4 relative z-20 block cursor-pointer p-2.5 lg:hidden'
                 onClick={() => setMenuState(!menuState)}
@@ -63,7 +65,7 @@ export const HeroHeader = () => {
             <div className='absolute inset-0 m-auto hidden size-fit lg:block'>
               <ul className='flex gap-8 text-sm'>
                 {menuItems.map((item, index) => (
-                  <li key={index}>
+                  <li key={item?.to ?? item?.name ?? String(index)}>
                     <Link
                       className='block text-muted-foreground duration-150 hover:text-accent-foreground'
                       to={item.to}
@@ -79,7 +81,7 @@ export const HeroHeader = () => {
               <div className='lg:hidden'>
                 <ul className='space-y-6 text-base'>
                   {menuItems.map((item, index) => (
-                    <li key={index}>
+                    <li key={item?.to ?? item?.name ?? String(index)}>
                       <Link
                         className='block text-muted-foreground duration-150 hover:text-accent-foreground'
                         to={item.to}

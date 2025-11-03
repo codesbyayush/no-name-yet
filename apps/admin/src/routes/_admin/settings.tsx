@@ -27,7 +27,7 @@ type NavItem = {
 };
 type NavGroup = { title: string; items: NavItem[] };
 
-const navGroups: NavGroup[] = [
+const _navGroups: NavGroup[] = [
   {
     title: 'General',
     items: [

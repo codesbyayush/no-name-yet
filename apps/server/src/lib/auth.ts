@@ -8,6 +8,7 @@ import { boards, member, tags, team, teamMember } from '../db/schema';
 import { sendEmail } from '../email';
 import type { AppEnv } from './env';
 
+// biome-ignore lint/suspicious/noExplicitAny: <Can't find a solution to this type error, searched through many of the issues related to types on better-auth repo but nothing works>
 export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | any {
   const db = getDb(env);
 
@@ -61,7 +62,7 @@ export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | any {
                   }),
                 },
               };
-            } catch (error) {
+            } catch (_error) {
               return { data: session };
             }
           },
@@ -105,32 +106,32 @@ export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | any {
           enabled: true,
         },
         organizationCreation: {
-          afterCreate: async ({ user, organization }) => {
+          afterCreate: async ({ user, organization: createdOrg }) => {
             if (env.NODE_ENV === 'production') {
               await sendEmail(env, user.email, 'welcome', user.name);
             }
 
-            const db = getDb(env);
+            const dbConn = getDb(env);
 
-            await db
+            await dbConn
               .update(schema.user)
-              .set({ organizationId: organization.id })
+              .set({ organizationId: createdOrg.id })
               .where(eq(schema.user.id, user.id));
 
             // Seed defaults (idempotent)
             try {
-              const existingBoards = await db
+              const existingBoards = await dbConn
                 .select({ id: boards.id })
                 .from(boards)
-                .where(eq(boards.organizationId, organization.id))
+                .where(eq(boards.organizationId, createdOrg.id))
                 .limit(1);
 
               if (existingBoards.length === 0) {
                 // Boards
-                await db.insert(boards).values([
+                await dbConn.insert(boards).values([
                   {
                     id: crypto.randomUUID(),
-                    organizationId: organization.id,
+                    organizationId: createdOrg.id,
                     name: 'Feature Requests',
                     slug: 'features',
                     description: 'Collect ideas and feature requests',
@@ -138,7 +139,7 @@ export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | any {
                   },
                   {
                     id: crypto.randomUUID(),
-                    organizationId: organization.id,
+                    organizationId: createdOrg.id,
                     name: 'Bugs',
                     slug: 'bugs',
                     description: 'Report and track bugs',
@@ -160,9 +161,9 @@ export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | any {
                   { name: 'Testing', color: 'teal' },
                   { name: 'Internationalization', color: 'cyan' },
                 ];
-                await db.insert(tags).values(
+                await dbConn.insert(tags).values(
                   defaultTags.map((t) => ({
-                    organizationId: organization.id,
+                    organizationId: createdOrg.id,
                     name: t.name,
                     color: t.color,
                   })),
@@ -178,14 +179,14 @@ export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | any {
         emailDomainName: 'anon.us',
         onLinkAccount: async ({ anonymousUser, newUser }) => {
           // TODO: When we allow user to post without signup, update here to migrate post on linking account
-          const db = getDb(env);
+          const dbConn = getDb(env);
           const anonymousUserId = anonymousUser.user.id;
           const newUserId = newUser.user.id;
 
           // Run all migrations concurrently with Promise.allSettled
           await Promise.allSettled([
             // Migrate votes
-            db
+            dbConn
               .update(schema.votes)
               .set({ userId: newUserId })
               .where(eq(schema.votes.userId, anonymousUserId)),
@@ -197,7 +198,7 @@ export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | any {
             //   .where(eq(schema.feedback.authorId, anonymousUserId)),
 
             // Migrate comments
-            db
+            dbConn
               .update(schema.comments)
               .set({ authorId: newUserId })
               .where(eq(schema.comments.authorId, anonymousUserId)),
