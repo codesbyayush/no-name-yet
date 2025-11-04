@@ -140,7 +140,7 @@ function BoardIndexPage() {
 
               return (
                 <button
-                  className={`${i > 0 ? 'border-muted-foreground/5 border-t' : ''} cursor-pointer space-y-1 p-6 text-start`}
+                  className={`${i > 0 ? 'border-muted-foreground/5 border-t' : ''} cursor-pointer space-y-1 p-6 text-start w-full`}
                   key={f.id}
                   onClick={() =>
                     navigate({
@@ -212,16 +212,7 @@ function BoardIndexPage() {
                       <Badge className='px-3 capitalize' variant='secondary'>
                         {f.board?.name}
                       </Badge>
-                      <Badge
-                        className='ml-3 px-3 capitalize'
-                        variant={(() => {
-                          if (f.status === 'in-progress') return 'inprogress';
-                          if (f.status === 'completed') return 'completed';
-                          return 'secondary';
-                        })()}
-                      >
-                        {f.status}
-                      </Badge>
+                      <Badge className='ml-3 px-3 capitalize'>{f.status}</Badge>
                     </div>
                   </div>
                 </button>
