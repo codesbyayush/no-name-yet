@@ -28,7 +28,9 @@ export function extractSubdomainFromHost(host: string): string | null {
   const cleanHost = host.includes(':') ? host.split(':')[0] : host;
 
   const parts = cleanHost.split('.');
-  if (parts.length <= 2) {
+  if (parts.length < 2) {
+    return null;
+  } else if (parts.length === 2 && parts[1] !== 'localhost') {
     return null;
   }
 

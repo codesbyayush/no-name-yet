@@ -140,7 +140,7 @@ function BoardIndexPage() {
 
               return (
                 <button
-                  className={`${i > 0 ? 'border-muted-foreground/5 border-t' : ''} cursor-pointer space-y-1 p-6`}
+                  className={`${i > 0 ? 'border-muted-foreground/5 border-t' : ''} cursor-pointer space-y-1 p-6 text-start`}
                   key={f.id}
                   onClick={() =>
                     navigate({
