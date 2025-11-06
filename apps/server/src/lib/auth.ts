@@ -135,7 +135,6 @@ export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | any {
                     name: 'Feature Requests',
                     slug: 'features',
                     description: 'Collect ideas and feature requests',
-                    isPrivate: false,
                   },
                   {
                     id: crypto.randomUUID(),
@@ -143,7 +142,15 @@ export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | any {
                     name: 'Bugs',
                     slug: 'bugs',
                     description: 'Report and track bugs',
-                    isPrivate: false,
+                  },
+                  {
+                    id: crypto.randomUUID(),
+                    organizationId: createdOrg.id,
+                    name: 'Internal',
+                    slug: 'internal',
+                    description: 'Internal tickets for the team',
+                    isSystem: true,
+                    isPrivate: true,
                   },
                 ]);
 
