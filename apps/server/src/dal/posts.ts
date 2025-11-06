@@ -2,11 +2,12 @@ import {
   aliasedTable,
   and,
   asc,
-  count,
   desc,
   eq,
   exists,
   inArray,
+  ne,
+  or,
   type SQL,
   sql,
 } from 'drizzle-orm';
@@ -48,8 +49,13 @@ export async function getPostsWithAggregates(
     }
   })();
 
+  // (If the board is public and status is not pending) or user is the author -> show the posts
   const whereFilters = [
     eq(boards.organizationId, filters.organizationId),
+    or(
+      and(eq(boards.isPrivate, false), ne(feedback.status, 'pending')),
+      eq(feedback.authorId, userId ?? ''),
+    ),
   ] as SQL<unknown>[];
   if (filters.boardId) {
     whereFilters.push(eq(boards.id, filters.boardId));
@@ -444,13 +450,7 @@ export async function createPublicPost(
   input: PublicCreatePostInput,
   authorId: string,
 ) {
-  const postsCount = await db
-    .select({ count: count() })
-    .from(feedback)
-    .where(eq(feedback.boardId, input.boardId));
-
-  const issueKey = `OF-${(postsCount[0]?.count ?? 0) + 1}`.toLowerCase();
-
+  // Status pending and the no issue key to signify public post that is still to be reviewed
   const [newPost] = await db
     .insert(feedback)
     .values({
@@ -458,8 +458,8 @@ export async function createPublicPost(
       authorId,
       title: input.title,
       description: input.description,
-      issueKey,
       priority: 'no-priority',
+      status: 'pending',
     })
     .returning();
 
