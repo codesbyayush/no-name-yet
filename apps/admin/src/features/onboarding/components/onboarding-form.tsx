@@ -8,7 +8,7 @@ import {
 } from '@workspace/ui/components/card';
 import { CreateOrganizationForm } from './create-organization-form';
 
-export const GeneratedForm = () => {
+export const OnboardingForm = () => {
   const navigate = useNavigate();
 
   const handleOrganizationSuccess = () => {

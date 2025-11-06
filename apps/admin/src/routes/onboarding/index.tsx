@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { GeneratedForm } from '@/components/admin/onboarding-form';
 import { withAuthGuard } from '@/features/auth';
+import { OnboardingForm } from '@/features/onboarding';
 
 const GuardedOnboardingPage = withAuthGuard(OnboardingPage, {
   requireOrganization: false,
@@ -13,8 +13,8 @@ export const Route = createFileRoute('/onboarding/')({
 
 function OnboardingPage() {
   return (
-    <div className='flex min-h-svh items-center justify-center bg-gradient-to-b from-card via-90% to-black py-8'>
-      <GeneratedForm />
+    <div className='flex min-h-svh items-center justify-center bg-linear-to-b from-card via-90% to-black py-8'>
+      <OnboardingForm />
     </div>
   );
 }
