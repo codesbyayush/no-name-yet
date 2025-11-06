@@ -10,7 +10,21 @@ import {
   UserPlus,
   X,
 } from 'lucide-react';
-import type { NotificationType } from '@/mock-data/inbox';
+
+const NotificationTypes = {
+  comment: 'comment',
+  mention: 'mention',
+  assignment: 'assignment',
+  status: 'status',
+  reopened: 'reopened',
+  closed: 'closed',
+  edited: 'edited',
+  created: 'created',
+  upload: 'upload',
+} as const;
+
+type NotificationType =
+  (typeof NotificationTypes)[keyof typeof NotificationTypes];
 
 export function getNotificationIcon(
   type: NotificationType,
