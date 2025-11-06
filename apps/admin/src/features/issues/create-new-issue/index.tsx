@@ -35,7 +35,7 @@ export function CreateNewIssue() {
   const { data: issues } = useIssues();
   const addIssue = useAddIssue();
 
-  const generateUniqueIdentifier = useCallback(() => {
+  const generateUniqueIdentifier = () => {
     const identifiers = (issues ?? []).map((issue) => issue.issueKey);
     let identifier = Math.floor(Math.random() * 999)
       .toString()
@@ -46,7 +46,7 @@ export function CreateNewIssue() {
         .padStart(3, '0');
     }
     return identifier;
-  }, [issues]);
+  };
 
   const { data: boards } = useBoards();
 
@@ -102,7 +102,7 @@ export function CreateNewIssue() {
       rank: ranks.at(-1) ?? ranks[ranks.length - 1] ?? '0',
       tags: [],
     };
-  }, [defaultStatusKey, generateUniqueIdentifier, mappedProjects[0]]);
+  }, [defaultStatusKey]);
 
   const [addIssueForm, setAddIssueForm] = useState<Issue>(createDefaultData());
 
@@ -114,7 +114,7 @@ export function CreateNewIssue() {
         setAddIssueForm(createDefaultData());
       }
     }
-  }, [isOpen, createDefaultData, mappedProjects[0]]);
+  }, [isOpen, createDefaultData]);
 
   const createIssue = () => {
     if (!addIssueForm.title) {
