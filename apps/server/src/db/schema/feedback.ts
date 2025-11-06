@@ -1,6 +1,5 @@
 import { sql } from 'drizzle-orm';
 import {
-  boolean,
   index,
   integer,
   pgEnum,
@@ -26,6 +25,7 @@ export const statusEnum = pgEnum('status_enum', [
   'backlog',
   'technical-review',
   'paused',
+  'pending',
 ]);
 
 // Feedback table - stores all feedback submissions
@@ -49,14 +49,12 @@ export const feedback = pgTable(
       onDelete: 'restrict',
     }),
     dueDate: timestamp('due_date'),
+    completedAt: timestamp('completed_at'),
     status: statusEnum('status').notNull().default('to-do'),
     priority: priorityEnum('priority').default('low'),
     // Metadata
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
-
-    // For future features
-    isAnonymous: boolean('is_anonymous').default(false).notNull(),
   },
   (table) => [
     index('idx_feedback_board_id').on(table.boardId),
@@ -66,6 +64,7 @@ export const feedback = pgTable(
     ),
     index('idx_feedback_status_created').on(table.createdAt.desc()),
     index('idx_feedback_issue_key').on(table.issueKey),
+    index('idx_feedback_assignee_status').on(table.assigneeId, table.status),
   ],
 );
 

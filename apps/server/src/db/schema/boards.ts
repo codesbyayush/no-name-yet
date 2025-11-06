@@ -20,6 +20,7 @@ export const boards = pgTable(
     slug: text('slug').notNull(),
     description: text('description'),
     isPrivate: boolean('is_private').default(false),
+    isSystem: boolean('is_system').default(false),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
     deletedAt: timestamp('deleted_at'),
