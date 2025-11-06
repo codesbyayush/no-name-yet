@@ -9,6 +9,7 @@ import {
 } from '@workspace/ui/components/card';
 import { cn } from '@workspace/ui/lib/utils';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 export default function SignIn({
   onSignIn,
@@ -22,7 +23,7 @@ export default function SignIn({
     try {
       await onSignIn(provider);
     } catch {
-      // Todo: handle error
+      toast.error('Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }

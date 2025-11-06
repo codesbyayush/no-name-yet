@@ -13,12 +13,12 @@ export const Route = createRootRouteWithContext()({
   head: () => ({
     meta: [
       {
-        title: 'OmniFeedback Admin',
+        title: 'OpenFeedback Admin Panel',
       },
       {
         name: 'description',
         content:
-          'OmniFeedback Admin is a bug/feature tracking tool admin dashboard.',
+          'OpenFeedback Admin Panel is a bug/feature tracking tool admin dashboard.',
       },
     ],
     links: [

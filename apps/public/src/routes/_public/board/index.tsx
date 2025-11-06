@@ -135,7 +135,6 @@ function BoardIndexPage() {
           {isError && <div>Error loading posts</div>}
           {!isLoading &&
             allPosts.map((f, i) => {
-              const _isLastPost = i === allPosts.length - 1;
               const isSecondLastPost = i === allPosts.length - 2;
 
               return (
@@ -160,10 +159,10 @@ function BoardIndexPage() {
                 >
                   <div className='flex items-center justify-between gap-3'>
                     <div>
-                      <h4 className='line-clamp-2 font-semibold text-card-foreground text-lg capitalize'>
+                      <h4 className='line-clamp-2 font-semibold text-card-foreground text-lg first-letter:capitalize'>
                         {f.title}
                       </h4>
-                      <p className='line-clamp-2 text-pretty font-medium text-muted-foreground text-sm capitalize'>
+                      <p className='line-clamp-2 text-pretty font-medium text-muted-foreground text-sm first-letter:capitalize'>
                         {f.content}
                       </p>
                     </div>
@@ -200,7 +199,7 @@ function BoardIndexPage() {
                         )}
                       </div>
                       <div className='flex items-center gap-3 self-end pt-px'>
-                        <h5 className='pb-0.5 font-medium text-sm capitalize'>
+                        <h5 className='pb-0.5 font-medium text-sm first-letter:capitalize'>
                           {f.author?.name || 'Anon'}
                         </h5>
                         <p className='font-medium text-muted-foreground text-xs'>
@@ -209,10 +208,12 @@ function BoardIndexPage() {
                       </div>
                     </div>
                     <div>
-                      <Badge className='px-3 capitalize' variant='secondary'>
+                      <Badge className='px-3 capitalize' variant='outline'>
                         {f.board?.name}
                       </Badge>
-                      <Badge className='ml-3 px-3 capitalize'>{f.status}</Badge>
+                      <Badge className='ml-3 px-3 capitalize' variant='outline'>
+                        {f.status}
+                      </Badge>
                     </div>
                   </div>
                 </button>
@@ -244,9 +245,9 @@ function BoardIndexPage() {
                         onClick={() => handleBoardClick(board.id)}
                         variant={isActive ? 'default' : 'secondary'}
                       >
-                        <p className='flex items-center gap-2 whitespace-break-spaces capitalize'>
+                        <p className='flex items-center gap-2 whitespace-break-spaces first-letter:capitalize'>
                           {/* {board.symbol} */}
-                          <span className='wrap-break-word text-left capitalize'>
+                          <span className='wrap-break-word text-left first-letter:capitalize'>
                             {board.name}
                           </span>
                         </p>
