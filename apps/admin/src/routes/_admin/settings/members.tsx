@@ -45,17 +45,8 @@ import { MoreHorizontal } from 'lucide-react';
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import { useAuth } from '@/contexts';
 import { useUsers as useAdminUsers } from '@/hooks/use-users';
-import { authClient } from '@/lib/auth-client';
-
-// Helpers to reduce complexity in effects/handlers
-async function resolveOrganizationId(existingOrgId?: string) {
-  if (existingOrgId) {
-    return existingOrgId;
-  }
-  const { data: orgs } = await authClient.organization.list();
-  return orgs?.[0]?.id as string | undefined;
-}
 
 type NormalizedInvitation = {
   id: string;
@@ -115,6 +106,7 @@ function RouteComponent() {
 
   const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [isInvitesLoading, setIsInvitesLoading] = useState(true);
+  const { auth, session } = useAuth();
 
   const users = data?.users ?? [];
   const organizationId = data?.organizationId;
@@ -156,21 +148,18 @@ function RouteComponent() {
   };
 
   useEffect(() => {
-    const controller = new AbortController();
     async function run() {
       try {
         setIsInvitesLoading(true);
-        const orgId = await resolveOrganizationId(organizationId);
+        const orgId = session?.session.activeOrganizationId;
         if (!orgId) {
           setInvitations([]);
           return;
         }
-        const list = await authClient.organization.listInvitations({
+        const list = await auth.organization.listInvitations({
           query: { organizationId: orgId },
         });
-        if (!controller.signal.aborted) {
-          setInvitations(normalizeInvitations(list));
-        }
+        setInvitations(normalizeInvitations(list));
       } catch {
         setInvitations([]);
       } finally {
@@ -178,16 +167,13 @@ function RouteComponent() {
       }
     }
     run();
-    return () => {
-      controller.abort();
-    };
-  }, [organizationId]);
+  }, [session?.session.activeOrganizationId]);
 
   async function handleResend(invite: Invitation) {
     try {
       let orgId = organizationId;
       if (!orgId) {
-        const { data: orgs } = await authClient.organization.list();
+        const { data: orgs } = await auth.organization.list();
         orgId = orgs?.[0]?.id;
       }
       if (!orgId) {
@@ -195,7 +181,7 @@ function RouteComponent() {
         return;
       }
       const roleToSend = mapRoleForResend(invite.role);
-      const result = await authClient.organization.inviteMember({
+      const result = await auth.organization.inviteMember({
         email: invite.email,
         role: roleToSend,
         resend: true,
@@ -216,7 +202,7 @@ function RouteComponent() {
 
   async function handleRevoke(invite: Invitation) {
     try {
-      await authClient.organization.cancelInvitation({
+      await auth.organization.cancelInvitation({
         invitationId: invite.id,
       });
       setInvitations((prev) => prev.filter((i) => i.id !== invite.id));
@@ -517,6 +503,8 @@ function InviteUsersDialog() {
     return { unique, valid } as const;
   }, [rawEmails]);
 
+  const { session, auth } = useAuth();
+
   const hasValidEmails = parsedEmails.valid.length > 0;
 
   async function handleSendInvites() {
@@ -525,19 +513,21 @@ function InviteUsersDialog() {
       return;
     }
 
-    const { data, error } = await authClient.organization.list();
-
-    if (error) {
-      toast.error('Something went wrong');
+    if (
+      !session?.session.activeOrganizationId ||
+      !session?.session.activeTeamId
+    ) {
+      toast.error('Some error occured please try again later');
       return;
     }
 
     const invitaitonPromises = parsedEmails.valid.map(async (email) => {
-      const res = await authClient.organization.inviteMember({
+      const res = await auth.organization.inviteMember({
         email,
         role: 'member',
         resend: true,
-        organizationId: data[0].id,
+        organizationId: session?.session.activeOrganizationId as string,
+        teamId: session?.session.activeTeamId as string,
       });
       return res;
     });
@@ -546,9 +536,7 @@ function InviteUsersDialog() {
       if (result.error) {
         toast.error(result.error.message ?? 'Failed to invite user');
       } else {
-        toast.success(
-          `Invitation email has been sent to ${result.data.email}.`,
-        );
+        toast.success(`Users invited successfully.`);
       }
     }
     setOpen(false);

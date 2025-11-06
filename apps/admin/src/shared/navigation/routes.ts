@@ -60,6 +60,14 @@ export const navigationRoutes = {
           url: '/settings/general',
         },
         {
+          title: 'Boards',
+          url: '/settings/boards',
+        },
+        {
+          title: 'Feedback',
+          url: '/settings/feedback',
+        },
+        {
           title: 'Integrations',
           url: '/settings/integrations',
         },

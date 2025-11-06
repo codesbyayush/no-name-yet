@@ -11,7 +11,9 @@ import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { adminClient } from '@/utils/admin-orpc';
-import BlockNoteEditor, { type BlockNoteEditorRef } from '../blocknote-editor';
+import BlockNoteEditor, {
+  type BlockNoteEditorRef,
+} from '../../wiki/blocknote-editor';
 
 const TITLE_MAX_LENGTH = 200;
 

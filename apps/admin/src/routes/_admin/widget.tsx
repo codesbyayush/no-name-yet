@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { WidgetEmbedCode } from '@/components/admin/widget-embed-code';
+import { WidgetEmbedCode } from '@/features/widget/components/widget-embed-code';
 
 export const Route = createFileRoute('/_admin/widget')({
   component: WidgetPage,

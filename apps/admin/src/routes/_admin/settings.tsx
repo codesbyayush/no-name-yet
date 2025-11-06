@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
-import { SiteHeader } from '@/components/site-header';
+import { SiteHeader } from '@/shared/layout/site-header';
 
 export const Route = createFileRoute('/_admin/settings')({
   beforeLoad: ({ location }) => {

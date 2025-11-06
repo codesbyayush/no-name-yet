@@ -20,43 +20,10 @@ import {
   TableRow,
 } from '@workspace/ui/components/table';
 import { EditIcon, PlusIcon, TrashIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { adminClient } from '@/utils/admin-orpc';
 import { queryClient } from '@/utils/orpc';
-
-const availableEmojis = [
-  '💡',
-  '🐛',
-  '💬',
-  '🚀',
-  '⭐',
-  '🎯',
-  '🔧',
-  '📊',
-  '🎨',
-  '🔒',
-  '📝',
-  '💰',
-  '🌟',
-  '🏆',
-  '🎪',
-  '🎭',
-  '🎨',
-  '🎯',
-  '🔥',
-  '⚡',
-  '🌈',
-  '🎊',
-  '🎉',
-  '🎀',
-  '🎁',
-  '🎲',
-  '🎸',
-  '🎺',
-  '🎻',
-  '🎤',
-];
 
 export function BoardsSettings() {
   const [allowGuestSubmissions, setAllowGuestSubmissions] = useState(false);
@@ -73,29 +40,13 @@ export function BoardsSettings() {
     queryFn: () => adminClient.organization.tagsRouter.getAll(),
   });
 
-  const boards = boardsData || [];
-
   const [newBoardName, setNewBoardName] = useState('');
-  const [newBoardEmoji, setNewBoardEmoji] = useState('');
   const [newBoardIsPrivate, setNewBoardIsPrivate] = useState(false);
-  const [showEmojiDropdown, setShowEmojiDropdown] = useState(false);
   const [newTagName, setNewTagName] = useState('');
   const [newTagColor, setNewTagColor] = useState('blue');
 
-  const usedEmojis = boards.map((board) => board.emoji).filter(Boolean);
-  const firstAvailableEmoji =
-    availableEmojis.find((emoji) => !usedEmojis.includes(emoji)) ||
-    availableEmojis[0];
-
-  // Set default emoji to first available when component mounts or boards change
-  useEffect(() => {
-    if (!newBoardEmoji) {
-      setNewBoardEmoji(firstAvailableEmoji);
-    }
-  }, [firstAvailableEmoji, newBoardEmoji]);
-
   const createBoardMutation = useMutation({
-    mutationFn: (data: { name: string; emoji: string; isPrivate: boolean }) =>
+    mutationFn: (data: { name: string; isPrivate: boolean }) =>
       adminClient.organization.boardsRouter.create({
         ...data,
         slug: data.name.split(' ').join('-').toLowerCase(),
@@ -104,9 +55,7 @@ export function BoardsSettings() {
       toast.success('Board created successfully!');
       queryClient.invalidateQueries({ queryKey: ['admin-boards'] });
       setNewBoardName('');
-      setNewBoardEmoji(firstAvailableEmoji);
       setNewBoardIsPrivate(false);
-      setShowEmojiDropdown(false);
     },
     onError: (error: unknown) => {
       const message =
@@ -118,7 +67,6 @@ export function BoardsSettings() {
   const createBoard = () => {
     createBoardMutation.mutate({
       name: newBoardName.trim(),
-      emoji: newBoardEmoji,
       isPrivate: newBoardIsPrivate,
     });
   };
@@ -221,7 +169,6 @@ export function BoardsSettings() {
           <Table>
             <TableHeader>
               <TableRow className='border-b-0 border-none'>
-                <TableHead>Symbol</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Visibility</TableHead>
                 <TableHead className='w-[100px]'>Actions</TableHead>
@@ -236,16 +183,11 @@ export function BoardsSettings() {
           </Table>
 
           <RenderCreateBoard
-            setShowEmojiDropdown={setShowEmojiDropdown}
-            newBoardEmoji={newBoardEmoji}
             newBoardName={newBoardName}
             newBoardIsPrivate={newBoardIsPrivate}
             createBoard={createBoard}
-            showEmojiDropdown={showEmojiDropdown}
-            setNewBoardEmoji={setNewBoardEmoji}
             setNewBoardName={setNewBoardName}
             setNewBoardIsPrivate={setNewBoardIsPrivate}
-            usedEmojis={usedEmojis}
           />
         </CardContent>
       </Card>
@@ -328,7 +270,6 @@ function RenderBoards({
     <>
       {boards.map((board) => (
         <TableRow className='border-b-0' key={board.id}>
-          <TableCell className='text-xl'>{board.symbol || '📋'}</TableCell>
           <TableCell className='font-medium'>{board.name}</TableCell>
           <TableCell>
             <Badge variant={board.isPrivate ? 'secondary' : 'default'}>
@@ -352,61 +293,22 @@ function RenderBoards({
 }
 
 function RenderCreateBoard({
-  setShowEmojiDropdown,
-  newBoardEmoji,
   newBoardName,
   newBoardIsPrivate,
   createBoard,
-  showEmojiDropdown,
-  setNewBoardEmoji,
   setNewBoardName,
   setNewBoardIsPrivate,
-  usedEmojis,
 }: {
-  newBoardEmoji: string;
   newBoardName: string;
   newBoardIsPrivate: boolean;
   createBoard: () => void;
-  setShowEmojiDropdown: (showEmojiDropdown: boolean) => void;
-  showEmojiDropdown: boolean;
-  setNewBoardEmoji: (boardEmoji: string) => void;
   setNewBoardName: (boardName: string) => void;
   setNewBoardIsPrivate: (boardIsPrivate: boolean) => void;
-  usedEmojis: string[];
 }) {
   return (
     <div className='mt-4 border-muted-foreground/10 border-t pt-6'>
       <div className='space-y-4'>
         <div className='flex gap-3'>
-          <div className='relative'>
-            <Button
-              className='h-10 w-16 p-0 text-xl'
-              onClick={() => setShowEmojiDropdown(!showEmojiDropdown)}
-              variant='outline'
-            >
-              {newBoardEmoji}
-            </Button>
-            {showEmojiDropdown && (
-              <div className='absolute top-12 left-0 z-10 grid w-48 grid-cols-6 gap-1 rounded-md border border-border bg-card p-2 shadow-lg'>
-                {availableEmojis.map((emoji) => (
-                  <button
-                    className={`h-8 w-8 rounded text-xl hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50 ${
-                      usedEmojis.includes(emoji) ? 'bg-muted' : ''
-                    }`}
-                    disabled={usedEmojis.includes(emoji)}
-                    key={emoji}
-                    onClick={() => {
-                      setNewBoardEmoji(emoji);
-                      setShowEmojiDropdown(false);
-                    }}
-                    type='button'
-                  >
-                    {emoji}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
           <Input
             className='flex-1'
             onChange={(e) => setNewBoardName(e.target.value)}
@@ -423,17 +325,14 @@ function RenderCreateBoard({
               onCheckedChange={setNewBoardIsPrivate}
             />
           </div>
-          <Button
-            disabled={!(newBoardName.trim() && newBoardEmoji)}
-            onClick={createBoard}
-          >
+          <Button disabled={!newBoardName.trim()} onClick={createBoard}>
             <PlusIcon className='mr-2 h-4 w-4' />
             Add Board
           </Button>
         </div>
-        {!(newBoardEmoji && newBoardName.trim()) && (
+        {!newBoardName.trim() && (
           <p className='text-muted-foreground text-sm'>
-            Please select a symbol and enter a board name to continue.
+            Please enter a board name to continue.
           </p>
         )}
       </div>

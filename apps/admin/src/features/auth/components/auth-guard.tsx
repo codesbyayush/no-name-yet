@@ -1,6 +1,5 @@
 import { Navigate, useLocation } from '@tanstack/react-router';
 import type { ComponentType } from 'react';
-import Loader from '@/components/loader';
 import { useAuth } from '@/contexts';
 import {
   DEFAULT_ONBOARDING_PATH,
@@ -12,6 +11,7 @@ import {
   buildRedirectTarget,
   resolveGuardResolution,
 } from '@/features/auth/utils/guard-resolution';
+import Loader from '@/shared/navigation/loader';
 
 export function withAuthGuard<P extends object>(
   Component: ComponentType<P>,

@@ -20,6 +20,8 @@ import { Route as AdminBoardsIndexRouteImport } from './routes/_admin/boards/ind
 import { Route as AdminSettingsPricingRouteImport } from './routes/_admin/settings/pricing'
 import { Route as AdminSettingsMembersRouteImport } from './routes/_admin/settings/members'
 import { Route as AdminSettingsGeneralRouteImport } from './routes/_admin/settings/general'
+import { Route as AdminSettingsFeedbackRouteImport } from './routes/_admin/settings/feedback'
+import { Route as AdminSettingsBoardsRouteImport } from './routes/_admin/settings/boards'
 import { Route as AdminBoardsPostIdRouteImport } from './routes/_admin/boards/$postId'
 import { Route as AdminSettingsIntegrationsIndexRouteImport } from './routes/_admin/settings/integrations/index'
 import { Route as AdminSettingsIntegrationsGithubRouteImport } from './routes/_admin/settings/integrations/github'
@@ -78,6 +80,16 @@ const AdminSettingsGeneralRoute = AdminSettingsGeneralRouteImport.update({
   path: '/general',
   getParentRoute: () => AdminSettingsRoute,
 } as any)
+const AdminSettingsFeedbackRoute = AdminSettingsFeedbackRouteImport.update({
+  id: '/feedback',
+  path: '/feedback',
+  getParentRoute: () => AdminSettingsRoute,
+} as any)
+const AdminSettingsBoardsRoute = AdminSettingsBoardsRouteImport.update({
+  id: '/boards',
+  path: '/boards',
+  getParentRoute: () => AdminSettingsRoute,
+} as any)
 const AdminBoardsPostIdRoute = AdminBoardsPostIdRouteImport.update({
   id: '/boards/$postId',
   path: '/boards/$postId',
@@ -104,6 +116,8 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
   '/boards/$postId': typeof AdminBoardsPostIdRoute
+  '/settings/boards': typeof AdminSettingsBoardsRoute
+  '/settings/feedback': typeof AdminSettingsFeedbackRoute
   '/settings/general': typeof AdminSettingsGeneralRoute
   '/settings/members': typeof AdminSettingsMembersRoute
   '/settings/pricing': typeof AdminSettingsPricingRoute
@@ -119,6 +133,8 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
   '/boards/$postId': typeof AdminBoardsPostIdRoute
+  '/settings/boards': typeof AdminSettingsBoardsRoute
+  '/settings/feedback': typeof AdminSettingsFeedbackRoute
   '/settings/general': typeof AdminSettingsGeneralRoute
   '/settings/members': typeof AdminSettingsMembersRoute
   '/settings/pricing': typeof AdminSettingsPricingRoute
@@ -136,6 +152,8 @@ export interface FileRoutesById {
   '/auth/': typeof AuthIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/_admin/boards/$postId': typeof AdminBoardsPostIdRoute
+  '/_admin/settings/boards': typeof AdminSettingsBoardsRoute
+  '/_admin/settings/feedback': typeof AdminSettingsFeedbackRoute
   '/_admin/settings/general': typeof AdminSettingsGeneralRoute
   '/_admin/settings/members': typeof AdminSettingsMembersRoute
   '/_admin/settings/pricing': typeof AdminSettingsPricingRoute
@@ -153,6 +171,8 @@ export interface FileRouteTypes {
     | '/auth'
     | '/onboarding'
     | '/boards/$postId'
+    | '/settings/boards'
+    | '/settings/feedback'
     | '/settings/general'
     | '/settings/members'
     | '/settings/pricing'
@@ -168,6 +188,8 @@ export interface FileRouteTypes {
     | '/auth'
     | '/onboarding'
     | '/boards/$postId'
+    | '/settings/boards'
+    | '/settings/feedback'
     | '/settings/general'
     | '/settings/members'
     | '/settings/pricing'
@@ -184,6 +206,8 @@ export interface FileRouteTypes {
     | '/auth/'
     | '/onboarding/'
     | '/_admin/boards/$postId'
+    | '/_admin/settings/boards'
+    | '/_admin/settings/feedback'
     | '/_admin/settings/general'
     | '/_admin/settings/members'
     | '/_admin/settings/pricing'
@@ -278,6 +302,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsGeneralRouteImport
       parentRoute: typeof AdminSettingsRoute
     }
+    '/_admin/settings/feedback': {
+      id: '/_admin/settings/feedback'
+      path: '/feedback'
+      fullPath: '/settings/feedback'
+      preLoaderRoute: typeof AdminSettingsFeedbackRouteImport
+      parentRoute: typeof AdminSettingsRoute
+    }
+    '/_admin/settings/boards': {
+      id: '/_admin/settings/boards'
+      path: '/boards'
+      fullPath: '/settings/boards'
+      preLoaderRoute: typeof AdminSettingsBoardsRouteImport
+      parentRoute: typeof AdminSettingsRoute
+    }
     '/_admin/boards/$postId': {
       id: '/_admin/boards/$postId'
       path: '/boards/$postId'
@@ -303,6 +341,8 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminSettingsRouteChildren {
+  AdminSettingsBoardsRoute: typeof AdminSettingsBoardsRoute
+  AdminSettingsFeedbackRoute: typeof AdminSettingsFeedbackRoute
   AdminSettingsGeneralRoute: typeof AdminSettingsGeneralRoute
   AdminSettingsMembersRoute: typeof AdminSettingsMembersRoute
   AdminSettingsPricingRoute: typeof AdminSettingsPricingRoute
@@ -311,6 +351,8 @@ interface AdminSettingsRouteChildren {
 }
 
 const AdminSettingsRouteChildren: AdminSettingsRouteChildren = {
+  AdminSettingsBoardsRoute: AdminSettingsBoardsRoute,
+  AdminSettingsFeedbackRoute: AdminSettingsFeedbackRoute,
   AdminSettingsGeneralRoute: AdminSettingsGeneralRoute,
   AdminSettingsMembersRoute: AdminSettingsMembersRoute,
   AdminSettingsPricingRoute: AdminSettingsPricingRoute,
