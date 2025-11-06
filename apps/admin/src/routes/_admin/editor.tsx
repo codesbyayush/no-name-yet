@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import BlockNoteEditor from '@/features/wiki/blocknote-editor';
+import BlockNoteEditor from '@/features/wiki/components/blocknote-editor';
 import { SiteHeader } from '@/shared/layout/site-header';
 
 export const Route = createFileRoute('/_admin/editor')({

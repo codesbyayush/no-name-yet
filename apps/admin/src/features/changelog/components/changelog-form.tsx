@@ -13,7 +13,7 @@ import { z } from 'zod';
 import { adminClient } from '@/utils/admin-orpc';
 import BlockNoteEditor, {
   type BlockNoteEditorRef,
-} from '../../wiki/blocknote-editor';
+} from '../../wiki/components/blocknote-editor';
 
 const TITLE_MAX_LENGTH = 200;
 
