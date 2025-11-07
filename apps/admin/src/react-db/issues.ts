@@ -85,6 +85,7 @@ const issuesCollection = createCollection<IssueDoc>(
           | 'backlog'
           | 'technical-review'
           | 'paused'
+          | 'pending'
           | undefined,
         tags: changes.tags.map((tag) => tag.id),
       });
@@ -102,6 +103,13 @@ export const useIssueById = (id: string | undefined) =>
       .where(({ issue }) => (id ? eq(issue.id, id) : false))
       .orderBy(({ issue }) => issue.createdAt, 'desc')
       .limit(1),
+  );
+
+export const useExternalPendingIssues = () =>
+  useLiveQuery((q) =>
+    q
+      .from({ issue: issuesCollection })
+      .where(({ issue }) => eq(issue.status.key, 'pending')),
   );
 
 export const useIssuesByStatus = (statusId: string | undefined) =>

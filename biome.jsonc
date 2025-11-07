@@ -40,9 +40,6 @@
       "correctness": {
         "noChildrenProp": "warn"
       },
-      "a11y": {
-        "noSvgWithoutTitle": "warn"
-      },
       "security": {
         "noDangerouslySetInnerHtml": "warn"
       }

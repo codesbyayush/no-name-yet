@@ -16,6 +16,7 @@ import { Route as AuthIndexRouteImport } from './routes/auth/index'
 import { Route as AdminWidgetRouteImport } from './routes/_admin/widget'
 import { Route as AdminSettingsRouteImport } from './routes/_admin/settings'
 import { Route as AdminEditorRouteImport } from './routes/_admin/editor'
+import { Route as AdminRequestsIndexRouteImport } from './routes/_admin/requests/index'
 import { Route as AdminBoardsIndexRouteImport } from './routes/_admin/boards/index'
 import { Route as AdminSettingsPricingRouteImport } from './routes/_admin/settings/pricing'
 import { Route as AdminSettingsMembersRouteImport } from './routes/_admin/settings/members'
@@ -58,6 +59,11 @@ const AdminSettingsRoute = AdminSettingsRouteImport.update({
 const AdminEditorRoute = AdminEditorRouteImport.update({
   id: '/editor',
   path: '/editor',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminRequestsIndexRoute = AdminRequestsIndexRouteImport.update({
+  id: '/requests/',
+  path: '/requests/',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminBoardsIndexRoute = AdminBoardsIndexRouteImport.update({
@@ -122,6 +128,7 @@ export interface FileRoutesByFullPath {
   '/settings/members': typeof AdminSettingsMembersRoute
   '/settings/pricing': typeof AdminSettingsPricingRoute
   '/boards': typeof AdminBoardsIndexRoute
+  '/requests': typeof AdminRequestsIndexRoute
   '/settings/integrations/github': typeof AdminSettingsIntegrationsGithubRoute
   '/settings/integrations': typeof AdminSettingsIntegrationsIndexRoute
 }
@@ -139,6 +146,7 @@ export interface FileRoutesByTo {
   '/settings/members': typeof AdminSettingsMembersRoute
   '/settings/pricing': typeof AdminSettingsPricingRoute
   '/boards': typeof AdminBoardsIndexRoute
+  '/requests': typeof AdminRequestsIndexRoute
   '/settings/integrations/github': typeof AdminSettingsIntegrationsGithubRoute
   '/settings/integrations': typeof AdminSettingsIntegrationsIndexRoute
 }
@@ -158,6 +166,7 @@ export interface FileRoutesById {
   '/_admin/settings/members': typeof AdminSettingsMembersRoute
   '/_admin/settings/pricing': typeof AdminSettingsPricingRoute
   '/_admin/boards/': typeof AdminBoardsIndexRoute
+  '/_admin/requests/': typeof AdminRequestsIndexRoute
   '/_admin/settings/integrations/github': typeof AdminSettingsIntegrationsGithubRoute
   '/_admin/settings/integrations/': typeof AdminSettingsIntegrationsIndexRoute
 }
@@ -177,6 +186,7 @@ export interface FileRouteTypes {
     | '/settings/members'
     | '/settings/pricing'
     | '/boards'
+    | '/requests'
     | '/settings/integrations/github'
     | '/settings/integrations'
   fileRoutesByTo: FileRoutesByTo
@@ -194,6 +204,7 @@ export interface FileRouteTypes {
     | '/settings/members'
     | '/settings/pricing'
     | '/boards'
+    | '/requests'
     | '/settings/integrations/github'
     | '/settings/integrations'
   id:
@@ -212,6 +223,7 @@ export interface FileRouteTypes {
     | '/_admin/settings/members'
     | '/_admin/settings/pricing'
     | '/_admin/boards/'
+    | '/_admin/requests/'
     | '/_admin/settings/integrations/github'
     | '/_admin/settings/integrations/'
   fileRoutesById: FileRoutesById
@@ -272,6 +284,13 @@ declare module '@tanstack/react-router' {
       path: '/editor'
       fullPath: '/editor'
       preLoaderRoute: typeof AdminEditorRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/_admin/requests/': {
+      id: '/_admin/requests/'
+      path: '/requests'
+      fullPath: '/requests'
+      preLoaderRoute: typeof AdminRequestsIndexRouteImport
       parentRoute: typeof AdminRoute
     }
     '/_admin/boards/': {
@@ -370,6 +389,7 @@ interface AdminRouteChildren {
   AdminWidgetRoute: typeof AdminWidgetRoute
   AdminBoardsPostIdRoute: typeof AdminBoardsPostIdRoute
   AdminBoardsIndexRoute: typeof AdminBoardsIndexRoute
+  AdminRequestsIndexRoute: typeof AdminRequestsIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
@@ -378,6 +398,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminWidgetRoute: AdminWidgetRoute,
   AdminBoardsPostIdRoute: AdminBoardsPostIdRoute,
   AdminBoardsIndexRoute: AdminBoardsIndexRoute,
+  AdminRequestsIndexRoute: AdminRequestsIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
