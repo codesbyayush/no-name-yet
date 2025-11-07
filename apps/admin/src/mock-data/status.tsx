@@ -1,3 +1,4 @@
+import { IconAntenna } from '@tabler/icons-react';
 import type React from 'react';
 
 export interface Status {
@@ -207,6 +208,13 @@ export const status: Status[] = [
     name: 'Backlog',
     color: '#ec4899',
     icon: BacklogIcon,
+  },
+  {
+    id: 'pending',
+    key: 'pending',
+    name: 'Pending',
+    color: '#f97316',
+    icon: IconAntenna,
   },
 ];
 

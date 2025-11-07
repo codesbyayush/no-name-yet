@@ -1,4 +1,4 @@
-import { BookOpen, Bot, Settings2, SquareTerminal } from 'lucide-react';
+import { BookOpen, Bot, Inbox, Settings2, SquareTerminal } from 'lucide-react';
 
 export const navigationRoutes = {
   navMain: [
@@ -7,6 +7,12 @@ export const navigationRoutes = {
       url: '/boards',
       icon: SquareTerminal,
       isActive: true,
+    },
+    {
+      title: 'Requests',
+      url: '/requests',
+      icon: Inbox,
+      isActive: false,
     },
     {
       title: 'Models',
