@@ -1,3 +1,5 @@
+const MAX_TITLE_LENGTH = 60;
+
 export function slugifyTitle(input: string): string {
   return input
     .toLowerCase()
@@ -23,7 +25,10 @@ export function buildBranchName(params: {
   assigneeName?: string | null;
 }): string {
   const key = params.issueKey.toLowerCase();
-  const titleSlug = params.title ? slugifyTitle(params.title) : undefined;
+  const titleSlug = params.title
+    ? slugifyTitle(params.title).slice(0, MAX_TITLE_LENGTH)
+    : undefined;
+
   const user = params.assigneeName
     ? slugifyUserName(params.assigneeName)
     : undefined;
