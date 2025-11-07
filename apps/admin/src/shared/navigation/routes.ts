@@ -1,4 +1,4 @@
-import { BookOpen, Bot, Inbox, Settings2, SquareTerminal } from 'lucide-react';
+import { Inbox, Settings2, SquareTerminal } from 'lucide-react';
 
 export const navigationRoutes = {
   navMain: [
@@ -13,48 +13,6 @@ export const navigationRoutes = {
       url: '/requests',
       icon: Inbox,
       isActive: false,
-    },
-    {
-      title: 'Models',
-      url: '#',
-      icon: Bot,
-      items: [
-        {
-          title: 'Genesis',
-          url: '#',
-        },
-        {
-          title: 'Explorer',
-          url: '#',
-        },
-        {
-          title: 'Quantum',
-          url: '#',
-        },
-      ],
-    },
-    {
-      title: 'Documentation',
-      url: '#',
-      icon: BookOpen,
-      items: [
-        {
-          title: 'Introduction',
-          url: '#',
-        },
-        {
-          title: 'Get Started',
-          url: '#',
-        },
-        {
-          title: 'Tutorials',
-          url: '#',
-        },
-        {
-          title: 'Changelog',
-          url: '#',
-        },
-      ],
     },
     {
       title: 'Settings',
