@@ -373,7 +373,8 @@ export type AdminUpdatePostInput = {
     | 'completed'
     | 'backlog'
     | 'technical-review'
-    | 'paused';
+    | 'paused'
+    | 'pending';
   priority?:
     | 'low'
     | 'medium'

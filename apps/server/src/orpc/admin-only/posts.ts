@@ -135,6 +135,7 @@ export const postsRouter = {
             'backlog',
             'technical-review',
             'paused',
+            'pending',
           ])
           .optional(),
         priority: z

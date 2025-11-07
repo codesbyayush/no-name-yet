@@ -10,6 +10,8 @@ import { GroupIssues } from './group-issues';
 import { CustomDragLayer } from './issue-grid';
 import { SearchIssues } from './search-issues';
 
+const adminStatus = allStatus.filter((status) => status.key !== 'pending');
+
 export default function AllIssues() {
   const { isSearchOpen, searchQuery } = useSearchStore();
   const { viewType } = useViewStore();
@@ -49,7 +51,7 @@ const FilteredIssuesView: FC<{
     <div
       className={cn(isViewTypeGrid && 'flex h-full min-w-max gap-3 px-2 py-2')}
     >
-      {allStatus.map((statusItem) => (
+      {adminStatus.map((statusItem) => (
         <GroupIssues key={statusItem.key} statusKey={statusItem.key} />
       ))}
     </div>
@@ -64,7 +66,7 @@ const GroupIssuesListView: FC<{
     <div
       className={cn(isViewTypeGrid && 'flex h-full min-w-max gap-3 px-2 py-2')}
     >
-      {allStatus.map((statusItem) => (
+      {adminStatus.map((statusItem) => (
         <GroupIssues key={statusItem.key} statusKey={statusItem.key} />
       ))}
     </div>
