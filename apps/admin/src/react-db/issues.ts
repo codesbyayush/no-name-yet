@@ -31,9 +31,6 @@ const issuesCollection = createCollection<IssueDoc>(
     onUpdate: async ({ transaction }) => {
       const mutation = transaction.mutations[0];
       const changes = mutation.changes as Partial<Issue>;
-      // map client changes → server payload
-      const toServerPriority = (id: string) =>
-        id === 'no-priority' ? 'no-priority' : id;
       // TODO: Fix with shared schema and types from the server
       const payload: any = { id: String(mutation.key) };
       if (changes.title) {
@@ -46,7 +43,7 @@ const issuesCollection = createCollection<IssueDoc>(
         payload.status = changes.statusKey;
       }
       if (changes.priority) {
-        payload.priority = toServerPriority(changes.priority.id);
+        payload.priority = changes.priority.id;
       }
       if (changes.priorityKey) {
         payload.priority = changes.priorityKey;
@@ -68,7 +65,6 @@ const issuesCollection = createCollection<IssueDoc>(
 
       await adminClient.organization.posts.create({
         ...changes,
-        boardId: changes.project?.id ?? '',
         priority:
           changes.priorityKey && changes.priorityKey !== 'no-priority'
             ? (changes.priorityKey as
