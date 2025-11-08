@@ -1,22 +1,41 @@
 import { TooltipProvider } from '@workspace/ui/components/tooltip';
 import { useAuth } from '@/features/auth';
 import { useTeams } from '@/features/auth/hooks/useTeams';
-import { useExternalPendingIssues } from '@/react-db/issues';
+import {
+  useDeleteIssue,
+  useExternalPendingIssues,
+  useUpdateIssue,
+} from '@/react-db/issues';
+import { adminClient } from '@/utils/admin-orpc';
 import { RequestLine } from './request-line';
 
 export function RequestIssues() {
   const { data: externalPendingIssues, isLoading } = useExternalPendingIssues();
   const { teams } = useTeams();
   const { session } = useAuth();
+  const { mutate: updateIssue } = useUpdateIssue();
+  const { mutate: deleteIssue } = useDeleteIssue();
 
-  const handlePromote = (issueId: string) => {
-    // TODO: Implement promote functionality
-    console.log('Promote issue:', issueId);
+  const handlePromote = async (issueId: string) => {
+    const promotedPost = await adminClient.organization.posts.promote({
+      id: issueId,
+    });
+    if (promotedPost) {
+      updateIssue(promotedPost.id, {
+        id: promotedPost.id,
+        issueKey: promotedPost.issueKey ?? undefined,
+        statusKey: 'to-do',
+      });
+    }
   };
 
-  const handleDiscard = (issueId: string) => {
-    // TODO: Implement discard functionality
-    console.log('Discard issue:', issueId);
+  const handleDiscard = async (issueId: string) => {
+    const discardedPost = await adminClient.organization.posts.discard({
+      id: issueId,
+    });
+    if (discardedPost) {
+      deleteIssue(discardedPost.id);
+    }
   };
 
   const getPublicUrl = (issueId: string) => {
@@ -76,7 +95,7 @@ function EmptyRequests() {
       <div className='text-center'>
         <h3 className='text-lg font-semibold'>Requested issues are empty</h3>
         <p className='text-muted-foreground mt-2'>
-          New feedback from the public portal will appear here
+          New requests from the public portal will appear here
         </p>
       </div>
     </div>
