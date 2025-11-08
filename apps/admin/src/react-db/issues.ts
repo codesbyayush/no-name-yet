@@ -33,8 +33,9 @@ const issuesCollection = createCollection<IssueDoc>(
       const changes = mutation.changes as Partial<Issue>;
       // map client changes → server payload
       const toServerPriority = (id: string) =>
-        id === 'no-priority' ? 'no_priority' : id;
-      const payload: Record<string, unknown> = { id: String(mutation.key) };
+        id === 'no-priority' ? 'no-priority' : id;
+      // TODO: Fix with shared schema and types from the server
+      const payload: any = { id: String(mutation.key) };
       if (changes.title) {
         payload.title = changes.title;
       }
@@ -71,13 +72,13 @@ const issuesCollection = createCollection<IssueDoc>(
         priority:
           changes.priorityKey && changes.priorityKey !== 'no-priority'
             ? (changes.priorityKey as
-                | 'no_priority'
+                | 'no-priority'
                 | 'low'
                 | 'medium'
                 | 'high'
                 | 'urgent'
                 | undefined)
-            : 'no_priority',
+            : 'no-priority',
         status: changes.statusKey as
           | 'to-do'
           | 'in-progress'
@@ -170,7 +171,7 @@ export const useSearchIssues = (query: string | undefined) => {
           return true;
         }
         const title = lower(issue.title);
-        const identifier = lower(issue.issueKey);
+        const identifier = lower(issue.issueKey || '');
         return ilike(title, `%${safe}%`) || ilike(identifier, `%${safe}%`);
       }),
     [safe],

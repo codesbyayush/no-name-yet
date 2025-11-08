@@ -14,6 +14,24 @@ import { adminOnlyProcedure } from '../procedures';
 const DEFAULT_TAKE = 20;
 const MAX_TAKE = 100;
 
+const statusSchema = z.enum([
+  'to-do',
+  'in-progress',
+  'completed',
+  'backlog',
+  'technical-review',
+  'paused',
+  'pending',
+]);
+
+const prioritySchema = z.enum([
+  'low',
+  'medium',
+  'high',
+  'urgent',
+  'no-priority',
+]);
+
 const issuesRouter = {
   getDetailedPosts: adminOnlyProcedure
     .input(
@@ -84,27 +102,9 @@ const issuesRouter = {
         type: z.enum(['bug', 'suggestion']).default('bug'),
         title: z.string(),
         description: z.string().min(1),
-        priority: z
-          .enum([
-            'low',
-            'medium',
-            'high',
-            'urgent',
-            'no_priority',
-            'no-priority',
-          ])
-          .default('no_priority'),
+        priority: prioritySchema.default('no-priority'),
         tags: z.array(z.string()).default([]),
-        status: z
-          .enum([
-            'to-do',
-            'in-progress',
-            'completed',
-            'backlog',
-            'technical-review',
-            'paused',
-          ])
-          .default('to-do'),
+        status: statusSchema.default('to-do'),
       }),
     )
     .handler(async ({ input, context }) => {
@@ -126,27 +126,8 @@ const issuesRouter = {
         id: z.string(),
         title: z.string().optional(),
         description: z.string().min(1).optional(),
-        status: z
-          .enum([
-            'to-do',
-            'in-progress',
-            'completed',
-            'backlog',
-            'technical-review',
-            'paused',
-            'pending',
-          ])
-          .optional(),
-        priority: z
-          .enum([
-            'low',
-            'medium',
-            'high',
-            'urgent',
-            'no_priority',
-            'no-priority',
-          ])
-          .optional(),
+        status: statusSchema.optional(),
+        priority: prioritySchema.optional(),
         tags: z.array(z.string()).optional(),
         url: z.string().optional(),
         userAgent: z.string().optional(),

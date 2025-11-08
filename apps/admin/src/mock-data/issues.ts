@@ -8,21 +8,27 @@ import type { User } from './users';
 export interface Issue {
   id: string;
   board?: Board;
-  issueKey: string;
+  issueKey?: string;
   title: string;
   description: string;
+  // TODO: remove this once we use status directly
   status: Status;
   statusKey?: string;
-  priorityKey?: string;
+  // TODO: remove this once we use assignee directly
   assignee: User | null;
   assigneeId?: string;
+  author?: User;
+  // TODO: remove this once we use priority directly
   priority: Priority;
-  tags: LabelInterface[];
+  priorityKey?: string;
+  teamId?: string;
+  boardId?: string;
   createdAt: string;
+  completedAt?: string;
   project?: Project;
-  subissues?: string[];
   rank: string;
   dueDate?: string;
+  tags: LabelInterface[];
 }
 
 interface Board {

@@ -24,11 +24,9 @@ const boardsCollection = createCollection(
       const c = m.changes as Partial<BoardDoc>;
       await adminClient.organization.boardsRouter.create({
         name: String(c.name),
-        emoji: String(c.symbol ?? ''),
         slug: String(c.slug),
         description: c.description ?? undefined,
         isPrivate: (c.isPrivate ?? false) as boolean,
-        customFields: c.customFields ?? undefined,
       });
     },
     onUpdate: async ({ transaction }) => {
@@ -40,9 +38,6 @@ const boardsCollection = createCollection(
         ...(c.slug !== undefined ? { slug: c.slug } : {}),
         ...(c.description && { description: c.description }),
         ...(c.isPrivate !== null && { isPrivate: c.isPrivate }),
-        ...(c.customFields !== undefined
-          ? { customFields: c.customFields }
-          : {}),
       });
     },
     onDelete: async ({ transaction }) => {

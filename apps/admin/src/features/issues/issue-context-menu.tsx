@@ -112,7 +112,7 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
       return;
     }
 
-    const hasTag = issue.labels.some((l) => l.id === tagId);
+    const hasTag = issue.tags.some((l) => l.id === tagId);
 
     if (hasTag) {
       removeIssueLabel(issueId, tagId);

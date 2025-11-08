@@ -75,7 +75,8 @@ export async function getPostsWithAggregates(
       },
       author: {
         name: user.name,
-        image: user.image,
+        avatarUrl: user.image,
+        email: user.email,
       },
       hasVoted: sql<boolean>`(select exists(select 1 from ${votes} where ${votes.feedbackId} = ${feedback.id} and ${votes.userId} = ${userId}))`,
       commentCount: sql<number>`(select count(*) from ${comments} where ${comments.feedbackId} = ${feedback.id})`,
@@ -110,7 +111,8 @@ export async function getPostById(
       status: feedback.status,
       author: {
         name: user.name,
-        image: user.image,
+        avatarUrl: user.image,
+        email: user.email,
       },
       board: {
         id: boards.id,
@@ -168,7 +170,7 @@ export async function getAdminDetailedPosts(
     .select({
       id: feedback.id,
       title: feedback.title,
-      content: feedback.description,
+      description: feedback.description,
       issueKey: feedback.issueKey,
       boardId: feedback.boardId,
       priority: feedback.priority,
@@ -176,15 +178,16 @@ export async function getAdminDetailedPosts(
       assigneeId: feedback.assigneeId,
       assigneeName: assigneeUser.name,
       assigneeEmail: assigneeUser.email,
-      assigneeImage: assigneeUser.image,
+      assigneeAvatarUrl: assigneeUser.image,
       dueDate: feedback.dueDate,
+      completedAt: feedback.completedAt,
       createdAt: feedback.createdAt,
       updatedAt: feedback.updatedAt,
       author: {
         id: creatorUser.id,
         name: creatorUser.name,
         email: creatorUser.email,
-        image: creatorUser.image,
+        avatarUrl: creatorUser.image,
       },
       board: {
         id: boards.id,
@@ -243,7 +246,7 @@ export async function getAdminDetailedSinglePost(
     .select({
       id: feedback.id,
       title: feedback.title,
-      content: feedback.description,
+      description: feedback.description,
       boardId: feedback.boardId,
       createdAt: feedback.createdAt,
       updatedAt: feedback.updatedAt,
@@ -251,7 +254,7 @@ export async function getAdminDetailedSinglePost(
         id: user.id,
         name: user.name,
         email: user.email,
-        image: user.image,
+        avatarUrl: user.image,
       },
       board: { id: boards.id, name: boards.name, slug: boards.slug },
       hasVoted: userId
@@ -281,20 +284,15 @@ export type AdminCreatePostInput = {
   teamId?: string;
   title: string;
   description: string;
-  priority:
-    | 'low'
-    | 'medium'
-    | 'high'
-    | 'urgent'
-    | 'no_priority'
-    | 'no-priority';
+  priority: 'low' | 'medium' | 'high' | 'urgent' | 'no-priority';
   status:
     | 'to-do'
     | 'in-progress'
     | 'completed'
     | 'backlog'
     | 'technical-review'
-    | 'paused';
+    | 'paused'
+    | 'pending';
   tags?: string[];
   issueKey?: string;
 };
@@ -306,7 +304,7 @@ export async function createAdminPost(
   teamId: string,
 ) {
   const normalizedPriority =
-    input.priority === 'no_priority' ? 'no-priority' : input.priority;
+    input.priority === 'no-priority' ? 'no-priority' : input.priority;
 
   const teamDetails = await getTeamDetails(db, teamId);
   const teamName = teamDetails[0]?.name;
@@ -375,13 +373,7 @@ export type AdminUpdatePostInput = {
     | 'technical-review'
     | 'paused'
     | 'pending';
-  priority?:
-    | 'low'
-    | 'medium'
-    | 'high'
-    | 'urgent'
-    | 'no_priority'
-    | 'no-priority';
+  priority?: 'low' | 'medium' | 'high' | 'urgent' | 'no-priority';
   url?: string;
   userAgent?: string;
   browserInfo?: {
@@ -406,7 +398,7 @@ export async function updateAdminPost(
   input: AdminUpdatePostInput,
 ) {
   const normalizedPriority =
-    input.priority === 'no_priority' ? 'no-priority' : input.priority;
+    input.priority === 'no-priority' ? 'no-priority' : input.priority;
 
   const [updatedPost] = await db
     .update(feedback)

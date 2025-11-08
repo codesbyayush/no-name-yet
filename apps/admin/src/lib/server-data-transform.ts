@@ -2,7 +2,7 @@ import LexoRank from '@kayron013/lexorank';
 import type { Issue } from '@/mock-data/issues';
 import { labels } from '@/mock-data/labels';
 import { priorities } from '@/mock-data/priorities';
-import { projects } from '@/mock-data/projects';
+// import { projects } from '@/mock-data/projects';
 import { status } from '@/mock-data/status';
 
 // Generate ranks for issues
@@ -20,14 +20,16 @@ type ServerTag = { id: string; name: string; color?: string };
 type ServerPost = {
   id: string;
   title: string;
-  description?: string;
+  issueKey?: string | null;
+  description: string;
   status: string;
   priority: string;
   assigneeId?: string | null;
   assigneeName?: string | null;
   assigneeEmail?: string | null;
-  assigneeImage?: string | null;
+  assigneeAvatarUrl?: string | null;
   tags?: ServerTag[];
+  completedAt?: string | Date | null;
   createdAt?: string | Date | null;
   dueDate?: string | Date | null;
 };
@@ -39,6 +41,7 @@ export const transformServerPostToIssue = (
   // Map server data to client format
   const clientIssue: Issue = {
     ...serverPost,
+    issueKey: serverPost.issueKey || undefined,
     status: status.find((s) => s.id === serverPost.status) || status[5],
     statusKey: serverPost.status,
     assignee: serverPost.assigneeId
@@ -47,7 +50,7 @@ export const transformServerPostToIssue = (
           name: serverPost.assigneeName || 'Unknown User',
           email: serverPost.assigneeEmail || 'unknown@example.com',
           avatarUrl:
-            serverPost.assigneeImage ||
+            serverPost.assigneeAvatarUrl ||
             `https://api.dicebear.com/9.x/glass/svg?seed=${serverPost.assigneeId}`,
           status: 'online' as const,
           role: 'Member' as const,
@@ -59,19 +62,21 @@ export const transformServerPostToIssue = (
     priorityKey: serverPost.priority,
     priority:
       priorities.find((p) => p.id === serverPost.priority) || priorities[4],
-    tags: serverPost.tags?.map((tag: ServerTag) => ({
-      id: tag.id,
-      name: tag.name,
-      color: tag.color,
-    })) || [labels[0]], // Default to first label
+    completedAt: serverPost.completedAt
+      ? new Date(serverPost.completedAt).toISOString().split('T')[0]
+      : undefined,
     createdAt: serverPost.createdAt
       ? new Date(serverPost.createdAt).toISOString().split('T')[0]
       : '2025-01-01',
-    project: projects[index % projects.length],
     rank: generateRank(index),
     dueDate: serverPost.dueDate
       ? new Date(serverPost.dueDate).toISOString().split('T')[0]
       : undefined,
+    tags: serverPost.tags?.map((tag: ServerTag) => ({
+      id: tag.id,
+      name: tag.name,
+      color: tag.color || 'gray',
+    })) || [labels[0]], // Default to first label
   };
 
   return clientIssue;

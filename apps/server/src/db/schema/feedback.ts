@@ -45,13 +45,15 @@ export const feedback = pgTable(
     assigneeId: text('assignee_id').references(() => user.id, {
       onDelete: 'restrict',
     }),
-    authorId: text('author_id').references(() => user.id, {
-      onDelete: 'restrict',
-    }),
+    authorId: text('author_id')
+      .references(() => user.id, {
+        onDelete: 'restrict',
+      })
+      .notNull(),
     dueDate: timestamp('due_date'),
     completedAt: timestamp('completed_at'),
     status: statusEnum('status').notNull().default('to-do'),
-    priority: priorityEnum('priority').default('low'),
+    priority: priorityEnum('priority').default('low').notNull(),
     // Metadata
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),

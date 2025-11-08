@@ -98,7 +98,6 @@ export function CreateNewIssue() {
       labels: [],
       createdAt: new Date().toISOString(),
       project: mappedProjects[0],
-      subissues: [],
       rank: ranks.at(-1) ?? ranks[ranks.length - 1] ?? '0',
       tags: [],
     };

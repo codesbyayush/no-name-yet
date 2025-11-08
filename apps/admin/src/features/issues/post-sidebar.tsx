@@ -85,7 +85,7 @@ export function PostSidebar({ issue }: PostSidebarProps) {
               onClick={async () => {
                 try {
                   const branch = buildBranchName({
-                    issueKey: issue.issueKey,
+                    issueKey: issue.issueKey || '',
                     title: issue.title,
                     assigneeName: issue.assignee?.name || null,
                   });

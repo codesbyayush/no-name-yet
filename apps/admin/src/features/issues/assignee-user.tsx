@@ -44,7 +44,10 @@ export function AssigneeUser({ userId, issueId }: AssigneeUserProps) {
     if (currentAssignee) {
       return (
         <Avatar className='size-6 shrink-0'>
-          <AvatarImage alt={currentAssignee.name} src={currentAssignee.image} />
+          <AvatarImage
+            alt={currentAssignee.name}
+            src={currentAssignee.image || ''}
+          />
           <AvatarFallback>{currentAssignee.name[0]}</AvatarFallback>
         </Avatar>
       );
@@ -113,7 +116,7 @@ export function AssigneeUser({ userId, issueId }: AssigneeUserProps) {
           >
             <div className='flex items-center gap-2'>
               <Avatar className='h-5 w-5'>
-                <AvatarImage alt={user.name} src={user.image} />
+                <AvatarImage alt={user.name} src={user.image || ''} />
                 <AvatarFallback>{user.name[0]}</AvatarFallback>
               </Avatar>
               <span>{user.name}</span>
