@@ -474,7 +474,7 @@ export {};`,
                       )}
 
                       <div className='flex items-start gap-2 rounded-md bg-muted/50 p-2'>
-                        <Info className='mt-0.5 h-3 w-3 flex-shrink-0 text-muted-foreground' />
+                        <Info className='mt-0.5 h-3 w-3 shrink-0 text-muted-foreground' />
                         <div className='space-y-1'>
                           <p className='text-muted-foreground text-xs'>
                             {option.description}

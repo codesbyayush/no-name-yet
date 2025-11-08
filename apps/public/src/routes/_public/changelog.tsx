@@ -76,7 +76,7 @@ function ChangelogPage() {
     return (
       <div className='text-card-foreground'>
         <div className='relative flex gap-4'>
-          <div className='w-2xl flex-1 rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card shadow-xs'>
+          <div className='w-2xl flex-1 rounded-3xl border border-muted-foreground/10 bg-linear-to-bl from-card-foreground/5 to-card shadow-xs'>
             <div className='p-6'>
               <div className='mb-6'>
                 <h1 className='font-bold text-3xl tracking-tight'>Changelog</h1>
@@ -96,7 +96,7 @@ function ChangelogPage() {
             </div>
           </div>
           <div className='sticky top-6 hidden h-fit w-3xs flex-col gap-4 md:flex'>
-            <div className='z-10 rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card p-4 shadow-xs'>
+            <div className='z-10 rounded-3xl border border-muted-foreground/10 bg-linear-to-bl from-card-foreground/5 to-card p-4 shadow-xs'>
               <h4 className='mb-2 font-medium capitalize'>
                 About the changelog
               </h4>
@@ -104,7 +104,7 @@ function ChangelogPage() {
                 We publish improvements, fixes and new features regularly.
               </p>
             </div>
-            <div className='z-10 rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card p-4 shadow-xs'>
+            <div className='z-10 rounded-3xl border border-muted-foreground/10 bg-linear-to-bl from-card-foreground/5 to-card p-4 shadow-xs'>
               <h4 className='mb-2 font-medium capitalize'>Stay in the loop</h4>
               <p className='text-muted-foreground text-sm'>
                 Check back often to see what&rsquo;s new.
@@ -120,7 +120,7 @@ function ChangelogPage() {
     return (
       <div className='text-card-foreground'>
         <div className='relative flex gap-4'>
-          <div className='w-2xl flex-1 rounded-3xl border-1 border-destructive/20 bg-gradient-to-bl from-destructive/5 to-card shadow-xs'>
+          <div className='w-2xl flex-1 rounded-3xl border border-destructive/20 bg-linear-to-bl from-destructive/5 to-card shadow-xs'>
             <div className='p-6'>
               <div className='mb-6'>
                 <h1 className='font-bold text-3xl tracking-tight'>Changelog</h1>
@@ -139,7 +139,7 @@ function ChangelogPage() {
             </div>
           </div>
           <div className='sticky top-6 hidden h-fit w-3xs flex-col gap-4 md:flex'>
-            <div className='z-10 rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card p-4 shadow-xs'>
+            <div className='z-10 rounded-3xl border border-muted-foreground/10 bg-linear-to-bl from-card-foreground/5 to-card p-4 shadow-xs'>
               <h4 className='mb-2 font-medium capitalize'>
                 About the changelog
               </h4>
@@ -147,7 +147,7 @@ function ChangelogPage() {
                 We publish improvements, fixes and new features regularly.
               </p>
             </div>
-            <div className='z-10 rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card p-4 shadow-xs'>
+            <div className='z-10 rounded-3xl border border-muted-foreground/10 bg-linear-to-bl from-card-foreground/5 to-card p-4 shadow-xs'>
               <h4 className='mb-2 font-medium capitalize'>Stay in the loop</h4>
               <p className='text-muted-foreground text-sm'>
                 Check back often to see what&rsquo;s new.
@@ -168,7 +168,7 @@ function ChangelogPage() {
     return (
       <div className='text-card-foreground'>
         <div className='relative flex gap-4'>
-          <div className='w-2xl flex-1 rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card shadow-xs'>
+          <div className='w-2xl flex-1 rounded-3xl border border-muted-foreground/10 bg-linear-to-bl from-card-foreground/5 to-card shadow-xs'>
             <div className='p-6'>
               <div className='mb-6'>
                 <h1 className='font-bold text-3xl tracking-tight'>Changelog</h1>
@@ -187,7 +187,7 @@ function ChangelogPage() {
             </div>
           </div>
           <div className='sticky top-6 hidden h-fit w-3xs flex-col gap-4 md:flex'>
-            <div className='z-10 rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card p-4 shadow-xs'>
+            <div className='z-10 rounded-3xl border border-muted-foreground/10 bg-linear-to-bl from-card-foreground/5 to-card p-4 shadow-xs'>
               <h4 className='mb-2 font-medium capitalize'>
                 About the changelog
               </h4>
@@ -195,7 +195,7 @@ function ChangelogPage() {
                 We publish improvements, fixes and new features regularly.
               </p>
             </div>
-            <div className='z-10 rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card p-4 shadow-xs'>
+            <div className='z-10 rounded-3xl border border-muted-foreground/10 bg-linear-to-bl from-card-foreground/5 to-card p-4 shadow-xs'>
               <h4 className='mb-2 font-medium capitalize'>Stay in the loop</h4>
               <p className='text-muted-foreground text-sm'>
                 Check back often to see what&rsquo;s new.
@@ -210,7 +210,7 @@ function ChangelogPage() {
   return (
     <div className='text-card-foreground'>
       <div className='relative flex gap-4'>
-        <div className='w-2xl flex-1 rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card shadow-xs'>
+        <div className='w-2xl flex-1 rounded-3xl border border-muted-foreground/10 bg-linear-to-bl from-card-foreground/5 to-card shadow-xs'>
           <div className='p-6'>
             <div className='mb-6'>
               <h1 className='font-bold text-3xl tracking-tight'>Changelog</h1>
@@ -302,13 +302,13 @@ function ChangelogPage() {
         </div>
 
         <div className='sticky top-6 hidden h-fit w-3xs flex-col gap-4 md:flex'>
-          <div className='z-10 rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card p-4 shadow-xs'>
+          <div className='z-10 rounded-3xl border border-muted-foreground/10 bg-linear-to-bl from-card-foreground/5 to-card p-4 shadow-xs'>
             <h4 className='mb-2 font-medium capitalize'>About the changelog</h4>
             <p className='text-muted-foreground text-sm'>
               We publish improvements, fixes and new features regularly.
             </p>
           </div>
-          <div className='z-10 rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card p-4 shadow-xs'>
+          <div className='z-10 rounded-3xl border border-muted-foreground/10 bg-linear-to-bl from-card-foreground/5 to-card p-4 shadow-xs'>
             <h4 className='mb-2 font-medium capitalize'>Stay in the loop</h4>
             <p className='text-muted-foreground text-sm'>
               Check back often to see what&rsquo;s new.

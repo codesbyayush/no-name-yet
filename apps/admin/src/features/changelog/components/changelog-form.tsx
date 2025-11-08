@@ -185,7 +185,7 @@ export function ChangelogForm({
                 }
                 value={field.state.value}
               >
-                <div className='flex items-center space-x-2 rounded-lg border border-input bg-background pl-2 text-sm ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground has-[:checked]:border-primary has-[:checked]:bg-primary/5'>
+                <div className='flex items-center space-x-2 rounded-lg border border-input bg-background pl-2 text-sm ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground has-checked:border-primary has-checked:bg-primary/5'>
                   <RadioGroupItem id='draft' value='draft' />
                   <Label
                     className='flex-1 cursor-pointer px-3 py-2 font-normal'
@@ -194,7 +194,7 @@ export function ChangelogForm({
                     Draft
                   </Label>
                 </div>
-                <div className='flex items-center space-x-2 rounded-lg border border-input bg-background pl-2 text-sm ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground has-[:checked]:border-primary has-[:checked]:bg-primary/5'>
+                <div className='flex items-center space-x-2 rounded-lg border border-input bg-background pl-2 text-sm ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground has-checked:border-primary has-checked:bg-primary/5'>
                   <RadioGroupItem id='published' value='published' />
                   <Label
                     className='flex-1 cursor-pointer px-3 py-2 font-normal'
@@ -203,7 +203,7 @@ export function ChangelogForm({
                     Published
                   </Label>
                 </div>
-                <div className='flex items-center space-x-2 rounded-lg border border-input bg-background pl-2 text-sm ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground has-[:checked]:border-primary has-[:checked]:bg-primary/5'>
+                <div className='flex items-center space-x-2 rounded-lg border border-input bg-background pl-2 text-sm ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground has-checked:border-primary has-checked:bg-primary/5'>
                   <RadioGroupItem id='archived' value='archived' />
                   <Label
                     className='flex-1 cursor-pointer px-3 py-2 font-normal'

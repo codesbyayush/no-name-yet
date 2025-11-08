@@ -49,7 +49,7 @@ function RouteComponent() {
 
   return (
     <div className='relative flex gap-4 text-card-foreground'>
-      <div className='w-2xl flex-1 rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card px-6 shadow-xs'>
+      <div className='w-2xl flex-1 rounded-3xl border border-muted-foreground/10 bg-linear-to-bl from-card-foreground/5 to-card px-6 shadow-xs'>
         <div className={'py-6'}>
           <h4 className='font-semibold text-lg capitalize'>{post?.title}</h4>
           <p className='text-pretty font-medium text-accent-foreground/75 text-sm capitalize'>
@@ -159,7 +159,7 @@ function RouteComponent() {
         )}
       </div>
       <div className='sticky top-6 flex h-fit flex-col gap-4'>
-        <div className='z-10 w-3xs rounded-2xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card p-4 shadow-xs'>
+        <div className='z-10 w-3xs rounded-2xl border border-muted-foreground/10 bg-linear-to-bl from-card-foreground/5 to-card p-4 shadow-xs'>
           <div className='flex items-center gap-3'>
             <div>
               {post?.author?.image ? (
@@ -198,7 +198,7 @@ function RouteComponent() {
             )}
           </div>
         </div>
-        <div className='z-10 rounded-2xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card p-4 shadow-xs'>
+        <div className='z-10 rounded-2xl border border-muted-foreground/10 bg-linear-to-bl from-card-foreground/5 to-card p-4 shadow-xs'>
           <h4 className='mb-2 font-medium capitalize'>Get Updates</h4>
           <Button
             className='w-full rounded-lg font-medium'

@@ -71,17 +71,17 @@ function _Footer() {
           <div className='font-semibold text-xl tracking-tight'>
             <span className='relative inline-block'>
               <span className='relative z-10'>chatbase</span>
-              <span className='-bottom-1 absolute inset-x-0 h-2 w-full bg-gradient-to-r from-white/60 via-white/20 to-transparent blur-[2px]' />
+              <span className='-bottom-1 absolute inset-x-0 h-2 w-full bg-linear-to-r from-white/60 via-white/20 to-transparent blur-[2px]' />
             </span>
             <span className='mx-2 text-neutral-500'>x</span>
             <span className='relative inline-block'>
               <span className='relative z-10'>bento</span>
-              <span className='-bottom-1 absolute inset-x-0 h-2 w-full bg-gradient-to-r from-white/60 via-white/20 to-transparent blur-[2px]' />
+              <span className='-bottom-1 absolute inset-x-0 h-2 w-full bg-linear-to-r from-white/60 via-white/20 to-transparent blur-[2px]' />
             </span>
             <span className='mx-2 text-neutral-500'>=</span>
             <span className='relative inline-block'>
               <span className='relative z-10'>My App</span>
-              <span className='-bottom-1 absolute inset-x-0 h-2 w-full bg-gradient-to-r from-white/60 via-white/20 to-transparent blur-[2px]' />
+              <span className='-bottom-1 absolute inset-x-0 h-2 w-full bg-linear-to-r from-white/60 via-white/20 to-transparent blur-[2px]' />
             </span>
           </div>
           <p className='mt-2 text-neutral-400 text-sm'>

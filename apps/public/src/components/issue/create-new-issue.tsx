@@ -200,7 +200,7 @@ export function CreateNewIssue() {
         <div className='w-full space-y-3 px-4 pb-0'>
           <Input
             autoFocus
-            className='h-auto w-full overflow-hidden text-ellipsis whitespace-normal break-words border-none font-medium text-2xl shadow-none outline-none focus-visible:ring-0 dark:bg-transparent'
+            className='h-auto w-full overflow-hidden text-ellipsis whitespace-normal wrap-break-word border-none font-medium text-2xl shadow-none outline-none focus-visible:ring-0 dark:bg-transparent'
             onChange={(e) =>
               setNewIssueForm({ ...newIssueForm, title: e.target.value })
             }
@@ -209,7 +209,7 @@ export function CreateNewIssue() {
           />
 
           <Textarea
-            className='overflow-wrap min-h-16 w-full resize-none whitespace-normal break-words border-none shadow-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
+            className='overflow-wrap min-h-16 w-full resize-none whitespace-normal wrap-break-word border-none shadow-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0'
             onChange={(e) =>
               setNewIssueForm({ ...newIssueForm, description: e.target.value })
             }

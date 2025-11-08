@@ -43,7 +43,7 @@ function RouteComponent() {
   return (
     <div className='text-card-foreground'>
       <div className='relative flex justify-center'>
-        <div className='w-2xl flex-1 rounded-3xl border-1 border-muted-foreground/10 bg-gradient-to-bl from-card-foreground/5 to-card shadow-xs'>
+        <div className='w-2xl flex-1 rounded-3xl border border-muted-foreground/10 bg-linear-to-bl from-card-foreground/5 to-card shadow-xs'>
           <form className='space-y-6 p-6' onSubmit={onSave}>
             <div className='space-y-1'>
               <h2 className='font-semibold text-xl'>Personal Information</h2>
