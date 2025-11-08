@@ -6,6 +6,7 @@ import {
   getAdminAllPosts,
   getAdminDetailedPosts,
   getAdminDetailedSinglePost,
+  promoteRequestedIssue,
   updateAdminPost,
 } from '@/dal/posts';
 import { adminOnlyProcedure } from '../procedures';
@@ -13,7 +14,7 @@ import { adminOnlyProcedure } from '../procedures';
 const DEFAULT_TAKE = 20;
 const MAX_TAKE = 100;
 
-export const postsRouter = {
+const issuesRouter = {
   getDetailedPosts: adminOnlyProcedure
     .input(
       z.object({
@@ -76,7 +77,6 @@ export const postsRouter = {
       };
     }),
 
-  // Standard post CRUD from public/posts.ts
   create: adminOnlyProcedure
     .input(
       z.object({
@@ -107,7 +107,6 @@ export const postsRouter = {
           .default('to-do'),
       }),
     )
-    .output(z.any())
     .handler(async ({ input, context }) => {
       const userId = context.session?.user.id;
       const teamId = context.session?.session.activeTeamId;
@@ -190,18 +189,57 @@ export const postsRouter = {
         id: z.string(),
       }),
     )
-    .output(z.any())
     .handler(async ({ input, context }) => {
       const _userId = context.session?.user.id;
       const deletedPost = await deleteAdminPost(context.db, input.id);
       if (!deletedPost) {
         throw new ORPCError('NOT_FOUND', { message: 'Post not found' });
       }
-      return { success: true, deletedPost };
+      return deletedPost;
     }),
 
   getAll: adminOnlyProcedure.handler(async ({ context }) => {
     const posts = await getAdminAllPosts(context.db);
     return posts;
   }),
+};
+
+const requestsRouter = {
+  promote: adminOnlyProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .handler(async ({ input, context }) => {
+      const promotedPost = await promoteRequestedIssue(
+        context.db,
+        input.id,
+        context.session?.session.activeTeamId,
+      );
+      if (!promotedPost) {
+        throw new ORPCError('NOT_FOUND', { message: 'Post not found' });
+      }
+      return promotedPost;
+    }),
+
+  discard: adminOnlyProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .handler(async ({ input, context }) => {
+      const _userId = context.session?.user.id;
+      const deletedPost = await deleteAdminPost(context.db, input.id);
+      if (!deletedPost) {
+        throw new ORPCError('NOT_FOUND', { message: 'Post not found' });
+      }
+      return deletedPost;
+    }),
+};
+
+export const postsRouter = {
+  ...issuesRouter,
+  ...requestsRouter,
 };

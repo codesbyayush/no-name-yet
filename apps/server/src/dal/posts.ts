@@ -429,11 +429,10 @@ export async function updateAdminPost(
 }
 
 export async function deleteAdminPost(db: Database, id: string) {
-  const [deleted] = await db
-    .delete(feedback)
-    .where(eq(feedback.id, id))
-    .returning();
-  return deleted ?? null;
+  return (
+    (await db.delete(feedback).where(eq(feedback.id, id)).returning())[0] ??
+    null
+  );
 }
 
 export async function getAdminAllPosts(db: Database) {
@@ -529,4 +528,27 @@ export async function updateFeedbackStatus(
     .update(feedback)
     .set({ status, updatedAt: new Date() })
     .where(eq(feedback.id, feedbackId));
+}
+
+export async function promoteRequestedIssue(
+  db: Database,
+  id: string,
+  teamId: string,
+) {
+  const teamDetails = await getTeamDetails(db, teamId);
+  const teamName = teamDetails[0]?.name;
+
+  const teamSerial = await getAndUpdatePostSerialCount(db, teamId);
+
+  const issueKey = generateIssueKey(teamName, teamSerial);
+
+  return (
+    (
+      await db
+        .update(feedback)
+        .set({ status: 'to-do', issueKey, updatedAt: new Date() })
+        .where(eq(feedback.id, id))
+        .returning()
+    )[0] ?? null
+  );
 }
