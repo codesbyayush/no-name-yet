@@ -15,7 +15,7 @@ import {
 import { CheckIcon } from 'lucide-react';
 import { useEffect, useId, useState } from 'react';
 import { renderStatusIcon } from '@/lib/status-utils';
-import { status as allStatus } from '@/mock-data/status';
+import { adminIssueStatus } from '@/mock-data/status';
 import { useUpdateIssue } from '@/react-db/issues';
 
 interface StatusSelectorProps {
@@ -40,7 +40,7 @@ export function StatusSelector({ issueId, statusKey }: StatusSelectorProps) {
     setOpen(false);
 
     if (issueId) {
-      const newStatus = allStatus.find((s) => s.id === statusId);
+      const newStatus = adminIssueStatus.find((s) => s.id === statusId);
       if (newStatus) {
         mutate(issueId, { statusKey: newStatus.key });
       }
@@ -75,7 +75,7 @@ export function StatusSelector({ issueId, statusKey }: StatusSelectorProps) {
             <CommandList>
               <CommandEmpty>No status found.</CommandEmpty>
               <CommandGroup>
-                {allStatus.map((item) => (
+                {adminIssueStatus.map((item) => (
                   <CommandItem
                     className='flex items-center justify-between'
                     key={item.id}

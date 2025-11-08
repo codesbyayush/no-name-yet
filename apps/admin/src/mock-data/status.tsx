@@ -218,6 +218,8 @@ export const status: Status[] = [
   },
 ];
 
+export const adminIssueStatus = status.filter((s) => s.id !== 'pending');
+
 export const StatusIcon: React.FC<{ statusId: string }> = ({ statusId }) => {
   const currentStatus = status.find((s) => s.id === statusId);
   if (!currentStatus) {

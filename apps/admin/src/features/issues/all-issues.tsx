@@ -2,15 +2,13 @@ import { cn } from '@workspace/ui/lib/utils';
 import type { FC } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { status as allStatus } from '@/mock-data/status';
+import { adminIssueStatus } from '@/mock-data/status';
 import { useFilterStore } from '@/store/filter-store';
 import { useSearchStore } from '@/store/search-store';
 import { useViewStore } from '@/store/view-store';
 import { GroupIssues } from './group-issues';
 import { CustomDragLayer } from './issue-grid';
 import { SearchIssues } from './search-issues';
-
-const adminStatus = allStatus.filter((status) => status.key !== 'pending');
 
 export default function AllIssues() {
   const { isSearchOpen, searchQuery } = useSearchStore();
@@ -51,7 +49,7 @@ const FilteredIssuesView: FC<{
     <div
       className={cn(isViewTypeGrid && 'flex h-full min-w-max gap-3 px-2 py-2')}
     >
-      {adminStatus.map((statusItem) => (
+      {adminIssueStatus.map((statusItem) => (
         <GroupIssues key={statusItem.key} statusKey={statusItem.key} />
       ))}
     </div>
@@ -66,7 +64,7 @@ const GroupIssuesListView: FC<{
     <div
       className={cn(isViewTypeGrid && 'flex h-full min-w-max gap-3 px-2 py-2')}
     >
-      {adminStatus.map((statusItem) => (
+      {adminIssueStatus.map((statusItem) => (
         <GroupIssues key={statusItem.key} statusKey={statusItem.key} />
       ))}
     </div>
