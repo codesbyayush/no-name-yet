@@ -1,10 +1,8 @@
 export * from './auth';
 export * from './boards';
 export * from './changelog';
-// export * from "./posts";
 export * from './comments';
 export * from './feedback';
-export * from './feedback-tags';
 export * from './github';
 export * from './organization';
 export * from './tags';

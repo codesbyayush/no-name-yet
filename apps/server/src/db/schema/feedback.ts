@@ -54,6 +54,7 @@ export const feedback = pgTable(
     completedAt: timestamp('completed_at'),
     status: statusEnum('status').notNull().default('to-do'),
     priority: priorityEnum('priority').default('low').notNull(),
+    tags: text('tags').array(),
     // Metadata
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),

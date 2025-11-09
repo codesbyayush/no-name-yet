@@ -105,6 +105,7 @@ const issuesRouter = {
         priority: prioritySchema.default('no-priority'),
         tags: z.array(z.string()).default([]),
         status: statusSchema.default('to-do'),
+        assigneeId: z.string().optional(),
       }),
     )
     .handler(async ({ input, context }) => {

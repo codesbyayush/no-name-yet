@@ -1,6 +1,6 @@
 {
-  "id": "8a105321-380f-4603-9fdb-d6e05ae37d16",
-  "prevId": "598d705e-e840-4883-b7d6-0678f1c16115",
+  "id": "b4785dff-9024-4b89-bdb8-14e7652b505f",
+  "prevId": "8a105321-380f-4603-9fdb-d6e05ae37d16",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -1022,104 +1022,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.feedback_tags": {
-      "name": "feedback_tags",
-      "schema": "",
-      "columns": {
-        "feedback_id": {
-          "name": "feedback_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "tag_id": {
-          "name": "tag_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "idx_feedback_tags_feedback_id": {
-          "name": "idx_feedback_tags_feedback_id",
-          "columns": [
-            {
-              "expression": "feedback_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "idx_feedback_tags_tag_id": {
-          "name": "idx_feedback_tags_tag_id",
-          "columns": [
-            {
-              "expression": "tag_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "feedback_tags_feedback_id_feedback_id_fk": {
-          "name": "feedback_tags_feedback_id_feedback_id_fk",
-          "tableFrom": "feedback_tags",
-          "tableTo": "feedback",
-          "columnsFrom": [
-            "feedback_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "feedback_tags_tag_id_tags_id_fk": {
-          "name": "feedback_tags_tag_id_tags_id_fk",
-          "tableFrom": "feedback_tags",
-          "tableTo": "tags",
-          "columnsFrom": [
-            "tag_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "feedback_tags_feedback_id_tag_id_pk": {
-          "name": "feedback_tags_feedback_id_tag_id_pk",
-          "columns": [
-            "feedback_id",
-            "tag_id"
-          ]
-        }
-      },
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.feedback": {
       "name": "feedback",
       "schema": "",
@@ -1200,6 +1102,12 @@
           "primaryKey": false,
           "notNull": true,
           "default": "'low'"
+        },
+        "tags": {
+          "name": "tags",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",

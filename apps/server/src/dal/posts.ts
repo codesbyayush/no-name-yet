@@ -5,7 +5,6 @@ import {
   desc,
   eq,
   exists,
-  inArray,
   ne,
   or,
   type SQL,
@@ -15,7 +14,6 @@ import {
   boards,
   comments,
   feedback,
-  feedbackTags,
   tags as tagsTable,
   team,
   teamSerials,
@@ -281,6 +279,7 @@ export type AdminCreatePostInput = {
   status: IssueStatus;
   tags?: string[];
   issueKey?: string;
+  assigneeId?: string;
 };
 
 export async function createAdminPost(
@@ -307,39 +306,10 @@ export async function createAdminPost(
       description: input.description,
       priority: input.priority,
       status: input.status,
+      ...(input.tags && input.tags.length > 0 && { tags: input.tags }),
+      ...(input.assigneeId && { assigneeId: input.assigneeId }),
     })
     .returning();
-
-  if (input.tags && input.tags.length > 0 && newPost.boardId) {
-    const orgId = (
-      await db
-        .select({ organizationId: boards.organizationId })
-        .from(boards)
-        .where(eq(boards.id, newPost.boardId))
-        .limit(1)
-    )[0]?.organizationId as string | undefined;
-
-    if (orgId) {
-      const tagRows = await db
-        .select({ id: tagsTable.id })
-        .from(tagsTable)
-        .where(
-          and(
-            eq(tagsTable.organizationId, orgId),
-            inArray(tagsTable.name, input.tags),
-          ),
-        );
-
-      if (tagRows.length > 0) {
-        await db.insert(feedbackTags).values(
-          tagRows.map((t: { id: string }) => ({
-            feedbackId: newPost.id,
-            tagId: t.id,
-          })),
-        );
-      }
-    }
-  }
 
   return newPost;
 }
