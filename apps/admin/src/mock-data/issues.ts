@@ -28,7 +28,7 @@ export interface Issue {
   project?: Project;
   rank: string;
   dueDate?: string;
-  tags: LabelInterface[];
+  tags?: LabelInterface[];
 }
 
 interface Board {

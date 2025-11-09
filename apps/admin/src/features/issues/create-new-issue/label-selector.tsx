@@ -78,7 +78,7 @@ export function LabelSelector({
         </PopoverTrigger>
         <PopoverContent
           align='start'
-          className='w-full min-w-[var(--radix-popper-anchor-width)] border-input p-0'
+          className='w-full min-w-(--radix-popper-anchor-width) border-input p-0'
         >
           <Command>
             <CommandInput placeholder='Search labels...' />
@@ -108,7 +108,7 @@ export function LabelSelector({
                       )}
                       <span className='text-muted-foreground text-xs'>
                         {issues?.filter((is) =>
-                          is.tags.some((l) => l.id === tag.id),
+                          is.tags?.some((l) => l.id === tag.id),
                         ).length ?? 0}
                       </span>
                     </CommandItem>

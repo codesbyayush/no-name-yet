@@ -84,7 +84,7 @@ const issuesCollection = createCollection<IssueDoc>(
           | 'paused'
           | 'pending'
           | undefined,
-        tags: changes.tags.map((tag) => tag.id),
+        tags: changes?.tags?.map((tag) => tag.id),
       });
     },
   }),
@@ -155,7 +155,11 @@ export const useIssueCountByLabel = (labelId: string) =>
   useLiveQuery((q) =>
     q
       .from({ issue: issuesCollection })
-      .where(({ issue }) => issue.tags.some((tag) => eq(tag.id, labelId))),
+      .where(
+        ({ issue }) =>
+          Array.isArray(issue.tags) &&
+          issue.tags.some((tag) => eq(tag.id, labelId)),
+      ),
   );
 
 export const useSearchIssues = (query: string | undefined) => {

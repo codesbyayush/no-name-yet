@@ -152,8 +152,8 @@ export function PostSidebar({ issue }: PostSidebarProps) {
             </div>
             <div className='flex items-center gap-2'>
               <span className='text-muted-foreground text-sm'>
-                {issue.tags.length > 0
-                  ? `${issue.tags.length} selected`
+                {issue.tags?.length && issue.tags.length > 0
+                  ? `${issue.tags?.length} selected`
                   : 'Unselected'}
               </span>
               <Button className='h-6 w-6' size='icon' variant='ghost'>

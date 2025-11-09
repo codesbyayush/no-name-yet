@@ -1,6 +1,5 @@
 import LexoRank from '@kayron013/lexorank';
 import type { Issue } from '@/mock-data/issues';
-import { labels } from '@/mock-data/labels';
 import { priorities } from '@/mock-data/priorities';
 // import { projects } from '@/mock-data/projects';
 import { status } from '@/mock-data/status';
@@ -16,7 +15,7 @@ const generateRank = (index: number) => {
 };
 
 // Transform server post data to client Issue format
-type ServerTag = { id: string; name: string; color?: string };
+type ServerTag = { id: string; name: string; color: string };
 type ServerPost = {
   id: string;
   title: string;
@@ -72,11 +71,7 @@ export const transformServerPostToIssue = (
     dueDate: serverPost.dueDate
       ? new Date(serverPost.dueDate).toISOString().split('T')[0]
       : undefined,
-    tags: serverPost.tags?.map((tag: ServerTag) => ({
-      id: tag.id,
-      name: tag.name,
-      color: tag.color || 'gray',
-    })) || [labels[0]], // Default to first label
+    tags: serverPost.tags,
   };
 
   return clientIssue;

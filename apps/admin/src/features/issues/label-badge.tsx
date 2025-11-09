@@ -1,10 +1,10 @@
 import { Badge } from '@workspace/ui/components/badge';
 import type { LabelInterface } from '@/mock-data/labels';
 
-export function LabelBadge({ tags }: { tags: LabelInterface[] }) {
+export function LabelBadge({ tags }: { tags?: LabelInterface[] }) {
   return (
     <>
-      {tags.map((l) => (
+      {tags?.map((l) => (
         <Badge
           className='gap-1.5 rounded-full bg-background text-muted-foreground'
           key={l.id}
