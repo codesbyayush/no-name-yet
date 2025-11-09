@@ -15,7 +15,6 @@ import {
 import { cn } from '@workspace/ui/lib/utils';
 import { CheckIcon, TagIcon } from 'lucide-react';
 import { useId, useState } from 'react';
-import type { LabelInterface } from '@/mock-data/labels';
 import { useIssues } from '@/react-db/issues';
 import { useTags } from '@/react-db/tags';
 

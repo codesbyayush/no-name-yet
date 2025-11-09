@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { groupIssuesByStatus, type Issue } from '@/mock-data/issues';
-import type { LabelInterface } from '@/mock-data/labels';
 import type { Project } from '@/mock-data/projects';
 import type { User } from '@/store/users-store';
 
