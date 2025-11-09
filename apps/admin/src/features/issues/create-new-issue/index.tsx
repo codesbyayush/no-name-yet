@@ -16,7 +16,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import type { Issue } from '@/mock-data/issues';
 import { ranks } from '@/mock-data/issues';
-import { priorities } from '@/mock-data/priorities';
 import { useBoards } from '@/react-db/boards';
 import { useAddIssue } from '@/react-db/issues';
 import { useCreateIssueStore } from '@/store/create-issue-store';

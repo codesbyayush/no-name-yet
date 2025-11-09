@@ -172,11 +172,10 @@ export const useSearchIssues = (query: string | undefined) => {
         }
         const title = lower(issue.title);
         const titleMatch = ilike(title, `%${safe}%`);
-        const issueKeyMatch =
-          issue.issueKey !== null
-            ? ilike(lower(issue.issueKey as unknown as string), `%${safe}%`)
-            : false;
-        return titleMatch || issueKeyMatch;
+        return issue.issueKey !== null
+          ? ilike(lower(issue.issueKey as unknown as string), `%${safe}%`) ||
+              titleMatch
+          : titleMatch;
       }),
     [safe],
   );
