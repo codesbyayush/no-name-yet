@@ -10,7 +10,8 @@ export type PullRequestAction =
   | 'opened'
   | 'reopened'
   | 'ready_for_review'
-  | 'closed';
+  | 'closed'
+  | 'converted_to_draft';
 
 /**
  * Generate a unique issue key for a board
@@ -60,12 +61,16 @@ export function mapPullRequestActionToStatus(
   baseBranch: string,
   defaultBranch = 'main',
 ): IssueStatus | null {
-  if (action === 'opened' || action === 'reopened') {
-    return 'in-progress';
-  }
-
   if (action === 'ready_for_review') {
     return 'technical-review';
+  }
+
+  if (
+    action === 'opened' ||
+    action === 'reopened' ||
+    action === 'converted_to_draft'
+  ) {
+    return 'in-progress';
   }
 
   if (action === 'closed' && isMerged) {
