@@ -69,6 +69,7 @@ const issuesCollection = createCollection<IssueDoc>(
 
       await adminClient.organization.posts.create({
         ...changes,
+        assigneeId: changes.assigneeId ?? undefined,
         priority:
           changes.priority && changes.priority !== 'no-priority'
             ? (changes.priority as
@@ -88,7 +89,7 @@ const issuesCollection = createCollection<IssueDoc>(
           | 'paused'
           | 'pending'
           | undefined,
-        tags: changes?.tags?.map((tag) => tag.id),
+        tags: changes?.tags ?? undefined,
       });
     },
   }),

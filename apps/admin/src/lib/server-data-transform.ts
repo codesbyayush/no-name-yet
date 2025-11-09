@@ -11,8 +11,6 @@ const generateRank = (index: number) => {
   return firstRank.toString();
 };
 
-// Transform server post data to client Issue format
-type ServerTag = { id: string; name: string; color: string };
 type ServerPost = {
   id: string;
   title: string;
@@ -24,7 +22,7 @@ type ServerPost = {
   assigneeName?: string | null;
   assigneeEmail?: string | null;
   assigneeAvatarUrl?: string | null;
-  tags?: ServerTag[];
+  tags?: string[] | null;
   completedAt?: string | Date | null;
   createdAt?: string | Date | null;
   dueDate?: string | Date | null;

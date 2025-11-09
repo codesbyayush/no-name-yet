@@ -1,5 +1,4 @@
 import LexoRank from '@kayron013/lexorank';
-import type { LabelInterface } from './labels';
 import type { Project } from './projects';
 import type { User } from './users';
 
@@ -21,7 +20,7 @@ export interface Issue {
   project?: Project;
   rank: string;
   dueDate?: string;
-  tags?: LabelInterface[];
+  tags?: string[] | null;
 }
 
 // generates issues ranks using LexoRank algorithm.

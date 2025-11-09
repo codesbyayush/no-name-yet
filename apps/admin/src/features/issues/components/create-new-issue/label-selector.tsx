@@ -20,8 +20,8 @@ import { useIssues } from '@/react-db/issues';
 import { useTags } from '@/react-db/tags';
 
 interface LabelSelectorProps {
-  selectedLabels: LabelInterface[];
-  onChange: (labels: LabelInterface[]) => void;
+  selectedLabels: string[];
+  onChange: (labels: string[]) => void;
 }
 
 export function LabelSelector({
@@ -34,12 +34,12 @@ export function LabelSelector({
   const { data: issues } = useIssues();
   const { data: tags } = useTags();
 
-  const handleLabelToggle = (tag: LabelInterface) => {
-    const isSelected = selectedLabels.some((l) => l.id === tag.id);
-    let newLabels: LabelInterface[];
+  const handleLabelToggle = (tag: string) => {
+    const isSelected = selectedLabels.includes(tag);
+    let newLabels: string[];
 
     if (isSelected) {
-      newLabels = selectedLabels.filter((l) => l.id !== tag.id);
+      newLabels = selectedLabels.filter((l) => l !== tag);
     } else {
       newLabels = [...selectedLabels, tag];
     }
@@ -63,15 +63,21 @@ export function LabelSelector({
             variant='secondary'
           >
             <TagIcon className='size-4' />
-            {selectedLabels.length > 0 && (
+            {selectedLabels.filter((t) => tags.find((tag) => tag.id === t))
+              .length > 0 && (
               <div className='-space-x-0.5 flex'>
-                {selectedLabels.map((tag) => (
-                  <div
-                    className='size-3 rounded-full'
-                    key={tag.id}
-                    style={{ backgroundColor: tag.color }}
-                  />
-                ))}
+                {selectedLabels
+                  .filter((t) => tags.find((tag) => tag.id === t))
+                  .map((tag) => {
+                    const tagData = tags?.find((t) => t.id === tag);
+                    return (
+                      <div
+                        className='size-3 rounded-full'
+                        key={tag}
+                        style={{ backgroundColor: tagData?.color }}
+                      />
+                    );
+                  })}
               </div>
             )}
           </Button>
@@ -86,14 +92,12 @@ export function LabelSelector({
               <CommandEmpty>No labels found.</CommandEmpty>
               <CommandGroup>
                 {tags.map((tag) => {
-                  const isSelected = selectedLabels.some(
-                    (l) => l.id === tag.id,
-                  );
+                  const isSelected = selectedLabels.includes(tag.id);
                   return (
                     <CommandItem
                       className='flex items-center justify-between'
                       key={tag.id}
-                      onSelect={() => handleLabelToggle(tag)}
+                      onSelect={() => handleLabelToggle(tag.id)}
                       value={tag.id}
                     >
                       <div className='flex items-center gap-2'>
@@ -107,9 +111,8 @@ export function LabelSelector({
                         <CheckIcon className='ml-auto' size={16} />
                       )}
                       <span className='text-muted-foreground text-xs'>
-                        {issues?.filter((is) =>
-                          is.tags?.some((l) => l.id === tag.id),
-                        ).length ?? 0}
+                        {issues?.filter((is) => is.tags?.includes(tag.id))
+                          .length ?? 0}
                       </span>
                     </CommandItem>
                   );

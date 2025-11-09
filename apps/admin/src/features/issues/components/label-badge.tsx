@@ -1,10 +1,12 @@
 import { Badge } from '@workspace/ui/components/badge';
-import type { LabelInterface } from '@/mock-data/labels';
+import { useTags } from '@/react-db/tags';
 
-export function LabelBadge({ tags }: { tags?: LabelInterface[] }) {
+export function LabelBadge({ tags }: { tags?: string[] }) {
+  const { data: tagsData } = useTags();
+  const availableTags = tagsData?.filter((t) => tags?.includes(t.id));
   return (
     <>
-      {tags?.map((l) => (
+      {availableTags?.map((l) => (
         <Badge
           className='gap-1.5 rounded-full bg-background text-muted-foreground'
           key={l.id}

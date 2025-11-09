@@ -112,13 +112,13 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
       return;
     }
 
-    const hasTag = issue.tags?.some((l) => l.id === tagId);
+    const hasTag = issue.tags?.includes(tagId);
 
     if (hasTag) {
       removeIssueLabel(issueId, tagId);
       toast.success(`Removed tag: ${tag.name}`);
     } else {
-      addIssueLabel(issueId, tag);
+      addIssueLabel(issueId, tagId);
       toast.success(`Added tag: ${tag.name}`);
     }
   };

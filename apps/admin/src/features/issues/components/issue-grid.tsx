@@ -42,7 +42,7 @@ function IssueDragPreview({ issue }: { issue: Issue }) {
       <h3 className='mb-3 line-clamp-2 font-semibold text-sm'>{issue.title}</h3>
 
       <div className='mb-3 flex min-h-[1.5rem] flex-wrap gap-1.5'>
-        <LabelBadge tags={issue.tags} />
+        {issue.tags && <LabelBadge tags={issue.tags} />}
         {issue.project && <ProjectBadge project={issue.project} />}
       </div>
 
@@ -137,7 +137,7 @@ export function IssueGrid({ issue }: IssueGridProps) {
             {issue.title}
           </h3>
           <div className='mb-3 flex min-h-[1.5rem] flex-wrap gap-1.5'>
-            <LabelBadge tags={issue.tags} />
+            {issue.tags && <LabelBadge tags={issue.tags} />}
             {issue.project && <ProjectBadge project={issue.project} />}
           </div>
           <div className='mt-auto flex items-center justify-between pt-2'>

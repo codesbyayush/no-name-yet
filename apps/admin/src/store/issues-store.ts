@@ -45,7 +45,7 @@ interface IssuesState {
   updateIssueAssignee: (issueId: string, newAssignee: User | null) => void;
 
   // Labels management
-  addIssueLabel: (issueId: string, label: LabelInterface) => void;
+  addIssueLabel: (issueId: string, label: string) => void;
   removeIssueLabel: (issueId: string, labelId: string) => void;
 
   // Project management
@@ -134,9 +134,7 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
   },
 
   filterByLabel: (labelId: string) =>
-    get().issues.filter((issue) =>
-      issue.tags?.some((label) => label.id === labelId),
-    ),
+    get().issues.filter((issue) => issue.tags?.includes(labelId)),
 
   filterByProject: (projectId: string) =>
     get().issues.filter((issue) => issue.project?.id === projectId),
@@ -180,7 +178,7 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
     // Filter by labels
     if (filters.labels && filters.labels.length > 0) {
       filteredIssues = filteredIssues.filter((issue) =>
-        issue.tags?.some((label) => filters.labels?.includes(label.id)),
+        issue.tags?.some((label) => filters.labels?.includes(label)),
       );
     }
 
@@ -210,7 +208,7 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
   },
 
   // Labels management
-  addIssueLabel: (issueId: string, label: LabelInterface) => {
+  addIssueLabel: (issueId: string, label: string) => {
     const issue = get().getIssueById(issueId);
     if (issue) {
       const updatedLabels = [...(issue.tags || []), label];
@@ -221,7 +219,7 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
   removeIssueLabel: (issueId: string, labelId: string) => {
     const issue = get().getIssueById(issueId);
     if (issue) {
-      const updatedLabels = issue.tags?.filter((label) => label.id !== labelId);
+      const updatedLabels = issue.tags?.filter((label) => label !== labelId);
       get().updateIssue(issueId, { tags: updatedLabels });
     }
   },

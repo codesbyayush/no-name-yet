@@ -14,7 +14,6 @@ import {
   boards,
   comments,
   feedback,
-  tags as tagsTable,
   team,
   teamSerials,
   user,
@@ -181,6 +180,7 @@ export async function getAdminDetailedPosts(
       completedAt: feedback.completedAt,
       createdAt: feedback.createdAt,
       updatedAt: feedback.updatedAt,
+      tags: feedback.tags,
       author: {
         id: creatorUser.id,
         name: creatorUser.name,
@@ -208,24 +208,8 @@ export async function getAdminDetailedPosts(
     .offset(filters.offset)
     .limit(filters.take + 1);
 
-  // TODO: improve this n+1 query to 1 query
-  const tagAugmented = await Promise.all(
-    rows.slice(0, filters.take).map(async (post) => {
-      const tags = await db
-        .select({
-          id: tagsTable.id,
-          name: tagsTable.name,
-          color: tagsTable.color,
-        })
-        .from(tagsTable)
-        .innerJoin(feedbackTags, eq(tagsTable.id, feedbackTags.tagId))
-        .where(eq(feedbackTags.feedbackId, post.id));
-      return { ...post, tags } as const;
-    }),
-  );
-
   const hasMore = rows.length > filters.take;
-  return { posts: tagAugmented, hasMore };
+  return { posts: rows, hasMore };
 }
 
 export async function getAdminDetailedSinglePost(

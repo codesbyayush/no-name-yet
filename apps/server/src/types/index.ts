@@ -2,7 +2,6 @@ import type { account, session, user, verification } from '../db/schema/auth';
 import type { boards } from '../db/schema/boards';
 import type { comments } from '../db/schema/comments';
 import type { feedback } from '../db/schema/feedback';
-import type { feedbackTags } from '../db/schema/feedback-tags';
 import type {
   githubInstallations,
   githubWebhookDeliveries,
@@ -44,8 +43,6 @@ export type NewTag = typeof tags.$inferInsert;
 // Feedback
 export type Feedback = typeof feedback.$inferSelect;
 export type NewFeedback = typeof feedback.$inferInsert;
-export type FeedbackTag = typeof feedbackTags.$inferSelect;
-export type NewFeedbackTag = typeof feedbackTags.$inferInsert;
 
 // Comments
 export type Comment = typeof comments.$inferSelect;
