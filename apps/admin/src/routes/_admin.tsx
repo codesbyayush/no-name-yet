@@ -17,7 +17,7 @@ function AdminLayout() {
     <SidebarProvider>
       <div className='flex min-h-screen w-full'>
         <AppSidebar className='w-64' />
-        <SidebarInset className='max-w-full flex-1'>
+        <SidebarInset className='max-w-full flex-1 overflow-hidden'>
           <Outlet />
         </SidebarInset>
       </div>
