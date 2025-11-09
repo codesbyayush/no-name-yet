@@ -1,4 +1,4 @@
-import { CreateNewIssue } from './create-new-issue';
+import { CreateNewIssue } from './index';
 
 export function CreateIssueModalProvider() {
   return (

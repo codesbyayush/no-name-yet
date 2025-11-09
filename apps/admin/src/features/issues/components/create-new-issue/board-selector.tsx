@@ -14,24 +14,13 @@ import {
 } from '@workspace/ui/components/popover';
 import { Box, CheckIcon } from 'lucide-react';
 import { useId, useMemo, useState } from 'react';
-import { projects } from '@/mock-data/projects';
+import { pickIconForId } from '@/features/issues/utils/get-random-icons';
 import { useBoards } from '@/react-db/boards';
 import { useIssues } from '@/react-db/issues';
 
 interface BoardSelectorProps {
   boardId?: string;
   onChange: (boardId: string) => void;
-}
-
-// Deterministically pick an icon from mock projects for a given id
-function pickIconForId(id: string) {
-  const icons = projects.map((p) => p.icon);
-  let hash = 0;
-  for (let i = 0; i < id.length; i++) {
-    hash = Math.imul(hash, 31) + id.charCodeAt(i);
-  }
-  const index = ((hash % icons.length) + icons.length) % icons.length;
-  return icons[index] ?? Box;
 }
 
 export function BoardSelector({ boardId, onChange }: BoardSelectorProps) {
