@@ -39,7 +39,7 @@ function IssueDragPreview({ issue }: { issue: Issue }) {
             {issue.issueKey}
           </span>
         </div>
-        <StatusSelector issueId={issue.id} statusKey={issue.statusKey} />
+        <StatusSelector issueId={issue.id} statusKey={issue.status} />
       </div>
 
       <h3 className='mb-3 line-clamp-2 font-semibold text-sm'>{issue.title}</h3>
@@ -134,7 +134,7 @@ export function IssueGrid({ issue }: IssueGridProps) {
                 {issue.issueKey}
               </span>
             </div>
-            <StatusSelector issueId={issue.id} statusKey={issue.statusKey} />
+            <StatusSelector issueId={issue.id} statusKey={issue.status} />
           </div>
           <h3 className='mb-3 line-clamp-2 font-semibold text-sm'>
             {issue.title}

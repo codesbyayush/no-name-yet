@@ -39,8 +39,8 @@ const issuesCollection = createCollection<IssueDoc>(
       if (changes.description) {
         payload.description = changes.description;
       }
-      if (changes.statusKey) {
-        payload.status = changes.statusKey;
+      if (changes.status) {
+        payload.status = changes.status;
       }
       if (changes.priority) {
         payload.priority = changes.priority.id;
@@ -75,7 +75,7 @@ const issuesCollection = createCollection<IssueDoc>(
                 | 'urgent'
                 | undefined)
             : 'no-priority',
-        status: changes.statusKey as
+        status: changes.status as
           | 'to-do'
           | 'in-progress'
           | 'completed'
@@ -106,26 +106,24 @@ export const useExternalPendingIssues = () =>
   useLiveQuery((q) =>
     q
       .from({ issue: issuesCollection })
-      .where(({ issue }) => eq(issue.status.key, 'pending')),
+      .where(({ issue }) => eq(issue.status, 'pending')),
   );
 
 export const useIssuesByStatus = (statusId: string | undefined) =>
   useLiveQuery((q) =>
     q
       .from({ issue: issuesCollection })
-      .where(({ issue }) =>
-        issue.statusKey && statusId ? eq(issue.statusKey, statusId) : false,
-      ),
+      .where(({ issue }) => eq(issue.status, statusId)),
   );
 
 export const useIssueCountByStatus = () =>
   useLiveQuery((q) =>
     q
       .from({ issue: issuesCollection })
-      .groupBy(({ issue }) => issue.status.id)
+      .groupBy(({ issue }) => issue.status)
       .select(({ issue }) => ({
         count: count(issue.id),
-        statusId: issue.status.id,
+        statusId: issue.status,
       })),
   );
 

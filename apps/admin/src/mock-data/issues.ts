@@ -12,8 +12,7 @@ export interface Issue {
   title: string;
   description: string;
   // TODO: remove this once we use status directly
-  status: Status;
-  statusKey?: string;
+  status: string;
   // TODO: remove this once we use assignee directly
   assignee: User | null;
   assigneeId?: string;
@@ -52,7 +51,7 @@ generateIssuesRanks();
 
 export function groupIssuesByStatus(issues: Issue[]): Record<string, Issue[]> {
   return issues.reduce<Record<string, Issue[]>>((acc, issue) => {
-    const statusId = issue.status.id;
+    const statusId = issue.status;
 
     if (!acc[statusId]) {
       acc[statusId] = [];

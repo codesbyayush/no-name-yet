@@ -72,7 +72,7 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
     }
     const newStatus = status.find((s) => s.id === statusId);
     if (newStatus) {
-      updateIssueStatus(issueId, newStatus);
+      updateIssueStatus(issueId, statusId);
       toast.success(`Status updated to ${newStatus.name}`);
     }
   };
@@ -112,7 +112,7 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
       return;
     }
 
-    const hasTag = issue.tags.some((l) => l.id === tagId);
+    const hasTag = issue.tags?.some((l) => l.id === tagId);
 
     if (hasTag) {
       removeIssueLabel(issueId, tagId);

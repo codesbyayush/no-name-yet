@@ -1,8 +1,8 @@
 import LexoRank from '@kayron013/lexorank';
 import type { Issue } from '@/mock-data/issues';
 import { priorities } from '@/mock-data/priorities';
+
 // import { projects } from '@/mock-data/projects';
-import { status } from '@/mock-data/status';
 
 // Generate ranks for issues
 const generateRank = (index: number) => {
@@ -41,8 +41,7 @@ export const transformServerPostToIssue = (
   const clientIssue: Issue = {
     ...serverPost,
     issueKey: serverPost.issueKey || undefined,
-    status: status.find((s) => s.id === serverPost.status) || status[5],
-    statusKey: serverPost.status,
+    status: serverPost.status,
     assignee: serverPost.assigneeId
       ? {
           id: serverPost.assigneeId,

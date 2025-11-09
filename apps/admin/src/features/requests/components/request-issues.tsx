@@ -24,7 +24,7 @@ export function RequestIssues() {
       updateIssue(promotedPost.id, {
         id: promotedPost.id,
         issueKey: promotedPost.issueKey ?? undefined,
-        statusKey: 'to-do',
+        status: 'to-do',
       });
     }
   };

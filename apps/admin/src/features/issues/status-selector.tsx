@@ -42,7 +42,7 @@ export function StatusSelector({ issueId, statusKey }: StatusSelectorProps) {
     if (issueId) {
       const newStatus = adminIssueStatus.find((s) => s.id === statusId);
       if (newStatus) {
-        mutate(issueId, { statusKey: newStatus.key });
+        mutate(issueId, { status: newStatus.key });
       }
     }
   };

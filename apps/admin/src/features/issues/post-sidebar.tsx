@@ -17,9 +17,9 @@ import {
   User,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { getStatusById } from '@/lib/status-utils';
 import type { Issue } from '@/mock-data/issues';
 import { buildBranchName } from '@/utils/github';
-
 import { StatusSelector } from './status-selector';
 
 interface PostSidebarProps {
@@ -116,9 +116,9 @@ export function PostSidebar({ issue }: PostSidebarProps) {
               <span className='font-medium text-sm'>Status</span>
             </div>
             <div className='flex items-center gap-2'>
-              <StatusSelector issueId={issue.id} statusKey={issue.statusKey} />
+              <StatusSelector issueId={issue.id} statusKey={issue.status} />
               <span className='text-muted-foreground text-sm'>
-                {issue.status.name}
+                {getStatusById(issue.status)?.name}
               </span>
               <Button className='h-6 w-6' size='icon' variant='ghost'>
                 <ChevronDown className='h-3 w-3' />

@@ -105,8 +105,8 @@ const IssueGridList: FC<{ issues: Issue[]; status: Status }> = ({
   const [{ isOver }, drop] = useDrop(() => ({
     accept: IssueDragType,
     drop(item: Issue, monitor) {
-      if (monitor.didDrop() && item.status.id !== status.id) {
-        mutate(item.id, { status });
+      if (monitor.didDrop() && item.status !== status.key) {
+        mutate(item.id, { status: status.key });
       }
     },
     collect: (monitor) => ({

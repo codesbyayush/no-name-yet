@@ -17,7 +17,6 @@ import { toast } from 'sonner';
 import type { Issue } from '@/mock-data/issues';
 import { ranks } from '@/mock-data/issues';
 import { priorities } from '@/mock-data/priorities';
-import { status } from '@/mock-data/status';
 import { useBoards } from '@/react-db/boards';
 import { useAddIssue } from '@/react-db/issues';
 import { useCreateIssueStore } from '@/store/create-issue-store';
@@ -40,11 +39,7 @@ export function CreateNewIssue() {
       id: crypto.randomUUID(),
       title: '',
       description: '',
-      status:
-        status.find((s) => s.key === defaultStatusKey) ||
-        status.find((s) => s.key === 'to-do') ||
-        status[0],
-      statusKey: defaultStatusKey,
+      status: defaultStatusKey,
       assigneeId: undefined,
       assignee: null,
       priority: priorities.find((p) => p.id === 'no-priority') || priorities[0],
@@ -138,9 +133,9 @@ export function CreateNewIssue() {
           <div className='flex w-full flex-wrap items-center justify-start gap-1.5'>
             <StatusSelector
               onChange={(newStatus) =>
-                setAddIssueForm({ ...addIssueForm, statusKey: newStatus })
+                setAddIssueForm({ ...addIssueForm, status: newStatus })
               }
-              statusKey={addIssueForm.statusKey || 'to-do'}
+              status={addIssueForm.status || 'to-do'}
             />
             <PrioritySelector
               onChange={(newPriority) =>
@@ -164,7 +159,7 @@ export function CreateNewIssue() {
               onChange={(newLabels) =>
                 setAddIssueForm({ ...addIssueForm, tags: newLabels })
               }
-              selectedLabels={addIssueForm.tags}
+              selectedLabels={addIssueForm.tags || []}
             />
           </div>
         </div>

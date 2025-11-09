@@ -18,20 +18,20 @@ import { status as allStatus } from '@/mock-data/status';
 import { useIssues } from '@/react-db/issues';
 
 interface StatusSelectorProps {
-  statusKey: string;
+  status: string;
   onChange: (statusId: string) => void;
 }
 
-export function StatusSelector({ statusKey, onChange }: StatusSelectorProps) {
+export function StatusSelector({ status, onChange }: StatusSelectorProps) {
   const id = useId();
   const [open, setOpen] = useState<boolean>(false);
-  const [value, setValue] = useState<string>(statusKey);
+  const [value, setValue] = useState<string>(status);
 
   const { data: issues } = useIssues();
 
   useEffect(() => {
-    setValue(statusKey);
-  }, [statusKey]);
+    setValue(status);
+  }, [status]);
 
   const handleStatusChange = (statusId: string) => {
     setValue(statusId);
@@ -67,7 +67,7 @@ export function StatusSelector({ statusKey, onChange }: StatusSelectorProps) {
         </PopoverTrigger>
         <PopoverContent
           align='start'
-          className='w-full min-w-[var(--radix-popper-anchor-width)] border-input p-0'
+          className='w-full min-w-(--radix-popper-anchor-width) border-input p-0'
         >
           <Command>
             <CommandInput placeholder='Set status...' />
@@ -89,8 +89,8 @@ export function StatusSelector({ statusKey, onChange }: StatusSelectorProps) {
                       <CheckIcon className='ml-auto' size={16} />
                     )}
                     <span className='text-muted-foreground text-xs'>
-                      {issues?.filter((is) => is.statusKey === item.id)
-                        .length ?? 0}
+                      {issues?.filter((is) => is.status === item.id).length ??
+                        0}
                     </span>
                   </CommandItem>
                 ))}

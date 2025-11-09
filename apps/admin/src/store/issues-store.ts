@@ -38,7 +38,7 @@ interface IssuesState {
   filterIssues: (filters: FilterOptions) => Issue[];
 
   // Status management
-  updateIssueStatus: (issueId: string, newStatus: Status) => void;
+  updateIssueStatus: (issueId: string, newStatus: string) => void;
 
   // Priority management
   updateIssuePriority: (issueId: string, newPriority: Priority) => void;
@@ -123,7 +123,7 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
 
   // Filters
   filterByStatus: (statusId: string) =>
-    get().issues.filter((issue) => issue.status.id === statusId),
+    get().issues.filter((issue) => issue.status === statusId),
 
   filterByPriority: (priorityId: string) =>
     get().issues.filter((issue) => issue.priority.id === priorityId),
@@ -137,7 +137,7 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
 
   filterByLabel: (labelId: string) =>
     get().issues.filter((issue) =>
-      issue.tags.some((label) => label.id === labelId),
+      issue.tags?.some((label) => label.id === labelId),
     ),
 
   filterByProject: (projectId: string) =>
@@ -148,7 +148,7 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
     return get().issues.filter(
       (issue) =>
         issue.title.toLowerCase().includes(lowerCaseQuery) ||
-        issue.issueKey.toLowerCase().includes(lowerCaseQuery),
+        issue.issueKey?.toLowerCase().includes(lowerCaseQuery),
     );
   },
 
@@ -158,7 +158,7 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
     // Filter by status
     if (filters.status && filters.status.length > 0) {
       filteredIssues = filteredIssues.filter((issue) =>
-        filters.status?.includes(issue.status.id),
+        filters.status?.includes(issue.status),
       );
     }
 
@@ -182,7 +182,7 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
     // Filter by labels
     if (filters.labels && filters.labels.length > 0) {
       filteredIssues = filteredIssues.filter((issue) =>
-        issue.tags.some((label) => filters.labels?.includes(label.id)),
+        issue.tags?.some((label) => filters.labels?.includes(label.id)),
       );
     }
 
@@ -197,7 +197,7 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
   },
 
   // Status management
-  updateIssueStatus: (issueId: string, newStatus: Status) => {
+  updateIssueStatus: (issueId: string, newStatus: string) => {
     get().updateIssue(issueId, { status: newStatus });
   },
 
@@ -215,7 +215,7 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
   addIssueLabel: (issueId: string, label: LabelInterface) => {
     const issue = get().getIssueById(issueId);
     if (issue) {
-      const updatedLabels = [...issue.tags, label];
+      const updatedLabels = [...(issue.tags || []), label];
       get().updateIssue(issueId, { tags: updatedLabels });
     }
   },
@@ -223,7 +223,7 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
   removeIssueLabel: (issueId: string, labelId: string) => {
     const issue = get().getIssueById(issueId);
     if (issue) {
-      const updatedLabels = issue.tags.filter((label) => label.id !== labelId);
+      const updatedLabels = issue.tags?.filter((label) => label.id !== labelId);
       get().updateIssue(issueId, { tags: updatedLabels });
     }
   },

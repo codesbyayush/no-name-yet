@@ -16,12 +16,12 @@ import { cn } from '@workspace/ui/lib/utils';
 import { CheckIcon, TagIcon } from 'lucide-react';
 import { useId, useState } from 'react';
 import { useTags } from '@/hooks/use-tags';
+import type { LabelInterface } from '@/mock-data/labels';
 import { useIssues } from '@/react-db/issues';
-import type { Tag } from '@/store/tags-store';
 
 interface LabelSelectorProps {
-  selectedLabels: Tag[];
-  onChange: (labels: Tag[]) => void;
+  selectedLabels: LabelInterface[];
+  onChange: (labels: LabelInterface[]) => void;
 }
 
 export function LabelSelector({
@@ -34,9 +34,9 @@ export function LabelSelector({
   const { data: issues } = useIssues();
   const { data: tags } = useTags();
 
-  const handleLabelToggle = (tag: Tag) => {
+  const handleLabelToggle = (tag: LabelInterface) => {
     const isSelected = selectedLabels.some((l) => l.id === tag.id);
-    let newLabels: Tag[];
+    let newLabels: LabelInterface[];
 
     if (isSelected) {
       newLabels = selectedLabels.filter((l) => l.id !== tag.id);
