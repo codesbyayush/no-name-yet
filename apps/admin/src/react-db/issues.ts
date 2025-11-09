@@ -4,11 +4,13 @@ import {
   createCollection,
   eq,
   ilike,
+  inArray,
   lower,
   useLiveQuery,
 } from '@tanstack/react-db';
 import { transformServerPostsToIssues } from '@/lib/server-data-transform';
 import type { Issue } from '@/mock-data/issues';
+import { useFilterStore } from '@/store/filter-store';
 import { adminClient } from '@/utils/admin-orpc';
 import { queryClient } from '@/utils/orpc';
 
@@ -116,6 +118,40 @@ export const useIssuesByStatus = (statusId: string | undefined) =>
       .where(({ issue }) => eq(issue.status, statusId)),
   );
 
+export const useFilteredIssuesByStatus = (statusId: string | null) => {
+  const { filters } = useFilterStore();
+
+  const filterDeps = [
+    statusId,
+    filters.status?.join(',') || '',
+    filters.priority?.join(',') || '',
+    filters.assignee?.join(',') || '',
+    filters.labels?.join(',') || '',
+    filters.project?.join(',') || '',
+  ];
+
+  return useLiveQuery((q) => {
+    let query = q.from({ issue: issuesCollection });
+    if (statusId) {
+      query = query.where(({ issue }) => eq(issue.status, statusId));
+    }
+    if (filters.status && filters.status.length > 0) {
+      query = query.where(({ issue }) => inArray(issue.status, filters.status));
+    }
+    if (filters.priority && filters.priority.length > 0) {
+      query = query.where(({ issue }) =>
+        inArray(issue.priority, filters.priority),
+      );
+    }
+    if (filters.assignee && filters.assignee.length > 0) {
+      query = query.where(({ issue }) =>
+        inArray(issue.assigneeId, filters.assignee),
+      );
+    }
+    return query;
+  }, filterDeps);
+};
+
 export const useIssueCountByStatus = () =>
   useLiveQuery((q) =>
     q
@@ -199,4 +235,6 @@ export const useIssuesCount = () => {
   return { data: data?.length } as const;
 };
 
-export const issues = issuesCollection;
+export const useFilteredIssues = () => {
+  return useFilteredIssuesByStatus(null);
+};

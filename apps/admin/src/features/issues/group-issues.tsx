@@ -7,7 +7,7 @@ import { useDrop } from 'react-dnd';
 import type { Issue } from '@/mock-data/issues';
 import { sortIssuesByPriority } from '@/mock-data/issues';
 import { status as allStatus, type Status } from '@/mock-data/status';
-import { useIssuesByStatus, useUpdateIssue } from '@/react-db/issues';
+import { useFilteredIssuesByStatus, useUpdateIssue } from '@/react-db/issues';
 import { useCreateIssueStore } from '@/store/create-issue-store';
 import { useViewStore } from '@/store/view-store';
 import { IssueDragType, IssueGrid } from './issue-grid';
@@ -21,7 +21,7 @@ export function GroupIssues({ statusKey }: GroupIssuesProps) {
   const { viewType } = useViewStore();
   const isViewTypeGrid = viewType === 'grid';
   const { openModal } = useCreateIssueStore();
-  const { data: issuesByCurrentStatus } = useIssuesByStatus(statusKey);
+  const { data: issuesByCurrentStatus } = useFilteredIssuesByStatus(statusKey);
 
   const source = issuesByCurrentStatus;
   const sortedIssues = sortIssuesByPriority(source);
