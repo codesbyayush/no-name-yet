@@ -164,7 +164,6 @@ export async function getAdminDetailedPosts(
   }
 
   const creatorUser = aliasedTable(user, 'creator');
-  const assigneeUser = aliasedTable(user, 'assignee');
 
   const rows = await db
     .select({
@@ -176,9 +175,6 @@ export async function getAdminDetailedPosts(
       priority: feedback.priority,
       status: feedback.status,
       assigneeId: feedback.assigneeId,
-      assigneeName: assigneeUser.name,
-      assigneeEmail: assigneeUser.email,
-      assigneeAvatarUrl: assigneeUser.image,
       dueDate: feedback.dueDate,
       completedAt: feedback.completedAt,
       createdAt: feedback.createdAt,
@@ -210,7 +206,6 @@ export async function getAdminDetailedPosts(
     })
     .from(feedback)
     .leftJoin(creatorUser, eq(feedback.authorId, creatorUser.id))
-    .leftJoin(assigneeUser, eq(feedback.assigneeId, assigneeUser.id))
     .leftJoin(boards, eq(feedback.boardId, boards.id))
     .where(and(...whereFilters))
     .orderBy(orderBy)

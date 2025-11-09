@@ -128,10 +128,12 @@ export const useIssueCountByAssignee = () =>
   useLiveQuery((q) =>
     q
       .from({ issue: issuesCollection })
-      .groupBy(({ issue }) => issue.assignee)
+      .groupBy(({ issue }) =>
+        issue.assigneeId != null ? issue.assigneeId : 'Unassigned',
+      )
       .select(({ issue }) => ({
         count: count(issue.id),
-        assignee: issue.assignee,
+        assigneeId: issue.assigneeId != null ? issue.assigneeId : 'Unassigned',
       })),
   );
 

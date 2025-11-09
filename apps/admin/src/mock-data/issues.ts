@@ -12,7 +12,7 @@ export interface Issue {
   // TODO: remove this once we use status directly
   status: string;
   // TODO: remove this once we use assignee directly
-  assignee: User | null;
+  assignee?: User | null;
   assigneeId?: string;
   author?: User;
   // TODO: remove this once we use priority directly

@@ -6,7 +6,7 @@ export function ProjectBadge({ project }: { project: Project }) {
   return (
     <Link
       className='flex items-center justify-center gap-.5'
-      to='/admin/projects/all'
+      to='/settings/pricing'
     >
       <Badge
         className='gap-1.5 rounded-full bg-background text-muted-foreground'

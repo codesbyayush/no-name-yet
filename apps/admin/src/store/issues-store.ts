@@ -1,9 +1,7 @@
 import { create } from 'zustand';
 import { groupIssuesByStatus, type Issue } from '@/mock-data/issues';
 import type { LabelInterface } from '@/mock-data/labels';
-import type { Priority } from '@/mock-data/priorities';
 import type { Project } from '@/mock-data/projects';
-import type { Status } from '@/mock-data/status';
 import type { User } from '@/store/users-store';
 
 interface FilterOptions {
@@ -167,8 +165,8 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
       filteredIssues = filteredIssues.filter(
         (issue) =>
           (filters.assignee?.includes('unassigned') &&
-            issue.assignee === null) ||
-          (!!issue.assignee && filters.assignee?.includes(issue.assignee.id)),
+            issue.assigneeId === null) ||
+          (!!issue.assigneeId && filters.assignee?.includes(issue.assigneeId)),
       );
     }
 

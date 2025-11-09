@@ -1,8 +1,5 @@
 import LexoRank from '@kayron013/lexorank';
 import type { Issue } from '@/mock-data/issues';
-import { priorities } from '@/mock-data/priorities';
-
-// import { projects } from '@/mock-data/projects';
 
 // Generate ranks for issues
 const generateRank = (index: number) => {
@@ -42,20 +39,6 @@ export const transformServerPostToIssue = (
     ...serverPost,
     issueKey: serverPost.issueKey || undefined,
     status: serverPost.status,
-    assignee: serverPost.assigneeId
-      ? {
-          id: serverPost.assigneeId,
-          name: serverPost.assigneeName || 'Unknown User',
-          email: serverPost.assigneeEmail || 'unknown@example.com',
-          avatarUrl:
-            serverPost.assigneeAvatarUrl ||
-            `https://api.dicebear.com/9.x/glass/svg?seed=${serverPost.assigneeId}`,
-          status: 'online' as const,
-          role: 'Member' as const,
-          joinedDate: new Date().toISOString().split('T')[0],
-          teamIds: [],
-        }
-      : null,
     assigneeId: serverPost.assigneeId || undefined,
     priority: serverPost.priority,
     completedAt: serverPost.completedAt
