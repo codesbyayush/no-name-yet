@@ -16,7 +16,7 @@ interface PriorityFilterProps {
   setActiveFilter: (filter: FilterType | null) => void;
 }
 
-type FilterType = 'status' | 'assignee' | 'priority' | 'labels' | 'project';
+type FilterType = 'status' | 'assignee' | 'priority' | 'labels' | 'board';
 
 export function PriorityFilter({ setActiveFilter }: PriorityFilterProps) {
   const { data: priorityCount } = useIssueCountByPriority();

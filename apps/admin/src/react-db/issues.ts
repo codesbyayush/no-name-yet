@@ -129,7 +129,7 @@ export const useFilteredIssuesByStatus = (statusId: string | null) => {
     filters.priority?.join(',') || '',
     filters.assignee?.join(',') || '',
     filters.labels?.join(',') || '',
-    filters.project?.join(',') || '',
+    filters.board?.join(',') || '',
   ];
 
   return useLiveQuery((q) => {
@@ -164,6 +164,27 @@ export const useFilteredIssuesByStatus = (statusId: string | null) => {
         );
       }
     }
+    if (filters.board && filters.board.length > 0) {
+      query = query.where(({ issue }) => inArray(issue.boardId, filters.board));
+    }
+    if (filters.labels && filters.labels.length > 0) {
+      query = query.where(({ issue }) => {
+        const conditions = filters.labels.map((label) =>
+          inArray(label, issue.tags),
+        );
+        if (conditions.length === 0) return false;
+        if (conditions.length === 1) return conditions[0];
+
+        // Type assertion needed because 'or' requires a tuple type, not an array with minimum length of 2
+        return or(
+          ...(conditions as [
+            (typeof conditions)[0],
+            (typeof conditions)[0],
+            ...(typeof conditions)[],
+          ]),
+        );
+      });
+    }
 
     return query;
   }, filterDeps);
@@ -177,6 +198,17 @@ export const useIssueCountByStatus = () =>
       .select(({ issue }) => ({
         count: count(issue.id),
         statusId: issue.status,
+      })),
+  );
+
+export const useIssueCountByBoard = () =>
+  useLiveQuery((q) =>
+    q
+      .from({ issue: issuesCollection })
+      .groupBy(({ issue }) => issue.boardId)
+      .select(({ issue }) => ({
+        count: count(issue.id),
+        boardId: issue.boardId || 'No board',
       })),
   );
 
@@ -204,15 +236,15 @@ export const useIssueCountByPriority = () =>
       })),
   );
 
-export const useIssueCountByLabel = (labelId: string) =>
+export const useIssueCountForLabel = (labelId: string) =>
   useLiveQuery((q) =>
     q
       .from({ issue: issuesCollection })
-      .where(
-        ({ issue }) =>
-          Array.isArray(issue.tags) &&
-          issue.tags.some((tag) => eq(tag.id, labelId)),
-      ),
+      .select(({ issue }) => ({
+        count: count(issue.id),
+        labelId: labelId,
+      }))
+      .where(({ issue }) => inArray(issue.tags, labelId)),
   );
 
 export const useSearchIssues = (query: string | undefined) => {

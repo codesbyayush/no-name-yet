@@ -39,10 +39,10 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { useTags } from '@/hooks/use-tags';
 import { priorities } from '@/mock-data/priorities';
 import { projects } from '@/mock-data/projects';
 import { status } from '@/mock-data/status';
+import { useTags } from '@/react-db/tags';
 import { useIssuesStore } from '@/store/issues-store';
 import { useUsersStore } from '@/store/users-store';
 

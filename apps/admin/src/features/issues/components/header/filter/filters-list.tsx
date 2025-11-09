@@ -19,7 +19,7 @@ interface FiltersListProps {
   setActiveFilter: (filter: FilterType) => void;
 }
 
-type FilterType = 'status' | 'assignee' | 'priority' | 'labels' | 'project';
+type FilterType = 'status' | 'assignee' | 'priority' | 'labels' | 'board';
 
 export function FiltersList({ setActiveFilter }: FiltersListProps) {
   const { filters, clearFilters, getActiveFiltersCount } = useFilterStore();
@@ -97,16 +97,16 @@ export function FiltersList({ setActiveFilter }: FiltersListProps) {
           </CommandItem>
           <CommandItem
             className='flex cursor-pointer items-center justify-between'
-            onSelect={() => setActiveFilter('project')}
+            onSelect={() => setActiveFilter('board')}
           >
             <span className='flex items-center gap-2'>
               <Folder className='size-4 text-muted-foreground' />
-              Project
+              Board
             </span>
             <div className='flex items-center'>
-              {filters.project.length > 0 && (
+              {filters.board.length > 0 && (
                 <span className='mr-1 text-muted-foreground text-xs'>
-                  {filters.project.length}
+                  {filters.board.length}
                 </span>
               )}
               <ChevronRight className='size-4' />

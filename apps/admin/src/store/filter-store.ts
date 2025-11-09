@@ -7,21 +7,21 @@ export interface FilterState {
     assignee: string[];
     priority: string[];
     labels: string[];
-    project: string[];
+    board: string[];
   };
 
   // Actions
   setFilter: (
-    type: 'status' | 'assignee' | 'priority' | 'labels' | 'project',
+    type: 'status' | 'assignee' | 'priority' | 'labels' | 'board',
     ids: string[],
   ) => void;
   toggleFilter: (
-    type: 'status' | 'assignee' | 'priority' | 'labels' | 'project',
+    type: 'status' | 'assignee' | 'priority' | 'labels' | 'board',
     id: string,
   ) => void;
   clearFilters: () => void;
   clearFilterType: (
-    type: 'status' | 'assignee' | 'priority' | 'labels' | 'project',
+    type: 'status' | 'assignee' | 'priority' | 'labels' | 'board',
   ) => void;
 
   // Utility
@@ -36,7 +36,7 @@ export const useFilterStore = create<FilterState>((set, get) => ({
     assignee: [],
     priority: [],
     labels: [],
-    project: [],
+    board: [],
   },
 
   // Actions
@@ -72,7 +72,7 @@ export const useFilterStore = create<FilterState>((set, get) => ({
         assignee: [],
         priority: [],
         labels: [],
-        project: [],
+        board: [],
       },
     });
   },

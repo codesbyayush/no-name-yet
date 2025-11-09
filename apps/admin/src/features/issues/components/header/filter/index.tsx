@@ -6,7 +6,6 @@ import {
 } from '@workspace/ui/components/popover';
 import { ListFilter } from 'lucide-react';
 import { useState } from 'react';
-import { useTags } from '@/hooks/use-tags';
 import { useFilterStore } from '@/store/filter-store';
 import { AssigneeFilter } from './assignee-filter';
 import { BoardsFilter } from './boards-filter';
@@ -16,15 +15,13 @@ import { PriorityFilter } from './priority-filter';
 import { StatusFilter } from './status-filter';
 
 // Define filter types
-type FilterType = 'status' | 'assignee' | 'priority' | 'labels' | 'project';
+type FilterType = 'status' | 'assignee' | 'priority' | 'labels' | 'board';
 
 export function Filter() {
   const [open, setOpen] = useState<boolean>(false);
   const [activeFilter, setActiveFilter] = useState<FilterType | null>(null);
 
   const { getActiveFiltersCount } = useFilterStore();
-
-  const _data = useTags();
 
   return (
     <Popover onOpenChange={setOpen} open={open}>
@@ -50,7 +47,7 @@ export function Filter() {
               return <PriorityFilter setActiveFilter={setActiveFilter} />;
             case 'labels':
               return <LabelsFilter setActiveFilter={setActiveFilter} />;
-            case 'project':
+            case 'board':
               return <BoardsFilter setActiveFilter={setActiveFilter} />;
             default:
               return <FiltersList setActiveFilter={setActiveFilter} />;

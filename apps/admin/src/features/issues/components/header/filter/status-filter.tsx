@@ -16,7 +16,7 @@ interface StatusFilterProps {
   setActiveFilter: (filter: FilterType | null) => void;
 }
 
-type FilterType = 'status' | 'assignee' | 'priority' | 'labels' | 'project';
+type FilterType = 'status' | 'assignee' | 'priority' | 'labels' | 'board';
 
 export function StatusFilter({ setActiveFilter }: StatusFilterProps) {
   const { data: statusCount } = useIssueCountByStatus();
