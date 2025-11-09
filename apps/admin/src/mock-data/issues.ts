@@ -1,8 +1,6 @@
 import LexoRank from '@kayron013/lexorank';
 import type { LabelInterface } from './labels';
-import type { Priority } from './priorities';
 import type { Project } from './projects';
-import type { Status } from './status';
 import type { User } from './users';
 
 export interface Issue {
@@ -18,8 +16,7 @@ export interface Issue {
   assigneeId?: string;
   author?: User;
   // TODO: remove this once we use priority directly
-  priority: Priority;
-  priorityKey?: string;
+  priority: string;
   teamId?: string;
   boardId?: string;
   createdAt: string;
@@ -76,7 +73,7 @@ export function sortIssuesByPriority(issues: Issue[]): Issue[] {
     .slice()
     .sort(
       (a, b) =>
-        priorityOrder[a.priorityKey as keyof typeof priorityOrder] -
-        priorityOrder[b.priorityKey as keyof typeof priorityOrder],
+        priorityOrder[a.priority as keyof typeof priorityOrder] -
+        priorityOrder[b.priority as keyof typeof priorityOrder],
     );
 }

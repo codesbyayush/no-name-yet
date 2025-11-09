@@ -36,10 +36,7 @@ export function IssueLine({
           }}
         >
           <div className='flex items-center gap-0.5'>
-            <PrioritySelector
-              issueId={issue.id}
-              priorityKey={issue.priorityKey}
-            />
+            <PrioritySelector issueId={issue.id} priority={issue.priority} />
             <span className='mr-0.5 hidden w-[66px] shrink-0 truncate align-bottom font-medium text-muted-foreground text-sm uppercase sm:inline-block'>
               {issue.issueKey}
             </span>

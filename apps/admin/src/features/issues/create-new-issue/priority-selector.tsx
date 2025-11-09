@@ -18,23 +18,23 @@ import { priorities } from '@/mock-data/priorities';
 import { useIssues } from '@/react-db/issues';
 
 interface PrioritySelectorProps {
-  priorityKey: string;
+  priority: string;
   onChange: (priorityId: string) => void;
 }
 
 export function PrioritySelector({
-  priorityKey,
+  priority,
   onChange,
 }: PrioritySelectorProps) {
   const id = useId();
   const [open, setOpen] = useState<boolean>(false);
-  const [value, setValue] = useState<string>(priorityKey);
+  const [value, setValue] = useState<string>(priority);
 
   const { data: issues } = useIssues();
 
   useEffect(() => {
-    setValue(priorityKey);
-  }, [priorityKey]);
+    setValue(priority);
+  }, [priority]);
 
   const handlePriorityChange = (priorityId: string) => {
     setValue(priorityId);
@@ -94,8 +94,8 @@ export function PrioritySelector({
                       <CheckIcon className='ml-auto' size={16} />
                     )}
                     <span className='text-muted-foreground text-xs'>
-                      {issues?.filter((is) => is.priorityKey === item.id)
-                        .length ?? 0}
+                      {issues?.filter((is) => is.priority === item.id).length ??
+                        0}
                     </span>
                   </CommandItem>
                 ))}

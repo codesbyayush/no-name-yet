@@ -41,7 +41,7 @@ interface IssuesState {
   updateIssueStatus: (issueId: string, newStatus: string) => void;
 
   // Priority management
-  updateIssuePriority: (issueId: string, newPriority: Priority) => void;
+  updateIssuePriority: (issueId: string, newPriority: string) => void;
 
   // Assignee management
   updateIssueAssignee: (issueId: string, newAssignee: User | null) => void;
@@ -126,7 +126,7 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
     get().issues.filter((issue) => issue.status === statusId),
 
   filterByPriority: (priorityId: string) =>
-    get().issues.filter((issue) => issue.priority.id === priorityId),
+    get().issues.filter((issue) => issue.priority === priorityId),
 
   filterByAssignee: (userId: string | null) => {
     if (userId === null) {
@@ -175,7 +175,7 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
     // Filter by priority
     if (filters.priority && filters.priority.length > 0) {
       filteredIssues = filteredIssues.filter((issue) =>
-        filters.priority?.includes(issue.priority.id),
+        filters.priority?.includes(issue.priority),
       );
     }
 
@@ -202,7 +202,7 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
   },
 
   // Priority management
-  updateIssuePriority: (issueId: string, newPriority: Priority) => {
+  updateIssuePriority: (issueId: string, newPriority: string) => {
     get().updateIssue(issueId, { priority: newPriority });
   },
 

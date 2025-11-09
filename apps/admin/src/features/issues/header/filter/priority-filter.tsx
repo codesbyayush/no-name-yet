@@ -54,7 +54,7 @@ export function PriorityFilter({ setActiveFilter }: PriorityFilterProps) {
               )}
               <span className='text-muted-foreground text-xs'>
                 {priorityCount?.find(
-                  (priority) => priority.priority.id === item.id,
+                  (priority) => priority.priority === item.id,
                 )?.count || 0}
               </span>
             </CommandItem>

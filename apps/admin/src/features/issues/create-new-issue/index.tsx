@@ -42,8 +42,7 @@ export function CreateNewIssue() {
       status: defaultStatusKey,
       assigneeId: undefined,
       assignee: null,
-      priority: priorities.find((p) => p.id === 'no-priority') || priorities[0],
-      priorityKey: 'no-priority',
+      priority: 'no-priority',
       labels: [],
       createdAt: new Date().toISOString(),
       boardId: boards?.filter((b) => b.isSystem)[0]?.id || boards?.[0]?.id,
@@ -139,9 +138,9 @@ export function CreateNewIssue() {
             />
             <PrioritySelector
               onChange={(newPriority) =>
-                setAddIssueForm({ ...addIssueForm, priorityKey: newPriority })
+                setAddIssueForm({ ...addIssueForm, priority: newPriority })
               }
-              priorityKey={addIssueForm.priorityKey || 'no-priority'}
+              priority={addIssueForm.priority}
             />
             <AssigneeSelector
               assigneeId={addIssueForm.assigneeId || undefined}

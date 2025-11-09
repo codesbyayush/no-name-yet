@@ -19,31 +19,28 @@ import { useUpdateIssue } from '@/react-db/issues';
 
 interface PrioritySelectorProps {
   issueId?: string;
-  priorityKey?: string;
+  priority?: string;
 }
 
-export function PrioritySelector({
-  issueId,
-  priorityKey,
-}: PrioritySelectorProps) {
+export function PrioritySelector({ issueId, priority }: PrioritySelectorProps) {
   const id = useId();
   const [open, setOpen] = useState<boolean>(false);
-  const [value, setValue] = useState<string>(priorityKey || 'no-priority');
+  const [value, setValue] = useState<string>(priority || 'no-priority');
 
   const { mutate } = useUpdateIssue();
 
   useEffect(() => {
-    if (priorityKey) {
-      setValue(priorityKey);
+    if (priority) {
+      setValue(priority);
     }
-  }, [priorityKey]);
+  }, [priority]);
 
   const handlePriorityChange = (priorityId: string) => {
     setValue(priorityId);
     setOpen(false);
 
     if (issueId) {
-      mutate(issueId, { priorityKey: priorityId });
+      mutate(issueId, { priority: priorityId });
     }
   };
 

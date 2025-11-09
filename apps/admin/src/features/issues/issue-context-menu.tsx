@@ -83,7 +83,7 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
     }
     const newPriority = priorities.find((p) => p.id === priorityId);
     if (newPriority) {
-      updateIssuePriority(issueId, newPriority);
+      updateIssuePriority(issueId, priorityId);
       toast.success(`Priority updated to ${newPriority.name}`);
     }
   };

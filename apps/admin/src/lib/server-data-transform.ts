@@ -57,9 +57,7 @@ export const transformServerPostToIssue = (
         }
       : null,
     assigneeId: serverPost.assigneeId || undefined,
-    priorityKey: serverPost.priority,
-    priority:
-      priorities.find((p) => p.id === serverPost.priority) || priorities[4],
+    priority: serverPost.priority,
     completedAt: serverPost.completedAt
       ? new Date(serverPost.completedAt).toISOString().split('T')[0]
       : undefined,

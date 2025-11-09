@@ -43,10 +43,7 @@ const issuesCollection = createCollection<IssueDoc>(
         payload.status = changes.status;
       }
       if (changes.priority) {
-        payload.priority = changes.priority.id;
-      }
-      if (changes.priorityKey) {
-        payload.priority = changes.priorityKey;
+        payload.priority = changes.priority;
       }
       if ('assignee' in changes) {
         payload.assigneeId = changes.assignee?.id ?? null;
@@ -66,8 +63,8 @@ const issuesCollection = createCollection<IssueDoc>(
       await adminClient.organization.posts.create({
         ...changes,
         priority:
-          changes.priorityKey && changes.priorityKey !== 'no-priority'
-            ? (changes.priorityKey as
+          changes.priority && changes.priority !== 'no-priority'
+            ? (changes.priority as
                 | 'no-priority'
                 | 'low'
                 | 'medium'

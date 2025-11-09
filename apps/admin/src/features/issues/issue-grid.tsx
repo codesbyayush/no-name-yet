@@ -31,10 +31,7 @@ function IssueDragPreview({ issue }: { issue: Issue }) {
     <div className='w-full overflow-hidden rounded-md border border-border/50 bg-background p-3'>
       <div className='mb-2 flex items-center justify-between'>
         <div className='flex items-center gap-1.5'>
-          <PrioritySelector
-            issueId={issue.id}
-            priorityKey={issue.priorityKey}
-          />
+          <PrioritySelector issueId={issue.id} priority={issue.priority} />
           <span className='font-medium text-muted-foreground text-xs'>
             {issue.issueKey}
           </span>
@@ -126,10 +123,7 @@ export function IssueGrid({ issue }: IssueGridProps) {
         >
           <div className='mb-2 flex items-center justify-between'>
             <div className='flex items-center gap-1.5'>
-              <PrioritySelector
-                issueId={issue.id}
-                priorityKey={issue.priorityKey}
-              />
+              <PrioritySelector issueId={issue.id} priority={issue.priority} />
               <span className='font-medium text-muted-foreground text-xs'>
                 {issue.issueKey}
               </span>
