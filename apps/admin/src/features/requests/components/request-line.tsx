@@ -6,6 +6,7 @@ import {
 import { format } from 'date-fns';
 import { Check, ExternalLink, X } from 'lucide-react';
 import type { Issue } from '@/mock-data/issues';
+import { useBoardById } from '@/react-db/boards';
 
 interface RequestLineProps {
   issue: Issue;
@@ -20,7 +21,8 @@ export function RequestLine({
   handlePromote,
   handleDiscard,
 }: RequestLineProps) {
-  const boardName = issue.board?.name ?? issue.project?.name ?? null;
+  const { data: board } = useBoardById(issue.boardId);
+  const boardName = board?.[0]?.name ?? null;
   const createdAtLabel = issue.createdAt
     ? format(new Date(issue.createdAt), 'MMM dd, yyyy')
     : null;

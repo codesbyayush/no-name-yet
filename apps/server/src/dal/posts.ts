@@ -35,6 +35,22 @@ export type GetPostsFilters = {
   sortBy?: 'newest' | 'oldest';
 };
 
+export type IssueStatus =
+  | 'to-do'
+  | 'in-progress'
+  | 'technical-review'
+  | 'completed'
+  | 'backlog'
+  | 'paused'
+  | 'pending';
+
+export type IssuePriority =
+  | 'low'
+  | 'medium'
+  | 'high'
+  | 'urgent'
+  | 'no-priority';
+
 export async function getPostsWithAggregates(
   db: Database,
   filters: GetPostsFilters,
@@ -65,14 +81,10 @@ export async function getPostsWithAggregates(
     .select({
       id: feedback.id,
       title: feedback.title,
-      content: feedback.description,
+      description: feedback.description,
       createdAt: feedback.createdAt,
       status: feedback.status,
-      board: {
-        id: boards.id,
-        name: boards.name,
-        slug: boards.slug,
-      },
+      boardId: feedback.boardId,
       author: {
         name: user.name,
         avatarUrl: user.image,
@@ -83,7 +95,6 @@ export async function getPostsWithAggregates(
       voteCount: sql<number>`(select count(*) from ${votes} where ${votes.feedbackId} = ${feedback.id})`,
     })
     .from(feedback)
-    .leftJoin(boards, eq(feedback.boardId, boards.id))
     .leftJoin(user, eq(feedback.authorId, user.id))
     .where(and(...whereFilters))
     .orderBy(orderBy)
@@ -106,7 +117,8 @@ export async function getPostById(
     .select({
       id: feedback.id,
       title: feedback.title,
-      content: feedback.description,
+      boardId: feedback.boardId,
+      description: feedback.description,
       createdAt: feedback.createdAt,
       status: feedback.status,
       author: {
@@ -114,18 +126,12 @@ export async function getPostById(
         avatarUrl: user.image,
         email: user.email,
       },
-      board: {
-        id: boards.id,
-        name: boards.name,
-        slug: boards.slug,
-      },
       hasVoted: sql<boolean>`(select exists(select 1 from ${votes} where ${votes.feedbackId} = ${feedback.id} and ${votes.userId} = ${userId}))`,
       commentCount: sql<number>`(select count(*) from ${comments} where ${comments.feedbackId} = ${feedback.id})`,
       voteCount: sql<number>`(select count(*) from ${votes} where ${votes.feedbackId} = ${feedback.id})`,
     })
     .from(feedback)
     .leftJoin(user, eq(feedback.authorId, user.id))
-    .leftJoin(boards, eq(feedback.boardId, boards.id))
     .where(eq(feedback.id, feedbackId));
 
   return rows[0] ?? null;
@@ -156,9 +162,7 @@ export async function getAdminDetailedPosts(
     }
   })();
 
-  const whereFilters = [
-    eq(boards.organizationId, filters.organizationId),
-  ] as SQL<unknown>[];
+  const whereFilters = [] as SQL<unknown>[];
   if (filters.boardId) {
     whereFilters.push(eq(boards.id, filters.boardId));
   }
@@ -185,11 +189,6 @@ export async function getAdminDetailedPosts(
         email: creatorUser.email,
         avatarUrl: creatorUser.image,
       },
-      board: {
-        id: boards.id,
-        name: boards.name,
-        slug: boards.slug,
-      },
       hasVoted: userId
         ? exists(
             db
@@ -206,7 +205,6 @@ export async function getAdminDetailedPosts(
     })
     .from(feedback)
     .leftJoin(creatorUser, eq(feedback.authorId, creatorUser.id))
-    .leftJoin(boards, eq(feedback.boardId, boards.id))
     .where(and(...whereFilters))
     .orderBy(orderBy)
     .offset(filters.offset)
@@ -279,15 +277,8 @@ export type AdminCreatePostInput = {
   teamId?: string;
   title: string;
   description: string;
-  priority: 'low' | 'medium' | 'high' | 'urgent' | 'no-priority';
-  status:
-    | 'to-do'
-    | 'in-progress'
-    | 'completed'
-    | 'backlog'
-    | 'technical-review'
-    | 'paused'
-    | 'pending';
+  priority: IssuePriority;
+  status: IssueStatus;
   tags?: string[];
   issueKey?: string;
 };
@@ -298,9 +289,6 @@ export async function createAdminPost(
   authorId: string,
   teamId: string,
 ) {
-  const normalizedPriority =
-    input.priority === 'no-priority' ? 'no-priority' : input.priority;
-
   const teamDetails = await getTeamDetails(db, teamId);
   const teamName = teamDetails[0]?.name;
 
@@ -317,7 +305,7 @@ export async function createAdminPost(
       authorId,
       title: input.title,
       description: input.description,
-      priority: normalizedPriority,
+      priority: input.priority,
       status: input.status,
     })
     .returning();
@@ -360,15 +348,8 @@ export type AdminUpdatePostInput = {
   id: string;
   title?: string;
   description?: string;
-  status?:
-    | 'to-do'
-    | 'in-progress'
-    | 'completed'
-    | 'backlog'
-    | 'technical-review'
-    | 'paused'
-    | 'pending';
-  priority?: 'low' | 'medium' | 'high' | 'urgent' | 'no-priority';
+  status?: IssueStatus;
+  priority?: IssuePriority;
   url?: string;
   userAgent?: string;
   browserInfo?: {
@@ -392,16 +373,13 @@ export async function updateAdminPost(
   db: Database,
   input: AdminUpdatePostInput,
 ) {
-  const normalizedPriority =
-    input.priority === 'no-priority' ? 'no-priority' : input.priority;
-
   const [updatedPost] = await db
     .update(feedback)
     .set({
       ...(input.title && { title: input.title }),
       ...(input.description && { description: input.description }),
       ...(input.status && { status: input.status }),
-      ...(normalizedPriority && { priority: normalizedPriority }),
+      ...(input.priority && { priority: input.priority }),
       ...(input.url && { url: input.url }),
       ...(input.userAgent && { userAgent: input.userAgent }),
       ...(input.browserInfo && { browserInfo: input.browserInfo }),
@@ -477,14 +455,6 @@ export async function getAndUpdatePostSerialCount(
     .returning();
   return result[0].nextSerial - nextSerial;
 }
-
-export type IssueStatus =
-  | 'to-do'
-  | 'in-progress'
-  | 'technical-review'
-  | 'completed'
-  | 'backlog'
-  | 'paused';
 
 export async function findFeedbackByIssueKey(
   db: Database,

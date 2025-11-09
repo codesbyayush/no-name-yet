@@ -5,7 +5,6 @@ import type { User } from './users';
 
 export interface Issue {
   id: string;
-  board?: Board;
   issueKey?: string | null;
   title: string;
   description: string;
@@ -23,12 +22,6 @@ export interface Issue {
   rank: string;
   dueDate?: string;
   tags?: LabelInterface[];
-}
-
-interface Board {
-  id: string;
-  name: string;
-  slug: string;
 }
 
 // generates issues ranks using LexoRank algorithm.
