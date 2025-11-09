@@ -54,7 +54,10 @@ export function IssueLine({
             <span className='hidden shrink-0 text-muted-foreground text-xs sm:inline-block'>
               {format(new Date(issue.createdAt), 'MMM dd')}
             </span>
-            <AssigneeUser issueId={issue.id} userId={issue.assigneeId} />
+            <AssigneeUser
+              issueId={issue.id}
+              userId={issue.assigneeId ?? undefined}
+            />
           </div>
         </motion.div>
       </ContextMenuTrigger>

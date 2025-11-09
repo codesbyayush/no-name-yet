@@ -19,6 +19,7 @@ import {
 import { toast } from 'sonner';
 import { getStatusById } from '@/lib/status-utils';
 import type { Issue } from '@/mock-data/issues';
+import { useUsers } from '@/react-db/users';
 import { buildBranchName } from '@/utils/github';
 import { StatusSelector } from './status-selector';
 
@@ -26,43 +27,45 @@ interface PostSidebarProps {
   issue: Issue;
 }
 
-export function PostSidebar({ issue }: PostSidebarProps) {
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInDays = Math.floor(
-      (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
-    );
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInDays = Math.floor(
+    (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
+  );
 
-    const pluralize = (count: number, unit: string) =>
-      `${count} ${unit}${count > 1 ? 's' : ''}`;
+  const pluralize = (count: number, unit: string) =>
+    `${count} ${unit}${count > 1 ? 's' : ''}`;
 
-    const rules: Array<{
-      limit: number;
-      format: (days: number) => string;
-    }> = [
-      { limit: 1, format: () => 'Today' },
-      { limit: 2, format: () => 'Yesterday' },
-      { limit: 7, format: (d) => `${d} days ago` },
-      {
-        limit: 30,
-        format: (d) => `About ${pluralize(Math.floor(d / 7), 'week')} ago`,
-      },
-      {
-        limit: 365,
-        format: (d) => `About ${pluralize(Math.floor(d / 30), 'month')} ago`,
-      },
-    ];
+  const rules: Array<{
+    limit: number;
+    format: (days: number) => string;
+  }> = [
+    { limit: 1, format: () => 'Today' },
+    { limit: 2, format: () => 'Yesterday' },
+    { limit: 7, format: (d) => `${d} days ago` },
+    {
+      limit: 30,
+      format: (d) => `About ${pluralize(Math.floor(d / 7), 'week')} ago`,
+    },
+    {
+      limit: 365,
+      format: (d) => `About ${pluralize(Math.floor(d / 30), 'month')} ago`,
+    },
+  ];
 
-    for (const rule of rules) {
-      if (diffInDays < rule.limit) {
-        return rule.format(diffInDays);
-      }
+  for (const rule of rules) {
+    if (diffInDays < rule.limit) {
+      return rule.format(diffInDays);
     }
+  }
 
-    const years = Math.floor(diffInDays / 365);
-    return `About ${pluralize(years, 'year')} ago`;
-  };
+  const years = Math.floor(diffInDays / 365);
+  return `About ${pluralize(years, 'year')} ago`;
+};
+export function PostSidebar({ issue }: PostSidebarProps) {
+  const { data: users } = useUsers();
+  const assignee = users?.find((user) => user.id === issue.assigneeId);
 
   return (
     <div className='h-screen overflow-y-auto bg-sidebar'>
@@ -87,7 +90,7 @@ export function PostSidebar({ issue }: PostSidebarProps) {
                   const branch = buildBranchName({
                     issueKey: issue.issueKey || '',
                     title: issue.title,
-                    assigneeName: issue.assignee?.name || null,
+                    assigneeName: assignee?.name || null,
                   });
                   await navigator.clipboard.writeText(branch);
                   toast.success('GitHub branch copied');
@@ -182,18 +185,18 @@ export function PostSidebar({ issue }: PostSidebarProps) {
             <div className='flex items-center gap-2'>
               <Avatar className='h-6 w-6'>
                 <AvatarImage
-                  alt={issue.assignee?.name}
-                  src={issue.assignee?.avatarUrl}
+                  alt={assignee?.name || 'Unassigned'}
+                  src={assignee?.image || ''}
                 />
                 <AvatarFallback className='bg-orange-500 text-white text-xs'>
-                  {issue.assignee?.name?.[0] || 'A'}
+                  {assignee?.name?.[0] || 'Unassigned'}
                 </AvatarFallback>
               </Avatar>
               <span className='text-muted-foreground text-sm'>
-                {issue.assignee?.name || 'ayush patel'}
+                {assignee?.name || 'Unassigned'}
               </span>
-              {issue.assignee && (
-                <div className='h-2 w-2 rounded-full border border-background bg-blue-500' />
+              {issue.assigneeId !== null && (
+                <div className='size-2 rounded-full border border-background bg-blue-500' />
               )}
             </div>
           </div>

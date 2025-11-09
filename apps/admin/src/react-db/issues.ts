@@ -45,8 +45,11 @@ const issuesCollection = createCollection<IssueDoc>(
       if (changes.priority) {
         payload.priority = changes.priority;
       }
-      if ('assignee' in changes) {
-        payload.assigneeId = changes.assignee?.id ?? null;
+      if (changes.assigneeId) {
+        payload.assigneeId = changes.assigneeId;
+      }
+      if (changes.assigneeId === null) {
+        payload.assigneeId = null;
       }
       await adminClient.organization.posts.update(payload);
     },
@@ -168,8 +171,12 @@ export const useSearchIssues = (query: string | undefined) => {
           return true;
         }
         const title = lower(issue.title);
-        const identifier = lower(issue.issueKey || '');
-        return ilike(title, `%${safe}%`) || ilike(identifier, `%${safe}%`);
+        const titleMatch = ilike(title, `%${safe}%`);
+        const issueKeyMatch =
+          issue.issueKey !== null
+            ? ilike(lower(issue.issueKey as unknown as string), `%${safe}%`)
+            : false;
+        return titleMatch || issueKeyMatch;
       }),
     [safe],
   );

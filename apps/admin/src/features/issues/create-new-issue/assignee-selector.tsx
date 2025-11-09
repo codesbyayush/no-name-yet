@@ -24,7 +24,7 @@ import { useUsers } from '@/react-db/users';
 
 interface AssigneeSelectorProps {
   assigneeId: string | undefined;
-  onChange: (assignee?: string) => void;
+  onChange: (assignee?: string | null) => void;
 }
 
 export function AssigneeSelector({
@@ -45,7 +45,7 @@ export function AssigneeSelector({
   const handleAssigneeChange = (userId: string) => {
     if (userId === 'unassigned') {
       setValue(null);
-      onChange();
+      onChange(null);
     } else {
       setValue(userId);
       const newAssignee = users?.find((u) => u.id === userId) || null;
@@ -119,7 +119,7 @@ export function AssigneeSelector({
                     <CheckIcon className='ml-auto' size={16} />
                   )}
                   <span className='text-muted-foreground text-xs'>
-                    {issues?.filter((is) => is.assignee === null).length ?? 0}
+                    {issues?.filter((is) => is.assigneeId === null).length ?? 0}
                   </span>
                 </CommandItem>
                 {(users ?? []).map((user) => (
@@ -140,7 +140,7 @@ export function AssigneeSelector({
                       <CheckIcon className='ml-auto' size={16} />
                     )}
                     <span className='text-muted-foreground text-xs'>
-                      {issues?.filter((is) => is.assignee?.id === user.id)
+                      {issues?.filter((is) => is.assigneeId === user.id)
                         .length ?? 0}
                     </span>
                   </CommandItem>

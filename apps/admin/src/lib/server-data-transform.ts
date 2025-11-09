@@ -37,10 +37,6 @@ export const transformServerPostToIssue = (
   // Map server data to client format
   const clientIssue: Issue = {
     ...serverPost,
-    issueKey: serverPost.issueKey || undefined,
-    status: serverPost.status,
-    assigneeId: serverPost.assigneeId || undefined,
-    priority: serverPost.priority,
     completedAt: serverPost.completedAt
       ? new Date(serverPost.completedAt).toISOString().split('T')[0]
       : undefined,
@@ -51,7 +47,6 @@ export const transformServerPostToIssue = (
     dueDate: serverPost.dueDate
       ? new Date(serverPost.dueDate).toISOString().split('T')[0]
       : undefined,
-    tags: serverPost.tags,
   };
 
   return clientIssue;

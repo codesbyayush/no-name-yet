@@ -128,9 +128,9 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
 
   filterByAssignee: (userId: string | null) => {
     if (userId === null) {
-      return get().issues.filter((issue) => issue.assignee === null);
+      return get().issues.filter((issue) => issue.assigneeId === null);
     }
-    return get().issues.filter((issue) => issue.assignee?.id === userId);
+    return get().issues.filter((issue) => issue.assigneeId === userId);
   },
 
   filterByLabel: (labelId: string) =>
@@ -206,7 +206,7 @@ export const useIssuesStore = create<IssuesState>((set, get) => ({
 
   // Assignee management
   updateIssueAssignee: (issueId: string, newAssignee: User | null) => {
-    get().updateIssue(issueId, { assignee: newAssignee });
+    get().updateIssue(issueId, { assigneeId: newAssignee?.id ?? null });
   },
 
   // Labels management

@@ -82,7 +82,7 @@ export function AssigneeUser({ userId, issueId }: AssigneeUserProps) {
           onClick={(e) => {
             e.stopPropagation();
             setCurrentAssignee(null);
-            mutate(issueId, { assignee: null });
+            mutate(issueId, { assigneeId: null });
             setOpen(false);
           }}
         >
@@ -100,16 +100,7 @@ export function AssigneeUser({ userId, issueId }: AssigneeUserProps) {
               e.stopPropagation();
               setCurrentAssignee(user);
               mutate(issueId, {
-                assignee: {
-                  id: user.userId,
-                  name: user.name,
-                  email: user.email,
-                  avatarUrl: user.image || '',
-                  status: 'online',
-                  role: user.role as 'Member' | 'Admin' | 'Guest',
-                  joinedDate: user.joinedTeamAt.toISOString(),
-                  teamIds: [],
-                },
+                assigneeId: user.userId,
               });
               setOpen(false);
             }}

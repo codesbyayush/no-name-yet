@@ -6,14 +6,12 @@ import type { User } from './users';
 export interface Issue {
   id: string;
   board?: Board;
-  issueKey?: string;
+  issueKey?: string | null;
   title: string;
   description: string;
   // TODO: remove this once we use status directly
   status: string;
-  // TODO: remove this once we use assignee directly
-  assignee?: User | null;
-  assigneeId?: string;
+  assigneeId?: string | null;
   author?: User;
   // TODO: remove this once we use priority directly
   priority: string;
