@@ -14,8 +14,8 @@ import {
 } from '@workspace/ui/components/command';
 import { CheckIcon, ChevronRight, User } from 'lucide-react';
 import { useIssueCountByAssignee } from '@/react-db/issues';
+import { useUsers } from '@/react-db/users';
 import { useFilterStore } from '@/store/filter-store';
-import { useUsersStore } from '@/store/users-store';
 
 interface AssigneeFilterProps {
   setActiveFilter: (filter: FilterType | null) => void;
@@ -24,7 +24,7 @@ interface AssigneeFilterProps {
 type FilterType = 'status' | 'assignee' | 'priority' | 'labels' | 'project';
 
 export function AssigneeFilter({ setActiveFilter }: AssigneeFilterProps) {
-  const { users } = useUsersStore();
+  const { data: users } = useUsers();
   const { data: assigneeCount } = useIssueCountByAssignee();
   const { filters, toggleFilter } = useFilterStore();
 
@@ -71,7 +71,7 @@ export function AssigneeFilter({ setActiveFilter }: AssigneeFilterProps) {
             >
               <div className='flex items-center gap-2'>
                 <Avatar className='size-5'>
-                  <AvatarImage alt={user.name} src={user.avatarUrl} />
+                  <AvatarImage alt={user.name} src={user.image || ''} />
                   <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 {user.name}

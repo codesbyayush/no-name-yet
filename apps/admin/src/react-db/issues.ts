@@ -6,8 +6,10 @@ import {
   ilike,
   inArray,
   lower,
+  or,
   useLiveQuery,
 } from '@tanstack/react-db';
+
 import { transformServerPostsToIssues } from '@/lib/server-data-transform';
 import type { Issue } from '@/mock-data/issues';
 import { useFilterStore } from '@/store/filter-store';
@@ -144,10 +146,25 @@ export const useFilteredIssuesByStatus = (statusId: string | null) => {
       );
     }
     if (filters.assignee && filters.assignee.length > 0) {
-      query = query.where(({ issue }) =>
-        inArray(issue.assigneeId, filters.assignee),
-      );
+      const assigneeIds = filters.assignee.filter((id) => id !== 'unassigned');
+      const hasUnassigned = filters.assignee.includes('unassigned');
+
+      if (hasUnassigned && assigneeIds.length > 0) {
+        query = query.where(({ issue }) =>
+          or(
+            eq(issue.assigneeId as any, null),
+            inArray(issue.assigneeId, assigneeIds),
+          ),
+        );
+      } else if (hasUnassigned) {
+        query = query.where(({ issue }) => eq(issue.assigneeId as any, null));
+      } else {
+        query = query.where(({ issue }) =>
+          inArray(issue.assigneeId, assigneeIds),
+        );
+      }
     }
+
     return query;
   }, filterDeps);
 };
