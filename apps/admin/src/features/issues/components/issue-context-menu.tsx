@@ -39,12 +39,13 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { pickIconForId } from '@/features/issues/utils/get-random-icons';
 import { priorities } from '@/mock-data/priorities';
-import { projects } from '@/mock-data/projects';
 import { status } from '@/mock-data/status';
+import { useBoards } from '@/react-db/boards';
+import { type IssueDoc, useIssueById, useUpdateIssue } from '@/react-db/issues';
 import { useTags } from '@/react-db/tags';
-import { useIssuesStore } from '@/store/issues-store';
-import { useUsersStore } from '@/store/users-store';
+import { useUsers } from '@/react-db/users';
 
 interface IssueContextMenuProps {
   issueId?: string;
@@ -54,95 +55,78 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
 
-  const {
-    updateIssueStatus,
-    updateIssuePriority,
-    updateIssueAssignee,
-    addIssueLabel,
-    removeIssueLabel,
-    updateIssueProject,
-    updateIssue,
-    getIssueById,
-  } = useIssuesStore();
+  const { data: issueData } = useIssueById(issueId);
+  const issue = issueData?.[0];
   const { data: tags } = useTags();
-  const { users } = useUsersStore();
-  const handleStatusChange = (statusId: string) => {
+  const { data: boards } = useBoards();
+  const { data: users } = useUsers();
+  const { mutate: issueUpdateMutation } = useUpdateIssue();
+
+  const boardWithIcon = boards?.map((board) => ({
+    ...board,
+    icon: pickIconForId(board.id),
+  }));
+  const updateIssue = (updated: Partial<IssueDoc>) => {
     if (!issueId) {
       return;
     }
+    issueUpdateMutation(issueId, updated);
+  };
+
+  const handleStatusChange = (statusId: string) => {
     const newStatus = status.find((s) => s.id === statusId);
     if (newStatus) {
-      updateIssueStatus(issueId, statusId);
+      updateIssue({ status: newStatus.key });
       toast.success(`Status updated to ${newStatus.name}`);
     }
   };
 
   const handlePriorityChange = (priorityId: string) => {
-    if (!issueId) {
-      return;
-    }
     const newPriority = priorities.find((p) => p.id === priorityId);
     if (newPriority) {
-      updateIssuePriority(issueId, priorityId);
+      updateIssue({ priority: priorityId });
       toast.success(`Priority updated to ${newPriority.name}`);
     }
   };
 
   const handleAssigneeChange = (userId: string | null) => {
-    if (!issueId) {
-      return;
-    }
     const newAssignee = userId
       ? users.find((u) => u.id === userId) || null
       : null;
-    updateIssueAssignee(issueId, newAssignee);
+    updateIssue({ assigneeId: newAssignee?.id ?? null });
     toast.success(
       newAssignee ? `Assigned to ${newAssignee.name}` : 'Unassigned',
     );
   };
 
   const handleLabelToggle = (tagId: string) => {
-    if (!issueId) {
-      return;
-    }
-    const issue = getIssueById(issueId);
     const tag = tags.find((t) => t.id === tagId);
 
-    if (!(issue && tag)) {
+    if (!tag) {
       return;
     }
 
-    const hasTag = issue.tags?.includes(tagId);
+    const hasTag = issue?.tags?.includes(tagId);
 
     if (hasTag) {
-      removeIssueLabel(issueId, tagId);
+      updateIssue({ tags: issue?.tags?.filter((t) => t !== tagId) || [] });
       toast.success(`Removed tag: ${tag.name}`);
     } else {
-      addIssueLabel(issueId, tagId);
+      updateIssue({ tags: [...(issue?.tags || []), tagId] });
       toast.success(`Added tag: ${tag.name}`);
     }
   };
 
-  const handleProjectChange = (projectId: string | null) => {
-    if (!issueId) {
-      return;
-    }
-    const newProject = projectId
-      ? projects.find((p) => p.id === projectId)
-      : undefined;
-    updateIssueProject(issueId, newProject);
-    toast.success(
-      newProject ? `Project set to ${newProject.name}` : 'Project removed',
-    );
+  const handleBoardChange = (boardId: string) => {
+    const newBoard = boards.find((b) => b.id === boardId);
+    updateIssue({ boardId: boardId });
+    toast.success(`Board set to ${newBoard?.name}`);
   };
 
   const handleSetDueDate = () => {
-    if (!issueId) {
-      return;
-    }
     const dueDate = new Date();
     dueDate.setDate(dueDate.getDate() + 7);
-    updateIssue(issueId, { dueDate: dueDate.toISOString() });
+    updateIssue({ dueDate: new Date(dueDate).toISOString() });
     toast.success('Due date set to 7 days from now');
   };
 
@@ -182,7 +166,6 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
     if (!issueId) {
       return;
     }
-    const issue = getIssueById(issueId);
     if (issue) {
       navigator.clipboard.writeText(issue.title);
       toast.success('Copied to clipboard');
@@ -229,7 +212,7 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
                 onClick={() => handleAssigneeChange(user.id)}
               >
                 <Avatar className='size-4'>
-                  <AvatarImage alt={user.name} src={user.avatarUrl} />
+                  <AvatarImage alt={user.name} src={user.image || ''} />
                   <AvatarFallback>{user.name[0]}</AvatarFallback>
                 </Avatar>
                 {user.name}
@@ -277,18 +260,15 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
 
         <ContextMenuSub>
           <ContextMenuSubTrigger>
-            <Folder className='mr-2 size-4' /> Project
+            <Folder className='mr-2 size-4' /> Board
           </ContextMenuSubTrigger>
           <ContextMenuSubContent className='w-64'>
-            <ContextMenuItem onClick={() => handleProjectChange(null)}>
-              <Folder className='size-4' /> No Project
-            </ContextMenuItem>
-            {projects.slice(0, 5).map((project) => (
+            {boardWithIcon?.slice(0, 5).map((board) => (
               <ContextMenuItem
-                key={project.id}
-                onClick={() => handleProjectChange(project.id)}
+                key={board.id}
+                onClick={() => handleBoardChange(board.id)}
               >
-                <project.icon className='size-4' /> {project.name}
+                <board.icon className='size-4' /> {board.name}
               </ContextMenuItem>
             ))}
           </ContextMenuSubContent>
