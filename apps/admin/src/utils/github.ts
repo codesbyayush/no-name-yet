@@ -30,7 +30,7 @@ export function buildBranchName(params: {
     : undefined;
 
   const user = params.assigneeName
-    ? slugifyUserName(params.assigneeName)
+    ? params.assigneeName.toLowerCase().split(' ')[0]
     : undefined;
   if (user) {
     return titleSlug ? `${user}/${key}/${titleSlug}` : `${user}/${key}`;
