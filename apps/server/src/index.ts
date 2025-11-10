@@ -141,15 +141,9 @@ const isWorkersEnvironment =
 
 const createExport = async () => {
   if (isLocalEnvironment && !isWorkersEnvironment) {
-    const { readFileSync } = await import('node:fs');
-    const { resolve } = await import('node:path');
-
-    // TLS configuration for HTTPS in development
     const tlsConfig = {
-      key: readFileSync(
-        resolve(import.meta.dir, '../certs/localhost+2-key.pem'),
-      ),
-      cert: readFileSync(resolve(import.meta.dir, '../certs/localhost+2.pem')),
+      key: Bun.file(`${import.meta.dir}/../certs/localhost+2-key.pem`),
+      cert: Bun.file(`${import.meta.dir}/../certs/localhost+2.pem`),
     };
 
     return {
