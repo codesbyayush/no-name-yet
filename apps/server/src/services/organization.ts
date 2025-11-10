@@ -1,6 +1,7 @@
 import { eq } from 'drizzle-orm';
 import type { Database } from '@/dal/posts';
 import { organization } from '@/db/schema';
+import type { Cache } from '@/lib/cache';
 
 export type Organization = {
   id: string;
@@ -66,24 +67,62 @@ export function extractSubdomainFromOrigin(origin: string): string | null {
 export async function getOrganizationBySubdomain(
   db: Database,
   subdomain: string,
+  cache: Cache,
+  ttlSeconds = 300,
 ): Promise<Organization | null> {
+  const cacheKey = `organization:subdomain:${subdomain}`;
+
+  try {
+    const cachedValue = await cache.get(cacheKey);
+    if (cachedValue) {
+      const parsed = JSON.parse(cachedValue) as
+        | (Organization & { createdAt: string })
+        | null;
+      if (!parsed) {
+        return null;
+      }
+
+      const { createdAt, ...rest } = parsed;
+      return {
+        ...rest,
+        createdAt: new Date(createdAt),
+      };
+    }
+  } catch {
+    await cache.delete(cacheKey);
+  }
+
   const [result] = await db
     .select()
     .from(organization)
     .where(eq(organization.slug, subdomain))
     .limit(1);
 
-  return result
-    ? {
-        id: result.id,
-        name: result.name,
-        slug: result.slug,
-        logo: result.logo,
-        metadata: result.metadata,
-        publicKey: result.publicKey,
-        createdAt: result.createdAt,
-      }
-    : null;
+  if (!result) {
+    await cache.set(cacheKey, JSON.stringify(null), ttlSeconds);
+    return null;
+  }
+
+  const organizationRecord: Organization = {
+    id: result.id,
+    name: result.name,
+    slug: result.slug,
+    logo: result.logo,
+    metadata: result.metadata,
+    publicKey: result.publicKey,
+    createdAt: result.createdAt,
+  };
+
+  await cache.set(
+    cacheKey,
+    JSON.stringify({
+      ...organizationRecord,
+      createdAt: organizationRecord.createdAt.toISOString(),
+    }),
+    ttlSeconds,
+  );
+
+  return organizationRecord;
 }
 
 /**
@@ -96,6 +135,7 @@ export async function getOrganizationBySubdomain(
 export async function resolveOrganizationFromHeaders(
   db: Database,
   headers: Headers,
+  cache: Cache,
 ): Promise<{ organization: Organization | null; subdomain: string | null }> {
   // Try X-Forwarded-Host first (for reverse proxies)
   const xfHost = headers.get('x-forwarded-host');
@@ -113,6 +153,6 @@ export async function resolveOrganizationFromHeaders(
     return { organization: null, subdomain: null };
   }
 
-  const org = await getOrganizationBySubdomain(db, subdomain);
+  const org = await getOrganizationBySubdomain(db, subdomain, cache);
   return { organization: org, subdomain };
 }
