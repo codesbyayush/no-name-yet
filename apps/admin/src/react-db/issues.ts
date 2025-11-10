@@ -55,6 +55,18 @@ const issuesCollection = createCollection<IssueDoc>(
       if (changes.assigneeId === null) {
         payload.assigneeId = null;
       }
+      if (changes.tags) {
+        payload.tags = changes.tags;
+      }
+      if (changes.boardId) {
+        payload.boardId = changes.boardId;
+      }
+      if (changes.dueDate) {
+        payload.dueDate = changes.dueDate;
+      }
+      if (changes.completedAt) {
+        payload.completedAt = changes.completedAt;
+      }
       await adminClient.organization.posts.update(payload);
     },
     onDelete: async ({ transaction }) => {

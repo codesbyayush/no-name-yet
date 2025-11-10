@@ -130,28 +130,9 @@ const issuesRouter = {
         status: statusSchema.optional(),
         priority: prioritySchema.optional(),
         tags: z.array(z.string()).optional(),
-        url: z.string().optional(),
-        userAgent: z.string().optional(),
-        browserInfo: z
-          .object({
-            platform: z.string().optional(),
-            language: z.string().optional(),
-            cookieEnabled: z.boolean().optional(),
-            onLine: z.boolean().optional(),
-            screenResolution: z.string().optional(),
-          })
-          .optional(),
-        attachments: z
-          .array(
-            z.object({
-              id: z.string(),
-              name: z.string(),
-              type: z.string(),
-              size: z.number(),
-              url: z.string(),
-            }),
-          )
-          .optional(),
+        boardId: z.string().optional(),
+        dueDate: z.string().optional(),
+        completedAt: z.string().optional(),
         assigneeId: z.string().optional().nullable(),
       }),
     )

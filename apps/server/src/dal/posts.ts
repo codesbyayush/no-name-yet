@@ -304,23 +304,11 @@ export type AdminUpdatePostInput = {
   description?: string;
   status?: IssueStatus;
   priority?: IssuePriority;
-  url?: string;
-  userAgent?: string;
-  browserInfo?: {
-    platform?: string;
-    language?: string;
-    cookieEnabled?: boolean;
-    onLine?: boolean;
-    screenResolution?: string;
-  };
-  attachments?: Array<{
-    id: string;
-    name: string;
-    type: string;
-    size: number;
-    url: string;
-  }>;
+  boardId?: string;
+  dueDate?: string;
+  completedAt?: string;
   assigneeId?: string | null;
+  tags?: string[];
 };
 
 export async function updateAdminPost(
@@ -334,11 +322,11 @@ export async function updateAdminPost(
       ...(input.description && { description: input.description }),
       ...(input.status && { status: input.status }),
       ...(input.priority && { priority: input.priority }),
-      ...(input.url && { url: input.url }),
-      ...(input.userAgent && { userAgent: input.userAgent }),
-      ...(input.browserInfo && { browserInfo: input.browserInfo }),
-      ...(input.attachments && { attachments: input.attachments }),
+      ...(input.boardId && { boardId: input.boardId }),
+      ...(input.dueDate && { dueDate: new Date(input.dueDate) }),
+      ...(input.completedAt && { completedAt: new Date(input.completedAt) }),
       ...(input.assigneeId !== undefined && { assigneeId: input.assigneeId }),
+      ...(input.tags && { tags: input.tags }),
       updatedAt: new Date(),
     })
     .where(eq(feedback.id, input.id))
