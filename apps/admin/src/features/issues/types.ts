@@ -1,5 +1,5 @@
 export interface Activity {
-  id: string;
+  id: string | number;
   feedbackId: string;
   userId: string;
   action: ActivityAction;
@@ -8,12 +8,6 @@ export interface Activity {
   newValue: unknown;
   metadata: Record<string, unknown> | null;
   createdAt: Date | string;
-  user: {
-    id: string;
-    name: string | null;
-    email: string | null;
-    image: string | null;
-  } | null;
 }
 
 export type ActivityAction =
