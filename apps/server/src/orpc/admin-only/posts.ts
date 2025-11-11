@@ -1,5 +1,6 @@
 import { ORPCError } from '@orpc/server';
 import { z } from 'zod';
+import { getActivityHistoryByFeedbackId } from '@/dal/activity';
 import {
   createAdminPost,
   deleteAdminPost,
@@ -138,8 +139,8 @@ const issuesRouter = {
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
-      const _userId = context.session?.user.id;
-      const updatedPost = await updateAdminPost(context.db, input);
+      const userId = context.session?.user.id;
+      const updatedPost = await updateAdminPost(context.db, input, userId);
       if (!updatedPost) {
         throw new ORPCError('NOT_FOUND', { message: 'Post not found' });
       }
@@ -153,8 +154,8 @@ const issuesRouter = {
       }),
     )
     .handler(async ({ input, context }) => {
-      const _userId = context.session?.user.id;
-      const deletedPost = await deleteAdminPost(context.db, input.id);
+      const userId = context.session?.user.id;
+      const deletedPost = await deleteAdminPost(context.db, input.id, userId);
       if (!deletedPost) {
         throw new ORPCError('NOT_FOUND', { message: 'Post not found' });
       }
@@ -165,6 +166,21 @@ const issuesRouter = {
     const posts = await getAdminAllPosts(context.db);
     return posts;
   }),
+
+  getActivityHistory: adminOnlyProcedure
+    .input(
+      z.object({
+        feedbackId: z.string(),
+      }),
+    )
+    .handler(async ({ input, context }) => {
+      const { feedbackId } = input;
+      const activities = await getActivityHistoryByFeedbackId(
+        context.db,
+        feedbackId,
+      );
+      return activities;
+    }),
 };
 
 const requestsRouter = {
@@ -175,10 +191,18 @@ const requestsRouter = {
       }),
     )
     .handler(async ({ input, context }) => {
+      const userId = context.session?.user.id;
+      const teamId = context.session?.session.activeTeamId;
+      if (!userId || !teamId) {
+        throw new ORPCError('UNAUTHORIZED', {
+          message: 'User not authenticated',
+        });
+      }
       const promotedPost = await promoteRequestedIssue(
         context.db,
         input.id,
-        context.session?.session.activeTeamId,
+        teamId,
+        userId,
       );
       if (!promotedPost) {
         throw new ORPCError('NOT_FOUND', { message: 'Post not found' });
@@ -193,8 +217,8 @@ const requestsRouter = {
       }),
     )
     .handler(async ({ input, context }) => {
-      const _userId = context.session?.user.id;
-      const deletedPost = await deleteAdminPost(context.db, input.id);
+      const userId = context.session?.user.id;
+      const deletedPost = await deleteAdminPost(context.db, input.id, userId);
       if (!deletedPost) {
         throw new ORPCError('NOT_FOUND', { message: 'Post not found' });
       }

@@ -20,6 +20,7 @@ import {
   votes,
 } from '@/db/schema';
 import { generateIssueKey } from '@/services/issue';
+import { type ActivityAction, createActivityLog } from './activity';
 import { getTeamDetails } from './organization';
 
 export type Database = ReturnType<typeof import('@/db').getDb>;
@@ -295,6 +296,20 @@ export async function createAdminPost(
     })
     .returning();
 
+  // Log creation activity
+  if (newPost) {
+    await createActivityLog(db, {
+      feedbackId: newPost.id,
+      userId: authorId,
+      action: 'created',
+      metadata: {
+        issueKey: newPost.issueKey,
+        initialStatus: newPost.status,
+        initialPriority: newPost.priority,
+      },
+    });
+  }
+
   return newPost;
 }
 
@@ -314,7 +329,18 @@ export type AdminUpdatePostInput = {
 export async function updateAdminPost(
   db: Database,
   input: AdminUpdatePostInput,
+  userId?: string,
 ) {
+  const [currentPost] = await db
+    .select()
+    .from(feedback)
+    .where(eq(feedback.id, input.id))
+    .limit(1);
+
+  if (!currentPost) {
+    return null;
+  }
+
   const [updatedPost] = await db
     .update(feedback)
     .set({
@@ -332,14 +358,201 @@ export async function updateAdminPost(
     .where(eq(feedback.id, input.id))
     .returning();
 
-  return updatedPost ?? null;
+  if (!updatedPost || !userId) {
+    return updatedPost ?? null;
+  }
+
+  const activities: Array<{
+    action: ActivityAction;
+    field: string;
+    oldValue: unknown;
+    newValue: unknown;
+  }> = [];
+
+  // Title change
+  if (input.title !== undefined && input.title !== currentPost.title) {
+    activities.push({
+      action: 'title_changed',
+      field: 'title',
+      oldValue: currentPost.title,
+      newValue: input.title,
+    });
+  }
+
+  // Description change
+  if (
+    input.description !== undefined &&
+    input.description !== currentPost.description
+  ) {
+    activities.push({
+      action: 'description_changed',
+      field: 'description',
+      oldValue: currentPost.description,
+      newValue: input.description,
+    });
+  }
+
+  // Status change
+  if (input.status !== undefined && input.status !== currentPost.status) {
+    activities.push({
+      action: 'status_changed',
+      field: 'status',
+      oldValue: currentPost.status,
+      newValue: input.status,
+    });
+  }
+
+  // Priority change
+  if (input.priority !== undefined && input.priority !== currentPost.priority) {
+    activities.push({
+      action: 'priority_changed',
+      field: 'priority',
+      oldValue: currentPost.priority,
+      newValue: input.priority,
+    });
+  }
+
+  // Board change
+  if (input.boardId !== undefined && input.boardId !== currentPost.boardId) {
+    activities.push({
+      action: 'board_changed',
+      field: 'boardId',
+      oldValue: currentPost.boardId,
+      newValue: input.boardId,
+    });
+  }
+
+  // Due date change
+  if (input.dueDate !== undefined) {
+    const newDueDate = new Date(input.dueDate);
+    const oldDueDate = currentPost.dueDate;
+    if (!oldDueDate || oldDueDate.getTime() !== newDueDate.getTime()) {
+      activities.push({
+        action: 'due_date_changed',
+        field: 'dueDate',
+        oldValue: oldDueDate,
+        newValue: newDueDate,
+      });
+    }
+  }
+
+  // Completed at change
+  if (input.completedAt !== undefined) {
+    const newCompletedAt = new Date(input.completedAt);
+    const oldCompletedAt = currentPost.completedAt;
+    if (
+      !oldCompletedAt ||
+      oldCompletedAt.getTime() !== newCompletedAt.getTime()
+    ) {
+      activities.push({
+        action: 'completed',
+        field: 'completedAt',
+        oldValue: oldCompletedAt,
+        newValue: newCompletedAt,
+      });
+    }
+  }
+
+  // Assignee change
+  if (input.assigneeId !== undefined) {
+    if (input.assigneeId !== currentPost.assigneeId) {
+      if (input.assigneeId === null) {
+        activities.push({
+          action: 'unassigned',
+          field: 'assigneeId',
+          oldValue: currentPost.assigneeId,
+          newValue: null,
+        });
+      } else {
+        activities.push({
+          action: 'assigned',
+          field: 'assigneeId',
+          oldValue: currentPost.assigneeId,
+          newValue: input.assigneeId,
+        });
+      }
+    }
+  }
+
+  // Tags change
+  if (input.tags !== undefined) {
+    const oldTags = currentPost.tags || [];
+    const newTags = input.tags || [];
+    const oldTagsSet = new Set(oldTags);
+    const newTagsSet = new Set(newTags);
+
+    // Find added tags
+    for (const tag of newTags) {
+      if (!oldTagsSet.has(tag)) {
+        activities.push({
+          action: 'tag_added',
+          field: 'tags',
+          oldValue: oldTags,
+          newValue: tag,
+        });
+      }
+    }
+
+    // Find removed tags
+    for (const tag of oldTags) {
+      if (!newTagsSet.has(tag)) {
+        activities.push({
+          action: 'tag_removed',
+          field: 'tags',
+          oldValue: tag,
+          newValue: newTags,
+        });
+      }
+    }
+  }
+
+  // Create activity logs for all changes
+  await Promise.all(
+    activities.map((activity) =>
+      createActivityLog(db, {
+        feedbackId: input.id,
+        userId,
+        action: activity.action,
+        field: activity.field,
+        oldValue: activity.oldValue,
+        newValue: activity.newValue,
+      }),
+    ),
+  );
+
+  return updatedPost;
 }
 
-export async function deleteAdminPost(db: Database, id: string) {
-  return (
+export async function deleteAdminPost(
+  db: Database,
+  id: string,
+  userId?: string,
+) {
+  // Fetch current state before deleting
+  const [currentPost] = await db
+    .select()
+    .from(feedback)
+    .where(eq(feedback.id, id))
+    .limit(1);
+
+  const deletedPost =
     (await db.delete(feedback).where(eq(feedback.id, id)).returning())[0] ??
-    null
-  );
+    null;
+
+  // Log deletion activity
+  if (deletedPost && userId) {
+    await createActivityLog(db, {
+      feedbackId: id,
+      userId,
+      action: 'deleted',
+      metadata: {
+        title: currentPost?.title,
+        issueKey: currentPost?.issueKey,
+      },
+    });
+  }
+
+  return deletedPost;
 }
 
 export async function getAdminAllPosts(db: Database) {
@@ -433,7 +646,19 @@ export async function promoteRequestedIssue(
   db: Database,
   id: string,
   teamId: string,
+  userId?: string,
 ) {
+  // Fetch current state before promoting
+  const [currentPost] = await db
+    .select()
+    .from(feedback)
+    .where(eq(feedback.id, id))
+    .limit(1);
+
+  if (!currentPost) {
+    return null;
+  }
+
   const teamDetails = await getTeamDetails(db, teamId);
   const teamName = teamDetails[0]?.name;
 
@@ -441,13 +666,52 @@ export async function promoteRequestedIssue(
 
   const issueKey = generateIssueKey(teamName, teamSerial);
 
-  return (
+  const promotedPost =
     (
       await db
         .update(feedback)
         .set({ status: 'to-do', issueKey, updatedAt: new Date() })
         .where(eq(feedback.id, id))
         .returning()
-    )[0] ?? null
-  );
+    )[0] ?? null;
+
+  // Log promotion activities
+  if (promotedPost && userId) {
+    const activities = [];
+
+    // Log status change if it changed
+    if (currentPost.status !== 'to-do') {
+      activities.push(
+        createActivityLog(db, {
+          feedbackId: id,
+          userId,
+          action: 'status_changed',
+          field: 'status',
+          oldValue: currentPost.status,
+          newValue: 'to-do',
+        }),
+      );
+    }
+
+    // Log issue key assignment
+    if (!currentPost.issueKey) {
+      activities.push(
+        createActivityLog(db, {
+          feedbackId: id,
+          userId,
+          action: 'updated',
+          field: 'issueKey',
+          oldValue: null,
+          newValue: issueKey,
+          metadata: {
+            promoted: true,
+          },
+        }),
+      );
+    }
+
+    await Promise.all(activities);
+  }
+
+  return promotedPost;
 }
