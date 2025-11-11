@@ -12,8 +12,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@workspace/ui/components/popover';
+import { cn } from '@workspace/ui/lib/utils';
 import { Box, CheckIcon } from 'lucide-react';
-import { useId, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
 import { pickIconForId } from '@/features/issues/utils/get-random-icons';
 import { useBoards } from '@/react-db/boards';
 import { useIssues } from '@/react-db/issues';
@@ -21,9 +22,16 @@ import { useIssues } from '@/react-db/issues';
 interface BoardSelectorProps {
   boardId?: string;
   onChange: (boardId: string) => void;
+  size?: 'default' | 'sm' | 'lg' | 'icon';
+  variant?: 'secondary' | 'ghost';
 }
 
-export function BoardSelector({ boardId, onChange }: BoardSelectorProps) {
+export function BoardSelector({
+  boardId,
+  onChange,
+  size = 'default',
+  variant = 'secondary',
+}: BoardSelectorProps) {
   const id = useId();
   const [open, setOpen] = useState<boolean>(false);
   const [value, setValue] = useState<string | undefined>(boardId);
@@ -38,6 +46,10 @@ export function BoardSelector({ boardId, onChange }: BoardSelectorProps) {
     }));
   }, [boards]);
 
+  useEffect(() => {
+    setValue(boardId);
+  }, [boardId]);
+
   const handleBoardChange = (newBoardId: string) => {
     setValue(newBoardId);
     onChange(newBoardId);
@@ -50,11 +62,15 @@ export function BoardSelector({ boardId, onChange }: BoardSelectorProps) {
         <PopoverTrigger asChild>
           <Button
             aria-expanded={open}
-            className='flex items-center justify-center'
+            className={cn(
+              'flex items-center justify-center py-1.5',
+              size === 'icon' ? 'size-7' : 'size-full',
+            )}
             id={id}
             role='combobox'
-            size='sm'
-            variant='secondary'
+            size={size === 'icon' ? 'icon' : size}
+            variant={variant}
+            onClick={(event) => event.stopPropagation()}
           >
             {value ? (
               (() => {
@@ -70,16 +86,19 @@ export function BoardSelector({ boardId, onChange }: BoardSelectorProps) {
             ) : (
               <Box className='size-4' />
             )}
-            <span>
-              {value
-                ? boardsWithIcon.find((b) => b.id === value)?.name
-                : 'No board'}
-            </span>
+            {size !== 'icon' && (
+              <span className='ml-2 truncate text-left'>
+                {value
+                  ? boardsWithIcon.find((b) => b.id === value)?.name
+                  : 'Set board'}
+              </span>
+            )}
           </Button>
         </PopoverTrigger>
         <PopoverContent
           align='start'
           className='w-full min-w-(--radix-popper-anchor-width) border-input p-0'
+          onClick={(event) => event.stopPropagation()}
         >
           <Command>
             <CommandInput placeholder='Set board...' />

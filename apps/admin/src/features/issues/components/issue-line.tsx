@@ -36,11 +36,21 @@ export function IssueLine({
           }}
         >
           <div className='flex items-center gap-0.5'>
-            <PrioritySelector issueId={issue.id} priority={issue.priority} />
+            <PrioritySelector
+              issueId={issue.id}
+              priority={issue.priority}
+              size='icon'
+              variant='ghost'
+            />
             <span className='mr-0.5 hidden w-[66px] shrink-0 truncate align-bottom font-medium text-muted-foreground text-sm uppercase sm:inline-block'>
               {issue.issueKey}
             </span>
-            <StatusSelector issueId={issue.id} statusKey={issue.status} />
+            <StatusSelector
+              issueId={issue.id}
+              statusKey={issue.status}
+              size='icon'
+              variant='ghost'
+            />
           </div>
           <span className='mr-1 ml-0.5 flex min-w-0 items-center justify-start'>
             <span className='truncate text-xs sm:text-sm'>{issue.title}</span>
