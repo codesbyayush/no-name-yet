@@ -67,7 +67,13 @@ const issuesCollection = createCollection<IssueDoc>(
       if (changes.completedAt) {
         payload.completedAt = changes.completedAt;
       }
+
       await adminClient.organization.posts.update(payload);
+
+      // Invalidate activity history query
+      queryClient.invalidateQueries({
+        queryKey: ['activity-history', payload.id],
+      });
     },
     onDelete: async ({ transaction }) => {
       const mutation = transaction.mutations[0];
@@ -102,6 +108,11 @@ const issuesCollection = createCollection<IssueDoc>(
           | 'pending'
           | undefined,
         tags: changes?.tags ?? undefined,
+      });
+
+      // Invalidate activity history query
+      queryClient.invalidateQueries({
+        queryKey: ['activity-history', changes.id],
       });
     },
   }),

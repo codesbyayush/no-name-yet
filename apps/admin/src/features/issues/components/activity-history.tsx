@@ -4,8 +4,8 @@ import {
   AvatarFallback,
   AvatarImage,
 } from '@workspace/ui/components/avatar';
+import { adminIssueStatus as statuses } from '@/mock-data/status';
 import { useBoards } from '@/react-db/boards';
-import { useStatuses } from '@/react-db/index';
 import { useTags } from '@/react-db/tags';
 import { useUsers } from '@/react-db/users';
 import { adminClient } from '@/utils/admin-orpc';
@@ -30,7 +30,6 @@ export function ActivityHistory({ feedbackId }: ActivityHistoryProps) {
 
   const { data: users } = useUsers();
   const { data: tags } = useTags();
-  const { data: statuses } = useStatuses();
   const { data: boards } = useBoards();
 
   if (isLoading) {
