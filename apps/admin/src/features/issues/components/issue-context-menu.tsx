@@ -273,7 +273,7 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
   );
 }
 
-const ExtraActions = ({
+const _ExtraActions = ({
   issue,
   issueId,
 }: {
