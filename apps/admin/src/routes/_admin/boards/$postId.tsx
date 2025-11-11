@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { ActivityHistory } from '@/features/issues/components/activity-history';
 import { PostSidebar } from '@/features/issues/components/post-sidebar';
 import { useIssueById } from '@/react-db/issues';
 
@@ -35,6 +36,7 @@ function RouteComponent() {
                 {JSON.stringify(post?.[0], null, 2)}
               </pre>
             </div>
+            <ActivityHistory feedbackId={postId} />
           </div>
         </div>
       </div>
