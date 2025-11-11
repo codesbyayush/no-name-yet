@@ -52,9 +52,6 @@ interface IssueContextMenuProps {
 }
 
 export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
-  const [isSubscribed, setIsSubscribed] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
-
   const { data: issueData } = useIssueById(issueId);
   const issue = issueData?.[0];
   const { data: tags } = useTags();
@@ -123,58 +120,20 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
     toast.success(`Board set to ${newBoard?.name}`);
   };
 
-  const handleSetDueDate = () => {
-    const dueDate = new Date();
-    dueDate.setDate(dueDate.getDate() + 7);
-    updateIssue({ dueDate: new Date(dueDate).toISOString() });
-    toast.success('Due date set to 7 days from now');
-  };
-
-  const handleAddLink = () => {
-    toast.success('Link added');
-  };
-
-  const handleMakeCopy = () => {
-    toast.success('Issue copied');
-  };
-
-  const handleCreateRelated = () => {
-    toast.success('Related issue created');
-  };
-
-  const handleMarkAs = (type: string) => {
-    toast.success(`Marked as ${type}`);
-  };
-
-  const handleMove = () => {
-    toast.success('Issue moved');
-  };
-
-  const handleSubscribe = () => {
-    setIsSubscribed(!isSubscribed);
-    toast.success(
-      isSubscribed ? 'Unsubscribed from issue' : 'Subscribed to issue',
-    );
-  };
-
-  const handleFavorite = () => {
-    setIsFavorite(!isFavorite);
-    toast.success(isFavorite ? 'Removed from favorites' : 'Added to favorites');
-  };
-
-  const handleCopy = () => {
-    if (!issueId) {
-      return;
-    }
-    if (issue) {
-      navigator.clipboard.writeText(issue.title);
-      toast.success('Copied to clipboard');
-    }
-  };
-
-  const handleRemindMe = () => {
-    toast.success('Reminder set');
-  };
+  // const handleSetDueDate = () => {
+  // const dueDate = new Date();
+  // dueDate.setDate(dueDate.getDate() + 7);
+  // updateIssue({ dueDate: new Date(dueDate).toISOString() });
+  // toast.success('Due date set to 7 days from now');
+  // };
+  //
+  // const handleAddLink = () => {
+  // toast.success('Link added');
+  // };
+  //
+  // const handleMakeCopy = () => {
+  // toast.success('Issue copied');
+  // };
 
   return (
     <ContextMenuContent className='w-64'>
@@ -273,7 +232,7 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
             ))}
           </ContextMenuSubContent>
         </ContextMenuSub>
-
+        {/* 
         <ContextMenuItem onClick={handleSetDueDate}>
           <CalendarClock className='size-4' /> Set due date...
           <ContextMenuShortcut>D</ContextMenuShortcut>
@@ -307,11 +266,64 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
 
         <ContextMenuItem onClick={handleMakeCopy}>
           <CopyIcon className='size-4' /> Make a copy...
-        </ContextMenuItem>
+        </ContextMenuItem> */}
       </ContextMenuGroup>
+      {/* <ExtraActions issue={issue} issueId={issueId} /> */}
+    </ContextMenuContent>
+  );
+}
 
+const ExtraActions = ({
+  issue,
+  issueId,
+}: {
+  issue: IssueDoc;
+  issueId: string;
+}) => {
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  const handleCreateRelated = () => {
+    toast.success('Related issue created');
+  };
+
+  const handleMarkAs = (type: string) => {
+    toast.success(`Marked as ${type}`);
+  };
+
+  const handleMove = () => {
+    toast.success('Issue moved');
+  };
+
+  const handleSubscribe = () => {
+    setIsSubscribed(!isSubscribed);
+    toast.success(
+      isSubscribed ? 'Unsubscribed from issue' : 'Subscribed to issue',
+    );
+  };
+
+  const handleFavorite = () => {
+    setIsFavorite(!isFavorite);
+    toast.success(isFavorite ? 'Removed from favorites' : 'Added to favorites');
+  };
+
+  const handleCopy = () => {
+    if (!issueId) {
+      return;
+    }
+    if (issue) {
+      navigator.clipboard.writeText(issue.title);
+      toast.success('Copied to clipboard');
+    }
+  };
+
+  const handleRemindMe = () => {
+    toast.success('Reminder set');
+  };
+
+  return (
+    <>
       <ContextMenuSeparator />
-
       <ContextMenuItem onClick={handleCreateRelated}>
         <PlusSquare className='size-4' /> Create related
       </ContextMenuItem>
@@ -364,6 +376,6 @@ export function IssueContextMenu({ issueId }: IssueContextMenuProps) {
         <Trash2 className='size-4' /> Delete...
         <ContextMenuShortcut>⌘⌫</ContextMenuShortcut>
       </ContextMenuItem>
-    </ContextMenuContent>
+    </>
   );
-}
+};
