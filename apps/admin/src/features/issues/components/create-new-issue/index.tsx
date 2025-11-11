@@ -157,6 +157,8 @@ export function CreateNewIssue() {
                 setAddIssueForm({ ...addIssueForm, tags: newLabels })
               }
               selectedLabels={addIssueForm.tags || []}
+              size='default'
+              variant='secondary'
             />
           </div>
         </div>

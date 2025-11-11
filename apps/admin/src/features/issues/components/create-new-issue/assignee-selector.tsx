@@ -17,19 +17,24 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@workspace/ui/components/popover';
+import { cn } from '@workspace/ui/lib/utils';
 import { CheckIcon, UserCircle } from 'lucide-react';
 import { useEffect, useId, useState } from 'react';
 import { useIssues } from '@/react-db/issues';
 import { useUsers } from '@/react-db/users';
 
 interface AssigneeSelectorProps {
-  assigneeId: string | undefined;
+  assigneeId?: string | null;
   onChange: (assignee?: string | null) => void;
+  size?: 'default' | 'sm' | 'lg' | 'icon';
+  variant?: 'secondary' | 'ghost';
 }
 
 export function AssigneeSelector({
   assigneeId,
   onChange,
+  size = 'default',
+  variant = 'secondary',
 }: AssigneeSelectorProps) {
   const id = useId();
   const [open, setOpen] = useState<boolean>(false);
@@ -37,6 +42,8 @@ export function AssigneeSelector({
 
   const { data: issues } = useIssues();
   const { data: users } = useUsers();
+
+  const selectedUser = users?.find((user) => user.id === value);
 
   useEffect(() => {
     setValue(assigneeId || null);
@@ -62,38 +69,30 @@ export function AssigneeSelector({
         <PopoverTrigger asChild>
           <Button
             aria-expanded={open}
-            className='flex items-center justify-center capitalize'
+            className={cn(
+              'flex items-center justify-center py-1.5 px-3',
+              size === 'icon' ? 'size-7' : 'size-full',
+            )}
             id={id}
             role='combobox'
-            size='sm'
-            variant='secondary'
+            size={size}
+            variant={variant}
+            onClick={(e) => e.stopPropagation()}
           >
-            {value ? (
-              (() => {
-                const selectedUser = users?.find((user) => user.id === value);
-                if (selectedUser) {
-                  return (
-                    <Avatar className='size-5'>
-                      <AvatarImage
-                        alt={selectedUser.name}
-                        src={selectedUser.image || ''}
-                      />
-                      <AvatarFallback>
-                        {selectedUser.name.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                  );
-                }
-                return <UserCircle className='size-5' />;
-              })()
+            {selectedUser ? (
+              <Avatar className='size-5'>
+                <AvatarImage
+                  alt={selectedUser.name}
+                  src={selectedUser.image || ''}
+                />
+                <AvatarFallback>{selectedUser.name.charAt(0)}</AvatarFallback>
+              </Avatar>
             ) : (
               <UserCircle className='size-5' />
             )}
-            <span>
-              {value
-                ? users?.find((user) => user.id === value)?.name
-                : 'Unassigned'}
-            </span>
+            {size !== 'icon' && (
+              <span>{selectedUser?.name || 'Unassigned'}</span>
+            )}
           </Button>
         </PopoverTrigger>
         <PopoverContent

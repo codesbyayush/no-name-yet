@@ -9,7 +9,11 @@ export const Route = createFileRoute('/_admin/boards/$postId')({
 function RouteComponent() {
   const { postId } = Route.useParams();
 
-  const { data: post } = useIssueById(postId);
+  const { data: post, isLoading } = useIssueById(postId);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   if (!post?.[0]) {
     return <div>No post found</div>;

@@ -12,17 +12,26 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@workspace/ui/components/popover';
+import { cn } from '@workspace/ui/lib/utils';
 import { CheckIcon } from 'lucide-react';
 import { useEffect, useId, useState } from 'react';
-import { status as allStatus } from '@/mock-data/status';
+import { renderStatusIcon } from '@/lib/status-utils';
+import { adminIssueStatus } from '@/mock-data/status';
 import { useIssues } from '@/react-db/issues';
 
 interface StatusSelectorProps {
   status: string;
   onChange: (statusId: string) => void;
+  size?: 'default' | 'sm' | 'lg' | 'icon';
+  variant?: 'secondary' | 'ghost';
 }
 
-export function StatusSelector({ status, onChange }: StatusSelectorProps) {
+export function StatusSelector({
+  status,
+  onChange,
+  size = 'default',
+  variant = 'secondary',
+}: StatusSelectorProps) {
   const id = useId();
   const [open, setOpen] = useState<boolean>(false);
   const [value, setValue] = useState<string>(status);
@@ -46,39 +55,41 @@ export function StatusSelector({ status, onChange }: StatusSelectorProps) {
         <PopoverTrigger asChild>
           <Button
             aria-expanded={open}
-            className='flex items-center justify-center'
+            className={cn(
+              'flex items-center justify-center py-1.5',
+              size === 'icon' ? 'size-7' : 'size-full',
+            )}
             id={id}
             role='combobox'
-            size='sm'
-            variant='secondary'
+            size={size}
+            variant={variant}
+            onClick={(e) => e.stopPropagation()}
           >
-            {(() => {
-              const selectedItem = allStatus.find((item) => item.id === value);
-              if (selectedItem) {
-                const Icon = selectedItem.icon;
-                return <Icon />;
-              }
-              return null;
-            })()}
-            <span>
-              {value ? allStatus.find((s) => s.id === value)?.name : 'To do'}
-            </span>
+            {renderStatusIcon(value)}
+            {size !== 'icon' && (
+              <span>
+                {value
+                  ? adminIssueStatus.find((s) => s.id === value)?.name
+                  : 'Set status'}
+              </span>
+            )}
           </Button>
         </PopoverTrigger>
         <PopoverContent
           align='start'
           className='w-full min-w-(--radix-popper-anchor-width) border-input p-0'
+          onClick={(e) => e.stopPropagation()}
         >
           <Command>
-            <CommandInput placeholder='Set status...' />
+            <CommandInput placeholder='Set status' />
             <CommandList>
               <CommandEmpty>No status found.</CommandEmpty>
               <CommandGroup>
-                {allStatus.map((item) => (
+                {adminIssueStatus.map((item) => (
                   <CommandItem
                     className='flex items-center justify-between'
                     key={item.id}
-                    onSelect={() => handleStatusChange(item.id)}
+                    onSelect={handleStatusChange}
                     value={item.id}
                   >
                     <div className='flex items-center gap-2'>

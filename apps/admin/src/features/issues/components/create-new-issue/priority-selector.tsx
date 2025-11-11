@@ -12,19 +12,25 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@workspace/ui/components/popover';
+import { cn } from '@workspace/ui/lib/utils';
 import { CheckIcon } from 'lucide-react';
 import { useEffect, useId, useState } from 'react';
+import { renderPriorityIcon } from '@/lib/priority-utils';
 import { priorities } from '@/mock-data/priorities';
 import { useIssues } from '@/react-db/issues';
 
 interface PrioritySelectorProps {
   priority: string;
   onChange: (priorityId: string) => void;
+  size?: 'default' | 'sm' | 'lg' | 'icon';
+  variant?: 'secondary' | 'ghost';
 }
 
 export function PrioritySelector({
   priority,
   onChange,
+  size = 'default',
+  variant = 'secondary',
 }: PrioritySelectorProps) {
   const id = useId();
   const [open, setOpen] = useState<boolean>(false);
@@ -49,30 +55,30 @@ export function PrioritySelector({
         <PopoverTrigger asChild>
           <Button
             aria-expanded={open}
-            className='flex items-center justify-center'
+            className={cn(
+              'flex items-center justify-center py-1.5',
+              size === 'icon' ? 'size-7' : 'size-full',
+            )}
             id={id}
             role='combobox'
-            size='sm'
-            variant='secondary'
+            size={size}
+            variant={variant}
+            onClick={(e) => e.stopPropagation()}
           >
-            {(() => {
-              const selectedItem = priorities.find((item) => item.id === value);
-              if (selectedItem) {
-                const Icon = selectedItem.icon;
-                return <Icon className='size-4 text-muted-foreground' />;
-              }
-              return null;
-            })()}
-            <span>
-              {value
-                ? priorities.find((p) => p.id === value)?.name
-                : 'No priority'}
-            </span>
+            {renderPriorityIcon(value)}
+            {size !== 'icon' && (
+              <span>
+                {value
+                  ? priorities.find((p) => p.id === value)?.name
+                  : 'Set priority'}
+              </span>
+            )}
           </Button>
         </PopoverTrigger>
         <PopoverContent
           align='start'
           className='w-full min-w-(--radix-popper-anchor-width) border-input p-0'
+          onClick={(e) => e.stopPropagation()}
         >
           <Command>
             <CommandInput placeholder='Set priority...' />

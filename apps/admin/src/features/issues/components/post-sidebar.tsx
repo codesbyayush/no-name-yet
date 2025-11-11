@@ -1,27 +1,13 @@
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@workspace/ui/components/avatar';
 import { Button } from '@workspace/ui/components/button';
-import {
-  ArrowRight,
-  ArrowUp,
-  Calendar,
-  ChevronDown,
-  Github,
-  Link,
-  MoreHorizontal,
-  Share,
-  Sparkles,
-  User,
-} from 'lucide-react';
+import { ArrowRight, Github, Link, Share, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
-import { formatDate } from '@/features/issues/utils/format-date';
-import { getStatusById } from '@/lib/status-utils';
 import type { Issue } from '@/mock-data/issues';
 import { useUsers } from '@/react-db/users';
 import { buildBranchName } from '@/utils/github';
+import { AssigneeSelector } from './assignee-selector';
+import { BoardSelector } from './board-selector';
+import { LabelSelector } from './label-selector';
+import { PrioritySelector } from './priority-selector';
 import { StatusSelector } from './status-selector';
 
 interface PostSidebarProps {
@@ -36,12 +22,9 @@ export function PostSidebar({ issue }: PostSidebarProps) {
     <div className='h-screen overflow-y-auto bg-sidebar'>
       {/* Header Section */}
       <div className='border-border border-b p-6'>
-        <div className='mb-6 flex items-center justify-between'>
+        <div className='mb-6 flex items-center gap-4 justify-between'>
           <h2 className='font-semibold text-xl'>Manage Post</h2>
           <div className='flex items-center gap-2'>
-            <Button className='h-8 w-8' size='icon' variant='ghost'>
-              <ArrowUp className='h-4 w-4' />
-            </Button>
             <Button className='h-8 w-8' size='icon' variant='ghost'>
               <Link className='h-4 w-4' />
             </Button>
@@ -69,101 +52,58 @@ export function PostSidebar({ issue }: PostSidebarProps) {
             >
               <Github className='h-4 w-4' />
             </Button>
-            <Button className='h-8 w-8' size='icon' variant='ghost'>
-              <MoreHorizontal className='h-4 w-4' />
-            </Button>
           </div>
         </div>
 
         {/* Post Details Section */}
-        <div className='space-y-4'>
+        <div className='space-y-2'>
           {/* Status */}
           <div className='flex items-center justify-between'>
-            <div className='flex items-center gap-2'>
-              <div className='h-2 w-2 rounded-full bg-purple-500' />
-              <span className='font-medium text-sm'>Status</span>
-            </div>
-            <div className='flex items-center gap-2'>
-              <StatusSelector issueId={issue.id} statusKey={issue.status} />
-              <span className='text-muted-foreground text-sm'>
-                {getStatusById(issue.status)?.name}
-              </span>
-              <Button className='h-6 w-6' size='icon' variant='ghost'>
-                <ChevronDown className='h-3 w-3' />
-              </Button>
-            </div>
+            <StatusSelector
+              issueId={issue.id}
+              statusKey={issue.status}
+              size='default'
+              variant='ghost'
+            />
+          </div>
+
+          <div className='flex items-center justify-between'>
+            <PrioritySelector
+              issueId={issue.id}
+              priority={issue.priority}
+              size='default'
+              variant='ghost'
+            />
           </div>
 
           {/* Board */}
           <div className='flex items-center justify-between'>
-            <div className='flex items-center gap-2'>
-              <div className='h-2 w-2 rounded-full bg-yellow-500' />
-              <span className='font-medium text-sm'>Board</span>
-            </div>
-            <div className='flex items-center gap-2'>
-              <span className='text-muted-foreground text-sm'>
-                {/*  TODO: fix this */}
-                {/* {issue.board?.name || 'Feature Request'} */}
-                Feature Request
-              </span>
-              <Button className='h-6 w-6' size='icon' variant='ghost'>
-                <ChevronDown className='h-3 w-3' />
-              </Button>
-            </div>
+            <BoardSelector
+              boardId={issue.boardId}
+              issueId={issue.id}
+              size='default'
+              variant='ghost'
+            />
           </div>
 
           {/* Tags */}
           <div className='flex items-center justify-between'>
-            <div className='flex items-center gap-2'>
-              <div className='h-2 w-2 rounded-full bg-gray-500' />
-              <span className='font-medium text-sm'>Tags</span>
-            </div>
-            <div className='flex items-center gap-2'>
-              <span className='text-muted-foreground text-sm'>
-                {issue.tags?.length && issue.tags.length > 0
-                  ? `${issue.tags?.length} selected`
-                  : 'Unselected'}
-              </span>
-              <Button className='h-6 w-6' size='icon' variant='ghost'>
-                <ChevronDown className='h-3 w-3' />
-              </Button>
-            </div>
+            <LabelSelector
+              issueId={issue.id}
+              labels={issue.tags ?? []}
+              size='default'
+              variant='ghost'
+            />
           </div>
 
-          {/* Date */}
+          {/* Assignee */}
           <div className='flex items-center justify-between'>
-            <div className='flex items-center gap-2'>
-              <Calendar className='h-4 w-4 text-muted-foreground' />
-              <span className='font-medium text-sm'>Date</span>
-            </div>
-            <span className='text-muted-foreground text-sm'>
-              {formatDate(issue.createdAt)}
-            </span>
-          </div>
-
-          {/* Author */}
-          <div className='flex items-center justify-between'>
-            <div className='flex items-center gap-2'>
-              <User className='h-4 w-4 text-muted-foreground' />
-              <span className='font-medium text-sm'>Author</span>
-            </div>
-            <div className='flex items-center gap-2'>
-              <Avatar className='h-6 w-6'>
-                <AvatarImage
-                  alt={assignee?.name || 'Unassigned'}
-                  src={assignee?.image || ''}
-                />
-                <AvatarFallback className='bg-orange-500 text-white text-xs'>
-                  {assignee?.name?.[0] || 'Unassigned'}
-                </AvatarFallback>
-              </Avatar>
-              <span className='text-muted-foreground text-sm'>
-                {assignee?.name || 'Unassigned'}
-              </span>
-              {issue.assigneeId !== null && (
-                <div className='size-2 rounded-full border border-background bg-blue-500' />
-              )}
-            </div>
+            <AssigneeSelector
+              assigneeId={issue.assigneeId}
+              issueId={issue.id}
+              size='default'
+              variant='ghost'
+            />
           </div>
         </div>
       </div>
