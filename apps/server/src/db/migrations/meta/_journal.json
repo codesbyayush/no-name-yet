@@ -120,6 +120,13 @@
       "when": 1762719906318,
       "tag": "0016_parallel_northstar",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1762877106123,
+      "tag": "0017_organic_weapon_omega",
+      "breakpoints": true
     }
   ]
 }
