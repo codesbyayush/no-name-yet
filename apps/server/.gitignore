@@ -56,3 +56,6 @@ gh-integration-instr.md
 
 certs/*
 _journal.json
+
+# Sentry Config File
+.sentryclirc

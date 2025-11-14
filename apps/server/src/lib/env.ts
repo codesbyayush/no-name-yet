@@ -25,6 +25,10 @@ export interface AppEnv {
   GH_APP_NAME: string;
   OF_STORE?: KVNamespace;
   REDIS_URL?: string;
+  SENTRY_DSN?: string;
+  CF_VERSION_METADATA: {
+    id: string;
+  };
 }
 
 // Use Hono's official env adapter to get environment variables
