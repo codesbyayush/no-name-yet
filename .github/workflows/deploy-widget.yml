@@ -141,6 +141,8 @@ jobs:
       - name: Build server
         run: |
           bun run build:server
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Run DB migrations
         run: |
