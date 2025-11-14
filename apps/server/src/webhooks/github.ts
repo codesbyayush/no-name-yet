@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { getDb } from '../db';
 import { githubWebhookDeliveries } from '../db/schema';
 import { getEnvFromContext } from '../lib/env';
+import { logger } from '../lib/logger';
 import {
   deleteInstallation,
   type GitHubInstallation,
@@ -36,6 +37,9 @@ router.post('/github', async (c) => {
 
     // Check if required env vars exist
     if (!env.GH_WEBHOOK_SECRET) {
+      logger.error('GitHub webhook secret not configured', {
+        scope: 'webhook',
+      });
       return c.text('Configuration error', HTTP_STATUS.INTERNAL_SERVER_ERROR);
     }
 
@@ -65,7 +69,15 @@ router.post('/github', async (c) => {
     // Process synchronously to support both local dev and Workers
     await handleEvent({ db, event, payload, deliveryId });
     return c.text('OK');
-  } catch (_error) {
+  } catch (error) {
+    logger.error('Error occurred', {
+      scope: 'webhook',
+      context: {
+        path: '/github',
+        method: 'POST',
+        error,
+      },
+    });
     return c.text('Internal server error', HTTP_STATUS.INTERNAL_SERVER_ERROR);
   }
 });

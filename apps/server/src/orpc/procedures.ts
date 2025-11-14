@@ -1,5 +1,5 @@
 import { ORPCError, os } from '@orpc/server';
-import { logError } from '@/lib/error-handler';
+import { logger } from '@/lib/logger';
 import type { AdminContext, Context } from './context';
 
 export const o = os.$context<Context>();
@@ -15,10 +15,13 @@ const withErrorBoundary = o.middleware(async ({ context, next }) => {
       throw error;
     }
     // Minimal structured logging
-    logError(error, {
+    logger.error('Error occurred', {
       scope: 'orpc',
-      userId: context.session?.user?.id,
-      orgId: context.organization?.id,
+      context: {
+        userId: context.session?.user?.id,
+        orgId: context.organization?.id,
+        error,
+      },
     });
     throw new ORPCError('INTERNAL_SERVER_ERROR');
   }

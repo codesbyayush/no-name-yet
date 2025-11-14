@@ -1,10 +1,11 @@
 import { RPCHandler } from '@orpc/server/fetch';
+import * as Sentry from '@sentry/cloudflare';
 import { type Context, Hono } from 'hono';
 import { cors } from 'hono/cors';
-import { logger } from 'hono/logger';
 import { secureHeaders } from 'hono/secure-headers';
 import { getAuth } from './lib/auth';
-import { getEnvFromContext } from './lib/env';
+import { type AppEnv, getEnvFromContext } from './lib/env';
+import { logger } from './lib/logger';
 import { adminRouter } from './orpc/admin';
 import { createAdminContext, createContext } from './orpc/context';
 import { apiRouter } from './orpc/index';
@@ -20,6 +21,29 @@ app.use(secureHeaders());
 const HTTP_STATUS = {
   INTERNAL_SERVER_ERROR: 500,
 } as const;
+
+// Global error handler
+app.onError((err, c) => {
+  const env = getEnvFromContext(c);
+  logger.error('Error occurred', {
+    scope: 'hono',
+    error: err instanceof Error ? err : new Error(String(err)),
+    context: {
+      path: c.req.path,
+      method: c.req.method,
+      url: c.req.url,
+      headers: Object.fromEntries(c.req.raw.headers.entries()),
+    },
+  });
+
+  return c.json(
+    {
+      error: 'Internal server error',
+      message: env.NODE_ENV === 'development' ? err.message : undefined,
+    },
+    HTTP_STATUS.INTERNAL_SERVER_ERROR,
+  );
+});
 
 const corsOptions = {
   origin: (origin: string, c: Context) => {
@@ -52,17 +76,16 @@ authRouter.all('*', async (c) => {
     const auth = getAuth(env);
     return await auth.handler(c.req.raw);
   } catch (error) {
-    return c.json(
-      {
-        error: 'Auth failed',
-        details: error instanceof Error ? error.message : 'Unknown error',
+    logger.error('Error occurred', {
+      scope: 'auth',
+      context: {
+        path: c.req.path,
+        error,
       },
-      HTTP_STATUS.INTERNAL_SERVER_ERROR,
-    );
+    });
+    return c.json({ error: 'Auth failed' }, HTTP_STATUS.INTERNAL_SERVER_ERROR);
   }
 });
-
-app.use(logger());
 
 app.use(
   '/api/v1/*',
@@ -115,6 +138,10 @@ app.use('/rpc/*', cors(corsOptions), async (c, next) => {
   await next();
 });
 
+app.get('debug-sentry', (c) => {
+  throw new Error('Test error');
+});
+
 // oRPC Handler for admin routes
 const adminRpcHandler = new RPCHandler(adminRouter);
 app.use('/admin/*', cors(corsOptions), async (c, next) => {
@@ -153,8 +180,19 @@ const createExport = async () => {
     };
   }
 
-  // Production/Workers environment
-  return app;
+  // Production/Workers environment - wrap with Sentry
+  return Sentry.withSentry<AppEnv>((env) => {
+    const { id: versionId } = env.CF_VERSION_METADATA;
+
+    return {
+      dsn: env.SENTRY_DSN,
+      release: versionId,
+      environment: env.NODE_ENV || 'production',
+      tracesSampleRate: 1.0,
+      enableLogs: true,
+      sendDefaultPii: true,
+    };
+  }, app);
 };
 
 export default await createExport();

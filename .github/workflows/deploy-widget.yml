@@ -170,6 +170,8 @@ jobs:
             GH_WEBHOOK_SECRET
             GH_APP_NAME
             NODE_ENV
+            SENTRY_DSN
+            SENTRY_AUTH_TOKEN
         env: 
           BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
@@ -184,3 +186,5 @@ jobs:
           GH_APP_NAME: ${{ secrets.GH_APP_NAME }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           NODE_ENV: production
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
