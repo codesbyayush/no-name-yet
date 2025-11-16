@@ -1,5 +1,5 @@
 import alchemy from 'alchemy';
-import { Website, Worker } from 'alchemy/cloudflare';
+import { VersionMetadata, Website, Worker } from 'alchemy/cloudflare';
 import { CloudflareStateStore } from 'alchemy/state';
 
 const app = await alchemy('openfeedback', {
@@ -163,6 +163,8 @@ const apiWorker = await Worker('api', {
   compatibilityFlags: ['nodejs_compat'],
   entrypoint: './apps/server/src/index.ts',
   bindings: {
+    // Cloudflare version metadata binding (for Sentry release tracking)
+    CF_VERSION_METADATA: VersionMetadata(),
     // Reference existing KV namespace by ID
     OF_STORE: {
       type: 'kv_namespace',
