@@ -49,6 +49,8 @@
     "@types/node": "^24.5.2",
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.2",
+    "alchemy": "^0.77.5",
+    "cloudflare": "^5.2.0",
     "husky": "^9.1.7",
     "knip": "^5.64.0",
     "lint-staged": "^16.2.4",
