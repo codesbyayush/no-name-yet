@@ -21,7 +21,7 @@ export const queryClient = new QueryClient({
   }),
 });
 
-const baseUrl = String(import.meta.env.PUBLIC_BACKEND_SERVER_URL || '');
+const baseUrl = String(import.meta.env.VITE_BACKEND_SERVER_URL || '');
 if (!baseUrl) {
   throw new Error('PUBLIC_BACKEND_SERVER_URL is not defined');
 }

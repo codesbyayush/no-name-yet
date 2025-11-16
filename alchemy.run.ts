@@ -1,5 +1,5 @@
 import alchemy from 'alchemy';
-import { VersionMetadata, Website, Worker } from 'alchemy/cloudflare';
+import { VersionMetadata, Vite, Worker } from 'alchemy/cloudflare';
 import { CloudflareStateStore } from 'alchemy/state';
 
 const app = await alchemy('openfeedback', {
@@ -123,7 +123,7 @@ if (process.env.SENTRY_AUTH_TOKEN) {
 const existingKVNamespaceId = '019d1859a7f64115a889f397093cc94f';
 
 // Define public worker (static assets) - using Website for static assets support
-const publicWorker = await Website('public', {
+const publicWorker = await Vite('public', {
   name: 'public',
   compatibilityDate: '2025-02-13',
   assets: {
@@ -142,7 +142,7 @@ const publicWorker = await Website('public', {
 });
 
 // Define admin worker (static assets) - using Website for static assets support
-const adminWorker = await Website('admin', {
+const adminWorker = await Vite('admin', {
   name: 'admin',
   compatibilityDate: '2025-02-13',
   assets: {

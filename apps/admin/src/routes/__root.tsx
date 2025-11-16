@@ -4,7 +4,7 @@ import {
   Outlet,
 } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
-import '@workspace/ui/globals.css';
+import '@workspace/ui/styles/globals.css';
 import '../index.css';
 import { Providers } from '@/contexts';
 

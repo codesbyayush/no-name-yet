@@ -58,7 +58,7 @@ export function WidgetEmbedCode() {
     position: 'above-button',
     buttonColor: '#3b82f6',
     buttonText: 'Feedback',
-    apiUrl: import.meta.env.PUBLIC_BACKEND_SERVER_URL || '',
+    apiUrl: import.meta.env.VITE_BACKEND_SERVER_URL || '',
     customDomain: '',
   });
 

@@ -7,7 +7,7 @@ import {
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import { Toaster } from '@workspace/ui/components/sonner';
 import { ThemeProvider } from '@/components/theme-provider';
-import '@workspace/ui/globals.css';
+import '@workspace/ui/styles/globals.css';
 import '../index.css';
 
 export type RouterAppContext = Record<string, never>;
