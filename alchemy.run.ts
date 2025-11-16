@@ -1,7 +1,13 @@
 import alchemy from 'alchemy';
 import { Website, Worker } from 'alchemy/cloudflare';
+import { CloudflareStateStore } from 'alchemy/state';
 
-const app = await alchemy('openfeedback');
+const app = await alchemy('openfeedback', {
+  // Using CloudflareStateStore for persistent state in CI environments
+  // Uses CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID from environment
+  // Uses ALCHEMY_STATE_TOKEN from environment (or generates one if not set)
+  stateStore: (scope) => new CloudflareStateStore(scope),
+});
 
 // Build steps - run before deploying workers
 // This ensures dist folders are ready for deployment
