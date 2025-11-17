@@ -11,6 +11,8 @@ on:
     branches:
       - main
 
+  workflow_dispatch:
+
 jobs:
   build-and-deploy-widget:
     runs-on: ubuntu-latest
