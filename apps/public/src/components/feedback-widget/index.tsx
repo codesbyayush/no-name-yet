@@ -182,7 +182,7 @@ const OmniFeedbackWidget = () => {
 
         // Initialize widget if not already initialized
         if (window.OmniFeedbackWidget && !instanceRef.current) {
-          const apiUrl = import.meta.env.PUBLIC_BACKEND_SERVER_URL as
+          const apiUrl = import.meta.env.VITE_BACKEND_SERVER_URL as
             | string
             | undefined;
           instanceRef.current = window.OmniFeedbackWidget.init({

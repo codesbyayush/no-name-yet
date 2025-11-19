@@ -22,7 +22,7 @@ export const queryClient = new QueryClient({
 });
 
 export const link = new RPCLink({
-  url: `${import.meta.env.PUBLIC_BACKEND_SERVER_URL ?? ''}/rpc`,
+  url: `${import.meta.env.VITE_BACKEND_SERVER_URL ?? ''}/rpc`,
   fetch(url, options) {
     return fetch(url, {
       ...options,

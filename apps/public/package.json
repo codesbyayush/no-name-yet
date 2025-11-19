@@ -4,16 +4,19 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "rsbuild dev",
-    "build": "rsbuild build",
-    "serve": "rsbuild preview",
-    "start": "rsbuild preview",
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
+    "start": "vite preview",
     "check-types": "tsc --noEmit",
     "deploy": "wrangler deploy",
     "knip": "knip"
   },
   "devDependencies": {
-    "@tanstack/router-plugin": "^1.133.13"
+    "@tanstack/router-plugin": "^1.133.13",
+    "@vitejs/plugin-basic-ssl": "^1.1.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.2"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

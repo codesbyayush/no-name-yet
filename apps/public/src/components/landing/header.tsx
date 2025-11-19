@@ -98,7 +98,7 @@ export const HeroHeader = () => {
                   className={cn(isScrolled && 'lg:hidden')}
                   size='sm'
                 >
-                  <a href={`${import.meta.env.PUBLIC_ADMIN_ROOT_URL}/auth`}>
+                  <a href={`${import.meta.env.VITE_ADMIN_ROOT_URL}/auth`}>
                     <span>Sign Up</span>
                   </a>
                 </Button>
@@ -107,7 +107,7 @@ export const HeroHeader = () => {
                   className={cn(isScrolled ? 'lg:inline-flex' : 'hidden')}
                   size='sm'
                 >
-                  <a href={`${import.meta.env.PUBLIC_ADMIN_ROOT_URL}/auth`}>
+                  <a href={`${import.meta.env.VITE_ADMIN_ROOT_URL}/auth`}>
                     <span>Get Started</span>
                   </a>
                 </Button>

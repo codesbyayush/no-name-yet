@@ -143,7 +143,7 @@ export default function HeroSection() {
                     className='rounded-xl px-5 text-base'
                     size='lg'
                   >
-                    <a href={`${import.meta.env.PUBLIC_ADMIN_ROOT_URL}/auth`}>
+                    <a href={`${import.meta.env.VITE_ADMIN_ROOT_URL}/auth`}>
                       <span className='text-nowrap'>Start Building</span>
                     </a>
                   </Button>

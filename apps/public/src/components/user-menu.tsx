@@ -88,7 +88,7 @@ export default function UserMenu() {
         <DropdownMenuGroup>
           <DropdownMenuItem
             onClick={() =>
-              navigate({ href: import.meta.env.PUBLIC_ADMIN_ROOT_URL })
+              navigate({ href: import.meta.env.VITE_ADMIN_ROOT_URL })
             }
           >
             <Plus className='h-4 w-4' />

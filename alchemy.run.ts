@@ -21,14 +21,12 @@ async function buildApps() {
     env: {
       ...process.env,
       // Build-time env vars for public app (inlined into bundle)
-      PUBLIC_BACKEND_SERVER_URL:
-        process.env.PUBLIC_BACKEND_SERVER_URL || process.env.BACKEND_URL || '',
-      PUBLIC_ADMIN_URL:
-        process.env.PUBLIC_ADMIN_URL || process.env.ADMIN_URL || '',
-      PUBLIC_ROOT_HOST:
-        process.env.PUBLIC_ROOT_HOST || process.env.ROOT_HOST || '',
-      PUBLIC_ADMIN_ROOT_URL:
-        process.env.PUBLIC_ADMIN_ROOT_URL || process.env.ADMIN_ROOT_URL || '',
+      VITE_BACKEND_SERVER_URL:
+        process.env.VITE_BACKEND_SERVER_URL || process.env.BACKEND_URL || '',
+      VITE_ADMIN_URL: process.env.VITE_ADMIN_URL || process.env.ADMIN_URL || '',
+      VITE_ROOT_HOST: process.env.VITE_ROOT_HOST || process.env.ROOT_HOST || '',
+      VITE_ADMIN_ROOT_URL:
+        process.env.VITE_ADMIN_ROOT_URL || process.env.ADMIN_ROOT_URL || '',
     },
     stdout: 'inherit',
     stderr: 'inherit',
@@ -45,8 +43,8 @@ async function buildApps() {
     env: {
       ...process.env,
       // Build-time env vars for admin app (inlined into bundle)
-      PUBLIC_BACKEND_SERVER_URL:
-        process.env.PUBLIC_BACKEND_SERVER_URL || process.env.BACKEND_URL || '',
+      VITE_BACKEND_SERVER_URL:
+        process.env.VITE_BACKEND_SERVER_URL || process.env.BACKEND_URL || '',
     },
     stdout: 'inherit',
     stderr: 'inherit',

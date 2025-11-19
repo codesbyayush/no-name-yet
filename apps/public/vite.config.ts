@@ -10,7 +10,7 @@ export default defineConfig({
       autoCodeSplitting: true,
       target: 'react',
     }),
-    basicSsl() as any,
+    basicSsl(),
     react(),
   ],
   server: {
