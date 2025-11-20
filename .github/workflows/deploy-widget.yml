@@ -10,6 +10,7 @@ on:
       - 'packages/**'
     branches:
       - main
+
   workflow_dispatch:
 
 jobs:
@@ -60,7 +61,7 @@ jobs:
           git commit -m "Deploy widget from private repo [skip ci]" || echo "No changes to commit"
           git push
 
-  deploy-workers:
+  build-and-deploy-public:
     runs-on: ubuntu-latest
 
     steps:
@@ -76,20 +77,106 @@ jobs:
         run: |
           bun install
 
-      - name: Deploy with Alchemy
+      - name: Build public routes
         run: |
-          bun ./alchemy.run.ts
+          echo "VITE_BACKEND_SERVER_URL=${{ secrets.BACKEND_URL }}" >> apps/public/.env.production
+          echo "VITE_ADMIN_URL=${{ secrets.ADMIN_URL }}" >> apps/public/.env.production
+          echo "VITE_ROOT_HOST=${{ secrets.ROOT_HOST }}" >> apps/public/.env.production
+          echo "VITE_ADMIN_ROOT_URL=${{ secrets.ADMIN_ROOT_URL }}" >> apps/public/.env.production
+          bun run build:public
+
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+          packageManager: bun
+          workingDirectory: apps/public
+
+  build-and-deploy-admin:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source repo
+        uses: actions/checkout@v5
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: |
+          bun install
+
+      - name: Build admin routes
+        run: |
+          echo "VITE_BACKEND_SERVER_URL=${{ secrets.BACKEND_URL }}" >> apps/admin/.env.production
+          bun run build:admin
+
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+          packageManager: bun
+          workingDirectory: apps/admin
+
+  deploy-server:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source repo
+        uses: actions/checkout@v5
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: |
+          bun install
+
+      - name: Build server
+        run: |
+          bun run build:server
         env:
-          # Cloudflare API credentials
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          # Build-time environment variables (inlined into bundles)
-          VITE_BACKEND_SERVER_URL: ${{ secrets.BACKEND_URL }}
-          VITE_ADMIN_URL: ${{ secrets.ADMIN_URL }}
-          VITE_ROOT_HOST: ${{ secrets.ROOT_HOST }}
-          VITE_ADMIN_ROOT_URL: ${{ secrets.ADMIN_ROOT_URL }}
-          # Server runtime environment variables
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
+      - name: Run DB migrations
+        run: |
+          bun run db:migrate
+        env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+          packageManager: bun
+          workingDirectory: apps/server
+          secrets: |
+            DATABASE_URL
+            BETTER_AUTH_URL
+            BETTER_AUTH_SECRET
+            GOOGLE_CLIENT_ID
+            GOOGLE_CLIENT_SECRET
+            CORS_ORIGIN
+            FRONTEND_URL
+            RESEND_DOMAIN_KEY
+            GH_APP_ID
+            GH_PRIVATE_KEY
+            GH_WEBHOOK_SECRET
+            GH_APP_NAME
+            NODE_ENV
+            SENTRY_DSN
+            SENTRY_AUTH_TOKEN
+        env: 
           BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
@@ -101,8 +188,7 @@ jobs:
           GH_PRIVATE_KEY: ${{ secrets.GH_PRIVATE_KEY }}
           GH_WEBHOOK_SECRET: ${{ secrets.GH_WEBHOOK_SECRET }}
           GH_APP_NAME: ${{ secrets.GH_APP_NAME }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           NODE_ENV: production
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          # Alchemy state store token (required for CloudflareStateStore)
-          ALCHEMY_STATE_TOKEN: ${{ secrets.ALCHEMY_STATE_TOKEN }}
