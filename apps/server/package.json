@@ -19,7 +19,7 @@
     "wrangler:dev": "wrangler dev",
     "wrangler:deploy": "wrangler deploy",
     "deploy": "wrangler deploy",
-    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org of-4f --project node-cloudflare-workers ./dist && sentry-cli sourcemaps upload --org of-4f --project node-cloudflare-workers ./dist"
+    "sentry:sourcemaps": "tsc && tsc-alias && sentry-cli sourcemaps inject --org of-4f --project node-cloudflare-workers ./dist && sentry-cli sourcemaps upload --org of-4f --project node-cloudflare-workers ./dist"
   },
   "dependencies": {
     "@blocknote/server-util": "^0.41.1",

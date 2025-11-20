@@ -1,5 +1,5 @@
 import alchemy from 'alchemy';
-import { VersionMetadata, Website, Worker } from 'alchemy/cloudflare';
+import { VersionMetadata, Vite, Worker } from 'alchemy/cloudflare';
 import { CloudflareStateStore } from 'alchemy/state';
 
 const app = await alchemy('openfeedback', {
@@ -13,58 +13,6 @@ const app = await alchemy('openfeedback', {
 // This ensures dist folders are ready for deployment
 async function buildApps() {
   const { spawn } = await import('bun');
-
-  console.log('Building public app...');
-  const publicBuild = spawn({
-    cmd: ['bun', 'run', 'build:public'],
-    cwd: process.cwd(),
-    env: {
-      ...process.env,
-      // Build-time env vars for public app (inlined into bundle)
-      VITE_BACKEND_SERVER_URL:
-        process.env.VITE_BACKEND_SERVER_URL || process.env.BACKEND_URL || '',
-      VITE_ADMIN_URL: process.env.VITE_ADMIN_URL || process.env.ADMIN_URL || '',
-      VITE_ROOT_HOST: process.env.VITE_ROOT_HOST || process.env.ROOT_HOST || '',
-      VITE_ADMIN_ROOT_URL:
-        process.env.VITE_ADMIN_ROOT_URL || process.env.ADMIN_ROOT_URL || '',
-    },
-    stdout: 'inherit',
-    stderr: 'inherit',
-  });
-  const publicExitCode = await publicBuild.exited;
-  if (publicExitCode !== 0) {
-    throw new Error(`Public build failed with exit code ${publicExitCode}`);
-  }
-
-  console.log('Building admin app...');
-  const adminBuild = spawn({
-    cmd: ['bun', 'run', 'build:admin'],
-    cwd: process.cwd(),
-    env: {
-      ...process.env,
-      // Build-time env vars for admin app (inlined into bundle)
-      VITE_BACKEND_SERVER_URL:
-        process.env.VITE_BACKEND_SERVER_URL || process.env.BACKEND_URL || '',
-    },
-    stdout: 'inherit',
-    stderr: 'inherit',
-  });
-  const adminExitCode = await adminBuild.exited;
-  if (adminExitCode !== 0) {
-    throw new Error(`Admin build failed with exit code ${adminExitCode}`);
-  }
-
-  console.log('Building server...');
-  const serverBuild = spawn({
-    cmd: ['bun', 'run', 'build:server'],
-    cwd: process.cwd(),
-    stdout: 'inherit',
-    stderr: 'inherit',
-  });
-  const serverExitCode = await serverBuild.exited;
-  if (serverExitCode !== 0) {
-    throw new Error(`Server build failed with exit code ${serverExitCode}`);
-  }
 
   // Run database migrations
   if (process.env.DATABASE_URL) {
@@ -121,37 +69,48 @@ if (process.env.SENTRY_AUTH_TOKEN) {
 const existingKVNamespaceId = '019d1859a7f64115a889f397093cc94f';
 
 // Define public worker (static assets) - using Website for static assets support
-const publicWorker = await Website('public', {
+const publicWorker = await Vite('public', {
   name: 'public',
   compatibilityDate: '2025-02-13',
   assets: {
     directory: './apps/public/dist',
     not_found_handling: 'single-page-application',
   },
-  spa: true,
+  build: {
+    command: 'bun run build:public',
+    env: {
+      VITE_BACKEND_SERVER_URL:
+        process.env.VITE_BACKEND_SERVER_URL || process.env.BACKEND_URL || '',
+      VITE_ADMIN_URL: process.env.VITE_ADMIN_URL || process.env.ADMIN_URL || '',
+      VITE_ROOT_HOST: process.env.VITE_ROOT_HOST || process.env.ROOT_HOST || '',
+      VITE_ADMIN_ROOT_URL:
+        process.env.VITE_ADMIN_ROOT_URL || process.env.ADMIN_ROOT_URL || '',
+    },
+  },
   routes: [
     { pattern: '*.openfeedback.tech/*' },
     { pattern: 'openfeedback.tech/*' },
   ],
   domains: [{ domainName: 'openfeedback.tech', adopt: true }],
-  observability: {
-    enabled: true,
-  },
 });
 
 // Define admin worker (static assets) - using Website for static assets support
-const adminWorker = await Website('admin', {
+const adminWorker = await Vite('admin', {
   name: 'admin',
   compatibilityDate: '2025-02-13',
   assets: {
     directory: './apps/admin/dist',
     not_found_handling: 'single-page-application',
   },
-  spa: true,
-  routes: [{ pattern: 'app.openfeedback.tech/*' }],
-  observability: {
-    enabled: true,
+  build: {
+    command: 'bun run build:admin',
+    env: {
+      VITE_BACKEND_SERVER_URL:
+        process.env.VITE_BACKEND_SERVER_URL || process.env.BACKEND_URL || '',
+    },
   },
+
+  routes: [{ pattern: 'app.openfeedback.tech/*' }],
 });
 
 // Define API worker (script-based)
