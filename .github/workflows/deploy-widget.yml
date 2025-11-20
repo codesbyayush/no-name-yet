@@ -84,10 +84,10 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           # Build-time environment variables (inlined into bundles)
-          PUBLIC_BACKEND_SERVER_URL: ${{ secrets.BACKEND_URL }}
-          PUBLIC_ADMIN_URL: ${{ secrets.ADMIN_URL }}
-          PUBLIC_ROOT_HOST: ${{ secrets.ROOT_HOST }}
-          PUBLIC_ADMIN_ROOT_URL: ${{ secrets.ADMIN_ROOT_URL }}
+          VITE_BACKEND_SERVER_URL: ${{ secrets.BACKEND_URL }}
+          VITE_ADMIN_URL: ${{ secrets.ADMIN_URL }}
+          VITE_ROOT_HOST: ${{ secrets.ROOT_HOST }}
+          VITE_ADMIN_ROOT_URL: ${{ secrets.ADMIN_ROOT_URL }}
           # Server runtime environment variables
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
