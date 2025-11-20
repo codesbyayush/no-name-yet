@@ -72,10 +72,7 @@ const existingKVNamespaceId = '019d1859a7f64115a889f397093cc94f';
 const publicWorker = await Vite('public', {
   name: 'public',
   compatibilityDate: '2025-02-13',
-  assets: {
-    directory: './apps/public/dist',
-    not_found_handling: 'single-page-application',
-  },
+  assets: './apps/public/dist',
   build: {
     command: 'bun run build:public',
     env: {
@@ -98,10 +95,7 @@ const publicWorker = await Vite('public', {
 const adminWorker = await Vite('admin', {
   name: 'admin',
   compatibilityDate: '2025-02-13',
-  assets: {
-    directory: './apps/admin/dist',
-    not_found_handling: 'single-page-application',
-  },
+  assets: './apps/admin/dist',
   build: {
     command: 'bun run build:admin',
     env: {
