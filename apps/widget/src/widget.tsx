@@ -17,6 +17,9 @@ interface OmniFeedbackWidgetOptions {
   theme?: {
     primaryColor?: string;
     buttonText?: string;
+    borderRadius?: string;
+    fontFamily?: string;
+    zIndex?: number;
   };
   targetElement?: string | HTMLElement;
   position?: 'center' | 'above-button';
@@ -271,6 +274,9 @@ if (typeof document !== 'undefined' && typeof window !== 'undefined') {
         userEmail,
         jwtAuthToken,
         portalUrl,
+        borderRadius,
+        fontFamily,
+        zIndex,
         ...customData // Capture all other data-* attributes as customData
       } = scriptTag.dataset;
 
@@ -288,6 +294,9 @@ if (typeof document !== 'undefined' && typeof window !== 'undefined') {
             theme: {
               primaryColor,
               buttonText,
+              borderRadius,
+              fontFamily,
+              zIndex: zIndex ? Number.parseInt(zIndex, 10) : undefined,
             },
             user: {
               id: userId,
