@@ -97,6 +97,9 @@ interface OmniFeedbackWidgetProps {
   theme?: {
     primaryColor?: string;
     buttonText?: string;
+    borderRadius?: string;
+    fontFamily?: string;
+    zIndex?: number;
   };
   position?: 'center' | 'above-button';
   onClose?: () => void;
@@ -137,28 +140,6 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
     }, 200);
     onOpenChange?.(false);
   };
-
-  // Prevent background page scroll while the widget is open
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-    const prevBodyOverflow = document.body.style.overflow;
-    const prevHtmlOverflow = document.documentElement.style.overflow;
-    const scrollbarWidth =
-      window.innerWidth - document.documentElement.clientWidth;
-    const prevBodyPaddingRight = document.body.style.paddingRight;
-    document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
-    if (scrollbarWidth > 0) {
-      document.body.style.paddingRight = `${scrollbarWidth}px`;
-    }
-    return () => {
-      document.body.style.overflow = prevBodyOverflow;
-      document.documentElement.style.overflow = prevHtmlOverflow;
-      document.body.style.paddingRight = prevBodyPaddingRight;
-    };
-  }, [isOpen]);
 
   let animateClasses = '';
   if (position === 'center') {
@@ -246,7 +227,7 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
       return {
         ...baseStyle,
         height: 'auto',
-        borderRadius: '12px',
+        borderRadius: theme.borderRadius || '12px',
         ...(position === 'center' ? { maxWidth: '512px' } : {}),
       };
     }
@@ -411,8 +392,9 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
       className='omni-feedback-widget'
       style={{
         position: 'fixed',
-        zIndex: 999_999,
+        zIndex: theme.zIndex ?? 999_999,
         fontFamily:
+          theme.fontFamily ||
           '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif',
         color: '#374151',
         fontSize: '14px',
@@ -471,7 +453,7 @@ const OmniFeedbackWidget: React.FC<OmniFeedbackWidgetProps> = ({
           cursor: 'pointer',
           alignItems: 'center',
           justifyContent: 'center',
-          borderRadius: '50%',
+          borderRadius: theme.borderRadius || '50%',
           border: 'none',
           boxShadow:
             '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',

@@ -154,7 +154,7 @@
         }
       }
 
-      function _testInit() {
+      function testInit() {
         try {
           if (widgetInstance) {
             widgetInstance.destroy();
@@ -176,7 +176,7 @@
         }
       }
 
-      function _testCustomTheme() {
+      function testCustomTheme() {
         try {
           if (widgetInstance) {
             widgetInstance.destroy();
@@ -188,6 +188,8 @@
             apiUrl: "https://localhost:8080",
             theme: {
               primaryColor: "#ff6b6b",
+              borderRadius: "0px",
+              fontFamily: "Courier New",
             },
           });
 
@@ -198,7 +200,7 @@
         }
       }
 
-      function _testDestroy() {
+      function testDestroy() {
         try {
           if (window.OmniFeedbackWidget) {
             window.OmniFeedbackWidget.destroyAll();
@@ -213,14 +215,14 @@
         }
       }
 
-      function _testCenterPosition() {
+      function testCenterPosition() {
         try {
           if (widgetInstance) {
             widgetInstance.destroy();
           }
 
-          widgetInstance = OmniFeedbackWidget.init({
-            tenantId: "center-position-tenant",
+          widgetInstance = window.OmniFeedbackWidget.init({
+            publicKey: "center-position-tenant",
             targetElement: "#widget-container",
             position: "center",
             theme: {
@@ -240,13 +242,6 @@
           testWidgetLoad();
         }, 1000);
       });
-
-      // Console debugging helpers
-      console.log("🔧 Debug page loaded. Available functions:");
-      console.log("- testWidgetLoad(): Check if widget is loaded");
-      console.log("- testInit(): Initialize widget with default config");
-      console.log("- testCustomTheme(): Test widget with custom theme");
-      console.log("- testDestroy(): Destroy all widget instances");
     </script>
   </body>
 </html>
