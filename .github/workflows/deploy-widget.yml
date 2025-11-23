@@ -28,7 +28,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          bun install --production
+          bun install
 
       - name: Build widget
         run: |
@@ -76,7 +76,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          bun install --production
+          bun install
 
       - name: Build public routes
         run: |
@@ -109,7 +109,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          bun install --production
+          bun install
 
       - name: Build admin routes
         run: |
@@ -139,7 +139,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          bun install --production
+          bun install
 
       - name: Build server
         run: |
