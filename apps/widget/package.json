@@ -9,8 +9,7 @@
     "preview": "rsbuild preview"
   },
   "dependencies": {
-    "@rsbuild/plugin-css-minimizer": "^1.0.2",
-    "@workspace/ui": "workspace:*"
+    "@rsbuild/plugin-css-minimizer": "^1.0.2"
   },
   "devDependencies": {
     "@rsbuild/plugin-umd": "^1.0.4"

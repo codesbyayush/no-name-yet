@@ -1,10 +1,10 @@
 import { defineConfig } from '@rsbuild/core';
-import { pluginReact } from '@rsbuild/plugin-react';
+import { pluginPreact } from '@rsbuild/plugin-preact';
 import { pluginUmd } from '@rsbuild/plugin-umd';
 
 export default defineConfig({
   plugins: [
-    pluginReact(),
+    pluginPreact(),
     pluginUmd({
       name: 'OmniFeedbackWidget',
       export: 'default',
