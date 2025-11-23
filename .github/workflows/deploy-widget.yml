@@ -28,10 +28,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          bun install
+          bun install --production
 
       - name: Build widget
         run: |
+          echo "PUBLIC_BACKEND_SERVER_URL=${{ secrets.BACKEND_URL }}" >> apps/widget/.env.production
           bun run build:widget
 
       - name: Copy dist to temp dir
@@ -75,7 +76,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          bun install
+          bun install --production
 
       - name: Build public routes
         run: |
@@ -108,7 +109,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          bun install
+          bun install --production
 
       - name: Build admin routes
         run: |
@@ -138,7 +139,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          bun install
+          bun install --production
 
       - name: Build server
         run: |
