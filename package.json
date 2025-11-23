@@ -31,7 +31,6 @@
     "db:up": "docker compose up -d postgres neon-proxy redis",
     "db:down": "docker compose down",
     "db:logs": "docker compose logs -f postgres",
-    "prepare": "husky",
     "one-version:check": "one-version check",
     "loc": "cloc . --exclude-dir=node_modules,.tanstack,.wrangler,dist,certs,.env.local,README.md,meta"
   },
