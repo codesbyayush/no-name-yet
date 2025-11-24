@@ -21,7 +21,7 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
       },
       {
         name: 'description',
-        content: 'OpenFeedback is a customer feedback platform',
+        content: 'OpenFeedback is a customer feedback collection platform',
       },
     ],
     links: [

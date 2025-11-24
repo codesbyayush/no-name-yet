@@ -42,13 +42,14 @@ export const HeroHeader = () => {
             <div className='flex w-full justify-between lg:w-auto'>
               <Link
                 aria-label='home'
-                className='flex items-center space-x-2'
+                className='flex items-center size-10 space-x-2 relative'
                 to='/'
               >
-                {/* <Logo /> */}
-                <span className='inline-block rounded-lg bg-gray-50 px-2.5 py-2 dark:bg-gray-800/50'>
-                  AP
-                </span>
+                <img
+                  src='/favicon-96x96.png'
+                  alt='OpenFeedback'
+                  className='dark:invert'
+                />
               </Link>
 
               <button
