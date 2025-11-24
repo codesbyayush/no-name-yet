@@ -22,7 +22,7 @@
     "sentry:sourcemaps": "tsc && tsc-alias && sentry-cli sourcemaps inject --org of-4f --project node-cloudflare-workers ./dist && sentry-cli sourcemaps upload --org of-4f --project node-cloudflare-workers ./dist"
   },
   "dependencies": {
-    "@blocknote/server-util": "^0.41.1",
+    "@blocknote/server-util": "^0.42.3",
     "@cloudflare/workers-types": "^4.20250712.0",
     "@hono/zod-validator": "^0.7.0",
     "@neondatabase/serverless": "^1.0.1",

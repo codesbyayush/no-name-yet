@@ -28,6 +28,6 @@
     "@tanstack/react-table": "^8.21.3",
     "react-hook-form": "^7.57.0",
     "@workspace/ui": "workspace:*",
-    "recharts": "3.3.0"
+    "recharts": "3.5.0"
   }
 }
