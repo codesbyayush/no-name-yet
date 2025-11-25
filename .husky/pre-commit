@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-bunx biome check
+bun --bun x biome check
 #!/bin/sh
 # Exit on any error
 set -e
@@ -23,7 +23,7 @@ git stash push --quiet --keep-index --message "pre-commit-stash" || true
 STASHED=$?
 
 # Run formatter on the staged files
-bun x ultracite fix
+bun --bun x ultracite fix
 FORMAT_EXIT_CODE=$?
 
 # Restore working directory state
