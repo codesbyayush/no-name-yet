@@ -2,6 +2,7 @@ import { sql } from 'drizzle-orm';
 import {
   index,
   integer,
+  jsonb,
   pgEnum,
   pgTable,
   text,
@@ -56,6 +57,7 @@ export const feedback = pgTable(
     priority: priorityEnum('priority').default('low').notNull(),
     tags: text('tags').array(),
     // Metadata
+    metadata: jsonb('metadata'),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
   },

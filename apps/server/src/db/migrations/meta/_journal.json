@@ -127,6 +127,13 @@
       "when": 1762877106123,
       "tag": "0017_organic_weapon_omega",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1764018553086,
+      "tag": "0018_lush_cassandra_nova",
+      "breakpoints": true
     }
   ]
 }
