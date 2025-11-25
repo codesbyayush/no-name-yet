@@ -114,13 +114,11 @@ app.use(
   }),
 );
 
-app.get('/docs', (c) => c.redirect('/api/docs'));
-
 app.route('/api/auth', authRouter);
 app.route('/api/v1', v1Router);
 app.route('/api/webhooks', githubWebhooks);
 
-// oRPC Handler for regular API routes
+// oRPC Handler for regular API public routes
 const rpcHandler = new RPCHandler(apiRouter);
 app.use('/rpc/*', cors(corsOptions), async (c, next) => {
   const env = getEnvFromContext(c);
@@ -136,10 +134,6 @@ app.use('/rpc/*', cors(corsOptions), async (c, next) => {
     return response;
   }
   await next();
-});
-
-app.get('debug-sentry', (c) => {
-  throw new Error('Test error');
 });
 
 // oRPC Handler for admin routes
