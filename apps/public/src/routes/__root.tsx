@@ -1,3 +1,4 @@
+import type { QueryClient } from '@tanstack/react-query';
 import {
   createRootRouteWithContext,
   HeadContent,
@@ -7,10 +8,14 @@ import {
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import { Toaster } from '@workspace/ui/components/sonner';
 import { ThemeProvider } from '@/components/theme-provider';
+import type { orpc } from '../utils/orpc';
 import '@workspace/ui/styles/globals.css';
 import '../index.css';
 
-export type RouterAppContext = Record<string, never>;
+export type RouterAppContext = {
+  orpc: typeof orpc;
+  queryClient: QueryClient;
+};
 
 export const Route = createRootRouteWithContext<RouterAppContext>()({
   component: RootComponent,
