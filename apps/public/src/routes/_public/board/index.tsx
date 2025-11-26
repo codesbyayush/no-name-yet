@@ -163,7 +163,7 @@ function BoardIndexPage() {
                         {f.title}
                       </h4>
                       <p className='line-clamp-2 text-pretty font-medium text-muted-foreground text-sm first-letter:capitalize'>
-                        {f.content}
+                        {f.description}
                       </p>
                     </div>
                     <div className='flex items-center justify-end gap-3'>
@@ -184,12 +184,12 @@ function BoardIndexPage() {
                   <div className='flex items-center justify-between pt-4'>
                     <div className='flex items-center gap-3'>
                       <div>
-                        {f.author?.image ? (
+                        {f.author?.avatarUrl ? (
                           <img
                             alt='author'
                             className='h-7 w-7 rounded-full'
                             height={28}
-                            src={f.author?.image || 'https://picsum/64'}
+                            src={f.author?.avatarUrl || 'https://picsum/64'}
                             width={28}
                           />
                         ) : (
@@ -208,9 +208,11 @@ function BoardIndexPage() {
                       </div>
                     </div>
                     <div>
-                      <Badge className='px-3 capitalize' variant='outline'>
-                        {f.board?.name}
-                      </Badge>
+                      {boards?.boards.find((b) => b.id === f.boardId) && (
+                        <Badge className='px-3 capitalize' variant='outline'>
+                          {boards.boards.find((b) => b.id === f.boardId)?.name}
+                        </Badge>
+                      )}
                       <Badge className='ml-3 px-3 capitalize' variant='outline'>
                         {f.status}
                       </Badge>

@@ -5,7 +5,6 @@ import {
   useLocation,
 } from '@tanstack/react-router';
 import { useEffect } from 'react';
-import { BrandLogoIcon } from '@/components/svg/logo';
 import { authClient, useSession } from '@/lib/auth-client';
 import UserMenu from '../components/user-menu';
 
@@ -40,19 +39,20 @@ function PublicLayout() {
             className='flex size-10 items-center gap-3 transition-opacity hover:opacity-80'
             to='/'
           >
-            <BrandLogoIcon
-              className='rounded-lg border border-muted/50 p-1 invert'
-              size={40}
+            <img
+              src='/favicon-96x96.png'
+              alt='Logo'
+              className='size-10 dark:invert'
             />
           </Link>
 
           {/* Separator */}
-          <div className='hidden h-6 w-px bg-gray-300 sm:block' />
+          <div className='hidden h-6 w-px bg-gray-200 dark:bg-gray-800 sm:block' />
 
           {/* Navigation Links */}
           <div className='flex items-center gap-1'>
             <Link
-              className={`rounded-full px-3 py-2 font-medium text-xs transition-all sm:text-sm ${
+              className={`rounded-lg px-3 py-2 font-medium text-xs transition-all sm:text-sm ${
                 location.pathname.includes('/board')
                   ? 'bg-gray-100 text-gray-900 shadow-sm'
                   : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'

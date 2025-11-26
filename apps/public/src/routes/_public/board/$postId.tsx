@@ -34,6 +34,11 @@ function RouteComponent() {
       client.public.posts.getDetailedSinglePost({ feedbackId: postId }),
   });
 
+  const { data: boards } = useQuery({
+    queryKey: ['public-boards'],
+    queryFn: () => client.public.boards.getAll(),
+  });
+
   const commentMutation = useMutation({
     mutationFn: (content: string) =>
       client.public.comments.create({ feedbackId: postId, content }),
@@ -53,7 +58,7 @@ function RouteComponent() {
         <div className={'py-6'}>
           <h4 className='font-semibold text-lg capitalize'>{post?.title}</h4>
           <p className='text-pretty font-medium text-accent-foreground/75 text-sm capitalize'>
-            {post?.content}
+            {post?.description}
           </p>
 
           <div className='ml-auto flex max-w-max gap-3 pt-6'>
@@ -106,12 +111,12 @@ function RouteComponent() {
             key={comment.id}
           >
             <div>
-              {post?.author?.image ? (
+              {post?.author?.avatarUrl ? (
                 <img
                   alt='Author'
                   className='h-8 w-8 rounded-full'
                   height={32}
-                  src={post?.author?.image}
+                  src={post?.author?.avatarUrl}
                   width={32}
                 />
               ) : (
@@ -162,12 +167,12 @@ function RouteComponent() {
         <div className='z-10 w-3xs rounded-2xl border border-muted-foreground/10 bg-linear-to-bl from-card-foreground/5 to-card p-4 shadow-xs'>
           <div className='flex items-center gap-3'>
             <div>
-              {post?.author?.image ? (
+              {post?.author?.avatarUrl ? (
                 <img
                   alt='Author'
                   className='h-8 w-8 rounded-full'
                   height={32}
-                  src={post?.author?.image}
+                  src={post?.author?.avatarUrl}
                   width={32}
                 />
               ) : (
@@ -186,16 +191,17 @@ function RouteComponent() {
             </div>
           </div>
           <div>
-            {post?.board && (
-              <div className='pt-4 pl-px'>
-                <span className='pr-4 font-medium text-foreground text-sm'>
-                  Board
-                </span>
-                <span className='rounded-md bg-green-100 p-1.5 px-2 font-medium text-green-800 text-xs'>
-                  {post?.board.name}
-                </span>
-              </div>
-            )}
+            {post?.boardId &&
+              boards?.boards.find((b) => b.id === post?.boardId) && (
+                <div className='pt-4 pl-px'>
+                  <span className='pr-4 font-medium text-foreground text-sm'>
+                    Board
+                  </span>
+                  <span className='rounded-md bg-green-100 p-1.5 px-2 font-medium text-green-800 text-xs'>
+                    {boards.boards.find((b) => b.id === post?.boardId)?.name}
+                  </span>
+                </div>
+              )}
           </div>
         </div>
         <div className='z-10 rounded-2xl border border-muted-foreground/10 bg-linear-to-bl from-card-foreground/5 to-card p-4 shadow-xs'>
