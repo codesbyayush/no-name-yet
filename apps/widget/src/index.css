@@ -220,6 +220,15 @@
   animation-duration: 300ms;
 }
 
+/* Opacity utilities for icon visibility */
+.opacity-0 {
+  opacity: 0;
+}
+
+.opacity-100 {
+  opacity: 1;
+}
+
 /* Iframe container utility for embedded pages */
 .iframe-container {
   width: 100%;

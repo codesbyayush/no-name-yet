@@ -57,6 +57,7 @@ export const useBoardById = (id: string | undefined) =>
     q
       .from({ board: boardsCollection })
       .where(({ board }) => (id ? eq(board.id, id) : false))
+      .orderBy(({ board }) => board.createdAt, 'desc')
       .limit(1),
   );
 

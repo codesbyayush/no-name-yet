@@ -29,6 +29,8 @@ const OmniFeedbackWidget: React.FC<WidgetProps> = ({
   onClose,
   portalUrl,
   onOpenChange,
+  onSuccess,
+  user,
 }) => {
   const isDesktop = useResponsive();
   const {
@@ -70,8 +72,9 @@ const OmniFeedbackWidget: React.FC<WidgetProps> = ({
           <SubmitTab
             apiUrl={apiUrl}
             boardId={boardId}
-            onSuccess={handleClose}
+            onSuccess={onSuccess || handleClose}
             publicKey={publicKey}
+            user={user}
           />
         );
       case 'roadmap':

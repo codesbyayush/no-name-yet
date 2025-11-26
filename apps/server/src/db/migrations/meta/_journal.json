@@ -134,6 +134,13 @@
       "when": 1764018553086,
       "tag": "0018_lush_cassandra_nova",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1764147204321,
+      "tag": "0019_shiny_stellaris",
+      "breakpoints": true
     }
   ]
 }

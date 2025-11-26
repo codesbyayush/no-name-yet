@@ -129,8 +129,9 @@ publicApiRouter.get('/tags', async (c) => {
 
 const feedbackSubmissionSchema = z.object({
   boardId: z.string(),
+  title: z.string().min(1, "Title can't be empty."),
   description: z.string().min(1, 'Description cannot be empty.'),
-  authorId: z.string(),
+  metadata: z.record(z.string(), z.any()).optional(),
 });
 
 /**
@@ -151,12 +152,12 @@ publicApiRouter.post('/feedback', async (c) => {
   const validation = feedbackSubmissionSchema.safeParse(body);
   if (!validation.success) {
     return c.json(
-      { error: 'Invalid input', details: validation.error.flatten() },
+      { error: 'Invalid input', details: z.treeifyError(validation.error) },
       400,
     );
   }
 
-  const { boardId, description, authorId } = validation.data;
+  const { boardId, description, metadata, title } = validation.data;
 
   // Security Check: Verify the board belongs to the organization.
   // This prevents a user from one org from submitting feedback to a board of another org.
@@ -175,21 +176,14 @@ publicApiRouter.post('/feedback', async (c) => {
       );
     }
 
-    const postsCount = await db
-      .select({ count: count() })
-      .from(feedback)
-      .where(eq(feedback.boardId, boardId));
-
-    const issueKey = `OF-${postsCount[0]?.count || 0 + 1}`;
-
     const [newFeedbackItem] = await db
       .insert(feedback)
       .values({
         boardId,
         description,
-        title: `Feedback: ${description.substring(0, 50)}`,
-        authorId,
-        issueKey,
+        title,
+        metadata,
+        status: 'pending',
       })
       .returning({ id: feedback.id });
 

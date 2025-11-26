@@ -30,6 +30,7 @@ export const statusEnum = pgEnum('status_enum', [
 ]);
 
 // Feedback table - stores all feedback submissions
+// Author id can't be null for most cases other than an embedded widget submission
 export const feedback = pgTable(
   'feedback',
   {
@@ -46,11 +47,9 @@ export const feedback = pgTable(
     assigneeId: text('assignee_id').references(() => user.id, {
       onDelete: 'restrict',
     }),
-    authorId: text('author_id')
-      .references(() => user.id, {
-        onDelete: 'restrict',
-      })
-      .notNull(),
+    authorId: text('author_id').references(() => user.id, {
+      onDelete: 'restrict',
+    }),
     dueDate: timestamp('due_date'),
     completedAt: timestamp('completed_at'),
     status: statusEnum('status').notNull().default('to-do'),

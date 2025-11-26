@@ -64,3 +64,10 @@ export const COLORS = {
 export const REGEX = {
   TRAILING_SLASH: /\/$/,
 } as const;
+
+/**
+ * Attribute name used to mark widget styles for identification
+ * This allows us to clone only widget styles into the iframe,
+ * avoiding host page normalizations that could break widget styling
+ */
+export const WIDGET_STYLE_MARKER = 'data-omnifeedback-widget';
