@@ -31,7 +31,8 @@ export interface WidgetProps {
   position?: WidgetPosition;
   onClose?: () => void;
   portalUrl?: string;
-  onOpenChange?: (open: boolean) => void;
+  onOpenChange?: (isOpen: boolean) => void;
+  onSuccess?: () => void;
 }
 
 export interface IconProps {
@@ -68,4 +69,38 @@ export interface TabContentProps {
   boardId?: string;
   portalUrl?: string;
   onSuccess?: () => void;
+}
+
+export interface OmniFeedbackWidgetOptions {
+  publicKey: string;
+  boardId?: string;
+  user?: {
+    id?: string;
+    name?: string;
+    email?: string;
+    companyId?: string;
+  };
+  customData?: { [key: string]: string | undefined };
+  jwtAuthToken?: string;
+  apiUrl?: string;
+  theme?: {
+    primaryColor?: string;
+    buttonText?: string;
+    borderRadius?: string;
+    fontFamily?: string;
+    zIndex?: number;
+  };
+  targetElement?: string | HTMLElement;
+  position?: 'center' | 'above-button';
+  /** Optional portal base URL to embed roadmap/changelog in the widget */
+  portalUrl?: string;
+}
+
+export interface OmniFeedbackWidgetInstance {
+  destroy: () => void;
+  show: () => void;
+  hide: () => void;
+  update: (options: Partial<OmniFeedbackWidgetOptions>) => void;
+  isVisible: () => boolean;
+  getElement: () => HTMLElement;
 }

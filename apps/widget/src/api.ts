@@ -32,9 +32,7 @@ export interface Board {
 export interface FeedbackSubmission {
   /** ID of the board to submit to */
   boardId: string;
-  /** Type of feedback */
-  type: 'bug' | 'suggestion';
-  /** Feedback description (can include title + description combined) */
+  title: string;
   description: string;
   /** Optional user information for attribution */
   user?: {
@@ -45,26 +43,8 @@ export interface FeedbackSubmission {
     /** User's email address */
     email?: string;
   };
-  /** Custom metadata to attach to the submission */
-  customData?: { [key: string]: string };
-  /** Browser/environment information for debugging */
-  browserInfo: {
-    /** User agent string */
-    userAgent: string;
-    /** Current page URL */
-    url: string;
-    /** Operating system platform */
-    platform?: string;
-    /** Browser language */
-    language?: string;
-    /** Whether cookies are enabled */
-    cookieEnabled?: boolean;
-    /** Whether browser is online */
-    onLine?: boolean;
-    /** Screen resolution (e.g., "1920x1080") */
-    screenResolution?: string;
-  };
-  // attachments metadata might be added here later
+  /** Detailed metadata about the user environment and context */
+  metadata?: Record<string, any>;
 }
 
 /**

@@ -6,14 +6,16 @@ import CreatePostForm from '../CreatePostForm';
  * Props for the SubmitTab component
  */
 interface SubmitTabProps {
-  /** API endpoint URL */
   apiUrl: string;
-  /** Public API key */
   publicKey: string;
-  /** Default board ID for submissions */
   boardId?: string;
-  /** Callback when submission succeeds */
   onSuccess?: () => void;
+  user?: {
+    id?: string;
+    name?: string;
+    email?: string;
+    companyId?: string;
+  };
 }
 
 /**
@@ -33,6 +35,7 @@ const SubmitTab: React.FC<SubmitTabProps> = ({
   publicKey,
   boardId,
   onSuccess,
+  user,
 }) => {
   return (
     <>
@@ -45,7 +48,7 @@ const SubmitTab: React.FC<SubmitTabProps> = ({
         }}
       >
         <div style={{ padding: '20px' }}>
-          {/* Avatar placeholder */}
+          {/* Logo avatar */}
           <div
             style={{
               marginBottom: '32px',
@@ -54,13 +57,18 @@ const SubmitTab: React.FC<SubmitTabProps> = ({
               gap: '12px',
             }}
           >
-            <div
+            <img
+              alt='Marker logo'
+              height={32}
+              src={'/favicon-96x96.png'}
               style={{
                 height: '32px',
                 width: '32px',
                 borderRadius: '50%',
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                padding: '2px',
               }}
+              width={32}
             />
           </div>
 
@@ -102,6 +110,7 @@ const SubmitTab: React.FC<SubmitTabProps> = ({
         defaultBoardId={boardId}
         onSuccess={onSuccess}
         publicKey={publicKey}
+        user={user}
       />
     </>
   );
