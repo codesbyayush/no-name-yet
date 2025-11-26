@@ -94,6 +94,7 @@ export async function getPostsWithAggregates(
     })
     .from(feedback)
     .leftJoin(user, eq(feedback.authorId, user.id))
+    .leftJoin(boards, eq(feedback.boardId, boards.id))
     .where(and(...whereFilters))
     .orderBy(orderBy)
     .offset(filters.offset)
