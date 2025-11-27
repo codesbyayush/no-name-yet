@@ -2,6 +2,7 @@ import { ORPCError } from '@orpc/server';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { member, user } from '@/db/schema';
+import { getAuth } from '@/lib/auth';
 import { adminOnlyProcedure } from '../procedures';
 
 // Local constants for schema defaults and boundaries
@@ -52,21 +53,13 @@ export const usersRouter = {
       const AVATAR_BASE = 'https://api.dicebear.com/9.x/glass/svg?seed=';
 
       const transformedUsers = organizationUsers.map((orgUser) => {
-        let roleLabel: 'Member' | 'Admin' | 'Guest';
-        if (orgUser.role === 'admin') {
-          roleLabel = 'Admin';
-        } else if (orgUser.role === 'member') {
-          roleLabel = 'Member';
-        } else {
-          roleLabel = 'Guest';
-        }
         return {
           id: orgUser.id,
           name: orgUser.name || 'Unknown User',
           avatarUrl: orgUser.image || `${AVATAR_BASE}${orgUser.id}`,
           email: orgUser.email,
           status: STATUS_ONLINE,
-          role: roleLabel,
+          role: orgUser.role,
           joinedDate: orgUser.createdAt.toISOString().split('T')[0],
           teamIds: [],
         };
@@ -76,6 +69,81 @@ export const usersRouter = {
         users: transformedUsers,
         organizationId: context.organization.id,
         total: transformedUsers.length, // Could be enhanced with actual count query
+      };
+    }),
+
+  // Bulk invite users to the organization (and optionally to a team)
+  inviteUsers: adminOnlyProcedure
+    .input(
+      z.object({
+        users: z
+          .array(
+            z.object({
+              email: z.string().email('Invalid email address'),
+              role: z.enum(['member', 'admin', 'owner']).default('member'),
+              teamId: z.string().optional(),
+            }),
+          )
+          .min(1, 'At least one user must be provided')
+          .max(50, 'Cannot invite more than 50 users at once'),
+      }),
+    )
+    .handler(async ({ input, context }) => {
+      if (!context.organization) {
+        throw new ORPCError('NOT_FOUND', { message: 'Organization not found' });
+      }
+
+      const auth = getAuth(context.env);
+
+      // Process all invitations in parallel
+      const invitationPromises = input.users.map(async (invitee) => {
+        // Use better-auth's API to create the invitation
+        // This will also trigger the sendInvitationEmail hook automatically
+        await auth.api.createInvitation({
+          headers: context.headers,
+          body: {
+            email: invitee.email,
+            role: invitee.role,
+            organizationId: context.organization.id,
+            inviterId: context.session.user.id,
+            teamId: invitee.teamId,
+          },
+        });
+        return invitee.email;
+      });
+
+      const settledResults = await Promise.allSettled(invitationPromises);
+
+      // Map results to our response format
+      const results = settledResults.map((result, index) => {
+        const email = input.users[index].email;
+        if (result.status === 'fulfilled') {
+          return { email, status: 'success' as const };
+        }
+        return {
+          email,
+          status: 'failed' as const,
+          error:
+            result.reason instanceof Error
+              ? result.reason.message
+              : 'Unknown error occurred',
+        };
+      });
+
+      const successCount = settledResults.filter(
+        (r) => r.status === 'fulfilled',
+      ).length;
+      const failedCount = settledResults.filter(
+        (r) => r.status === 'rejected',
+      ).length;
+
+      return {
+        results,
+        summary: {
+          total: input.users.length,
+          success: successCount,
+          failed: failedCount,
+        },
       };
     }),
 };

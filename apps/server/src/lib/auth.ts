@@ -5,7 +5,7 @@ import { and, eq } from 'drizzle-orm';
 import { getDb } from '../db';
 import * as schema from '../db/schema';
 import { boards, member, tags, team, teamMember } from '../db/schema';
-import { sendEmail } from '../email';
+import { sendEmail, sendInvitationEmail } from '../email';
 import type { AppEnv } from './env';
 
 // biome-ignore lint/suspicious/noExplicitAny: <Can't find a solution to this type error, searched through many of the issues related to types on better-auth repo but nothing works>
@@ -70,10 +70,6 @@ export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | any {
       },
     },
     session: {
-      cookieCache: {
-        enabled: true,
-        maxAge: 5 * 60,
-      },
       expiresIn: 60 * 60 * 24 * 28,
       updateAge: 60 * 60 * 24 * 7,
     },
@@ -105,18 +101,42 @@ export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | any {
         teams: {
           enabled: true,
         },
+        organizationHooks: {
+          afterCreateInvitation: async (data) => {
+            const inviteLink = `${env.FRONTEND_URL}/auth/accept-invitation/${data.invitation.id}`;
+
+            // Look up team name if teamId is provided
+            let teamName: string | undefined;
+            const teamId = data.invitation.teamId;
+            if (teamId) {
+              const teamResult = await db
+                .select({ name: team.name })
+                .from(team)
+                .where(eq(team.id, teamId))
+                .limit(1);
+              teamName = teamResult[0]?.name;
+            }
+
+            await sendInvitationEmail(env, data.invitation.email, {
+              inviterName: data.inviter.name,
+              inviterEmail: data.inviter.email,
+              organizationName: data.organization.name,
+              teamName,
+              role: data.invitation.role,
+              inviteLink,
+              expiresInDays: 7,
+            });
+          },
+        },
         organizationCreation: {
           afterCreate: async ({ user, organization: createdOrg }) => {
             if (env.NODE_ENV === 'production') {
-              await sendEmail(env, user.email, 'welcome', user.name);
+              await sendEmail(env, user.email, 'welcome', {
+                firstname: user.name,
+              });
             }
 
             const dbConn = getDb(env);
-
-            await dbConn
-              .update(schema.user)
-              .set({ organizationId: createdOrg.id })
-              .where(eq(schema.user.id, user.id));
 
             // Seed defaults (idempotent)
             try {

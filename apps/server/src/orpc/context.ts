@@ -2,7 +2,7 @@ import type { InferSelectModel } from 'drizzle-orm';
 import { eq } from 'drizzle-orm';
 import type { Context as HonoContext } from 'hono';
 import { getDb } from '../db';
-import { organization, user } from '../db/schema';
+import { organization, type user } from '../db/schema';
 import { getAuth } from '../lib/auth';
 import { type Cache, getCache } from '../lib/cache';
 import type { AppEnv } from '../lib/env';
@@ -48,11 +48,14 @@ export async function createAdminContext({
     headers: context.req.raw.headers,
   });
 
+  const headers = context.req.raw.headers;
+
   if (!session?.user?.id) {
     return {
       session: null,
       user: null,
       organization: null,
+      headers,
       db,
       cache,
       env,
@@ -60,38 +63,35 @@ export async function createAdminContext({
   }
 
   try {
-    // Get user with organizationId
-    const userResult = await db
-      .select()
-      .from(user)
-      .where(eq(user.id, session.user.id))
-      .limit(1);
+    // Use session's activeOrganizationId (managed by better-auth)
+    // This is set when user accepts invitation or switches organizations
+    const activeOrgId = session.session?.activeOrganizationId;
 
-    const currentUser = userResult[0] || null;
-
-    if (!currentUser?.organizationId) {
+    if (!activeOrgId) {
       return {
         session,
-        user: currentUser,
+        user: session.user,
         organization: null,
+        headers,
         db,
         cache,
         env,
       };
     }
 
-    // Get organization from user's organizationId
+    // Get organization from session's activeOrganizationId
     const orgResult = await db
       .select()
       .from(organization)
-      .where(eq(organization.id, currentUser.organizationId))
+      .where(eq(organization.id, activeOrgId))
       .limit(1);
 
     const org = orgResult[0] || null;
     return {
       session,
-      user: currentUser,
+      user: session.user,
       organization: org,
+      headers,
       db,
       cache,
       env,
@@ -101,6 +101,7 @@ export async function createAdminContext({
       session,
       user: null,
       organization: null,
+      headers,
       db,
       cache,
       env,
@@ -119,6 +120,7 @@ export type Context = Awaited<ReturnType<typeof createContext>> & {
 export type AdminContext = Awaited<ReturnType<typeof createAdminContext>> & {
   user: InferSelectModel<typeof user> | null;
   organization: InferSelectModel<typeof organization> | null;
+  headers: Headers;
   db: ReturnType<typeof getDb>;
   cache: Cache;
   env: AppEnv;

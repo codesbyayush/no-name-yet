@@ -47,6 +47,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 import { useAuth } from '@/contexts';
 import { useUsers as useAdminUsers } from '@/hooks/use-users';
+import { adminClient } from '@/utils/admin-orpc';
 
 type NormalizedInvitation = {
   id: string;
@@ -126,16 +127,6 @@ function RouteComponent() {
 
   const activeCount = filteredUsers.length;
   const invitedCount = invitations.length;
-
-  const roleLabelFrom = (userRole: string) => {
-    if (userRole === 'admin' || userRole === 'owner') {
-      return 'Admin';
-    }
-    if (userRole === 'guest') {
-      return 'Guest';
-    }
-    return 'Member';
-  };
 
   const mapRoleForResend = (userRole: string): 'member' | 'admin' | 'owner' => {
     if (userRole === 'admin') {
@@ -333,7 +324,7 @@ function RouteComponent() {
               {u.joinedDate}
             </TableCell>
             <TableCell>
-              <Badge variant={u.role === 'Admin' ? 'default' : 'secondary'}>
+              <Badge variant={u.role === 'owner' ? 'default' : 'secondary'}>
                 {u.role}
               </Badge>
             </TableCell>
@@ -352,7 +343,6 @@ function RouteComponent() {
             typeof inv.createdAt === 'string'
               ? inv.createdAt.split('T')[0]
               : inv.createdAt.toISOString().split('T')[0];
-          const labelRole = roleLabelFrom(inv.role);
           return (
             <TableRow className='group border-b-0' key={inv.id}>
               <TableCell>
@@ -392,7 +382,9 @@ function RouteComponent() {
               </TableCell>
               <TableCell>
                 <div className='flex items-center justify-end gap-2'>
-                  <Badge variant='secondary'>{labelRole} (Invited)</Badge>
+                  <Badge variant='secondary' className='capitalize'>
+                    {inv.role} (Invited)
+                  </Badge>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button
@@ -464,9 +456,8 @@ function RouteComponent() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value='all'>All</SelectItem>
-            <SelectItem value='Admin'>Admin</SelectItem>
-            <SelectItem value='Member'>Member</SelectItem>
-            <SelectItem value='Guest'>Guest</SelectItem>
+            <SelectItem value='owner'>Owner</SelectItem>
+            <SelectItem value='member'>Member</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -503,7 +494,7 @@ function InviteUsersDialog() {
     return { unique, valid } as const;
   }, [rawEmails]);
 
-  const { session, auth } = useAuth();
+  const { session } = useAuth();
 
   const hasValidEmails = parsedEmails.valid.length > 0;
 
@@ -521,20 +512,18 @@ function InviteUsersDialog() {
       return;
     }
 
-    const invitaitonPromises = parsedEmails.valid.map(async (email) => {
-      const res = await auth.organization.inviteMember({
+    const invitations = await adminClient.organization.users.inviteUsers({
+      users: parsedEmails.valid.map((email) => ({
         email,
         role: 'member',
-        resend: true,
         organizationId: session?.session.activeOrganizationId as string,
         teamId: session?.session.activeTeamId as string,
-      });
-      return res;
+      })),
     });
-    const results = await Promise.all(invitaitonPromises);
-    for (const result of results) {
-      if (result.error) {
-        toast.error(result.error.message ?? 'Failed to invite user');
+
+    for (const result of invitations.results) {
+      if (result.status === 'failed') {
+        toast.error(result.error ?? 'Failed to invite user');
       } else {
         toast.success(`Users invited successfully.`);
       }

@@ -12,12 +12,13 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AdminRouteImport } from './routes/_admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as OnboardingIndexRouteImport } from './routes/onboarding/index'
-import { Route as AuthIndexRouteImport } from './routes/auth/index'
+import { Route as AuthAuthRouteImport } from './routes/_auth/auth'
 import { Route as AdminWidgetRouteImport } from './routes/_admin/widget'
 import { Route as AdminSettingsRouteImport } from './routes/_admin/settings'
 import { Route as AdminEditorRouteImport } from './routes/_admin/editor'
 import { Route as AdminRequestsIndexRouteImport } from './routes/_admin/requests/index'
 import { Route as AdminBoardsIndexRouteImport } from './routes/_admin/boards/index'
+import { Route as AuthAcceptInvitationIdRouteImport } from './routes/_auth/accept-invitation.$id'
 import { Route as AdminSettingsPricingRouteImport } from './routes/_admin/settings/pricing'
 import { Route as AdminSettingsMembersRouteImport } from './routes/_admin/settings/members'
 import { Route as AdminSettingsGeneralRouteImport } from './routes/_admin/settings/general'
@@ -41,9 +42,9 @@ const OnboardingIndexRoute = OnboardingIndexRouteImport.update({
   path: '/onboarding/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthIndexRoute = AuthIndexRouteImport.update({
-  id: '/auth/',
-  path: '/auth/',
+const AuthAuthRoute = AuthAuthRouteImport.update({
+  id: '/_auth/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminWidgetRoute = AdminWidgetRouteImport.update({
@@ -70,6 +71,11 @@ const AdminBoardsIndexRoute = AdminBoardsIndexRouteImport.update({
   id: '/boards/',
   path: '/boards/',
   getParentRoute: () => AdminRoute,
+} as any)
+const AuthAcceptInvitationIdRoute = AuthAcceptInvitationIdRouteImport.update({
+  id: '/_auth/accept-invitation/$id',
+  path: '/accept-invitation/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminSettingsPricingRoute = AdminSettingsPricingRouteImport.update({
   id: '/pricing',
@@ -119,7 +125,7 @@ export interface FileRoutesByFullPath {
   '/editor': typeof AdminEditorRoute
   '/settings': typeof AdminSettingsRouteWithChildren
   '/widget': typeof AdminWidgetRoute
-  '/auth': typeof AuthIndexRoute
+  '/auth': typeof AuthAuthRoute
   '/onboarding': typeof OnboardingIndexRoute
   '/boards/$postId': typeof AdminBoardsPostIdRoute
   '/settings/boards': typeof AdminSettingsBoardsRoute
@@ -127,6 +133,7 @@ export interface FileRoutesByFullPath {
   '/settings/general': typeof AdminSettingsGeneralRoute
   '/settings/members': typeof AdminSettingsMembersRoute
   '/settings/pricing': typeof AdminSettingsPricingRoute
+  '/accept-invitation/$id': typeof AuthAcceptInvitationIdRoute
   '/boards': typeof AdminBoardsIndexRoute
   '/requests': typeof AdminRequestsIndexRoute
   '/settings/integrations/github': typeof AdminSettingsIntegrationsGithubRoute
@@ -137,7 +144,7 @@ export interface FileRoutesByTo {
   '/editor': typeof AdminEditorRoute
   '/settings': typeof AdminSettingsRouteWithChildren
   '/widget': typeof AdminWidgetRoute
-  '/auth': typeof AuthIndexRoute
+  '/auth': typeof AuthAuthRoute
   '/onboarding': typeof OnboardingIndexRoute
   '/boards/$postId': typeof AdminBoardsPostIdRoute
   '/settings/boards': typeof AdminSettingsBoardsRoute
@@ -145,6 +152,7 @@ export interface FileRoutesByTo {
   '/settings/general': typeof AdminSettingsGeneralRoute
   '/settings/members': typeof AdminSettingsMembersRoute
   '/settings/pricing': typeof AdminSettingsPricingRoute
+  '/accept-invitation/$id': typeof AuthAcceptInvitationIdRoute
   '/boards': typeof AdminBoardsIndexRoute
   '/requests': typeof AdminRequestsIndexRoute
   '/settings/integrations/github': typeof AdminSettingsIntegrationsGithubRoute
@@ -157,7 +165,7 @@ export interface FileRoutesById {
   '/_admin/editor': typeof AdminEditorRoute
   '/_admin/settings': typeof AdminSettingsRouteWithChildren
   '/_admin/widget': typeof AdminWidgetRoute
-  '/auth/': typeof AuthIndexRoute
+  '/_auth/auth': typeof AuthAuthRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/_admin/boards/$postId': typeof AdminBoardsPostIdRoute
   '/_admin/settings/boards': typeof AdminSettingsBoardsRoute
@@ -165,6 +173,7 @@ export interface FileRoutesById {
   '/_admin/settings/general': typeof AdminSettingsGeneralRoute
   '/_admin/settings/members': typeof AdminSettingsMembersRoute
   '/_admin/settings/pricing': typeof AdminSettingsPricingRoute
+  '/_auth/accept-invitation/$id': typeof AuthAcceptInvitationIdRoute
   '/_admin/boards/': typeof AdminBoardsIndexRoute
   '/_admin/requests/': typeof AdminRequestsIndexRoute
   '/_admin/settings/integrations/github': typeof AdminSettingsIntegrationsGithubRoute
@@ -185,6 +194,7 @@ export interface FileRouteTypes {
     | '/settings/general'
     | '/settings/members'
     | '/settings/pricing'
+    | '/accept-invitation/$id'
     | '/boards'
     | '/requests'
     | '/settings/integrations/github'
@@ -203,6 +213,7 @@ export interface FileRouteTypes {
     | '/settings/general'
     | '/settings/members'
     | '/settings/pricing'
+    | '/accept-invitation/$id'
     | '/boards'
     | '/requests'
     | '/settings/integrations/github'
@@ -214,7 +225,7 @@ export interface FileRouteTypes {
     | '/_admin/editor'
     | '/_admin/settings'
     | '/_admin/widget'
-    | '/auth/'
+    | '/_auth/auth'
     | '/onboarding/'
     | '/_admin/boards/$postId'
     | '/_admin/settings/boards'
@@ -222,6 +233,7 @@ export interface FileRouteTypes {
     | '/_admin/settings/general'
     | '/_admin/settings/members'
     | '/_admin/settings/pricing'
+    | '/_auth/accept-invitation/$id'
     | '/_admin/boards/'
     | '/_admin/requests/'
     | '/_admin/settings/integrations/github'
@@ -231,8 +243,9 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
-  AuthIndexRoute: typeof AuthIndexRoute
+  AuthAuthRoute: typeof AuthAuthRoute
   OnboardingIndexRoute: typeof OnboardingIndexRoute
+  AuthAcceptInvitationIdRoute: typeof AuthAcceptInvitationIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -258,11 +271,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth/': {
-      id: '/auth/'
+    '/_auth/auth': {
+      id: '/_auth/auth'
       path: '/auth'
       fullPath: '/auth'
-      preLoaderRoute: typeof AuthIndexRouteImport
+      preLoaderRoute: typeof AuthAuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_admin/widget': {
@@ -299,6 +312,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/boards'
       preLoaderRoute: typeof AdminBoardsIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/_auth/accept-invitation/$id': {
+      id: '/_auth/accept-invitation/$id'
+      path: '/accept-invitation/$id'
+      fullPath: '/accept-invitation/$id'
+      preLoaderRoute: typeof AuthAcceptInvitationIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_admin/settings/pricing': {
       id: '/_admin/settings/pricing'
@@ -406,8 +426,9 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
-  AuthIndexRoute: AuthIndexRoute,
+  AuthAuthRoute: AuthAuthRoute,
   OnboardingIndexRoute: OnboardingIndexRoute,
+  AuthAcceptInvitationIdRoute: AuthAcceptInvitationIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

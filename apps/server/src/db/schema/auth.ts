@@ -5,9 +5,7 @@ import {
   pgTable,
   text,
   timestamp,
-  uniqueIndex,
 } from 'drizzle-orm/pg-core';
-import { organization } from './organization';
 
 export const user = pgTable(
   'user',
@@ -20,10 +18,6 @@ export const user = pgTable(
     createdAt: timestamp('created_at').notNull(),
     updatedAt: timestamp('updated_at').notNull(),
     isAnonymous: boolean('is_anonymous').notNull().default(false),
-    // Extended fields for multi-tenancy and enhanced user management
-    organizationId: text('organization_id').references(() => organization.id, {
-      onDelete: 'cascade',
-    }),
     authProvider: text('auth_provider').notNull().default('email'),
     externalId: text('external_id'),
     role: text('role').notNull().default('user'),
@@ -34,18 +28,7 @@ export const user = pgTable(
     lastActiveAt: timestamp('last_active_at'),
     deletedAt: timestamp('deleted_at'),
   },
-  (table) => [
-    uniqueIndex('idx_user_organization_id_email').on(
-      table.organizationId,
-      table.email,
-    ),
-    uniqueIndex('idx_user_organization_id_external_id').on(
-      table.organizationId,
-      table.externalId,
-    ),
-    index('idx_user_organization_id').on(table.organizationId),
-    index('idx_user_email').on(table.email),
-  ],
+  (table) => [index('idx_user_email').on(table.email)],
 );
 
 export const session = pgTable('session', {
