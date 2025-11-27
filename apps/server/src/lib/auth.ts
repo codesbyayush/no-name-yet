@@ -1,5 +1,5 @@
-import { type BetterAuthOptions, betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { type BetterAuthOptions, betterAuth } from 'better-auth/minimal';
 import { admin, anonymous, organization } from 'better-auth/plugins';
 import { and, eq } from 'drizzle-orm';
 import { getDb } from '../db';
