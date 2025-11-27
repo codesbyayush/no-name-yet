@@ -11,6 +11,8 @@ export default function useTeamMembers() {
   } = useQuery({
     queryKey: ['teamUsers', session?.session.activeTeamId],
     queryFn: () => adminClient.organization.teams.getTeamMembers(),
+    staleTime: Number.POSITIVE_INFINITY,
+    refetchOnWindowFocus: false,
   });
 
   return { teamUsers, isLoading, error };

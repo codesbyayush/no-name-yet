@@ -104,8 +104,8 @@ const IssueGridList: FC<{ issues: Issue[]; status: Status }> = ({
   // Set up drop functionality to accept only issue items.
   const [{ isOver }, drop] = useDrop(() => ({
     accept: IssueDragType,
-    drop(item: Issue, monitor) {
-      if (monitor.didDrop() && item.status !== status.key) {
+    drop(item: Issue) {
+      if (item.status !== status.key) {
         mutate(item.id, { status: status.key });
       }
     },
