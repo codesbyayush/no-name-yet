@@ -21,7 +21,7 @@
     "@orpc/tanstack-query": "^1.9.4",
     "@remixicon/react": "^4.7.0",
     "@tanstack/query-db-collection": "0.2.37",
-    "@tanstack/react-db": "0.1.36",
+    "@tanstack/react-db": "0.1.52",
     "date-fns": "^4.1.0",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
