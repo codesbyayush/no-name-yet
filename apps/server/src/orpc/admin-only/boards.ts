@@ -10,11 +10,11 @@ import { adminOnlyProcedure } from '../procedures';
 
 export const boardsRouter = {
   getAll: adminOnlyProcedure.handler(async ({ context }) => {
-    if (!context.organization?.id) {
-      throw new ORPCError('NOT_FOUND', { message: 'Organization not found' });
+    if (!context.team?.id) {
+      throw new ORPCError('NOT_FOUND', { message: 'Team not found' });
     }
 
-    const list = await getAllBoards(context.db, context.organization.id);
+    const list = await getAllBoards(context.db, context.team.id);
     return list;
   }),
 
@@ -31,7 +31,7 @@ export const boardsRouter = {
     .output(z.any())
     .handler(
       async ({ input, context }) =>
-        await createBoard(context.db, context.organization.id, input),
+        await createBoard(context.db, context.team?.id || '', input),
     ),
 
   update: adminOnlyProcedure

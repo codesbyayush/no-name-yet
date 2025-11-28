@@ -47,7 +47,7 @@ async function hmacSHA256(keyBytes: Uint8Array, data: string): Promise<string> {
 }
 
 export type InstallStatePayload = {
-  orgId?: string;
+  teamId?: string;
   returnTo?: string;
   nonce: string;
   ts: number; // unix seconds

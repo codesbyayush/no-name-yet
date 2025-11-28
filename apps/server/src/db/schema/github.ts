@@ -6,14 +6,14 @@ import {
   timestamp,
   uniqueIndex,
 } from 'drizzle-orm/pg-core';
-import { organization } from './organization';
+import { team } from './organization';
 
 export const githubInstallations = pgTable(
   'github_installations',
   {
     id: text('id').primaryKey(),
-    organizationId: text('organization_id').references(() => organization.id, {
-      onDelete: 'set null',
+    teamId: text('team_id').references(() => team.id, {
+      onDelete: 'cascade',
     }),
     githubInstallationId: integer('github_installation_id').notNull(),
     accountLogin: text('account_login').notNull(),

@@ -23,14 +23,14 @@ export const postsRouter = {
     )
     .handler(async ({ input, context }) => {
       const { offset, take, sortBy, boardId } = input;
-      if (!context.organization) {
+      if (!context.team) {
         throw new ORPCError('NOT_FOUND');
       }
       const userId = context.session?.user?.id;
       const { posts, hasMore } = await getPostsWithAggregates(
         context.db,
         {
-          organizationId: context.organization.id,
+          teamId: context.team.id,
           boardId,
           offset,
           take,
@@ -40,7 +40,7 @@ export const postsRouter = {
       );
       return {
         posts,
-        organizationName: context.organization.name,
+        teamName: context.team.name,
         pagination: {
           offset,
           take,
@@ -57,7 +57,7 @@ export const postsRouter = {
     )
     .handler(async ({ input, context }) => {
       const { feedbackId } = input;
-      if (!(context.organization && feedbackId)) {
+      if (!(context.team && feedbackId)) {
         throw new ORPCError('NOT_FOUND');
       }
       const userId = context.session?.user?.id;

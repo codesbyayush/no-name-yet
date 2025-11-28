@@ -26,7 +26,7 @@ import { getTeamDetails } from './organization';
 export type Database = ReturnType<typeof import('@/db').getDb>;
 
 export type GetPostsFilters = {
-  organizationId: string;
+  teamId: string;
   boardId?: string;
   offset: number;
   take: number;
@@ -65,7 +65,7 @@ export async function getPostsWithAggregates(
 
   // (If the board is public and status is not pending) or user is the author -> show the posts
   const whereFilters = [
-    eq(boards.organizationId, filters.organizationId),
+    eq(boards.teamId, filters.teamId),
     or(
       and(eq(boards.isPrivate, false), ne(feedback.status, 'pending')),
       eq(feedback.authorId, userId ?? ''),
@@ -137,7 +137,7 @@ export async function getPostById(
 }
 
 export type GetAdminPostsFilters = {
-  organizationId: string;
+  teamId: string;
   boardId?: string;
   offset: number;
   take: number;
@@ -285,7 +285,6 @@ export async function createAdminPost(
     .insert(feedback)
     .values({
       ...(input.boardId && { boardId: input.boardId }),
-      teamId,
       issueKey,
       authorId,
       title: input.title,
@@ -615,18 +614,11 @@ export async function getAndUpdatePostSerialCount(
 export async function findFeedbackByIssueKey(
   db: Database,
   issueKey: string,
-  organizationId: string,
 ): Promise<{ id: string } | null> {
   const [result] = await db
     .select({ id: feedback.id })
     .from(feedback)
-    .leftJoin(team, eq(team.id, feedback.teamId))
-    .where(
-      and(
-        eq(feedback.issueKey, issueKey.toLowerCase()),
-        eq(team.organizationId, organizationId),
-      ),
-    )
+    .where(eq(feedback.issueKey, issueKey.toLowerCase()))
     .limit(1);
 
   return result || null;

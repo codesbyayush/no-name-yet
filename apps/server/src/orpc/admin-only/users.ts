@@ -28,7 +28,7 @@ export const usersRouter = {
     .handler(async ({ input, context }) => {
       const { limit, offset } = input;
 
-      if (!context.organization) {
+      if (!context.team) {
         throw new ORPCError('NOT_FOUND');
       }
 
@@ -44,7 +44,12 @@ export const usersRouter = {
         })
         .from(member)
         .innerJoin(user, eq(member.userId, user.id))
-        .where(eq(member.organizationId, context.organization.id))
+        .where(
+          eq(
+            member.organizationId,
+            context.session.session.activeOrganizationId,
+          ),
+        )
         .limit(limit)
         .offset(offset);
 
@@ -67,7 +72,7 @@ export const usersRouter = {
 
       return {
         users: transformedUsers,
-        organizationId: context.organization.id,
+        organizationId: context.session.session.activeOrganizationId,
         total: transformedUsers.length, // Could be enhanced with actual count query
       };
     }),
@@ -89,8 +94,8 @@ export const usersRouter = {
       }),
     )
     .handler(async ({ input, context }) => {
-      if (!context.organization) {
-        throw new ORPCError('NOT_FOUND', { message: 'Organization not found' });
+      if (!context.team) {
+        throw new ORPCError('NOT_FOUND', { message: 'Team not found' });
       }
 
       const auth = getAuth(context.env);
@@ -104,7 +109,7 @@ export const usersRouter = {
           body: {
             email: invitee.email,
             role: invitee.role,
-            organizationId: context.organization.id,
+            organizationId: context.session.session.activeOrganizationId,
             inviterId: context.session.user.id,
             teamId: invitee.teamId,
           },
