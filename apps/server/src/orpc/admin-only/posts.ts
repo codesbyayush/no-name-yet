@@ -2,14 +2,14 @@ import { ORPCError } from '@orpc/server';
 import { z } from 'zod';
 import { getActivityHistoryByFeedbackId } from '@/dal/activity';
 import {
-  createAdminPost,
-  deleteAdminPost,
-  getAdminAllPosts,
-  getAdminDetailedPosts,
-  getAdminDetailedSinglePost,
-  promoteRequestedIssue,
-  updateAdminPost,
-} from '@/dal/posts';
+  createPost,
+  deletePost,
+  getAdminPost,
+  getAdminPosts,
+  getAllPosts,
+  promoteRequest,
+  updatePost,
+} from '@/services/posts';
 import { adminOnlyProcedure } from '../procedures';
 
 const DEFAULT_TAKE = 20;
@@ -49,7 +49,7 @@ const issuesRouter = {
         throw new ORPCError('NOT_FOUND');
       }
       const userId = context.session?.user?.id;
-      const { posts, hasMore } = await getAdminDetailedPosts(
+      const { posts, hasMore } = await getAdminPosts(
         context.db,
         {
           teamId: context.team.id,
@@ -84,11 +84,7 @@ const issuesRouter = {
         throw new ORPCError('NOT_FOUND');
       }
       const userId = context.session?.user?.id;
-      const post = await getAdminDetailedSinglePost(
-        context.db,
-        feedbackId,
-        userId,
-      );
+      const post = await getAdminPost(context.db, feedbackId, userId);
       return {
         post,
         teamId: context.team.id,
@@ -118,7 +114,7 @@ const issuesRouter = {
       if (!teamId) {
         throw new ORPCError('NOT_FOUND');
       }
-      const newPost = await createAdminPost(context.db, input, userId, teamId);
+      const newPost = await createPost(context.db, input, userId, teamId);
       return newPost;
     }),
 
@@ -140,7 +136,7 @@ const issuesRouter = {
     .output(z.any())
     .handler(async ({ input, context }) => {
       const userId = context.session?.user.id;
-      const updatedPost = await updateAdminPost(context.db, input, userId);
+      const updatedPost = await updatePost(context.db, input, userId);
       if (!updatedPost) {
         throw new ORPCError('NOT_FOUND', { message: 'Post not found' });
       }
@@ -155,7 +151,7 @@ const issuesRouter = {
     )
     .handler(async ({ input, context }) => {
       const userId = context.session?.user.id;
-      const deletedPost = await deleteAdminPost(context.db, input.id, userId);
+      const deletedPost = await deletePost(context.db, input.id, userId);
       if (!deletedPost) {
         throw new ORPCError('NOT_FOUND', { message: 'Post not found' });
       }
@@ -163,7 +159,7 @@ const issuesRouter = {
     }),
 
   getAll: adminOnlyProcedure.handler(async ({ context }) => {
-    const posts = await getAdminAllPosts(context.db);
+    const posts = await getAllPosts(context.db);
     return posts;
   }),
 
@@ -198,7 +194,7 @@ const requestsRouter = {
           message: 'User not authenticated',
         });
       }
-      const promotedPost = await promoteRequestedIssue(
+      const promotedPost = await promoteRequest(
         context.db,
         input.id,
         teamId,
@@ -218,7 +214,7 @@ const requestsRouter = {
     )
     .handler(async ({ input, context }) => {
       const userId = context.session?.user.id;
-      const deletedPost = await deleteAdminPost(context.db, input.id, userId);
+      const deletedPost = await deletePost(context.db, input.id, userId);
       if (!deletedPost) {
         throw new ORPCError('NOT_FOUND', { message: 'Post not found' });
       }
