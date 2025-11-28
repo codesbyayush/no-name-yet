@@ -39,9 +39,6 @@ export const feedback = pgTable(
     boardId: text('board_id').references(() => boards.id, {
       onDelete: 'cascade',
     }),
-    teamId: text('team_id').references(() => team.id, {
-      onDelete: 'cascade',
-    }),
     title: text('title').notNull(),
     description: text('description').notNull(),
     assigneeId: text('assignee_id').references(() => user.id, {

@@ -3,7 +3,7 @@ import { boards } from '@/db/schema/boards';
 
 type Database = ReturnType<typeof import('@/db').getDb>;
 
-export async function getPublicBoards(db: Database, organizationId: string) {
+export async function getPublicBoards(db: Database, teamId: string) {
   return await db
     .select({
       id: boards.id,
@@ -12,20 +12,12 @@ export async function getPublicBoards(db: Database, organizationId: string) {
       description: boards.description,
     })
     .from(boards)
-    .where(
-      and(
-        eq(boards.organizationId, organizationId),
-        eq(boards.isPrivate, false),
-      ),
-    )
+    .where(and(eq(boards.teamId, teamId), eq(boards.isPrivate, false)))
     .orderBy(asc(boards.createdAt));
 }
 
-export async function getAllBoards(db: Database, organizationId: string) {
-  return await db
-    .select()
-    .from(boards)
-    .where(eq(boards.organizationId, organizationId));
+export async function getAllBoards(db: Database, teamId: string) {
+  return await db.select().from(boards).where(eq(boards.teamId, teamId));
 }
 
 export type CreateBoardInput = {
@@ -37,7 +29,7 @@ export type CreateBoardInput = {
 
 export async function createBoard(
   db: Database,
-  organizationId: string,
+  teamId: string,
   input: CreateBoardInput,
 ) {
   const boardId = crypto.randomUUID();
@@ -45,7 +37,7 @@ export async function createBoard(
     .insert(boards)
     .values({
       id: boardId,
-      organizationId,
+      teamId,
       name: input.name,
       slug: input.slug,
       description: input.description,

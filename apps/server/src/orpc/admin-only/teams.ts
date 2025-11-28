@@ -2,6 +2,7 @@ import { ORPCError } from '@orpc/server';
 import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { team, teamMember, user } from '@/db/schema';
+import { getAuth } from '@/lib/auth';
 import { adminOnlyProcedure } from '../procedures';
 
 export const teamsRouter = {
@@ -15,11 +16,11 @@ export const teamsRouter = {
         .optional(),
     )
     .handler(async ({ input, context }) => {
-      if (!context.organization) {
-        throw new ORPCError('NOT_FOUND', { message: 'Organization not found' });
+      if (!context.team) {
+        throw new ORPCError('NOT_FOUND', { message: 'Team not found' });
       }
 
-      const teamId = input?.teamId || context.session.session.activeTeamId;
+      const teamId = input?.teamId || context.team.id;
 
       if (!teamId) {
         throw new ORPCError('BAD_REQUEST', { message: 'Team ID is required' });
@@ -64,6 +65,42 @@ export const teamsRouter = {
         members,
         teamName: teamData[0].name,
         totalMembers: members.length,
+      };
+    }),
+
+  createTeam: adminOnlyProcedure
+    .input(
+      z.object({
+        name: z.string().min(1, 'Team name is required'),
+      }),
+    )
+    .handler(async ({ input, context }) => {
+      if (!context.team) {
+        throw new ORPCError('NOT_FOUND', { message: 'Team not found' });
+      }
+
+      const result = await getAuth(context.env).api.createTeam({
+        body: {
+          name: input.name,
+          organizationId: context.session.session.activeOrganizationId,
+        },
+        headers: context.headers,
+      });
+
+      const addMember = await getAuth(context.env).api.addTeamMember({
+        body: {
+          teamId: result.id,
+          userId: context.session.session.userId,
+          role: 'member',
+        },
+        headers: context.headers,
+      });
+
+      return {
+        teamId: result.id,
+        members: [addMember],
+        teamName: result.name,
+        totalMembers: 1,
       };
     }),
 };

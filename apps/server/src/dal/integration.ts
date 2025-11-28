@@ -1,17 +1,17 @@
 import { eq } from 'drizzle-orm';
 import type { Database } from '@/dal/posts';
-import { githubInstallations, organization } from '@/db/schema';
+import { githubInstallations, team } from '@/db/schema';
 
-export async function getOrganizationIdBySlug(
+export async function getTeamIdBySlug(
   db: Database,
   slug: string,
 ): Promise<string | null> {
-  const [org] = await db
-    .select({ id: organization.id })
-    .from(organization)
-    .where(eq(organization.slug, slug))
+  const [t] = await db
+    .select({ id: team.id })
+    .from(team)
+    .where(eq(team.slug, slug))
     .limit(1);
-  return org?.id ?? null;
+  return t?.id ?? null;
 }
 
 export type GitHubInstallationRow = {
@@ -20,7 +20,7 @@ export type GitHubInstallationRow = {
   accountLogin: string;
   accountId: number;
   appId: number;
-  organizationId?: string;
+  teamId?: string;
 };
 
 export async function insertOrUpdateInstallation(
@@ -48,14 +48,14 @@ export async function deleteInstallationByInstallationId(
     .where(eq(githubInstallations.githubInstallationId, installationId));
 }
 
-export async function getOrganizationIdByInstallationId(
+export async function getTeamIdByInstallationId(
   db: Database,
   installationId: number,
 ): Promise<string | null> {
   const [result] = await db
-    .select({ organizationId: githubInstallations.organizationId })
+    .select({ teamId: githubInstallations.teamId })
     .from(githubInstallations)
     .where(eq(githubInstallations.githubInstallationId, installationId))
     .limit(1);
-  return result?.organizationId ?? null;
+  return result?.teamId ?? null;
 }

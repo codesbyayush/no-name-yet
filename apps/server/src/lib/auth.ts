@@ -2,6 +2,7 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { type BetterAuthOptions, betterAuth } from 'better-auth/minimal';
 import { admin, anonymous, organization } from 'better-auth/plugins';
 import { and, eq } from 'drizzle-orm';
+import { slugifyTitle } from '@/utils/slug';
 import { getDb } from '../db';
 import * as schema from '../db/schema';
 import { boards, member, tags, team, teamMember } from '../db/schema';
@@ -127,45 +128,40 @@ export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | any {
               expiresInDays: 7,
             });
           },
-        },
-        organizationCreation: {
-          afterCreate: async ({ user, organization: createdOrg }) => {
-            if (env.NODE_ENV === 'production') {
-              await sendEmail(env, user.email, 'welcome', {
-                firstname: user.name,
-              });
-            }
-
-            const dbConn = getDb(env);
+          afterCreateTeam: async (data) => {
+            const dbConn = db;
 
             // Seed defaults (idempotent)
             try {
+              const teamSlug = slugifyTitle(data.team.name);
+              await dbConn
+                .update(team)
+                .set({ slug: teamSlug })
+                .where(eq(team.id, data.team.id));
+
               const existingBoards = await dbConn
                 .select({ id: boards.id })
                 .from(boards)
-                .where(eq(boards.organizationId, createdOrg.id))
+                .where(eq(boards.teamId, data.team.id))
                 .limit(1);
 
               if (existingBoards.length === 0) {
                 // Boards
                 await dbConn.insert(boards).values([
                   {
-                    id: crypto.randomUUID(),
-                    organizationId: createdOrg.id,
+                    teamId: data.team.id,
                     name: 'Feature Requests',
                     slug: 'features',
                     description: 'Collect ideas and feature requests',
                   },
                   {
-                    id: crypto.randomUUID(),
-                    organizationId: createdOrg.id,
+                    teamId: data.team.id,
                     name: 'Bugs',
                     slug: 'bugs',
                     description: 'Report and track bugs',
                   },
                   {
-                    id: crypto.randomUUID(),
-                    organizationId: createdOrg.id,
+                    teamId: data.team.id,
                     name: 'Internal',
                     slug: 'internal',
                     description: 'Internal tickets for the team',
@@ -190,7 +186,7 @@ export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | any {
                 ];
                 await dbConn.insert(tags).values(
                   defaultTags.map((t) => ({
-                    organizationId: createdOrg.id,
+                    teamId: data.team.id,
                     name: t.name,
                     color: t.color,
                   })),
@@ -198,6 +194,16 @@ export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | any {
               }
             } catch {
               //
+            }
+          },
+        },
+
+        organizationCreation: {
+          afterCreate: async ({ user, organization: createdOrg }) => {
+            if (env.NODE_ENV === 'production') {
+              await sendEmail(env, user.email, 'welcome', {
+                firstname: user.name,
+              });
             }
           },
         },

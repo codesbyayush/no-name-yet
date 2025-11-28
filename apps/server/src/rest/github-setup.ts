@@ -24,11 +24,11 @@ router.get('/setup', async (c) => {
   // Attempt to verify state and auto-link
   if (installationId && state) {
     const decoded = await verifyInstallState(env, state);
-    if (decoded?.orgId) {
+    if (decoded?.teamId) {
       try {
         await db
           .update(githubInstallations)
-          .set({ organizationId: decoded.orgId })
+          .set({ teamId: decoded.teamId })
           .where(
             eq(
               githubInstallations.githubInstallationId,

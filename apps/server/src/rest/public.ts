@@ -2,14 +2,15 @@ import { and, count, eq, inArray, isNull, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod/v4';
 import { getDb } from '@/db';
+import { tags } from '@/db/schema';
 import { boards } from '@/db/schema/boards';
 import { feedback } from '@/db/schema/feedback';
-import { organization } from '@/db/schema/organization';
+import { organization, team } from '@/db/schema/organization';
 import { getEnvFromContext } from '../lib/env';
 
 type AppContext = {
   Variables: {
-    organization: {
+    team: {
       id: string;
       // attach a list of allowed domains for CORS checks.
       // allowedDomains: string[];
@@ -32,12 +33,12 @@ publicApiRouter.use('*', async (c, next) => {
   try {
     const env = getEnvFromContext(c);
     const db = getDb(env);
-    const org = await db
+    const teamResult = await db
       .select()
-      .from(organization)
-      .where(eq(organization.publicKey, publicKey));
+      .from(team)
+      .where(eq(team.publicKey, publicKey));
 
-    if (!org || org.length === 0) {
+    if (!teamResult || teamResult.length === 0) {
       return c.json(
         { error: 'Unauthorized', message: 'Invalid API key.' },
         401,
@@ -50,7 +51,7 @@ publicApiRouter.use('*', async (c, next) => {
     //   return c.json({ error: "Forbidden", message: "This domain is not authorized to access the API." }, 403);
     // }
 
-    c.set('organization', org[0]);
+    c.set('team', teamResult[0]);
   } catch (_error) {
     return c.json({ error: 'Internal Server Error' }, 500);
   }
@@ -64,7 +65,7 @@ publicApiRouter.use('*', async (c, next) => {
  * @returns {Array<Object>} A list of board objects with limited public fields.
  */
 publicApiRouter.get('/boards', async (c) => {
-  const org = c.get('organization');
+  const teamContext = c.get('team');
 
   try {
     const env = getEnvFromContext(c);
@@ -79,7 +80,7 @@ publicApiRouter.get('/boards', async (c) => {
       .from(boards)
       .where(
         and(
-          eq(boards.organizationId, org.id),
+          eq(boards.teamId, teamContext.id),
           eq(boards.isPrivate, false),
           isNull(boards.deletedAt),
         ),
@@ -96,32 +97,17 @@ publicApiRouter.get('/boards', async (c) => {
  * @returns {Array<string>} A flat list of unique tag strings.
  */
 publicApiRouter.get('/tags', async (c) => {
-  const org = c.get('organization');
+  const teamContext = c.get('team');
 
   try {
     const env = getEnvFromContext(c);
     const db = getDb(env);
-    const orgBoards = await db
-      .select({ id: boards.id })
-      .from(boards)
-      .where(and(eq(boards.organizationId, org.id), isNull(boards.deletedAt)));
+    const teamTags = await db
+      .select()
+      .from(tags)
+      .where(eq(tags.teamId, teamContext.id));
 
-    if (orgBoards.length === 0) {
-      return c.json([]); // No boards, so no tags
-    }
-    const boardIdList = orgBoards.map((b) => b.id);
-
-    const tagsResult = await db.execute(sql`
-        SELECT DISTINCT unnest(tags) as tag
-        FROM feedback
-        WHERE board_id IN ${inArray(feedback.boardId, boardIdList)}
-          AND tags IS NOT NULL AND cardinality(tags) > 0
-        ORDER BY tag;
-    `);
-
-    const tags = (tagsResult.rows as { tag: string }[]).map((row) => row.tag);
-
-    return c.json(tags);
+    return c.json(teamTags);
   } catch (_error) {
     return c.json({ error: 'Internal Server Error' }, 500);
   }
@@ -146,7 +132,7 @@ const feedbackSubmissionSchema = z.object({
  * @returns {Object} A success message and the ID of the created feedback.
  */
 publicApiRouter.post('/feedback', async (c) => {
-  const org = c.get('organization');
+  const teamContext = c.get('team');
   const body = await c.req.json();
 
   const validation = feedbackSubmissionSchema.safeParse(body);
@@ -164,16 +150,13 @@ publicApiRouter.post('/feedback', async (c) => {
   try {
     const env = getEnvFromContext(c);
     const db = getDb(env);
-    const board = await db.query.boards.findFirst({
-      where: and(eq(boards.id, boardId), eq(boards.organizationId, org.id)),
-      columns: { id: true },
-    });
+    const board = await db
+      .select({ id: boards.id })
+      .from(boards)
+      .where(and(eq(boards.id, boardId), eq(boards.teamId, teamContext.id)));
 
-    if (!board) {
-      return c.json(
-        { error: 'Forbidden', message: 'Board not found or access denied.' },
-        403,
-      );
+    if (board.length === 0) {
+      return c.json({ error: 'NOT_FOUND', message: 'Board not found.' }, 404);
     }
 
     const [newFeedbackItem] = await db

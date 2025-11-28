@@ -19,7 +19,8 @@ const withErrorBoundary = o.middleware(async ({ context, next }) => {
       scope: 'orpc',
       context: {
         userId: context.session?.user?.id,
-        orgId: context.organization?.id,
+        orgId: context.session?.session?.activeOrganizationId,
+        teamId: context.team?.id,
         error,
       },
     });
@@ -38,8 +39,8 @@ const requireAuth = o.middleware(({ context, next }) => {
   });
 });
 
-const requireOrganization = o.middleware(({ context, next }) => {
-  if (!context.organization) {
+const requireTeam = o.middleware(({ context, next }) => {
+  if (!context.team) {
     throw new ORPCError('UNAUTHORIZED');
   }
   return next({
@@ -52,7 +53,7 @@ const requireAdminAuth = adminO.middleware(({ context, next }) => {
     throw new ORPCError('UNAUTHORIZED');
   }
 
-  if (!context.organization) {
+  if (!context.team) {
     throw new ORPCError('UNAUTHORIZED');
   }
   return next({
@@ -62,6 +63,6 @@ const requireAdminAuth = adminO.middleware(({ context, next }) => {
 
 export const protectedProcedure = publicProcedure.use(requireAuth);
 
-export const organizationProcedure = publicProcedure.use(requireOrganization);
+export const teamProcedure = publicProcedure.use(requireTeam);
 
 export const adminOnlyProcedure = adminO.use(requireAdminAuth);

@@ -45,14 +45,14 @@ const issuesRouter = {
     )
     .handler(async ({ input, context }) => {
       const { offset, take, sortBy, boardId } = input;
-      if (!context.organization) {
+      if (!context.team) {
         throw new ORPCError('NOT_FOUND');
       }
       const userId = context.session?.user?.id;
       const { posts, hasMore } = await getAdminDetailedPosts(
         context.db,
         {
-          organizationId: context.organization.id,
+          teamId: context.team.id,
           boardId,
           offset,
           take,
@@ -62,8 +62,8 @@ const issuesRouter = {
       );
       return {
         posts,
-        organizationId: context.organization.id,
-        organizationName: context.organization.name,
+        teamId: context.team.id,
+        teamName: context.team.name,
         pagination: {
           offset,
           take,
@@ -80,7 +80,7 @@ const issuesRouter = {
     )
     .handler(async ({ input, context }) => {
       const { feedbackId } = input;
-      if (!(context.organization && feedbackId)) {
+      if (!(context.team && feedbackId)) {
         throw new ORPCError('NOT_FOUND');
       }
       const userId = context.session?.user?.id;
@@ -91,8 +91,8 @@ const issuesRouter = {
       );
       return {
         post,
-        organizationId: context.organization.id,
-        organizationName: context.organization.name,
+        teamId: context.team.id,
+        teamName: context.team.name,
       };
     }),
 

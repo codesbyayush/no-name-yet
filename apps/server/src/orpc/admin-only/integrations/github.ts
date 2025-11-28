@@ -8,13 +8,13 @@ import { adminOnlyProcedure } from '../../procedures';
 
 export const githubAdminRouter = {
   getInstallStatus: adminOnlyProcedure.handler(async ({ context }) => {
-    if (!context.organization) {
+    if (!context.team) {
       return { linked: false };
     }
     const rows = await context.db
       .select()
       .from(githubInstallations)
-      .where(eq(githubInstallations.organizationId, context.organization.id))
+      .where(eq(githubInstallations.teamId, context.team.id))
       .limit(1);
     const installation = rows[0];
     if (!installation) {
@@ -33,7 +33,7 @@ export const githubAdminRouter = {
     const SECONDS_PER_MILLISECOND = 1000 as const;
     const UNIX_SECONDS = Math.floor(Date.now() / SECONDS_PER_MILLISECOND);
     const state = await signInstallState(context.env, {
-      orgId: context.organization?.id,
+      teamId: context.team?.id,
       returnTo: `${context.env.FRONTEND_URL}/settings/integrations`,
       nonce,
       ts: UNIX_SECONDS,
@@ -45,7 +45,7 @@ export const githubAdminRouter = {
   linkInstallation: adminOnlyProcedure
     .input(z.object({ githubInstallationId: z.number() }))
     .handler(async ({ input, context }) => {
-      if (!context.organization) {
+      if (!context.team) {
         return { success: false };
       }
       const rows = await context.db
@@ -62,27 +62,24 @@ export const githubAdminRouter = {
       if (!installation) {
         return { success: false };
       }
-      if (
-        installation.organizationId &&
-        installation.organizationId !== context.organization.id
-      ) {
+      if (installation.teamId && installation.teamId !== context.team.id) {
         return { success: false };
       }
       await context.db
         .update(githubInstallations)
-        .set({ organizationId: context.organization.id })
+        .set({ teamId: context.team.id })
         .where(eq(githubInstallations.id, installation.id));
       return { success: true };
     }),
 
   unlinkInstallation: adminOnlyProcedure.handler(async ({ context }) => {
-    if (!context.organization) {
+    if (!context.team) {
       return { success: false };
     }
     await context.db
       .update(githubInstallations)
-      .set({ organizationId: null })
-      .where(eq(githubInstallations.organizationId, context.organization.id));
+      .set({ teamId: null })
+      .where(eq(githubInstallations.teamId, context.team.id));
     return { success: true };
   }),
 
@@ -90,14 +87,14 @@ export const githubAdminRouter = {
     // If we have a linked installation, prefer the org-specific settings URL; otherwise fallback
     let installationId: number | null = null;
     let accountLogin: string | null = null;
-    if (context.organization) {
+    if (context.team) {
       const rows = await context.db
         .select({
           githubInstallationId: githubInstallations.githubInstallationId,
           accountLogin: githubInstallations.accountLogin,
         })
         .from(githubInstallations)
-        .where(eq(githubInstallations.organizationId, context.organization.id))
+        .where(eq(githubInstallations.teamId, context.team.id))
         .limit(1);
       if (rows[0]) {
         installationId = rows[0].githubInstallationId as number;
@@ -115,7 +112,7 @@ export const githubAdminRouter = {
   getBranchSuggestion: adminOnlyProcedure
     .input(z.object({ feedbackId: z.string() }))
     .handler(async ({ input, context }) => {
-      if (!context.organization) {
+      if (!context.team) {
         throw new ORPCError('UNAUTHORIZED');
       }
       const rows = await context.db

@@ -1,7 +1,7 @@
 import {
   deleteInstallationByInstallationId,
-  getOrganizationIdByInstallationId,
-  getOrganizationIdBySlug,
+  getTeamIdByInstallationId,
+  getTeamIdBySlug,
   insertOrUpdateInstallation,
 } from '@/dal/integration';
 import type { Database } from '@/dal/posts';
@@ -52,10 +52,10 @@ export async function upsertInstallation(
     appId: installation.app_id,
   };
 
-  // Try to map to organization by slug = account.login
-  const orgId = await getOrganizationIdBySlug(db, account.login);
-  if (orgId) {
-    (row as Record<string, unknown>).organizationId = orgId;
+  // Try to map to team by slug = account.login
+  const teamId = await getTeamIdBySlug(db, account.login);
+  if (teamId) {
+    (row as Record<string, unknown>).teamId = teamId;
   }
 
   await insertOrUpdateInstallation(db, row);
@@ -74,11 +74,11 @@ export async function deleteInstallation(
 /**
  * Get organization ID by GitHub installation ID
  */
-export async function getOrganizationByInstallation(
+export async function getTeamByInstallation(
   db: Database,
   installationId: number,
 ): Promise<string | null> {
-  return await getOrganizationIdByInstallationId(db, installationId);
+  return await getTeamIdByInstallationId(db, installationId);
 }
 
 /**
@@ -111,16 +111,13 @@ export async function handlePullRequest(
     return;
   }
 
-  const organizationId = await getOrganizationByInstallation(
-    db,
-    installationId,
-  );
-  if (!organizationId) {
+  const teamId = await getTeamByInstallation(db, installationId);
+  if (!teamId) {
     return;
   }
 
   // Find feedback by issue key
-  const feedback = await findFeedbackByIssueKey(db, issueKey, organizationId);
+  const feedback = await findFeedbackByIssueKey(db, issueKey);
   if (!feedback) {
     return;
   }

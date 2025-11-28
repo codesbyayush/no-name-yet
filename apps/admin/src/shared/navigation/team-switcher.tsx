@@ -14,6 +14,8 @@ import {
   useSidebar,
 } from '@workspace/ui/components/sidebar';
 import { AudioWaveform, ChevronsUpDown, Plus } from 'lucide-react';
+import { useState } from 'react';
+import { CreateTeamModal } from '@/features/teams/components/create-team-modal';
 
 export function TeamSwitcher({
   activeTeamId,
@@ -28,6 +30,7 @@ export function TeamSwitcher({
   }[];
 }) {
   const { isMobile } = useSidebar();
+  const [isCreateTeamOpen, setIsCreateTeamOpen] = useState(false);
   const activeTeam = teams.find((team) => team.id === activeTeamId);
 
   if (!activeTeam) {
@@ -84,7 +87,10 @@ export function TeamSwitcher({
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
-            <DropdownMenuItem className='gap-2 p-2'>
+            <DropdownMenuItem
+              className='gap-2 p-2'
+              onClick={() => setIsCreateTeamOpen(true)}
+            >
               <div className='flex size-6 items-center justify-center rounded-md border bg-transparent'>
                 <Plus className='size-4' />
               </div>
@@ -92,6 +98,10 @@ export function TeamSwitcher({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <CreateTeamModal
+          open={isCreateTeamOpen}
+          onOpenChange={setIsCreateTeamOpen}
+        />
       </SidebarMenuItem>
     </SidebarMenu>
   );
