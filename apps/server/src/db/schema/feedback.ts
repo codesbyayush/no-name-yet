@@ -10,16 +10,15 @@ import {
 } from 'drizzle-orm/pg-core';
 import { user } from './auth';
 import { boards } from './boards';
-import { team } from './organization';
 
-export const priorityEnum = pgEnum('priority_enum', [
+const priorityEnum = pgEnum('priority_enum', [
   'low',
   'medium',
   'high',
   'urgent',
   'no-priority',
 ]);
-export const statusEnum = pgEnum('status_enum', [
+const statusEnum = pgEnum('status_enum', [
   'to-do',
   'in-progress',
   'completed',
@@ -76,3 +75,6 @@ export const teamSerials = pgTable('team_serials', {
 
 export type Feedback = typeof feedback.$inferSelect;
 export type NewFeedback = typeof feedback.$inferInsert;
+
+export type StatusEnum = (typeof statusEnum.enumValues)[number];
+export type PriorityEnum = (typeof priorityEnum.enumValues)[number];
