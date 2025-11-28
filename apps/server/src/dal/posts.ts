@@ -14,6 +14,7 @@ import {
   boards,
   comments,
   feedback,
+  type StatusEnum,
   team,
   teamSerials,
   user,
@@ -32,15 +33,6 @@ export type GetPostsFilters = {
   take: number;
   sortBy?: 'newest' | 'oldest';
 };
-
-export type IssueStatus =
-  | 'to-do'
-  | 'in-progress'
-  | 'technical-review'
-  | 'completed'
-  | 'backlog'
-  | 'paused'
-  | 'pending';
 
 export type IssuePriority =
   | 'low'
@@ -262,7 +254,7 @@ export type AdminCreatePostInput = {
   title: string;
   description: string;
   priority: IssuePriority;
-  status: IssueStatus;
+  status: StatusEnum;
   tags?: string[];
   issueKey?: string;
   assigneeId?: string;
@@ -317,7 +309,7 @@ export type AdminUpdatePostInput = {
   id: string;
   title?: string;
   description?: string;
-  status?: IssueStatus;
+  status?: StatusEnum;
   priority?: IssuePriority;
   boardId?: string;
   dueDate?: string;
@@ -627,7 +619,7 @@ export async function findFeedbackByIssueKey(
 export async function updateFeedbackStatus(
   db: Database,
   feedbackId: string,
-  status: IssueStatus,
+  status: StatusEnum,
 ): Promise<void> {
   await db
     .update(feedback)

@@ -1,10 +1,4 @@
-export type IssueStatus =
-  | 'to-do'
-  | 'in-progress'
-  | 'technical-review'
-  | 'completed'
-  | 'backlog'
-  | 'paused';
+import type { StatusEnum } from '@/db/schema';
 
 export type PullRequestAction =
   | 'opened'
@@ -60,7 +54,7 @@ export function mapPullRequestActionToStatus(
   isMerged: boolean,
   baseBranch: string,
   defaultBranch = 'main',
-): IssueStatus | null {
+): StatusEnum | null {
   if (action === 'ready_for_review') {
     return 'technical-review';
   }

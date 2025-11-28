@@ -17,7 +17,10 @@ import {
   getPostById,
   getPostsWithAggregates,
   type PublicCreatePostInput,
+  promoteRequestedIssue,
+  updateFeedbackStatus,
 } from '@/dal/posts';
+import type { StatusEnum } from '@/db/schema';
 
 /**
  * Get posts with aggregates for public view
@@ -134,7 +137,6 @@ export async function promoteRequest(
   teamId: string,
   userId?: string,
 ) {
-  const { promoteRequestedIssue } = await import('@/dal/posts');
   return await promoteRequestedIssue(db, id, teamId, userId);
 }
 
@@ -151,20 +153,7 @@ export async function findPostByIssueKey(db: Database, issueKey: string) {
 export async function updatePostStatus(
   db: Database,
   feedbackId: string,
-  status: string,
+  status: StatusEnum,
 ) {
-  const { updateFeedbackStatus } = await import('@/dal/posts');
-  // Cast to IssueStatus type
-  return await updateFeedbackStatus(
-    db,
-    feedbackId,
-    status as
-      | 'to-do'
-      | 'in-progress'
-      | 'completed'
-      | 'backlog'
-      | 'technical-review'
-      | 'paused'
-      | 'pending',
-  );
+  return await updateFeedbackStatus(db, feedbackId, status);
 }
