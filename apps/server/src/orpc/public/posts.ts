@@ -3,9 +3,9 @@ import { z } from 'zod';
 import {
   createPublicPost,
   deletePublicPost,
-  getPostById,
-  getPostsWithAggregates,
-} from '@/dal/posts';
+  getPublicPost,
+  getPublicPosts,
+} from '@/services/posts';
 import { protectedProcedure } from '../procedures';
 
 const DEFAULT_TAKE = 20;
@@ -27,7 +27,7 @@ export const postsRouter = {
         throw new ORPCError('NOT_FOUND');
       }
       const userId = context.session?.user?.id;
-      const { posts, hasMore } = await getPostsWithAggregates(
+      const { posts, hasMore } = await getPublicPosts(
         context.db,
         {
           teamId: context.team.id,
@@ -61,7 +61,7 @@ export const postsRouter = {
         throw new ORPCError('NOT_FOUND');
       }
       const userId = context.session?.user?.id;
-      const post = await getPostById(context.db, feedbackId, userId);
+      const post = await getPublicPost(context.db, feedbackId, userId);
       return post;
     }),
 
