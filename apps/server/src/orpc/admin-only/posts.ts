@@ -1,10 +1,10 @@
 import { ORPCError } from '@orpc/server';
 import { z } from 'zod';
 import { pagination } from '@/config';
-import { getActivityHistoryByFeedbackId } from '@/dal/activity';
 import {
   createPost,
   deletePost,
+  getActivityHistory,
   getAdminPost,
   getAdminPosts,
   getAllPosts,
@@ -172,12 +172,7 @@ const issuesRouter = {
       }),
     )
     .handler(async ({ input, context }) => {
-      const { feedbackId } = input;
-      const activities = await getActivityHistoryByFeedbackId(
-        context.db,
-        feedbackId,
-      );
-      return activities;
+      return await getActivityHistory(context.db, input.feedbackId);
     }),
 };
 

@@ -3,6 +3,7 @@ import { Hono } from 'hono';
 import { getDb } from '../db';
 import { githubInstallations } from '../db/schema';
 import { getEnvFromContext } from '../lib/env';
+import { logger } from '../lib/logger';
 import { verifyInstallState } from '../lib/state';
 
 const HTTP_PROTOCOL_RE = /^https?:\/\//i;
@@ -35,8 +36,11 @@ router.get('/setup', async (c) => {
               Number(installationId),
             ),
           );
-      } catch {
-        // no-op: best-effort linking only
+      } catch (error) {
+        logger.error('Failed to auto-link GitHub installation', {
+          scope: 'github-setup',
+          context: { installationId, teamId: decoded.teamId, error },
+        });
       }
     }
   }
