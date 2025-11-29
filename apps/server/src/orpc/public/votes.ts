@@ -1,6 +1,6 @@
 import { ORPCError } from '@orpc/server';
 import { z } from 'zod';
-import { countVotes, createVote, deleteVote } from '@/dal/votes';
+import { addVote, getVoteCount, removeVote } from '@/services/votes';
 import { protectedProcedure } from '../procedures';
 
 export const votesRouter = {
@@ -25,7 +25,7 @@ export const votesRouter = {
         throw new ORPCError('BAD_REQUEST');
       }
       try {
-        const newVote = await createVote(context.db, input, userId);
+        const newVote = await addVote(context.db, input, userId);
         return newVote;
       } catch (_error) {
         throw new ORPCError('INTERNAL_SERVER_ERROR');
@@ -45,7 +45,7 @@ export const votesRouter = {
       if (!userId) {
         throw new ORPCError('UNAUTHORIZED');
       }
-      const deletedVote = await deleteVote(context.db, input, userId);
+      const deletedVote = await removeVote(context.db, input, userId);
       if (!deletedVote) {
         throw new ORPCError('NOT_FOUND', { message: 'Vote not found' });
       }
@@ -63,6 +63,6 @@ export const votesRouter = {
       if (!(input.feedbackId || input.commentId)) {
         throw new ORPCError('BAD_REQUEST');
       }
-      return await countVotes(context.db, input);
+      return await getVoteCount(context.db, input);
     }),
 };

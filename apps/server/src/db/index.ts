@@ -2,6 +2,9 @@ import { neon, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from './schema';
 
+// Centralized Database type - import this everywhere instead of redefining
+export type Database = ReturnType<typeof getDb>;
+
 // Accepts the Worker env object and returns a Drizzle db instance
 export function getDb(env: {
   HYPERDRIVE: { connectionString: string };

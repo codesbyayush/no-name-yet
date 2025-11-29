@@ -1,7 +1,6 @@
 import { eq } from 'drizzle-orm';
+import type { Database } from '@/db';
 import { tags } from '@/db/schema/tags';
-
-type Database = ReturnType<typeof import('@/db').getDb>;
 
 export async function getAllTags(db: Database, teamId: string) {
   return await db.select().from(tags).where(eq(tags.teamId, teamId));

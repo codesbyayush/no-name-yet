@@ -1,5 +1,5 @@
 import { eq } from 'drizzle-orm';
-import type { Database } from '@/dal/posts';
+import type { Database } from '@/db';
 import { githubInstallations, team } from '@/db/schema';
 
 export async function getTeamIdBySlug(

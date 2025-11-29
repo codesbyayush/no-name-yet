@@ -1,6 +1,6 @@
 import { and, eq } from 'drizzle-orm';
+import type { Database } from '@/db';
 import { team, teamMember, user } from '@/db/schema';
-import type { Database } from './posts';
 
 /**
  * Get team by ID
