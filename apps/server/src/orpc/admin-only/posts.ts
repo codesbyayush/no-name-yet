@@ -1,5 +1,6 @@
 import { ORPCError } from '@orpc/server';
 import { z } from 'zod';
+import { pagination } from '@/config';
 import { getActivityHistoryByFeedbackId } from '@/dal/activity';
 import {
   createPost,
@@ -11,9 +12,6 @@ import {
   updatePost,
 } from '@/services/posts';
 import { adminOnlyProcedure } from '../procedures';
-
-const DEFAULT_TAKE = 20;
-const MAX_TAKE = 100;
 
 const statusSchema = z.enum([
   'to-do',
@@ -37,8 +35,12 @@ const issuesRouter = {
   getDetailedPosts: adminOnlyProcedure
     .input(
       z.object({
-        offset: z.number().min(0).default(0),
-        take: z.number().min(1).max(MAX_TAKE).default(DEFAULT_TAKE),
+        offset: z.number().min(0).default(pagination.defaultOffset),
+        take: z
+          .number()
+          .min(1)
+          .max(pagination.maxLimit)
+          .default(pagination.defaultLimit),
         sortBy: z.enum(['newest', 'oldest', 'most_voted']).default('newest'),
         boardId: z.string().optional(),
       }),
