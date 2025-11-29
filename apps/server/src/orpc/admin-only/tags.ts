@@ -29,16 +29,6 @@ export const tagsRouter = {
         color: z.string().default('blue'),
       }),
     )
-    .output(
-      z.object({
-        id: z.string(),
-        name: z.string(),
-        color: z.string(),
-        teamId: z.string(),
-        createdAt: z.date(),
-        updatedAt: z.date(),
-      }),
-    )
     .handler(async ({ input, context }) => {
       if (!context.team?.id) {
         throw new ORPCError('NOT_FOUND', { message: 'Team not found' });

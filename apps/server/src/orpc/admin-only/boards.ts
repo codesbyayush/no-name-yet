@@ -29,10 +29,12 @@ export const boardsRouter = {
       }),
     )
     .output(z.any())
-    .handler(
-      async ({ input, context }) =>
-        await createBoard(context.db, context.team?.id || '', input),
-    ),
+    .handler(async ({ input, context }) => {
+      if (!context.team?.id) {
+        throw new ORPCError('NOT_FOUND', { message: 'Team not found' });
+      }
+      return await createBoard(context.db, context.team.id, input);
+    }),
 
   update: adminOnlyProcedure
     .input(
