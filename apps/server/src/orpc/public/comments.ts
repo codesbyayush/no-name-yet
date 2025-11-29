@@ -1,12 +1,12 @@
 import { ORPCError } from '@orpc/server';
 import { z } from 'zod';
 import {
-  countPublicComments as dalCountPublic,
-  createComment as dalCreateComment,
-  deleteComment as dalDeleteComment,
-  listTopLevelComments as dalListTopLevel,
-  updateComment as dalUpdateComment,
-} from '@/dal/comments';
+  createComment,
+  deleteComment,
+  getCommentCount,
+  getPostComments,
+  updateComment,
+} from '@/services/comments';
 import { protectedProcedure } from '../procedures';
 
 export const commentsRouter = {
@@ -20,7 +20,7 @@ export const commentsRouter = {
     .output(z.any())
     .handler(async ({ input, context }) => {
       const userId = context.session?.user.id;
-      return await dalCreateComment(context.db, input, userId);
+      return await createComment(context.db, input, userId);
     }),
 
   update: protectedProcedure
@@ -32,7 +32,7 @@ export const commentsRouter = {
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
-      const updatedComment = await dalUpdateComment(context.db, input);
+      const updatedComment = await updateComment(context.db, input);
       if (!updatedComment) {
         throw new ORPCError('NOT_FOUND', { message: 'Comment not found' });
       }
@@ -47,10 +47,7 @@ export const commentsRouter = {
     )
     .output(z.any())
     .handler(async ({ input, context }) => {
-      const deletedComment = await dalDeleteComment(
-        context.db,
-        input.commentId,
-      );
+      const deletedComment = await deleteComment(context.db, input.commentId);
       if (!deletedComment) {
         throw new ORPCError('NOT_FOUND', { message: 'Comment not found' });
       }
@@ -61,13 +58,13 @@ export const commentsRouter = {
   getAll: protectedProcedure
     .input(z.object({ feedbackId: z.string() }))
     .handler(async ({ input, context }) =>
-      dalListTopLevel(context.db, input.feedbackId),
+      getPostComments(context.db, input.feedbackId),
     ),
 
   count: protectedProcedure
     .input(z.object({ feedbackId: z.string() }))
     .output(z.any())
     .handler(async ({ input, context }) =>
-      dalCountPublic(context.db, input.feedbackId),
+      getCommentCount(context.db, input.feedbackId),
     ),
 };

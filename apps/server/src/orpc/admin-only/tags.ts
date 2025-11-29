@@ -1,9 +1,7 @@
 import { ORPCError } from '@orpc/server';
 import { z } from 'zod';
-import { createTag, deleteTag, getAllTags } from '@/dal/tags';
+import { createTag, deleteTag, getAllTags } from '@/services/tags';
 import { adminOnlyProcedure } from '../procedures';
-
-const getTagsCacheKey = (organizationId: string) => `tags:${organizationId}`;
 
 export const tagsRouter = {
   getAll: adminOnlyProcedure
@@ -17,20 +15,11 @@ export const tagsRouter = {
       ),
     )
     .handler(async ({ context }) => {
-      if (!context.organization?.id) {
-        throw new ORPCError('NOT_FOUND', { message: 'Organization not found' });
+      if (!context.team?.id) {
+        throw new ORPCError('NOT_FOUND', { message: 'Team not found' });
       }
-      const cacheKey = getTagsCacheKey(context.organization.id);
 
-      const cached = await context.cache.get(cacheKey);
-      if (cached) {
-        return JSON.parse(cached);
-      }
-      const tags = await getAllTags(context.db, context.organization.id);
-
-      await context.cache.set(cacheKey, JSON.stringify(tags));
-
-      return tags;
+      return await getAllTags(context.db, context.team.id, context.cache);
     }),
 
   create: adminOnlyProcedure
@@ -40,28 +29,23 @@ export const tagsRouter = {
         color: z.string().default('blue'),
       }),
     )
-    .output(
-      z.object({
-        id: z.string(),
-        name: z.string(),
-        color: z.string(),
-        organizationId: z.string(),
-        createdAt: z.date(),
-        updatedAt: z.date(),
-      }),
-    )
     .handler(async ({ input, context }) => {
-      if (!context.organization?.id) {
-        throw new ORPCError('NOT_FOUND', { message: 'Organization not found' });
+      if (!context.team?.id) {
+        throw new ORPCError('NOT_FOUND', { message: 'Team not found' });
       }
+
       const newTag = await createTag(
         context.db,
-        context.organization.id,
+        context.team.id,
         input,
+        context.cache,
       );
 
-      const cacheKey = getTagsCacheKey(context.organization.id);
-      await context.cache.delete(cacheKey);
+      if (!newTag) {
+        throw new ORPCError('INTERNAL_SERVER_ERROR', {
+          message: 'Failed to create tag',
+        });
+      }
 
       return newTag;
     }),
@@ -83,16 +67,20 @@ export const tagsRouter = {
       }),
     )
     .handler(async ({ input, context }) => {
-      if (!context.organization?.id) {
-        throw new ORPCError('NOT_FOUND', { message: 'Organization not found' });
+      if (!context.team?.id) {
+        throw new ORPCError('NOT_FOUND', { message: 'Team not found' });
       }
-      const deletedTag = await deleteTag(context.db, input.id);
+
+      const deletedTag = await deleteTag(
+        context.db,
+        context.team.id,
+        input.id,
+        context.cache,
+      );
+
       if (!deletedTag) {
         throw new ORPCError('NOT_FOUND', { message: 'Tag not found' });
       }
-
-      const cacheKey = getTagsCacheKey(context.organization.id);
-      await context.cache.delete(cacheKey);
 
       return { success: true, deletedTag };
     }),

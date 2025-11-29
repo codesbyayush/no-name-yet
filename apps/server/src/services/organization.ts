@@ -1,7 +1,14 @@
 import { eq } from 'drizzle-orm';
-import type { Database } from '@/dal/posts';
-import { organization } from '@/db/schema';
+import type { Database } from '@/db';
+import { type Team, team } from '@/db/schema';
 import type { Cache } from '@/lib/cache';
+import {
+  extractSubdomainFromHost,
+  extractSubdomainFromOrigin,
+} from '@/lib/subdomain';
+
+// Re-export for backwards compatibility
+export { extractSubdomainFromHost, extractSubdomainFromOrigin };
 
 export type Organization = {
   id: string;
@@ -14,69 +21,21 @@ export type Organization = {
 };
 
 /**
- * Extract subdomain from host header
- * Handles various formats:
- * - "app.example.com" -> "app"
- * - "subdomain.example.com:3000" -> "subdomain"
- * - "localhost:3000" -> null
- */
-export function extractSubdomainFromHost(host: string): string | null {
-  if (!host || host.startsWith('localhost')) {
-    return null;
-  }
-
-  // Remove port if present
-  const cleanHost = host.includes(':') ? host.split(':')[0] : host;
-
-  const parts = cleanHost.split('.');
-  if (parts.length < 2) {
-    return null;
-  } else if (parts.length === 2 && parts[1] !== 'localhost') {
-    return null;
-  }
-
-  const candidate = parts[0];
-  // Skip common prefixes
-  if (candidate === 'www' || candidate === 'api') {
-    return null;
-  }
-
-  return candidate;
-}
-
-/**
- * Extract subdomain from origin header
- * Handles formats like "https://subdomain.example.com"
- */
-export function extractSubdomainFromOrigin(origin: string): string | null {
-  if (!origin) {
-    return null;
-  }
-
-  try {
-    const url = new URL(origin);
-    return extractSubdomainFromHost(url.host);
-  } catch {
-    return null;
-  }
-}
-
-/**
  * Resolve organization by subdomain
  */
-export async function getOrganizationBySubdomain(
+export async function getTeamBySubdomain(
   db: Database,
   subdomain: string,
   cache: Cache,
   ttlSeconds = 300,
-): Promise<Organization | null> {
-  const cacheKey = `organization:subdomain:${subdomain}`;
+): Promise<Team | null> {
+  const cacheKey = `team:subdomain:${subdomain}`;
 
   try {
     const cachedValue = await cache.get(cacheKey);
     if (cachedValue) {
       const parsed = JSON.parse(cachedValue) as
-        | (Organization & { createdAt: string })
+        | (Team & { createdAt: string })
         | null;
       if (!parsed) {
         return null;
@@ -94,8 +53,8 @@ export async function getOrganizationBySubdomain(
 
   const [result] = await db
     .select()
-    .from(organization)
-    .where(eq(organization.slug, subdomain))
+    .from(team)
+    .where(eq(team.slug, subdomain))
     .limit(1);
 
   if (!result) {
@@ -103,26 +62,27 @@ export async function getOrganizationBySubdomain(
     return null;
   }
 
-  const organizationRecord: Organization = {
+  const teamRecord: Team = {
     id: result.id,
     name: result.name,
     slug: result.slug,
     logo: result.logo,
-    metadata: result.metadata,
     publicKey: result.publicKey,
     createdAt: result.createdAt,
+    organizationId: result.organizationId,
+    updatedAt: result.updatedAt,
   };
 
   await cache.set(
     cacheKey,
     JSON.stringify({
-      ...organizationRecord,
-      createdAt: organizationRecord.createdAt.toISOString(),
+      ...teamRecord,
+      createdAt: teamRecord.createdAt.toISOString(),
     }),
     ttlSeconds,
   );
 
-  return organizationRecord;
+  return teamRecord;
 }
 
 /**
@@ -132,11 +92,11 @@ export async function getOrganizationBySubdomain(
  * 2. Host header
  * 3. Origin header
  */
-export async function resolveOrganizationFromHeaders(
+export async function resolveTeamFromHeaders(
   db: Database,
   headers: Headers,
   cache: Cache,
-): Promise<{ organization: Organization | null; subdomain: string | null }> {
+): Promise<{ team: Team | null; subdomain: string | null }> {
   // Try X-Forwarded-Host first (for reverse proxies)
   const xfHost = headers.get('x-forwarded-host');
   const host = xfHost ? xfHost.split(',')[0].trim() : headers.get('host') || '';
@@ -150,9 +110,9 @@ export async function resolveOrganizationFromHeaders(
   }
 
   if (!subdomain) {
-    return { organization: null, subdomain: null };
+    return { team: null, subdomain: null };
   }
 
-  const org = await getOrganizationBySubdomain(db, subdomain, cache);
-  return { organization: org, subdomain };
+  const teamResult = await getTeamBySubdomain(db, subdomain, cache);
+  return { team: teamResult, subdomain };
 }

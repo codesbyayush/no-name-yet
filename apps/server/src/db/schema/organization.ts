@@ -17,7 +17,6 @@ export const organization = pgTable(
     slug: text('slug').notNull(),
     logo: text('logo'),
     metadata: text('metadata'),
-    publicKey: text('public_key').default(sql`gen_random_uuid()::text`),
     createdAt: timestamp('created_at').notNull(),
   },
   (table) => [uniqueIndex('idx_organization_slug').on(table.slug)],
@@ -26,11 +25,14 @@ export const organization = pgTable(
 export const team = pgTable('team', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
+  slug: text('slug'),
+  logo: text('logo'),
   organizationId: text('organization_id')
     .notNull()
     .references(() => organization.id, { onDelete: 'cascade' }),
   createdAt: timestamp('created_at').notNull(),
   updatedAt: timestamp('updated_at'),
+  publicKey: text('public_key').default(sql`gen_random_uuid()::text`),
 });
 
 export const teamMember = pgTable(
@@ -96,3 +98,15 @@ export const invitation = pgTable(
     index('idx_invitation_expires').on(table.expiresAt),
   ],
 );
+
+export type Team = typeof team.$inferSelect;
+export type NewTeam = typeof team.$inferInsert;
+
+export type Organization = typeof organization.$inferSelect;
+export type NewOrganization = typeof organization.$inferInsert;
+
+export type Member = typeof member.$inferSelect;
+export type NewMember = typeof member.$inferInsert;
+
+export type Invitation = typeof invitation.$inferSelect;
+export type NewInvitation = typeof invitation.$inferInsert;

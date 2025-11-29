@@ -228,7 +228,7 @@ function RenderBoards({
   boardsData:
     | {
         id: string;
-        organizationId: string;
+        teamId: string;
         name: string;
         slug: string;
         description: string | null;

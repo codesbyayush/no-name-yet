@@ -6,7 +6,7 @@ import {
   timestamp,
   uniqueIndex,
 } from 'drizzle-orm/pg-core';
-import { organization } from './organization';
+import { team } from './organization';
 
 export const tags = pgTable(
   'tags',
@@ -15,22 +15,14 @@ export const tags = pgTable(
     name: text('name').notNull(),
     color: text('color').notNull().default('blue'),
     type: text('type').notNull().default('feedback'),
-    organizationId: text('organization_id')
-      .notNull()
-      .references(() => organization.id, { onDelete: 'cascade' }),
+    teamId: text('team_id').references(() => team.id, { onDelete: 'cascade' }),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
   },
   (table) => [
-    uniqueIndex('idx_tags_organization_id_name').on(
-      table.organizationId,
-      table.name,
-    ),
-    index('idx_tags_organization_id').on(table.organizationId),
-    index('idx_tags_organization_id_name_lower').on(
-      table.organizationId,
-      table.name,
-    ),
+    uniqueIndex('idx_tags_team_id_name').on(table.teamId, table.name),
+    index('idx_tags_team_id').on(table.teamId),
+    index('idx_tags_team_id_name_lower').on(table.teamId, table.name),
   ],
 );
 

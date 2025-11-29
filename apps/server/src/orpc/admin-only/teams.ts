@@ -1,7 +1,9 @@
 import { ORPCError } from '@orpc/server';
-import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
-import { team, teamMember, user } from '@/db/schema';
+import {
+  createTeamWithMember,
+  getTeamMembersWithDetails,
+} from '@/services/teams';
 import { adminOnlyProcedure } from '../procedures';
 
 export const teamsRouter = {
@@ -15,55 +17,46 @@ export const teamsRouter = {
         .optional(),
     )
     .handler(async ({ input, context }) => {
-      if (!context.organization) {
-        throw new ORPCError('NOT_FOUND', { message: 'Organization not found' });
+      if (!context.team) {
+        throw new ORPCError('NOT_FOUND', { message: 'Team not found' });
       }
 
-      const teamId = input?.teamId || context.session.session.activeTeamId;
+      const teamId = input?.teamId || context.team.id;
 
       if (!teamId) {
         throw new ORPCError('BAD_REQUEST', { message: 'Team ID is required' });
       }
 
-      const teamData = await context.db
-        .select()
-        .from(team)
-        .where(
-          and(
-            eq(team.id, teamId),
-            eq(
-              team.organizationId,
-              context.session.session.activeOrganizationId,
-            ),
-          ),
-        )
-        .limit(1);
+      // Use service layer
+      const result = await getTeamMembersWithDetails(
+        context.db,
+        teamId,
+        context.session.session.activeOrganizationId,
+      );
 
-      if (teamData.length === 0) {
+      return result;
+    }),
+
+  createTeam: adminOnlyProcedure
+    .input(
+      z.object({
+        name: z.string().min(1, 'Team name is required'),
+      }),
+    )
+    .handler(async ({ input, context }) => {
+      if (!context.team) {
         throw new ORPCError('NOT_FOUND', { message: 'Team not found' });
       }
 
-      const members = await context.db
-        .select({
-          memberId: teamMember.id,
-          userId: user.id,
-          name: user.name,
-          email: user.email,
-          image: user.image,
-          role: user.role,
-          createdAt: user.createdAt,
-          lastActiveAt: user.lastActiveAt,
-          joinedTeamAt: teamMember.createdAt,
-        })
-        .from(teamMember)
-        .innerJoin(user, eq(teamMember.userId, user.id))
-        .where(eq(teamMember.teamId, teamId));
+      // Use service layer
+      const result = await createTeamWithMember(
+        context.env,
+        input.name,
+        context.session.session.activeOrganizationId,
+        context.session.session.userId,
+        context.headers,
+      );
 
-      return {
-        teamId,
-        members,
-        teamName: teamData[0].name,
-        totalMembers: members.length,
-      };
+      return result;
     }),
 };

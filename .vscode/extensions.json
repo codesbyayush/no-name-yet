@@ -1,0 +1,18 @@
+{
+  "recommendations": [
+    // Formatter & Linter
+    "biomejs.biome",
+    // Docker
+    "ms-azuretools.vscode-docker",
+    "editorconfig.editorconfig",
+    "ms-vscode.vscode-typescript-next",
+    "wix.vscode-import-cost",
+    "yoavbls.pretty-ts-errors"
+  ],
+  "unwantedRecommendations": [
+    // Prettier conflicts with Biome
+    "esbenp.prettier-vscode",
+    // ESLint conflicts with Biome
+    "dbaeumer.vscode-eslint"
+  ]
+}

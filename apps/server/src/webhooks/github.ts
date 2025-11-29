@@ -39,6 +39,7 @@ router.post('/github', async (c) => {
     if (!env.GH_WEBHOOK_SECRET) {
       logger.error('GitHub webhook secret not configured', {
         scope: 'webhook',
+        context: { envVar: 'GH_WEBHOOK_SECRET', deliveryId },
       });
       return c.text('Configuration error', HTTP_STATUS.INTERNAL_SERVER_ERROR);
     }
@@ -70,13 +71,10 @@ router.post('/github', async (c) => {
     await handleEvent({ db, event, payload, deliveryId });
     return c.text('OK');
   } catch (error) {
-    logger.error('Error occurred', {
+    logger.error('GitHub webhook processing failed', {
       scope: 'webhook',
-      context: {
-        path: '/github',
-        method: 'POST',
-        error,
-      },
+      context: { path: '/github', method: 'POST' },
+      error,
     });
     return c.text('Internal server error', HTTP_STATUS.INTERNAL_SERVER_ERROR);
   }

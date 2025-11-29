@@ -55,7 +55,7 @@ export function IssueLine({
           <span className='mr-1 ml-0.5 flex min-w-0 items-center justify-start'>
             <span className='truncate text-xs sm:text-sm'>{issue.title}</span>
           </span>
-          <div className='ml-auto flex items-center justify-end gap-2 sm:w-fit'>
+          <div className='ml-auto flex items-center justify-end gap-2 sm:w-fit max-w-1/2 overflow-hidden'>
             <div className='w-3 shrink-0' />
             <div className='-space-x-5 hidden items-center justify-end transition-all duration-200 hover:space-x-1 sm:flex lg:space-x-1'>
               {issue.tags && <LabelBadge tags={issue.tags} />}

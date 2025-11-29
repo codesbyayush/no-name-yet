@@ -28,7 +28,7 @@ import { Code2, Copy, Info, Settings } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 interface WidgetConfig {
-  organizationId: string;
+  teamId: string;
   boardId?: string;
   position: 'above-button' | 'center';
   buttonColor: string;
@@ -53,7 +53,7 @@ interface OptionGroup {
 
 export function WidgetEmbedCode() {
   const [config, setConfig] = useState<WidgetConfig>({
-    organizationId: 'org_123456789',
+    teamId: 'team_123456789',
     boardId: 'board_general',
     position: 'above-button',
     buttonColor: '#3b82f6',
@@ -70,12 +70,12 @@ export function WidgetEmbedCode() {
       description: 'Essential settings for widget identification',
       options: [
         {
-          key: 'organizationId',
-          label: 'Organization ID',
-          description: 'Unique identifier for your organization',
+          key: 'teamId',
+          label: 'Team ID',
+          description: 'Unique identifier for your team',
           changeable: false,
           reason:
-            'Auto-generated from your organization settings. Required for widget to connect to correct data.',
+            'Auto-generated from your team settings. Required for widget to connect to correct data.',
           type: 'text',
         },
         {
@@ -160,7 +160,7 @@ export function WidgetEmbedCode() {
   const generateEmbedCode = useMemo(() => {
     const configString = JSON.stringify(
       {
-        publicKey: config.organizationId, // Widget expects publicKey, not organizationId
+        publicKey: config.teamId, // Widget expects publicKey, not teamId
         ...(config.boardId && { boardId: config.boardId }),
         ...(config.apiUrl && { apiUrl: config.apiUrl }),
         theme: {

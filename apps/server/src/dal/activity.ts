@@ -1,6 +1,6 @@
 import { desc, eq } from 'drizzle-orm';
+import type { Database } from '@/db';
 import { activityLog } from '@/db/schema';
-import type { Database } from './posts';
 
 export type ActivityAction =
   | 'created'

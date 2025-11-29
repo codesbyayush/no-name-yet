@@ -1,10 +1,5 @@
-export type IssueStatus =
-  | 'to-do'
-  | 'in-progress'
-  | 'technical-review'
-  | 'completed'
-  | 'backlog'
-  | 'paused';
+import { issueKey as issueKeyConfig } from '@/config';
+import type { StatusEnum } from '@/db/schema';
 
 export type PullRequestAction =
   | 'opened'
@@ -15,23 +10,22 @@ export type PullRequestAction =
 
 /**
  * Generate a unique issue key for a board
- * Format: OF-{count + 1}
+ * Format: {team-slug}-{serial}
  */
-const MAX_TEAM_WORDS_FOR_SLUG = 3;
-const DEFAULT_SLUG_LENGTH = 3;
-
 export function generateIssueKey(teamName: string, teamSerial: number) {
   const teamNameSplit = teamName.split(' ');
   let slug: string;
   if (teamNameSplit.length > 1) {
     slug = teamNameSplit
       .map((word, index) =>
-        index < MAX_TEAM_WORDS_FOR_SLUG ? word.charAt(0) : '',
+        index < issueKeyConfig.maxTeamWordsForSlug ? word.charAt(0) : '',
       )
       .join('')
       .toLowerCase();
   } else {
-    slug = teamNameSplit[0].substring(0, DEFAULT_SLUG_LENGTH).toLowerCase();
+    slug = teamNameSplit[0]
+      .substring(0, issueKeyConfig.defaultSlugLength)
+      .toLowerCase();
   }
 
   return `${slug}-${teamSerial}`;
@@ -60,7 +54,7 @@ export function mapPullRequestActionToStatus(
   isMerged: boolean,
   baseBranch: string,
   defaultBranch = 'main',
-): IssueStatus | null {
+): StatusEnum | null {
   if (action === 'ready_for_review') {
     return 'technical-review';
   }

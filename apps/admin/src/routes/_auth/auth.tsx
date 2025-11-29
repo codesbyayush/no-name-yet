@@ -16,7 +16,7 @@ export const Route = createFileRoute('/_auth/auth')({
     // If user is authenticated and there's an invitation to accept, redirect there
     if (session && !session.user.isAnonymous && search.invitationId) {
       throw redirect({
-        to: '/_auth/accept-invitation/$id',
+        to: '/accept-invitation/$id',
         params: { id: search.invitationId },
         replace: true,
       });

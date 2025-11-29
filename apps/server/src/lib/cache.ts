@@ -81,7 +81,13 @@ export async function getCache(env: AppEnv): Promise<Cache> {
       const redisClient = new RedisClient(env.REDIS_URL);
       return new RedisCache(redisClient);
     } catch (error) {
-      console.error('Error importing RedisClient:', error);
+      // Redis is optional in dev, fall through to KV store
+      const { logger } = await import('./logger');
+      logger.error('Failed to connect to Redis', {
+        scope: 'cache',
+        error,
+        operational: true, // Redis is optional
+      });
     }
   }
 

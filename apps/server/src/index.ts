@@ -1,3 +1,4 @@
+import { ORPCError } from '@orpc/server';
 import { RPCHandler } from '@orpc/server/fetch';
 import * as Sentry from '@sentry/cloudflare';
 import { type Context, Hono } from 'hono';
@@ -25,16 +26,20 @@ const HTTP_STATUS = {
 // Global error handler
 app.onError((err, c) => {
   const env = getEnvFromContext(c);
-  logger.error('Error occurred', {
-    scope: 'hono',
-    error: err instanceof Error ? err : new Error(String(err)),
-    context: {
-      path: c.req.path,
-      method: c.req.method,
-      url: c.req.url,
-      headers: Object.fromEntries(c.req.raw.headers.entries()),
-    },
-  });
+
+  // Skip logging for ORPCErrors - these are operational/expected errors
+  // They're already handled by ORPC and converted to proper responses
+  if (!(err instanceof ORPCError)) {
+    logger.error('Unhandled error in Hono', {
+      scope: 'hono',
+      error: err instanceof Error ? err : new Error(String(err)),
+      context: {
+        path: c.req.path,
+        method: c.req.method,
+        url: c.req.url,
+      },
+    });
+  }
 
   return c.json(
     {
@@ -76,12 +81,10 @@ authRouter.all('*', async (c) => {
     const auth = getAuth(env);
     return await auth.handler(c.req.raw);
   } catch (error) {
-    logger.error('Error occurred', {
+    logger.error('Auth handler error', {
       scope: 'auth',
-      context: {
-        path: c.req.path,
-        error,
-      },
+      context: { path: c.req.path },
+      error,
     });
     return c.json({ error: 'Auth failed' }, HTTP_STATUS.INTERNAL_SERVER_ERROR);
   }

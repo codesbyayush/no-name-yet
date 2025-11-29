@@ -2,11 +2,14 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { type BetterAuthOptions, betterAuth } from 'better-auth/minimal';
 import { admin, anonymous, organization } from 'better-auth/plugins';
 import { and, eq } from 'drizzle-orm';
+import { defaultBoards, defaultTags, session as sessionConfig } from '@/config';
+import { slugifyTitle } from '@/utils/slug';
 import { getDb } from '../db';
 import * as schema from '../db/schema';
 import { boards, member, tags, team, teamMember } from '../db/schema';
 import { sendEmail, sendInvitationEmail } from '../email';
 import type { AppEnv } from './env';
+import { logger } from './logger';
 
 // biome-ignore lint/suspicious/noExplicitAny: <Can't find a solution to this type error, searched through many of the issues related to types on better-auth repo but nothing works>
 export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | any {
@@ -62,7 +65,13 @@ export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | any {
                   }),
                 },
               };
-            } catch (_error) {
+            } catch (error) {
+              logger.error('Failed to set active organization on session', {
+                scope: 'auth',
+                context: { userId: session.userId },
+                error,
+                operational: true, // Session still works without active org
+              });
               return { data: session };
             }
           },
@@ -70,8 +79,8 @@ export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | any {
       },
     },
     session: {
-      expiresIn: 60 * 60 * 24 * 28,
-      updateAge: 60 * 60 * 24 * 7,
+      expiresIn: sessionConfig.expiresInSeconds,
+      updateAge: sessionConfig.updateAgeSeconds,
     },
     trustedOrigins: ['*'],
     emailAndPassword: {
@@ -127,77 +136,62 @@ export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | any {
               expiresInDays: 7,
             });
           },
+          afterCreateTeam: async (data) => {
+            const dbConn = db;
+
+            // Seed defaults (idempotent)
+            try {
+              const teamSlug = slugifyTitle(data.team.name);
+              await dbConn
+                .update(team)
+                .set({ slug: teamSlug })
+                .where(eq(team.id, data.team.id));
+
+              const existingBoards = await dbConn
+                .select({ id: boards.id })
+                .from(boards)
+                .where(eq(boards.teamId, data.team.id))
+                .limit(1);
+
+              if (existingBoards.length === 0) {
+                // Seed default boards
+                await dbConn.insert(boards).values(
+                  defaultBoards.map((board) => ({
+                    teamId: data.team.id,
+                    name: board.name,
+                    slug: board.slug,
+                    description: board.description,
+                    ...('isSystem' in board && { isSystem: board.isSystem }),
+                    ...('isPrivate' in board && { isPrivate: board.isPrivate }),
+                  })),
+                );
+
+                // Seed default tags
+                await dbConn.insert(tags).values(
+                  defaultTags.map((tag) => ({
+                    teamId: data.team.id,
+                    name: tag.name,
+                    color: tag.color,
+                  })),
+                );
+              }
+            } catch (error) {
+              logger.error('Failed to seed default boards/tags for team', {
+                scope: 'auth',
+                context: { teamId: data.team.id },
+                error,
+                operational: true, // Seeding is best-effort, team creation continues
+              });
+            }
+          },
         },
+
         organizationCreation: {
-          afterCreate: async ({ user, organization: createdOrg }) => {
+          afterCreate: async ({ user }) => {
             if (env.NODE_ENV === 'production') {
               await sendEmail(env, user.email, 'welcome', {
                 firstname: user.name,
               });
-            }
-
-            const dbConn = getDb(env);
-
-            // Seed defaults (idempotent)
-            try {
-              const existingBoards = await dbConn
-                .select({ id: boards.id })
-                .from(boards)
-                .where(eq(boards.organizationId, createdOrg.id))
-                .limit(1);
-
-              if (existingBoards.length === 0) {
-                // Boards
-                await dbConn.insert(boards).values([
-                  {
-                    id: crypto.randomUUID(),
-                    organizationId: createdOrg.id,
-                    name: 'Feature Requests',
-                    slug: 'features',
-                    description: 'Collect ideas and feature requests',
-                  },
-                  {
-                    id: crypto.randomUUID(),
-                    organizationId: createdOrg.id,
-                    name: 'Bugs',
-                    slug: 'bugs',
-                    description: 'Report and track bugs',
-                  },
-                  {
-                    id: crypto.randomUUID(),
-                    organizationId: createdOrg.id,
-                    name: 'Internal',
-                    slug: 'internal',
-                    description: 'Internal tickets for the team',
-                    isSystem: true,
-                    isPrivate: true,
-                  },
-                ]);
-
-                // Labels/Tags (match admin mock defaults)
-                const defaultTags = [
-                  { name: 'UI Enhancement', color: 'purple' },
-                  { name: 'Bug', color: 'red' },
-                  { name: 'Feature', color: 'green' },
-                  { name: 'Documentation', color: 'blue' },
-                  { name: 'Refactor', color: 'yellow' },
-                  { name: 'Performance', color: 'orange' },
-                  { name: 'Design', color: 'pink' },
-                  { name: 'Security', color: 'gray' },
-                  { name: 'Accessibility', color: 'indigo' },
-                  { name: 'Testing', color: 'teal' },
-                  { name: 'Internationalization', color: 'cyan' },
-                ];
-                await dbConn.insert(tags).values(
-                  defaultTags.map((t) => ({
-                    organizationId: createdOrg.id,
-                    name: t.name,
-                    color: t.color,
-                  })),
-                );
-              }
-            } catch {
-              //
             }
           },
         },

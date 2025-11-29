@@ -1,5 +1,4 @@
 import { ORPCError, os } from '@orpc/server';
-import { logger } from '@/lib/logger';
 import type { AdminContext, Context } from './context';
 
 export const o = os.$context<Context>();
@@ -15,13 +14,14 @@ const withErrorBoundary = o.middleware(async ({ context, next }) => {
       throw error;
     }
     // Minimal structured logging
-    logger.error('Error occurred', {
+    context.logger.error('Unhandled error in ORPC handler', {
       scope: 'orpc',
       context: {
         userId: context.session?.user?.id,
-        orgId: context.organization?.id,
-        error,
+        orgId: context.session?.session?.activeOrganizationId,
+        teamId: context.team?.id,
       },
+      error,
     });
     throw new ORPCError('INTERNAL_SERVER_ERROR');
   }
@@ -38,8 +38,8 @@ const requireAuth = o.middleware(({ context, next }) => {
   });
 });
 
-const requireOrganization = o.middleware(({ context, next }) => {
-  if (!context.organization) {
+const requireTeam = o.middleware(({ context, next }) => {
+  if (!context.team) {
     throw new ORPCError('UNAUTHORIZED');
   }
   return next({
@@ -52,7 +52,7 @@ const requireAdminAuth = adminO.middleware(({ context, next }) => {
     throw new ORPCError('UNAUTHORIZED');
   }
 
-  if (!context.organization) {
+  if (!context.team) {
     throw new ORPCError('UNAUTHORIZED');
   }
   return next({
@@ -62,6 +62,6 @@ const requireAdminAuth = adminO.middleware(({ context, next }) => {
 
 export const protectedProcedure = publicProcedure.use(requireAuth);
 
-export const organizationProcedure = publicProcedure.use(requireOrganization);
+export const teamProcedure = publicProcedure.use(requireTeam);
 
 export const adminOnlyProcedure = adminO.use(requireAdminAuth);

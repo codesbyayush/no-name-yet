@@ -1,22 +1,19 @@
 import { ORPCError } from '@orpc/server';
-import { getPublicBoards } from '@/dal/boards';
-import { organizationProcedure } from '../procedures';
+import { getTeamPublicBoards } from '@/services/boards';
+import { teamProcedure } from '../procedures';
 
 export const boardsRouter = {
-  getAll: organizationProcedure.handler(async ({ context }) => {
-    try {
-      const publicBoards = await getPublicBoards(
-        context.db,
-        context.organization?.id || '',
-      );
-
-      return {
-        boards: publicBoards,
-        organizationId: context.organization?.id || '',
-        organizationName: context.organization?.name || '',
-      };
-    } catch (_error) {
-      throw new ORPCError('INTERNAL_SERVER_ERROR');
+  getAll: teamProcedure.handler(async ({ context }) => {
+    if (!context.team?.id) {
+      throw new ORPCError('NOT_FOUND', { message: 'Team not found' });
     }
+
+    const publicBoards = await getTeamPublicBoards(context.db, context.team.id);
+
+    return {
+      boards: publicBoards,
+      teamId: context.team.id,
+      teamName: context.team.name ?? '',
+    };
   }),
 };

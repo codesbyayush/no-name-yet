@@ -1,18 +1,14 @@
 import { eq } from 'drizzle-orm';
+import type { Database } from '@/db';
 import { tags } from '@/db/schema/tags';
 
-type Database = ReturnType<typeof import('@/db').getDb>;
-
-export async function getAllTags(db: Database, organizationId: string) {
-  return await db
-    .select()
-    .from(tags)
-    .where(eq(tags.organizationId, organizationId));
+export async function getAllTags(db: Database, teamId: string) {
+  return await db.select().from(tags).where(eq(tags.teamId, teamId));
 }
 
 export async function createTag(
   db: Database,
-  organizationId: string,
+  teamId: string,
   input: { name: string; color: string },
 ) {
   const [newTag] = await db
@@ -20,7 +16,7 @@ export async function createTag(
     .values({
       name: input.name.trim(),
       color: input.color,
-      organizationId,
+      teamId,
     })
     .returning();
   return newTag ?? null;

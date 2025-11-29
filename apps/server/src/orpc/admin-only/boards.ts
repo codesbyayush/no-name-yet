@@ -3,18 +3,18 @@ import { z } from 'zod';
 import {
   createBoard,
   deleteBoard,
-  getAllBoards,
+  getTeamBoards,
   updateBoard,
-} from '@/dal/boards';
+} from '@/services/boards';
 import { adminOnlyProcedure } from '../procedures';
 
 export const boardsRouter = {
   getAll: adminOnlyProcedure.handler(async ({ context }) => {
-    if (!context.organization?.id) {
-      throw new ORPCError('NOT_FOUND', { message: 'Organization not found' });
+    if (!context.team?.id) {
+      throw new ORPCError('NOT_FOUND', { message: 'Team not found' });
     }
 
-    const list = await getAllBoards(context.db, context.organization.id);
+    const list = await getTeamBoards(context.db, context.team.id);
     return list;
   }),
 
@@ -29,10 +29,12 @@ export const boardsRouter = {
       }),
     )
     .output(z.any())
-    .handler(
-      async ({ input, context }) =>
-        await createBoard(context.db, context.organization.id, input),
-    ),
+    .handler(async ({ input, context }) => {
+      if (!context.team?.id) {
+        throw new ORPCError('NOT_FOUND', { message: 'Team not found' });
+      }
+      return await createBoard(context.db, context.team.id, input);
+    }),
 
   update: adminOnlyProcedure
     .input(

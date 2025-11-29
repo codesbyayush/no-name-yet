@@ -2,11 +2,12 @@ import type { InferSelectModel } from 'drizzle-orm';
 import { eq } from 'drizzle-orm';
 import type { Context as HonoContext } from 'hono';
 import { getDb } from '../db';
-import { organization, type user } from '../db/schema';
+import { type Team, team, type user } from '../db/schema';
 import { getAuth } from '../lib/auth';
 import { type Cache, getCache } from '../lib/cache';
 import type { AppEnv } from '../lib/env';
-import { resolveOrganizationFromHeaders } from '../services/organization';
+import { type Logger, logger } from '../lib/logger';
+import { resolveTeamFromHeaders } from '../services/organization';
 
 export type CreateContextOptions = {
   context: HonoContext;
@@ -21,7 +22,7 @@ export async function createContext({ context, env }: CreateContextOptions) {
     headers: context.req.raw.headers,
   });
 
-  const { organization: org, subdomain } = await resolveOrganizationFromHeaders(
+  const { team: resolvedTeam, subdomain } = await resolveTeamFromHeaders(
     db,
     context.req.raw.headers,
     cache,
@@ -29,11 +30,12 @@ export async function createContext({ context, env }: CreateContextOptions) {
 
   return {
     session,
-    organization: org,
+    team: resolvedTeam,
     subdomain: subdomain || undefined,
     db,
     cache,
     env,
+    logger,
   };
 }
 
@@ -54,74 +56,83 @@ export async function createAdminContext({
     return {
       session: null,
       user: null,
-      organization: null,
+      team: null,
       headers,
       db,
       cache,
       env,
+      logger,
     };
   }
 
   try {
-    // Use session's activeOrganizationId (managed by better-auth)
+    // Use session's activeTeamId (managed by better-auth)
     // This is set when user accepts invitation or switches organizations
-    const activeOrgId = session.session?.activeOrganizationId;
+    const activeTeamId = session.session?.activeTeamId;
 
-    if (!activeOrgId) {
+    if (!activeTeamId) {
       return {
         session,
         user: session.user,
-        organization: null,
+        team: null,
         headers,
         db,
         cache,
         env,
+        logger,
       };
     }
 
-    // Get organization from session's activeOrganizationId
-    const orgResult = await db
-      .select()
-      .from(organization)
-      .where(eq(organization.id, activeOrgId))
-      .limit(1);
+    // Get team from session's activeTeamId
+    const teamResult: Team | undefined = await db.query.team.findFirst({
+      where: eq(team.id, activeTeamId),
+    });
 
-    const org = orgResult[0] || null;
     return {
       session,
       user: session.user,
-      organization: org,
+      team: teamResult || null,
       headers,
       db,
       cache,
       env,
+      logger,
     };
-  } catch (_error) {
+  } catch (error) {
+    logger.error('Failed to resolve team for admin context', {
+      scope: 'context',
+      context: { userId: session.user.id },
+      error,
+      operational: true, // Fallback to no team is acceptable
+    });
     return {
       session,
       user: null,
-      organization: null,
+      team: null,
       headers,
       db,
       cache,
       env,
+      logger,
     };
   }
 }
 
 export type Context = Awaited<ReturnType<typeof createContext>> & {
-  organization: InferSelectModel<typeof organization> | null;
+  team: InferSelectModel<typeof team> | null;
   subdomain?: string;
   db: ReturnType<typeof getDb>;
   cache: Cache;
   env: AppEnv;
+  logger: Logger;
 };
 
 export type AdminContext = Awaited<ReturnType<typeof createAdminContext>> & {
   user: InferSelectModel<typeof user> | null;
-  organization: InferSelectModel<typeof organization> | null;
+  team: InferSelectModel<typeof team> | null;
   headers: Headers;
   db: ReturnType<typeof getDb>;
   cache: Cache;
   env: AppEnv;
+  logger: Logger;
 };
