@@ -6,7 +6,7 @@ export interface User {
   avatarUrl: string;
   email: string;
   status: 'online' | 'offline' | 'away';
-  role: 'Member' | 'Admin' | 'Guest';
+  role: 'member' | 'admin' | 'owner';
   joinedDate: string;
   teamIds: string[];
 }
