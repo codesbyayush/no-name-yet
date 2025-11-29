@@ -4,8 +4,8 @@ import {
   getTeamIdBySlug,
   insertOrUpdateInstallation,
 } from '@/dal/integration';
-import type { Database } from '@/dal/posts';
 import { findFeedbackByIssueKey, updateFeedbackStatus } from '@/dal/posts';
+import type { Database } from '@/db';
 import {
   extractIssueKeyFromBranch,
   mapPullRequestActionToStatus,

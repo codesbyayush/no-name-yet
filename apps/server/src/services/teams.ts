@@ -1,6 +1,6 @@
 import { ORPCError } from '@orpc/server';
-import type { Database } from '@/dal/posts';
-import { getTeamById, getTeamMembers, verifyTeamOwnership } from '@/dal/teams';
+import { getTeamMembers, verifyTeamOwnership } from '@/dal/teams';
+import type { Database } from '@/db';
 import { getAuth } from '@/lib/auth';
 import type { AppEnv } from '@/lib/env';
 

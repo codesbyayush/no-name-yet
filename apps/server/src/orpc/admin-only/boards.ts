@@ -3,9 +3,9 @@ import { z } from 'zod';
 import {
   createBoard,
   deleteBoard,
-  getAllBoards,
+  getTeamBoards,
   updateBoard,
-} from '@/dal/boards';
+} from '@/services/boards';
 import { adminOnlyProcedure } from '../procedures';
 
 export const boardsRouter = {
@@ -14,7 +14,7 @@ export const boardsRouter = {
       throw new ORPCError('NOT_FOUND', { message: 'Team not found' });
     }
 
-    const list = await getAllBoards(context.db, context.team.id);
+    const list = await getTeamBoards(context.db, context.team.id);
     return list;
   }),
 

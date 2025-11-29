@@ -1,7 +1,6 @@
 import { and, asc, eq } from 'drizzle-orm';
+import type { Database } from '@/db';
 import { boards } from '@/db/schema/boards';
-
-type Database = ReturnType<typeof import('@/db').getDb>;
 
 export async function getPublicBoards(db: Database, teamId: string) {
   return await db
