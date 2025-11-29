@@ -10,7 +10,7 @@ export type TransformedUser = {
   avatarUrl: string;
   email: string;
   status: 'online';
-  role: string;
+  role: 'admin' | 'member' | 'owner';
   joinedDate: string;
   teamIds: string[];
 };
@@ -64,7 +64,7 @@ export async function getOrganizationUsers(
     avatarUrl: orgUser.image || `${avatar.baseUrl}${orgUser.id}`,
     email: orgUser.email,
     status: 'online' as const,
-    role: orgUser.role,
+    role: orgUser.role as 'admin' | 'member' | 'owner',
     joinedDate: orgUser.createdAt.toISOString().split('T')[0],
     teamIds: [],
   }));

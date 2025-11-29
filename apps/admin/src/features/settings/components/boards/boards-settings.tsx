@@ -228,17 +228,17 @@ function RenderBoards({
   boardsData:
     | {
         id: string;
-        teamId: string;
+        teamId: string | null;
         name: string;
         slug: string;
         description: string | null;
         isPrivate: boolean | null;
+        isSystem: boolean | null;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
       }[]
-    | undefined
-    | null;
+    | undefined;
   boardsLoading: boolean;
 }) {
   const boards = boardsData || [];
