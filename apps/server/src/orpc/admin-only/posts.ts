@@ -135,7 +135,7 @@ const issuesRouter = {
         assigneeId: z.string().optional().nullable(),
       }),
     )
-    .output(z.any())
+
     .handler(async ({ input, context }) => {
       const userId = context.session?.user.id;
       const updatedPost = await updatePost(context.db, input, userId);

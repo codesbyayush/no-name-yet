@@ -17,7 +17,7 @@ export const commentsRouter = {
         content: z.string().min(1),
       }),
     )
-    .output(z.any())
+
     .handler(async ({ input, context }) => {
       const userId = context.session?.user.id;
       return await createComment(context.db, input, userId);
@@ -30,7 +30,7 @@ export const commentsRouter = {
         content: z.string().min(1).optional(),
       }),
     )
-    .output(z.any())
+
     .handler(async ({ input, context }) => {
       const updatedComment = await updateComment(context.db, input);
       if (!updatedComment) {
@@ -45,7 +45,7 @@ export const commentsRouter = {
         commentId: z.string(),
       }),
     )
-    .output(z.any())
+
     .handler(async ({ input, context }) => {
       const deletedComment = await deleteComment(context.db, input.commentId);
       if (!deletedComment) {
@@ -63,7 +63,7 @@ export const commentsRouter = {
 
   count: protectedProcedure
     .input(z.object({ feedbackId: z.string() }))
-    .output(z.any())
+
     .handler(async ({ input, context }) =>
       getCommentCount(context.db, input.feedbackId),
     ),

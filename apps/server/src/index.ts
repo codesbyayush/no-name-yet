@@ -6,6 +6,7 @@ import { cors } from 'hono/cors';
 import { secureHeaders } from 'hono/secure-headers';
 import { getAuth } from './lib/auth';
 import { type AppEnv, getEnvFromContext } from './lib/env';
+import { HTTP_STATUS } from './lib/http';
 import { logger } from './lib/logger';
 import { adminRouter } from './orpc/admin';
 import { createAdminContext, createContext } from './orpc/context';
@@ -18,10 +19,6 @@ const app = new Hono();
 const authRouter = new Hono();
 
 app.use(secureHeaders());
-
-const HTTP_STATUS = {
-  INTERNAL_SERVER_ERROR: 500,
-} as const;
 
 // Global error handler
 app.onError((err, c) => {

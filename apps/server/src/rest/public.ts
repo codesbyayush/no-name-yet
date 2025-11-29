@@ -7,6 +7,7 @@ import { boards } from '@/db/schema/boards';
 import { feedback } from '@/db/schema/feedback';
 import { team } from '@/db/schema/organization';
 import { getEnvFromContext } from '../lib/env';
+import { HTTP_STATUS } from '../lib/http';
 import { logger } from '../lib/logger';
 
 type AppContext = {
@@ -27,7 +28,7 @@ publicApiRouter.use('*', async (c, next) => {
   if (!publicKey) {
     return c.json(
       { error: 'Unauthorized', message: 'API key is missing.' },
-      401,
+      HTTP_STATUS.UNAUTHORIZED,
     );
   }
 
@@ -42,7 +43,7 @@ publicApiRouter.use('*', async (c, next) => {
     if (!teamResult || teamResult.length === 0) {
       return c.json(
         { error: 'Unauthorized', message: 'Invalid API key.' },
-        401,
+        HTTP_STATUS.UNAUTHORIZED,
       );
     }
 
@@ -59,7 +60,10 @@ publicApiRouter.use('*', async (c, next) => {
       context: { publicKey: publicKey ? 'present' : 'missing' },
       error,
     });
-    return c.json({ error: 'Internal Server Error' }, 500);
+    return c.json(
+      { error: 'Internal Server Error' },
+      HTTP_STATUS.INTERNAL_SERVER_ERROR,
+    );
   }
 
   await next();
@@ -99,7 +103,10 @@ publicApiRouter.get('/boards', async (c) => {
       context: { teamId: teamContext.id },
       error,
     });
-    return c.json({ error: 'Internal Server Error' }, 500);
+    return c.json(
+      { error: 'Internal Server Error' },
+      HTTP_STATUS.INTERNAL_SERVER_ERROR,
+    );
   }
 });
 
@@ -125,7 +132,10 @@ publicApiRouter.get('/tags', async (c) => {
       context: { teamId: teamContext.id },
       error,
     });
-    return c.json({ error: 'Internal Server Error' }, 500);
+    return c.json(
+      { error: 'Internal Server Error' },
+      HTTP_STATUS.INTERNAL_SERVER_ERROR,
+    );
   }
 });
 
@@ -155,7 +165,7 @@ publicApiRouter.post('/feedback', async (c) => {
   if (!validation.success) {
     return c.json(
       { error: 'Invalid input', details: z.treeifyError(validation.error) },
-      400,
+      HTTP_STATUS.BAD_REQUEST,
     );
   }
 
@@ -172,7 +182,10 @@ publicApiRouter.post('/feedback', async (c) => {
       .where(and(eq(boards.id, boardId), eq(boards.teamId, teamContext.id)));
 
     if (board.length === 0) {
-      return c.json({ error: 'NOT_FOUND', message: 'Board not found.' }, 404);
+      return c.json(
+        { error: 'NOT_FOUND', message: 'Board not found.' },
+        HTTP_STATUS.NOT_FOUND,
+      );
     }
 
     const [newFeedbackItem] = await db
@@ -186,14 +199,20 @@ publicApiRouter.post('/feedback', async (c) => {
       })
       .returning({ id: feedback.id });
 
-    return c.json({ success: true, feedbackId: newFeedbackItem.id }, 201);
+    return c.json(
+      { success: true, feedbackId: newFeedbackItem.id },
+      HTTP_STATUS.CREATED,
+    );
   } catch (error) {
     logger.error('Failed to create public feedback', {
       scope: 'rest-public',
       context: { teamId: teamContext.id, boardId },
       error,
     });
-    return c.json({ error: 'Internal Server Error' }, 500);
+    return c.json(
+      { error: 'Internal Server Error' },
+      HTTP_STATUS.INTERNAL_SERVER_ERROR,
+    );
   }
 });
 
