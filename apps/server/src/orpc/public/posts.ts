@@ -75,7 +75,7 @@ export const postsRouter = {
         description: z.string().min(1),
       }),
     )
-    .output(z.any())
+
     .handler(async ({ input, context }) => {
       const userId = context.session?.user.id;
       if (!userId) {
@@ -90,7 +90,7 @@ export const postsRouter = {
         feedbackId: z.string(),
       }),
     )
-    .output(z.any())
+
     .handler(async ({ input, context }) => {
       const deletedPost = await deletePublicPost(context.db, input.feedbackId);
       if (!deletedPost) {

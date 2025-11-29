@@ -38,6 +38,15 @@ export const stateToken = {
   freshnessWindowMinutes: 15,
 } as const;
 
+export const github = {
+  baseUrl: 'https://github.com',
+  installationsPath: '/settings/installations',
+  getAppInstallUrl: (appName: string) =>
+    `https://github.com/apps/${appName}/installations/new`,
+  getInstallationSettingsUrl: (installationId: number) =>
+    `https://github.com/settings/installations/${installationId}`,
+} as const;
+
 export const defaultBoards = [
   {
     name: 'Feature Requests',

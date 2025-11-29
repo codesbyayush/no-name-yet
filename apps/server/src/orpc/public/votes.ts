@@ -15,7 +15,7 @@ export const votesRouter = {
           message: 'Either feedbackId or commentId must be provided',
         }),
     )
-    .output(z.any())
+
     .handler(async ({ input, context }) => {
       const userId = context.session?.user.id;
       if (!userId) {
@@ -48,7 +48,7 @@ export const votesRouter = {
         commentId: z.string().optional(),
       }),
     )
-    .output(z.any())
+
     .handler(async ({ input, context }) => {
       const userId = context.session?.user.id;
       if (!userId) {

@@ -1,3 +1,4 @@
+import { github } from '@/config';
 import {
   getFeedbackForBranch,
   getInstallationByGithubId,
@@ -44,7 +45,7 @@ export async function getInstallUrl(
   env: AppEnv,
   teamId: string | undefined,
 ): Promise<{ url: string }> {
-  const base = `https://github.com/apps/${env.GH_APP_NAME}/installations/new`;
+  const base = github.getAppInstallUrl(env.GH_APP_NAME);
   const nonce = crypto.randomUUID();
   const SECONDS_PER_MILLISECOND = 1000;
   const unixSeconds = Math.floor(Date.now() / SECONDS_PER_MILLISECOND);
@@ -115,12 +116,14 @@ export async function getUninstallUrl(
     const installation = await getInstallationByTeamId(db, teamId);
     if (installation) {
       return {
-        url: `https://github.com/settings/installations/${installation.githubInstallationId}`,
+        url: github.getInstallationSettingsUrl(
+          installation.githubInstallationId,
+        ),
       };
     }
   }
 
-  return { url: 'https://github.com/settings/installations' };
+  return { url: `${github.baseUrl}${github.installationsPath}` };
 }
 
 /**

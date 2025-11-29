@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { getDb } from '../db';
 import { githubWebhookDeliveries } from '../db/schema';
 import { getEnvFromContext } from '../lib/env';
+import { HTTP_STATUS } from '../lib/http';
 import { logger } from '../lib/logger';
 import {
   deleteInstallation,
@@ -15,13 +16,6 @@ import {
 } from '../services/github';
 
 const router = new Hono();
-
-const HTTP_STATUS = {
-  BAD_REQUEST: 400,
-  UNAUTHORIZED: 401,
-  ACCEPTED: 202,
-  INTERNAL_SERVER_ERROR: 500,
-} as const;
 
 router.post('/github', async (c) => {
   try {

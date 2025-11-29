@@ -28,7 +28,7 @@ export const boardsRouter = {
         customFields: z.any().optional(),
       }),
     )
-    .output(z.any())
+
     .handler(async ({ input, context }) => {
       if (!context.team?.id) {
         throw new ORPCError('NOT_FOUND', { message: 'Team not found' });
@@ -46,7 +46,7 @@ export const boardsRouter = {
         isPrivate: z.boolean().optional(),
       }),
     )
-    .output(z.any())
+
     .handler(async ({ input, context }) => {
       const updatedBoard = await updateBoard(context.db, input);
       if (!updatedBoard) {
@@ -61,7 +61,7 @@ export const boardsRouter = {
         id: z.string(),
       }),
     )
-    .output(z.any())
+
     .handler(async ({ input, context }) => {
       const deletedBoard = await deleteBoard(context.db, input.id);
       if (!deletedBoard) {
