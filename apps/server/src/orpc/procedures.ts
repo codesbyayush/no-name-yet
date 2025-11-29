@@ -1,5 +1,4 @@
 import { ORPCError, os } from '@orpc/server';
-import { logger } from '@/lib/logger';
 import type { AdminContext, Context } from './context';
 
 export const o = os.$context<Context>();
@@ -15,14 +14,14 @@ const withErrorBoundary = o.middleware(async ({ context, next }) => {
       throw error;
     }
     // Minimal structured logging
-    logger.error('Error occurred', {
+    context.logger.error('Unhandled error in ORPC handler', {
       scope: 'orpc',
       context: {
         userId: context.session?.user?.id,
         orgId: context.session?.session?.activeOrganizationId,
         teamId: context.team?.id,
-        error,
       },
+      error,
     });
     throw new ORPCError('INTERNAL_SERVER_ERROR');
   }

@@ -27,7 +27,16 @@ export const votesRouter = {
       try {
         const newVote = await addVote(context.db, input, userId);
         return newVote;
-      } catch (_error) {
+      } catch (error) {
+        context.logger.error('Failed to add vote', {
+          scope: 'votes',
+          context: {
+            userId,
+            feedbackId: input.feedbackId,
+            commentId: input.commentId,
+          },
+          error,
+        });
         throw new ORPCError('INTERNAL_SERVER_ERROR');
       }
     }),

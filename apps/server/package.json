@@ -38,11 +38,13 @@
     "drizzle-valibot": "^0.4.2",
     "hono": "^4.7.6",
     "pg": "^8.14.1",
+    "pino": "^10.1.0",
     "react-email": "4.3.2",
     "resend": "^6.2.2",
     "valibot": "1.1.0"
   },
   "devDependencies": {
+    "pino-pretty": "^13.1.2",
     "@types/bun": "^1.2.6",
     "@types/pg": "^8.11.11",
     "drizzle-kit": "^0.31.5",

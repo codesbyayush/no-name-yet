@@ -56,7 +56,8 @@ publicApiRouter.use('*', async (c, next) => {
   } catch (error) {
     logger.error('Failed to authenticate public API request', {
       scope: 'rest-public',
-      context: { publicKey: publicKey ? 'present' : 'missing', error },
+      context: { publicKey: publicKey ? 'present' : 'missing' },
+      error,
     });
     return c.json({ error: 'Internal Server Error' }, 500);
   }
@@ -95,7 +96,8 @@ publicApiRouter.get('/boards', async (c) => {
   } catch (error) {
     logger.error('Failed to fetch public boards', {
       scope: 'rest-public',
-      context: { teamId: teamContext.id, error },
+      context: { teamId: teamContext.id },
+      error,
     });
     return c.json({ error: 'Internal Server Error' }, 500);
   }
@@ -120,7 +122,8 @@ publicApiRouter.get('/tags', async (c) => {
   } catch (error) {
     logger.error('Failed to fetch public tags', {
       scope: 'rest-public',
-      context: { teamId: teamContext.id, error },
+      context: { teamId: teamContext.id },
+      error,
     });
     return c.json({ error: 'Internal Server Error' }, 500);
   }
@@ -187,7 +190,8 @@ publicApiRouter.post('/feedback', async (c) => {
   } catch (error) {
     logger.error('Failed to create public feedback', {
       scope: 'rest-public',
-      context: { teamId: teamContext.id, boardId, error },
+      context: { teamId: teamContext.id, boardId },
+      error,
     });
     return c.json({ error: 'Internal Server Error' }, 500);
   }
