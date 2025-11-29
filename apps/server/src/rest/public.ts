@@ -1,12 +1,13 @@
-import { and, count, eq, inArray, isNull, sql } from 'drizzle-orm';
+import { and, eq, isNull } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod/v4';
 import { getDb } from '@/db';
 import { tags } from '@/db/schema';
 import { boards } from '@/db/schema/boards';
 import { feedback } from '@/db/schema/feedback';
-import { organization, team } from '@/db/schema/organization';
+import { team } from '@/db/schema/organization';
 import { getEnvFromContext } from '../lib/env';
+import { logger } from '../lib/logger';
 
 type AppContext = {
   Variables: {
@@ -52,7 +53,11 @@ publicApiRouter.use('*', async (c, next) => {
     // }
 
     c.set('team', teamResult[0]);
-  } catch (_error) {
+  } catch (error) {
+    logger.error('Failed to authenticate public API request', {
+      scope: 'rest-public',
+      context: { publicKey: publicKey ? 'present' : 'missing', error },
+    });
     return c.json({ error: 'Internal Server Error' }, 500);
   }
 
@@ -87,7 +92,11 @@ publicApiRouter.get('/boards', async (c) => {
       );
 
     return c.json(publicBoards);
-  } catch (_error) {
+  } catch (error) {
+    logger.error('Failed to fetch public boards', {
+      scope: 'rest-public',
+      context: { teamId: teamContext.id, error },
+    });
     return c.json({ error: 'Internal Server Error' }, 500);
   }
 });
@@ -108,7 +117,11 @@ publicApiRouter.get('/tags', async (c) => {
       .where(eq(tags.teamId, teamContext.id));
 
     return c.json(teamTags);
-  } catch (_error) {
+  } catch (error) {
+    logger.error('Failed to fetch public tags', {
+      scope: 'rest-public',
+      context: { teamId: teamContext.id, error },
+    });
     return c.json({ error: 'Internal Server Error' }, 500);
   }
 });
@@ -171,7 +184,11 @@ publicApiRouter.post('/feedback', async (c) => {
       .returning({ id: feedback.id });
 
     return c.json({ success: true, feedbackId: newFeedbackItem.id }, 201);
-  } catch (_error) {
+  } catch (error) {
+    logger.error('Failed to create public feedback', {
+      scope: 'rest-public',
+      context: { teamId: teamContext.id, boardId, error },
+    });
     return c.json({ error: 'Internal Server Error' }, 500);
   }
 });

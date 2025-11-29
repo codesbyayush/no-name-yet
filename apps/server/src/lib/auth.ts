@@ -9,6 +9,7 @@ import * as schema from '../db/schema';
 import { boards, member, tags, team, teamMember } from '../db/schema';
 import { sendEmail, sendInvitationEmail } from '../email';
 import type { AppEnv } from './env';
+import { logger } from './logger';
 
 // biome-ignore lint/suspicious/noExplicitAny: <Can't find a solution to this type error, searched through many of the issues related to types on better-auth repo but nothing works>
 export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | any {
@@ -168,8 +169,11 @@ export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | any {
                   })),
                 );
               }
-            } catch {
-              //
+            } catch (error) {
+              logger.error('Failed to seed default boards/tags for team', {
+                scope: 'auth',
+                context: { teamId: data.team.id, error },
+              });
             }
           },
         },

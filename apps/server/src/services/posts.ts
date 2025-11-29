@@ -1,4 +1,8 @@
-import { type ActivityAction, createActivityLog } from '@/dal/activity';
+import {
+  type ActivityAction,
+  createActivityLog,
+  getActivityHistoryByFeedbackId,
+} from '@/dal/activity';
 import { getTeamDetails } from '@/dal/organization';
 import {
   type CreatePostData,
@@ -502,4 +506,11 @@ export async function updatePostStatus(
   status: StatusEnum,
 ) {
   return await updateFeedbackStatus(db, feedbackId, status);
+}
+
+/**
+ * Get activity history for a post
+ */
+export async function getActivityHistory(db: Database, feedbackId: string) {
+  return await getActivityHistoryByFeedbackId(db, feedbackId);
 }

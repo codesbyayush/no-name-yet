@@ -84,17 +84,6 @@ export const postsRouter = {
       return await createPublicPost(context.db, input, userId);
     }),
 
-  update: protectedProcedure
-    .input(
-      z.object({
-        feedbackId: z.string(),
-        title: z.string().optional(),
-        description: z.string().min(1).optional(),
-      }),
-    )
-    .output(z.any())
-    .handler(() => 'will implement'),
-
   delete: protectedProcedure
     .input(
       z.object({
