@@ -2,6 +2,7 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { type BetterAuthOptions, betterAuth } from 'better-auth/minimal';
 import { admin, anonymous, organization } from 'better-auth/plugins';
 import { and, eq } from 'drizzle-orm';
+import { defaultBoards, defaultTags, session as sessionConfig } from '@/config';
 import { slugifyTitle } from '@/utils/slug';
 import { getDb } from '../db';
 import * as schema from '../db/schema';
@@ -71,8 +72,8 @@ export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | any {
       },
     },
     session: {
-      expiresIn: 60 * 60 * 24 * 28,
-      updateAge: 60 * 60 * 24 * 7,
+      expiresIn: sessionConfig.expiresInSeconds,
+      updateAge: sessionConfig.updateAgeSeconds,
     },
     trustedOrigins: ['*'],
     emailAndPassword: {
@@ -146,49 +147,24 @@ export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | any {
                 .limit(1);
 
               if (existingBoards.length === 0) {
-                // Boards
-                await dbConn.insert(boards).values([
-                  {
+                // Seed default boards
+                await dbConn.insert(boards).values(
+                  defaultBoards.map((board) => ({
                     teamId: data.team.id,
-                    name: 'Feature Requests',
-                    slug: 'features',
-                    description: 'Collect ideas and feature requests',
-                  },
-                  {
-                    teamId: data.team.id,
-                    name: 'Bugs',
-                    slug: 'bugs',
-                    description: 'Report and track bugs',
-                  },
-                  {
-                    teamId: data.team.id,
-                    name: 'Internal',
-                    slug: 'internal',
-                    description: 'Internal tickets for the team',
-                    isSystem: true,
-                    isPrivate: true,
-                  },
-                ]);
+                    name: board.name,
+                    slug: board.slug,
+                    description: board.description,
+                    ...('isSystem' in board && { isSystem: board.isSystem }),
+                    ...('isPrivate' in board && { isPrivate: board.isPrivate }),
+                  })),
+                );
 
-                // Labels/Tags (match admin mock defaults)
-                const defaultTags = [
-                  { name: 'UI Enhancement', color: 'purple' },
-                  { name: 'Bug', color: 'red' },
-                  { name: 'Feature', color: 'green' },
-                  { name: 'Documentation', color: 'blue' },
-                  { name: 'Refactor', color: 'yellow' },
-                  { name: 'Performance', color: 'orange' },
-                  { name: 'Design', color: 'pink' },
-                  { name: 'Security', color: 'gray' },
-                  { name: 'Accessibility', color: 'indigo' },
-                  { name: 'Testing', color: 'teal' },
-                  { name: 'Internationalization', color: 'cyan' },
-                ];
+                // Seed default tags
                 await dbConn.insert(tags).values(
-                  defaultTags.map((t) => ({
+                  defaultTags.map((tag) => ({
                     teamId: data.team.id,
-                    name: t.name,
-                    color: t.color,
+                    name: tag.name,
+                    color: tag.color,
                   })),
                 );
               }
@@ -199,7 +175,7 @@ export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | any {
         },
 
         organizationCreation: {
-          afterCreate: async ({ user, organization: createdOrg }) => {
+          afterCreate: async ({ user }) => {
             if (env.NODE_ENV === 'production') {
               await sendEmail(env, user.email, 'welcome', {
                 firstname: user.name,

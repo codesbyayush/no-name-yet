@@ -1,3 +1,4 @@
+import { stateToken } from '@/config';
 import type { AppEnv } from './env';
 
 function bytesToBase64Url(input: ArrayBuffer | Uint8Array | string): string {
@@ -81,8 +82,11 @@ export async function verifyInstallState(
     }
     const json = new TextDecoder().decode(base64UrlToBytes(body));
     const payload = JSON.parse(json) as InstallStatePayload;
-    // Basic freshness check (15 minutes)
-    if (Math.abs(Date.now() / 1000 - payload.ts) > 15 * 60) {
+    // Basic freshness check
+    if (
+      Math.abs(Date.now() / 1000 - payload.ts) >
+      stateToken.freshnessWindowMinutes * 60
+    ) {
       return null;
     }
     return payload;
