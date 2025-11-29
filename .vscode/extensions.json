@@ -1,0 +1,22 @@
+{
+  "recommendations": [
+    // Formatter & Linter
+    "biomejs.biome",
+    "eamodio.gitlens",
+    // Docker
+    "ms-azuretools.vscode-docker",
+    "usernamehw.errorlens",
+    // Database tools (for Drizzle/PostgreSQL)
+    "mtxr.sqltools",
+    "mtxr.sqltools-driver-pg",
+    "yzhang.markdown-all-in-one",
+    "editorconfig.editorconfig",
+    "ms-vscode.vscode-typescript-next"
+  ],
+  "unwantedRecommendations": [
+    // Prettier conflicts with Biome
+    "esbenp.prettier-vscode",
+    // ESLint conflicts with Biome
+    "dbaeumer.vscode-eslint"
+  ]
+}
