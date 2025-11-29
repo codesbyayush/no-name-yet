@@ -1,5 +1,6 @@
 import { ORPCError } from '@orpc/server';
 import { z } from 'zod';
+import { pagination } from '@/config';
 import {
   createPublicPost,
   deletePublicPost,
@@ -8,15 +9,16 @@ import {
 } from '@/services/posts';
 import { protectedProcedure } from '../procedures';
 
-const DEFAULT_TAKE = 20;
-const MAX_TAKE = 100;
-
 export const postsRouter = {
   getDetailedPosts: protectedProcedure
     .input(
       z.object({
-        offset: z.number().min(0).default(0),
-        take: z.number().min(1).max(MAX_TAKE).default(DEFAULT_TAKE),
+        offset: z.number().min(0).default(pagination.defaultOffset),
+        take: z
+          .number()
+          .min(1)
+          .max(pagination.maxLimit)
+          .default(pagination.defaultLimit),
         sortBy: z.enum(['newest', 'oldest']).default('newest'),
         boardId: z.string().optional(),
       }),
