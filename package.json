@@ -11,7 +11,7 @@
     "check-types": "bun run --filter '*' check-types",
     "dev:admin": "bun run --filter admin dev",
     "dev:public": "bun run --filter public dev",
-    "dev:server": "bun run --filter server dev",
+    "dev:server": "bun run --elide-lines=0 --filter server dev",
     "dev:widget": "bun run --filter widget dev",
     "build:admin": "bun run --filter admin build",
     "build:public": "bun run --filter public build",

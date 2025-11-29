@@ -65,7 +65,13 @@ export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | any {
                   }),
                 },
               };
-            } catch (_error) {
+            } catch (error) {
+              logger.error('Failed to set active organization on session', {
+                scope: 'auth',
+                context: { userId: session.userId },
+                error,
+                operational: true, // Session still works without active org
+              });
               return { data: session };
             }
           },
@@ -172,7 +178,9 @@ export function getAuth(env: AppEnv): ReturnType<typeof betterAuth> | any {
             } catch (error) {
               logger.error('Failed to seed default boards/tags for team', {
                 scope: 'auth',
-                context: { teamId: data.team.id, error },
+                context: { teamId: data.team.id },
+                error,
+                operational: true, // Seeding is best-effort, team creation continues
               });
             }
           },

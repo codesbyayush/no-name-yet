@@ -39,7 +39,9 @@ router.get('/setup', async (c) => {
       } catch (error) {
         logger.error('Failed to auto-link GitHub installation', {
           scope: 'github-setup',
-          context: { installationId, teamId: decoded.teamId, error },
+          context: { installationId, teamId: decoded.teamId },
+          error,
+          operational: true, // Best-effort linking, expected to sometimes fail
         });
       }
     }

@@ -6,6 +6,7 @@ import { type Team, team, type user } from '../db/schema';
 import { getAuth } from '../lib/auth';
 import { type Cache, getCache } from '../lib/cache';
 import type { AppEnv } from '../lib/env';
+import { type Logger, logger } from '../lib/logger';
 import { resolveTeamFromHeaders } from '../services/organization';
 
 export type CreateContextOptions = {
@@ -21,7 +22,7 @@ export async function createContext({ context, env }: CreateContextOptions) {
     headers: context.req.raw.headers,
   });
 
-  const { team, subdomain } = await resolveTeamFromHeaders(
+  const { team: resolvedTeam, subdomain } = await resolveTeamFromHeaders(
     db,
     context.req.raw.headers,
     cache,
@@ -29,11 +30,12 @@ export async function createContext({ context, env }: CreateContextOptions) {
 
   return {
     session,
-    team,
+    team: resolvedTeam,
     subdomain: subdomain || undefined,
     db,
     cache,
     env,
+    logger,
   };
 }
 
@@ -59,6 +61,7 @@ export async function createAdminContext({
       db,
       cache,
       env,
+      logger,
     };
   }
 
@@ -76,6 +79,7 @@ export async function createAdminContext({
         db,
         cache,
         env,
+        logger,
       };
     }
 
@@ -92,8 +96,15 @@ export async function createAdminContext({
       db,
       cache,
       env,
+      logger,
     };
-  } catch (_error) {
+  } catch (error) {
+    logger.error('Failed to resolve team for admin context', {
+      scope: 'context',
+      context: { userId: session.user.id },
+      error,
+      operational: true, // Fallback to no team is acceptable
+    });
     return {
       session,
       user: null,
@@ -102,6 +113,7 @@ export async function createAdminContext({
       db,
       cache,
       env,
+      logger,
     };
   }
 }
@@ -112,6 +124,7 @@ export type Context = Awaited<ReturnType<typeof createContext>> & {
   db: ReturnType<typeof getDb>;
   cache: Cache;
   env: AppEnv;
+  logger: Logger;
 };
 
 export type AdminContext = Awaited<ReturnType<typeof createAdminContext>> & {
@@ -121,4 +134,5 @@ export type AdminContext = Awaited<ReturnType<typeof createAdminContext>> & {
   db: ReturnType<typeof getDb>;
   cache: Cache;
   env: AppEnv;
+  logger: Logger;
 };

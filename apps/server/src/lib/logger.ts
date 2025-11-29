@@ -1,109 +1,143 @@
 /**
- * Unified error logging utility that handles both local logging and Sentry reporting
- * Automatically detects environment and routes logs appropriately
+ * Centralized logging with Pino
+ *
+ * Features:
+ * - Pretty output in development (pino-pretty)
+ * - JSON output in production
+ * - Sentry integration for error tracking
+ * - `operational` flag to skip Sentry for expected failures
+ *
+ * Usage:
+ *   logger.error('message', { scope: 'auth', context: {...} })
+ *   logger.error('message', { scope: 'auth', operational: true }) // Won't send to Sentry
+ *   logger.info('message', { scope: 'service' })
  */
 
 import * as Sentry from '@sentry/cloudflare';
+import pino from 'pino';
 
-interface ErrorLogOptions {
+export interface LogOptions {
   scope?: string;
   context?: Record<string, unknown>;
-  error?: Error;
+  error?: unknown;
+  /**
+   * Mark as operational error (expected failure)
+   * When true, error won't be sent to Sentry
+   * @default false
+   */
+  operational?: boolean;
 }
 
-// Detect environment
+// Environment detection
 const isWorkersEnvironment =
   typeof globalThis !== 'undefined' &&
   (globalThis as { __CLOUDFLARE_WORKER__?: boolean }).__CLOUDFLARE_WORKER__;
 
-// ANSI color codes
-const colors = {
-  reset: '\x1b[0m',
-  bright: '\x1b[1m',
-  dim: '\x1b[2m',
-  red: '\x1b[31m',
-  blue: '\x1b[34m',
-  cyan: '\x1b[36m',
-  white: '\x1b[37m',
-  bgRed: '\x1b[41m',
-  black: '\x1b[30m',
-} as const;
+const isDevelopment =
+  typeof process !== 'undefined' && process.env?.NODE_ENV === 'development';
 
-function formatValue(value: unknown): string {
-  return typeof value === 'object' && value !== null
-    ? JSON.stringify(value, null, 2)
-    : String(value);
+// Create Pino instance with appropriate transport
+const pinoInstance = pino({
+  level: isDevelopment ? 'debug' : 'info',
+  ...(isDevelopment &&
+    !isWorkersEnvironment && {
+      transport: {
+        target: 'pino-pretty',
+        options: {
+          colorize: true,
+          translateTime: 'HH:MM:ss.l',
+          ignore: 'pid,hostname',
+          messageFormat: '{scope} {msg}',
+          customColors: 'error:red,warn:yellow,info:blue,debug:gray',
+        },
+      },
+    }),
+});
+
+function formatError(error: unknown): Record<string, unknown> | undefined {
+  if (!error) return undefined;
+
+  if (error instanceof Error) {
+    const formatted: Record<string, unknown> = {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+    };
+    if (error.cause) {
+      formatted.cause = formatError(error.cause);
+    }
+    return formatted;
+  }
+
+  return { message: String(error) };
+}
+
+function sendToSentry(
+  message: string,
+  options?: LogOptions,
+  level: 'error' | 'warning' = 'error',
+) {
+  if (!isWorkersEnvironment || options?.operational) return;
+
+  try {
+    const errorObj =
+      options?.error instanceof Error ? options.error : undefined;
+
+    if (errorObj && Sentry.captureException) {
+      Sentry.captureException(errorObj, {
+        extra: options?.context,
+        tags: { source: options?.scope ?? 'logger' },
+        level,
+      });
+    } else if (Sentry.captureMessage) {
+      Sentry.captureMessage(message, {
+        extra: options?.context,
+        tags: { source: options?.scope ?? 'logger' },
+        level,
+      });
+    }
+  } catch (sentryError) {
+    pinoInstance.error({ err: sentryError }, 'Failed to send to Sentry');
+  }
+}
+
+function createLogData(options?: LogOptions): Record<string, unknown> {
+  const data: Record<string, unknown> = {};
+
+  if (options?.scope) {
+    data.scope = `[${options.scope}]`;
+  }
+  if (options?.context) {
+    data.context = options.context;
+  }
+  if (options?.error) {
+    data.err = formatError(options.error);
+  }
+  if (options?.operational) {
+    data.operational = true;
+  }
+
+  return data;
 }
 
 export const logger = {
-  error: (message: string, options?: ErrorLogOptions & { error?: unknown }) => {
-    const { error: err, scope, context } = options ?? {};
-    const c = colors;
-    const time = new Date().toLocaleTimeString('en-US', {
-      hour12: false,
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      fractionalSecondDigits: 3,
-    });
+  error: (message: string, options?: LogOptions) => {
+    pinoInstance.error(createLogData(options), message);
+    sendToSentry(message, options, 'error');
+  },
 
-    const timestamp = `${c.dim}${time}${c.reset}`;
-    const level = `${c.bgRed}${c.black}${c.bright} ERROR ${c.reset}`;
-    const scopeStr = scope
-      ? `${c.blue}${c.bright}[${scope}]${c.reset}`
-      : `[${scope}]`;
-    const msg = `${c.red}${c.bright}${message}${c.reset}`;
+  warn: (message: string, options?: LogOptions) => {
+    pinoInstance.warn(createLogData(options), message);
+    sendToSentry(message, options, 'warning');
+  },
 
-    let log = [timestamp, level, scopeStr, msg].filter(Boolean).join(' ');
+  info: (message: string, options?: LogOptions) => {
+    pinoInstance.info(createLogData(options), message);
+  },
 
-    if (err instanceof Error) {
-      const errorLines = [
-        `${c.red}${c.bright}Error: ${err.name}${c.reset}`,
-        `${c.red}Message: ${err.message}${c.reset}`,
-      ];
-      if (err.stack) {
-        errorLines.push(
-          `${c.dim}Stack trace:${c.reset}`,
-          ...err.stack.split('\n').map((line) => `${c.dim}${line}${c.reset}`),
-        );
-      }
-      log += `\n${errorLines.join('\n')}`;
-    } else if (err !== undefined) {
-      log += `\nError: ${String(err)}`;
-    }
-
-    if (context && Object.keys(context).length > 0) {
-      const formatted = Object.entries(context)
-        .map(([key, value]) => {
-          const val = formatValue(value);
-          return `  ${c.cyan}${key}${c.reset}: ${c.white}${val}${c.reset}`;
-        })
-        .join('\n');
-      log += `\n${c.dim}Context:${c.reset}\n${formatted}`;
-    }
-
-    console.error(log);
-
-    // Send to Sentry (only in workers environment where Sentry is initialized)
-    if (isWorkersEnvironment) {
-      try {
-        const errorObj = err instanceof Error ? err : undefined;
-        if (errorObj && Sentry.captureException) {
-          Sentry.captureException(errorObj, {
-            extra: context,
-            tags: { source: scope ?? 'logger' },
-            level: 'error',
-          });
-        } else if (Sentry.captureMessage) {
-          Sentry.captureMessage(message, {
-            extra: context,
-            tags: { source: scope ?? 'logger' },
-            level: 'error',
-          });
-        }
-      } catch (error) {
-        console.error('Error sending to Sentry', error);
-      }
-    }
+  debug: (message: string, options?: LogOptions) => {
+    pinoInstance.debug(createLogData(options), message);
   },
 };
+
+export type Logger = typeof logger;

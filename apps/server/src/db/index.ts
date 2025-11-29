@@ -1,17 +1,15 @@
 import { neon, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
+import type { AppEnv } from '@/lib/env';
 import * as schema from './schema';
 
 // Centralized Database type - import this everywhere instead of redefining
 export type Database = ReturnType<typeof getDb>;
 
 // Accepts the Worker env object and returns a Drizzle db instance
-export function getDb(env: {
-  HYPERDRIVE: { connectionString: string };
-  DATABASE_URL: string;
-  NODE_ENV: string;
-}) {
+export function getDb(env: AppEnv) {
   let connectionString = env.DATABASE_URL;
+
   if (env.NODE_ENV === 'development') {
     connectionString = 'postgres://postgres:postgres@db.localtest.me:5432/main';
     neonConfig.fetchEndpoint = (host: string) => {
@@ -25,6 +23,9 @@ export function getDb(env: {
       connectionStringUrl.hostname !== 'db.localtest.me';
     neonConfig.wsProxy = (host) =>
       host === 'db.localtest.me' ? `${host}:4444/v2` : `${host}/v2`;
+  }
+  if (!connectionString.trim()) {
+    throw new Error('DATABASE_URL is not set');
   }
 
   const sql = neon(connectionString);
