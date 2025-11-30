@@ -24,6 +24,7 @@ import { Route as AdminSettingsMembersRouteImport } from './routes/_admin/settin
 import { Route as AdminSettingsGeneralRouteImport } from './routes/_admin/settings/general'
 import { Route as AdminSettingsFeedbackRouteImport } from './routes/_admin/settings/feedback'
 import { Route as AdminSettingsBoardsRouteImport } from './routes/_admin/settings/boards'
+import { Route as AdminRequestsRequestIdRouteImport } from './routes/_admin/requests/$requestId'
 import { Route as AdminBoardsPostIdRouteImport } from './routes/_admin/boards/$postId'
 import { Route as AdminSettingsIntegrationsIndexRouteImport } from './routes/_admin/settings/integrations/index'
 import { Route as AdminSettingsIntegrationsGithubRouteImport } from './routes/_admin/settings/integrations/github'
@@ -102,6 +103,11 @@ const AdminSettingsBoardsRoute = AdminSettingsBoardsRouteImport.update({
   path: '/boards',
   getParentRoute: () => AdminSettingsRoute,
 } as any)
+const AdminRequestsRequestIdRoute = AdminRequestsRequestIdRouteImport.update({
+  id: '/requests/$requestId',
+  path: '/requests/$requestId',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminBoardsPostIdRoute = AdminBoardsPostIdRouteImport.update({
   id: '/boards/$postId',
   path: '/boards/$postId',
@@ -128,6 +134,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthAuthRoute
   '/onboarding': typeof OnboardingIndexRoute
   '/boards/$postId': typeof AdminBoardsPostIdRoute
+  '/requests/$requestId': typeof AdminRequestsRequestIdRoute
   '/settings/boards': typeof AdminSettingsBoardsRoute
   '/settings/feedback': typeof AdminSettingsFeedbackRoute
   '/settings/general': typeof AdminSettingsGeneralRoute
@@ -147,6 +154,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthAuthRoute
   '/onboarding': typeof OnboardingIndexRoute
   '/boards/$postId': typeof AdminBoardsPostIdRoute
+  '/requests/$requestId': typeof AdminRequestsRequestIdRoute
   '/settings/boards': typeof AdminSettingsBoardsRoute
   '/settings/feedback': typeof AdminSettingsFeedbackRoute
   '/settings/general': typeof AdminSettingsGeneralRoute
@@ -168,6 +176,7 @@ export interface FileRoutesById {
   '/_auth/auth': typeof AuthAuthRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/_admin/boards/$postId': typeof AdminBoardsPostIdRoute
+  '/_admin/requests/$requestId': typeof AdminRequestsRequestIdRoute
   '/_admin/settings/boards': typeof AdminSettingsBoardsRoute
   '/_admin/settings/feedback': typeof AdminSettingsFeedbackRoute
   '/_admin/settings/general': typeof AdminSettingsGeneralRoute
@@ -189,6 +198,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/onboarding'
     | '/boards/$postId'
+    | '/requests/$requestId'
     | '/settings/boards'
     | '/settings/feedback'
     | '/settings/general'
@@ -208,6 +218,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/onboarding'
     | '/boards/$postId'
+    | '/requests/$requestId'
     | '/settings/boards'
     | '/settings/feedback'
     | '/settings/general'
@@ -228,6 +239,7 @@ export interface FileRouteTypes {
     | '/_auth/auth'
     | '/onboarding/'
     | '/_admin/boards/$postId'
+    | '/_admin/requests/$requestId'
     | '/_admin/settings/boards'
     | '/_admin/settings/feedback'
     | '/_admin/settings/general'
@@ -355,6 +367,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsBoardsRouteImport
       parentRoute: typeof AdminSettingsRoute
     }
+    '/_admin/requests/$requestId': {
+      id: '/_admin/requests/$requestId'
+      path: '/requests/$requestId'
+      fullPath: '/requests/$requestId'
+      preLoaderRoute: typeof AdminRequestsRequestIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/_admin/boards/$postId': {
       id: '/_admin/boards/$postId'
       path: '/boards/$postId'
@@ -408,6 +427,7 @@ interface AdminRouteChildren {
   AdminSettingsRoute: typeof AdminSettingsRouteWithChildren
   AdminWidgetRoute: typeof AdminWidgetRoute
   AdminBoardsPostIdRoute: typeof AdminBoardsPostIdRoute
+  AdminRequestsRequestIdRoute: typeof AdminRequestsRequestIdRoute
   AdminBoardsIndexRoute: typeof AdminBoardsIndexRoute
   AdminRequestsIndexRoute: typeof AdminRequestsIndexRoute
 }
@@ -417,6 +437,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminSettingsRoute: AdminSettingsRouteWithChildren,
   AdminWidgetRoute: AdminWidgetRoute,
   AdminBoardsPostIdRoute: AdminBoardsPostIdRoute,
+  AdminRequestsRequestIdRoute: AdminRequestsRequestIdRoute,
   AdminBoardsIndexRoute: AdminBoardsIndexRoute,
   AdminRequestsIndexRoute: AdminRequestsIndexRoute,
 }
